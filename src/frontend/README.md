@@ -1,0 +1,1 @@
+The frontend folder contains all the code for the frontend of the project.
