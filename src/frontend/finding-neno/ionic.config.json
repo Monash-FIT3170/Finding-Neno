@@ -1,0 +1,7 @@
+{
+  "name": "Finding Neno",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "react-vite"
+}
