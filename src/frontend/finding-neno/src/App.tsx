@@ -10,10 +10,13 @@ import {
   setupIonicReact
 } from '@ionic/react';
 import { IonReactRouter } from '@ionic/react-router';
-import { ellipse, square, triangle } from 'ionicons/icons';
-import Tab1 from './pages/Tab1';
-import Tab2 from './pages/Tab2';
-import Tab3 from './pages/Tab3';
+import { home, navigateCircle, glasses, personCircle, addCircle } from 'ionicons/icons';
+import Dashboard from './pages/Dashboard';
+import Map from './pages/Map';
+import Report from './pages/Report';
+import Sightings from './pages/Sightings';
+import Profile from './pages/Profile';
+
 
 /* Core CSS required for Ionic components to work properly */
 import '@ionic/react/css/core.css';
@@ -41,32 +44,43 @@ const App: React.FC = () => (
     <IonReactRouter>
       <IonTabs>
         <IonRouterOutlet>
-          <Route exact path="/tab1">
-            <Tab1 />
-          </Route>
-          <Route exact path="/tab2">
-            <Tab2 />
-          </Route>
-          <Route path="/tab3">
-            <Tab3 />
-          </Route>
+          <Route path="/dashboard" render={() => <Dashboard />} exact={true} />
+          <Route path="/map" render={() => <Map />} exact={true} />
+          <Route path="/report" render={() => <Report />} exact={true} />
+          <Route path="/sightings" render={() => <Sightings />} exact={true} />
+          <Route path="/profile" render={() => <Profile />} exact={true} />
           <Route exact path="/">
-            <Redirect to="/tab1" />
+            <Redirect to="/dashboard" />
           </Route>
         </IonRouterOutlet>
+
         <IonTabBar slot="bottom">
-          <IonTabButton tab="tab1" href="/tab1">
-            <IonIcon aria-hidden="true" icon={triangle} />
-            <IonLabel>Tab 1</IonLabel>
+
+          <IonTabButton tab="dashboard" href="/dashboard">
+            <IonIcon aria-hidden="true" icon={home} />
+            <IonLabel>Dashboard</IonLabel>
           </IonTabButton>
-          <IonTabButton tab="tab2" href="/tab2">
-            <IonIcon aria-hidden="true" icon={ellipse} />
-            <IonLabel>Tab 2</IonLabel>
+
+          <IonTabButton tab="map" href="/map">
+            <IonIcon aria-hidden="true" icon={navigateCircle} />
+            <IonLabel>Map</IonLabel>
           </IonTabButton>
-          <IonTabButton tab="tab3" href="/tab3">
-            <IonIcon aria-hidden="true" icon={square} />
-            <IonLabel>Tab 3</IonLabel>
+
+          <IonTabButton tab="report" href="/report">
+            <IonIcon aria-hidden="true" icon={addCircle} />
+            <IonLabel>Report</IonLabel>
           </IonTabButton>
+
+          <IonTabButton tab="sightings" href="/sightings">
+            <IonIcon aria-hidden="true" icon={glasses} />
+            <IonLabel>Sightings</IonLabel>
+          </IonTabButton>
+
+          <IonTabButton tab="profile" href="/profile">
+            <IonIcon aria-hidden="true" icon={personCircle} />
+            <IonLabel>Profile</IonLabel>
+          </IonTabButton>
+
         </IonTabBar>
       </IonTabs>
     </IonReactRouter>
