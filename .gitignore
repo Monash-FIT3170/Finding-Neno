@@ -1,2 +1,3 @@
 # Ignore all files containing environment variables
 .env*
+.idea*
