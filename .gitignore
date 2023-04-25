@@ -1,3 +1,7 @@
 # Ignore all files containing environment variables
 .env*
 .idea*
+node_modules/
+package-lock.json
+package.json
+src/.DS_Store
