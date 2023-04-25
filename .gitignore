@@ -1,3 +1,7 @@
 # Ignore all files containing environment variables
 .env*
+<<<<<<< HEAD
 __pycache__
+=======
+.idea*
+>>>>>>> 19fbf9e (Added .idea folder to gitignore)
