@@ -1,12 +1,20 @@
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text } from 'react-native';
+import { 
+  NativeBaseProvider, 
+  Box } from "native-base";
+
+import LoginPage from './components/Login/LoginPage'
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      <Text>This is Finding Neno</Text>
-      <StatusBar style="auto" />
-    </View>
+    <NativeBaseProvider>
+      {/* remove this css later */}
+      <Box flex={1} alignItems="center" justifyContent="center">
+        {/* keeping this here for now */}
+        <LoginPage onPress={() => alert('testing onpress')}/>
+      </Box>
+    </NativeBaseProvider>
   );
 }
 
