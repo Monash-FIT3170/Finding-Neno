@@ -1,6 +1,7 @@
 import { Box, Center, Heading, VStack, HStack, FormControl, Input, Link, Button, Text } from "native-base";
 
 import { Color } from "../atomic/Theme";
+import {validEmail} from "./validation"
 import { useState } from "react";
 
 const LoginPage = ({ onLoginPress, onSwitchPress }) => {
@@ -10,13 +11,12 @@ const LoginPage = ({ onLoginPress, onSwitchPress }) => {
   const validateDetails = () => {
     // Validates details. If details are valid, send formData object to onLoginPress.
     foundErrors = {};
-
-    if (!formData.email.includes('@')) {
-      foundErrors = {...foundErrors, email: 'Email is invalid'}
-    }
-    if (!formData.email || formData.email == "") {
+  
+    if (!formData.email) {
       foundErrors = {...foundErrors, email: 'Email is required'}
-    }
+    } else if (!validEmail(formData.email)) {
+        foundErrors = {...foundErrors, email: 'Email is invalid'}
+      }
     
     if (!formData.password || formData.password == "") {
       foundErrors = {...foundErrors, password: 'Password is required'}
