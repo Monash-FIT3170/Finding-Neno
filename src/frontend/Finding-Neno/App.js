@@ -16,8 +16,20 @@ export default function App() {
     alert("login data: " + JSON.stringify(formData));
   };
 
-  const signup = (formData) => {
-    alert("signup data: " + JSON.stringify(formData));
+  const signup = async (formData) => {
+    const ipAddress = "http://192.168.0.108";
+    const port = "5000";
+    const url = `${ipAddress}:${port}/insert_user`;
+
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    }).then((res) => {
+      if (res.status == 201) {
+        alert("inserted user successfully");
+      }
+    });
   };
 
   return (
