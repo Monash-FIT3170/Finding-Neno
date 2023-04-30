@@ -29,7 +29,8 @@ export default function App() {
       if (res.status == 201) {
         alert("inserted user successfully");
       }
-    });
+    })
+    .catch(error => alert(error));
   };
 
   return (
