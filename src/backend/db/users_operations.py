@@ -11,9 +11,11 @@ conn = psycopg2.connect(
     port=os.getenv("DATABASE_PORT"),
 )
 
-def salt_and_hash(password): #TODO: IMPLEMENT
+
+def salt_and_hash(password):  # TODO: IMPLEMENT
 
     return ""
+
 
 def generate_access_token():
     # This function generates an 32 character random access token using both letters and numbers
@@ -22,6 +24,7 @@ def generate_access_token():
     token = ''.join(secrets.choice(alphabet) for i in range(32))
 
     return token
+
 
 def insert_user(email, phone, user_name, password):
     # This function is used to add a new user to the database
@@ -35,7 +38,8 @@ def insert_user(email, phone, user_name, password):
     access_token = generate_access_token()
 
     # Construct and INSERT query to insert this user into the DB
-    query = """INSERT INTO users (email_address, phone_number, name, password, access_token) VALUES (%s, %s, %s, %s, %s);"""
+    query = """INSERT INTO users (email_address, phone_number, name, password, access_token) VALUES (%s, %s, %s, %s, 
+    %s);"""
 
     # Execute the query
     try:
