@@ -1,5 +1,6 @@
 import psycopg2
 import os
+import secrets
 from dotenv import load_dotenv
 import sys
 
@@ -11,7 +12,11 @@ conn = psycopg2.connect(
     port=os.getenv("DATABASE_PORT"),
 )
 
-def salt_and_hash(password):
+def salt_and_hash(password): #TODO: IMPLEMENT
+
+    return ""
+
+def generate_access_token(): #TODO: IMPLEMENT
 
     return ""
 
@@ -21,7 +26,7 @@ def insert_user(email, phone, user_name, password):
 
     hashed_pass = salt_and_hash(password)
 
-    access_token = "" # TODO : HOW ARE WE MAKING ACCESS TOKENS?
+    access_token = generate_access_token()
 
     query = """INSERT INTO users (email_address) VALUES (%s), (phone_number) VALUES (%s), (name) VALUES (%s), (password) VALUES (%s), (access_token) VALUES (%s);"""
 
