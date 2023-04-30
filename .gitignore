@@ -1,7 +1,24 @@
 # Ignore all files containing environment variables
 .env*
 .idea*
-node_modules/
 package-lock.json
 package.json
-src/.DS_Store
+**/.DS_Store
+__pycache__/
+
+.vscode
+**/node_modules/
+**/.expo
+src/frontend/finding-neno/dist/
+**/npm-debug.*
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+src/frontend/finding-neno/web-build/
+
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
