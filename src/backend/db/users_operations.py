@@ -20,8 +20,6 @@ def salt_and_hash(password,access_token):
     :Input:
     argv1: password(string)
     :return: hashed password(string)
-
-
     """
 
     salted_password = f"{password}{access_token}"
@@ -33,7 +31,10 @@ def salt_and_hash(password,access_token):
 
 
 def generate_access_token():
-    # This function generates an 32 character random access token using both letters and numbers
+    """
+    This function generates an 32 character random access token using both letters and numbers
+    :return: access token(string)
+    """
 
     alphabet = string.ascii_letters + string.digits
     token = ''.join(secrets.choice(alphabet) for i in range(32))
@@ -42,11 +43,12 @@ def generate_access_token():
 
 
 def insert_user(email, phone, user_name, password):
-    # This function is used to add a new user to the database
+    #
+    """
+    This function is used to add a new user to the database
+    """
 
     cur = conn.cursor()
-
-
 
     # Generate an access token
     access_token = generate_access_token()
