@@ -1,17 +1,6 @@
-import psycopg2
-import os
 import secrets
 import string
 import hashlib
-
-
-conn = psycopg2.connect(
-    dbname=os.getenv("DATABASE_NAME"),
-    user=os.getenv("DATABASE_USER"),
-    password=os.getenv("DATABASE_PASSWORD"),
-    host=os.getenv("DATABASE_HOST"),
-    port=os.getenv("DATABASE_PORT"),
-)
 
 
 def salt_and_hash(password,access_token):
@@ -42,7 +31,7 @@ def generate_access_token():
     return token
 
 
-def insert_user(email, phone, user_name, password):
+def insert_user(conn, email, phone, user_name, password):
     #
     """
     This function is used to add a new user to the database
