@@ -2,6 +2,8 @@ import psycopg2
 import os
 import secrets
 import string
+import hashlib
+
 
 conn = psycopg2.connect(
     dbname=os.getenv("DATABASE_NAME"),
@@ -12,9 +14,22 @@ conn = psycopg2.connect(
 )
 
 
-def salt_and_hash(password):  # TODO: IMPLEMENT
+def salt_and_hash(password,access_token):
+    """
+    This function is responsible to salt and hash the password it receives
+    :Input:
+    argv1: password(string)
+    :return: hashed password(string)
 
-    return ""
+
+    """
+
+    salted_password = f"{password}{access_token}"
+    hasher = hashlib.sha256()
+    hasher.update(salted_password.encode('utf-8'))
+    hashed_password = hasher.hexdigest()
+
+    return hashed_password
 
 
 def generate_access_token():
@@ -31,11 +46,13 @@ def insert_user(email, phone, user_name, password):
 
     cur = conn.cursor()
 
-    # Hash the password input
-    hashed_pass = salt_and_hash(password)
+
 
     # Generate an access token
     access_token = generate_access_token()
+
+    # Hash the password input
+    hashed_pass = salt_and_hash(password,access_token)
 
     # Construct and INSERT query to insert this user into the DB
     query = """INSERT INTO users (email_address, phone_number, name, password, access_token) VALUES (%s, %s, %s, %s, 
