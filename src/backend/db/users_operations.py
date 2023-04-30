@@ -1,8 +1,7 @@
 import psycopg2
 import os
 import secrets
-from dotenv import load_dotenv
-import sys
+import string
 
 conn = psycopg2.connect(
     dbname=os.getenv("DATABASE_NAME"),
@@ -18,7 +17,10 @@ def salt_and_hash(password): #TODO: IMPLEMENT
 
 def generate_access_token(): #TODO: IMPLEMENT
 
-    return ""
+    alphabet = string.ascii_letters + string.digits
+    token = ''.join(secrets.choice(alphabet) for i in range(32))
+
+    return token
 
 def insert_user(email, phone, user_name, password):
 
@@ -31,6 +33,12 @@ def insert_user(email, phone, user_name, password):
     query = """INSERT INTO users (email_address) VALUES (%s), (phone_number) VALUES (%s), (name) VALUES (%s), (password) VALUES (%s), (access_token) VALUES (%s);"""
 
     # Execute the query
-    cur.execute(query, (email, phone, user_name, hashed_pass, access_token, ))
+
+    try:
+        cur.execute(query, (email, phone, user_name, hashed_pass, access_token,))
+        print(f"Query executed successfully: {query}")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
     conn.commit()
     cur.close()
