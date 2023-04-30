@@ -30,12 +30,12 @@ def insert_user(email, phone, user_name, password):
 
     access_token = generate_access_token()
 
-    query = """INSERT INTO users (email_address) VALUES (%s), (phone_number) VALUES (%s), (name) VALUES (%s), (password) VALUES (%s), (access_token) VALUES (%s);"""
+    query = """INSERT INTO users (email_address, phone_number, name, password, access_token) VALUES (%s, %s, %s, %s, %s);"""
 
     # Execute the query
 
     try:
-        cur.execute(query, (email, phone, user_name, hashed_pass, access_token,))
+        cur.execute(query, (email, phone, user_name, hashed_pass, access_token))
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
