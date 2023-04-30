@@ -1,11 +1,14 @@
 from flask import Flask, request, jsonify
 import psycopg2
-import sys
-import os
+import sys, os
 from dotenv import load_dotenv
+from pathlib import Path
+
+file = Path(__file__).resolve()
+package_root_directory = file.parents[1]
+sys.path.append(str(package_root_directory))
 
 from db.users_operations import insert_user
-
 
 app = Flask(__name__)
 conn = None
