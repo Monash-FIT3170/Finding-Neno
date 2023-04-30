@@ -2,6 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text } from "react-native";
 import { useState } from "react";
 import { NativeBaseProvider, Box } from "native-base";
+import { IP } from "@env";
 
 import LoginPage from "./components/Login/LoginPage";
 import SignupPage from "./components/Login/SignupPage";
@@ -17,20 +18,20 @@ export default function App() {
   };
 
   const signup = async (formData) => {
-    const ipAddress = "http://192.168.0.108";
     const port = "5000";
-    const url = `${ipAddress}:${port}/insert_user`;
+    const url = `${IP}:${port}/insert_user`;
 
     fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(formData),
-    }).then((res) => {
-      if (res.status == 201) {
-        alert("inserted user successfully");
-      }
     })
-    .catch(error => alert(error));
+      .then((res) => {
+        if (res.status == 201) {
+          alert("inserted user successfully");
+        }
+      })
+      .catch((error) => alert(error));
   };
 
   return (
