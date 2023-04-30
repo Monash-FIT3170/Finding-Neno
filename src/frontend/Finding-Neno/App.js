@@ -2,7 +2,7 @@ import { StatusBar } from "expo-status-bar";
 import { StyleSheet, Text } from "react-native";
 import { useState } from "react";
 import { NativeBaseProvider, Box } from "native-base";
-import { IP } from "@env";
+import { IP, PORT } from "@env";
 
 import LoginPage from "./components/Login/LoginPage";
 import SignupPage from "./components/Login/SignupPage";
@@ -18,8 +18,7 @@ export default function App() {
   };
 
   const signup = async (formData) => {
-    const port = "5000";
-    const url = `${IP}:${port}/insert_user`;
+    const url = `${IP.toString()}:${PORT.toString()}/insert_user`;
 
     fetch(url, {
       method: "POST",
