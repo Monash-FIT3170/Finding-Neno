@@ -1,8 +1,17 @@
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
-import { Text } from 'react-native';
+import { Text, Button, Box, View } from 'react-native';
 
-export default function ProfilePage() {
+export default function ProfilePage({ navigation: { navigate}}) {
     const navigation = useNavigation();
 
-    return (<Text>Profile page</Text>)
+    return (
+        <View>
+            <Button 
+                onPress={() => navigate('New Pet Page')} 
+                title="Add New Pet"> 
+            </Button>
+        </View>
+        
+        
+    )
 }
