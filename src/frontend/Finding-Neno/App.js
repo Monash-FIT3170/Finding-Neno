@@ -21,6 +21,7 @@ export default function App() {
   return (
     <NativeBaseProvider>
       <NavigationContainer>
+        {/* To skip login/signup pages, replace initalRouteName="Login Page" to initalRouteName="TabNavigator" */}
         <Stack.Navigator initialRouteName="Login Page">
           <Stack.Screen name="Login Page" component={LoginPage} />
           <Stack.Screen name="Sign Up Page" component={SignupPage} /> 
@@ -37,21 +38,21 @@ export default function App() {
 
 function TabNavigator(){
   return(
-    <Tab.Navigator initialRouteName="DashboardPage">
+    <Tab.Navigator initialRouteName="Dashboard Page">
       <Tab.Screen name="Dashboard Page" component={DashboardPage}/>
       <Tab.Screen name="Map Page" component={MapPage} />
       <Tab.Screen name="Report Page" component={ReportPage} />
       <Tab.Screen name="Sightings Page" component={SightingsPage}/>
       <Tab.Screen 
-        name="ProfileStackNav" 
-        component={ProfileStackNav} 
+        name="Profile Stack Navigator" 
+        component={ProfileStackNavigator} 
         options={{ headerShown: false }}
       />
     </Tab.Navigator>
   )
 }
 
-function ProfileStackNav() {
+function ProfileStackNavigator() {
   return (
     <Stack.Navigator initialRouteName="ProfilePage">
       <Stack.Screen name="Profile Page" component={ProfilePage}/>
