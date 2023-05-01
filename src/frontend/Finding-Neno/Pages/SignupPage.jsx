@@ -1,12 +1,32 @@
 import { Box, Center, Heading, VStack, HStack, FormControl, Input, Link, Button, Text } from "native-base";
+import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 
-import { Color } from "../atomic/Theme";
-import { validEmail } from "./validation"
+import { Color } from "../components/atomic/Theme";
+import { validEmail } from "./validation";
 import { useState } from "react";
+import { IP, PORT } from "@env";
 
-const SignupPage = ({ onSignupPress, onSwitchPress }) => {
+const SignupPage = () => {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
+  
+  const navigation = useNavigation();
+
+  const onSignupPress = async (formData) => {
+    const url = `${IP.toString()}:${PORT.toString()}/insert_user`;
+
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    })
+      .then((res) => {
+        if (res.status == 201) {
+          alert("inserted user successfully");
+        }
+      })
+      .catch((error) => alert(error));
+  };
 
   const validateDetails = () => {
     // Validates details. If details are valid, send formData object to onSignupPress.
@@ -99,7 +119,9 @@ const SignupPage = ({ onSignupPress, onSwitchPress }) => {
                 fontWeight: "medium",
                 fontSize: "sm",
               }}
-              onPress={onSwitchPress}
+              onPress={() => {
+                navigation.navigate("SignupPage");
+              }}
             >
               Sign In
             </Link>

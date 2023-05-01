@@ -1,59 +1,62 @@
-import { StatusBar } from "expo-status-bar";
-import { StyleSheet, Text } from "react-native";
-import { useState } from "react";
 import { NativeBaseProvider, Box } from "native-base";
-import { IP, PORT } from "@env";
 
-import LoginPage from "./components/Login/LoginPage";
-import SignupPage from "./components/Login/SignupPage";
+import { NavigationContainer, useNavigation  } from '@react-navigation/native';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createStackNavigator } from '@react-navigation/stack';
+
+import DashboardPage from "./Pages/DashboardPage";
+import LoginPage from "./Pages/LoginPage";
+import MapPage from "./Pages/MapPage";
+import NewPetPage from "./Pages/NewPetPage";
+import ProfilePage from "./Pages/ProfilePage";
+import ReportPage from "./Pages/ReportPage";
+import SignupPage from "./Pages/SignupPage";
+import SightingsPage from "./Pages/SightingsPage";
+
+const Stack = createStackNavigator();
+const Tab = createBottomTabNavigator();
 
 export default function App() {
-  const [isLogin, setIsLogin] = useState(true); // true to show login page, false to show signup page
-  const switchPage = () => {
-    setIsLogin(!isLogin);
-  };
-
-  const login = (formData) => {
-    alert("login data: " + JSON.stringify(formData));
-  };
-
-  const signup = async (formData) => {
-    const url = `${IP.toString()}:${PORT.toString()}/insert_user`;
-
-    fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => {
-        if (res.status == 201) {
-          alert("inserted user successfully");
-        }
-      })
-      .catch((error) => alert(error));
-  };
-
+  
   return (
     <NativeBaseProvider>
-      {/* remove this css later */}
-      <Box flex={1} alignItems="center" justifyContent="center">
-        {/* keeping this here for now */}
-
-        {isLogin ? (
-          <LoginPage onLoginPress={login} onSwitchPress={switchPage} />
-        ) : (
-          <SignupPage onSignupPress={signup} onSwitchPress={switchPage} />
-        )}
-      </Box>
+      <NavigationContainer>
+        {/* To skip login/signup pages, replace initalRouteName="Login Page" to initalRouteName="TabNavigator" */}
+        <Stack.Navigator initialRouteName="Login Page">
+          <Stack.Screen name="Login Page" component={LoginPage} />
+          <Stack.Screen name="Sign Up Page" component={SignupPage} /> 
+          <Stack.Screen 
+            name="Tab Navigator" 
+            component={TabNavigator}
+            options={{ headerShown: false }}
+          />       
+        </Stack.Navigator>
+      </NavigationContainer>
     </NativeBaseProvider>
   );
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#fff",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});
+function TabNavigator(){
+  return(
+    <Tab.Navigator initialRouteName="Dashboard Page">
+      <Tab.Screen name="Dashboard Page" component={DashboardPage}/>
+      <Tab.Screen name="Map Page" component={MapPage} />
+      <Tab.Screen name="Report Page" component={ReportPage} />
+      <Tab.Screen name="Sightings Page" component={SightingsPage}/>
+      <Tab.Screen 
+        name="Profile Stack Navigator" 
+        component={ProfileStackNavigator} 
+        options={{ headerShown: false }}
+      />
+    </Tab.Navigator>
+  )
+}
+
+function ProfileStackNavigator() {
+  return (
+    <Stack.Navigator initialRouteName="ProfilePage">
+      <Stack.Screen name="Profile Page" component={ProfilePage}/>
+      <Stack.Screen name="New Pet Page" component={NewPetPage}/>
+    </Stack.Navigator>
+  )
+}
