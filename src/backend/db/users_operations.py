@@ -3,7 +3,7 @@ import string
 import hashlib
 
 
-def salt_and_hash(password,access_token):
+def salt_and_hash(password):
     """
     This function is responsible to salt and hash the password it receives
     :Input:
@@ -11,12 +11,14 @@ def salt_and_hash(password,access_token):
     :return: hashed password(string)
     """
 
-    salted_password = f"{password}{access_token}"
+
+    salt = secrets.token_hex(16)
+    salted_password = f"{password}{salt}"
     hasher = hashlib.sha256()
     hasher.update(salted_password.encode('utf-8'))
     hashed_password = hasher.hexdigest()
 
-    return hashed_password
+    return hashed_password,salt
 
 
 def generate_access_token():
@@ -43,7 +45,7 @@ def insert_user(conn, email, phone, user_name, password):
     access_token = generate_access_token()
 
     # Hash the password input
-    hashed_pass = salt_and_hash(password,access_token)
+    hashed_pass, salt = salt_and_hash(password)
 
     # Construct and INSERT query to insert this user into the DB
     query = """INSERT INTO users (email_address, phone_number, name, password, access_token) VALUES (%s, %s, %s, %s, 
@@ -51,7 +53,7 @@ def insert_user(conn, email, phone, user_name, password):
 
     # Execute the query
     try:
-        cur.execute(query, (email, phone, user_name, hashed_pass, access_token))
+        cur.execute(query, (email, phone, user_name, hashed_pass, salt, access_token))
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
