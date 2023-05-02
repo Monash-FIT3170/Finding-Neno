@@ -4,3 +4,4 @@ REM Run '. install_dependencies.bat' from the backend directory to install depen
 
 pip install psycopg2
 pip install python-dotenv
+pip install flask

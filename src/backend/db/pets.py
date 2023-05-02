@@ -48,6 +48,49 @@ def get_all_pets(
     return pets
 
 
+def get_pet(
+        connection: psycopg2.extensions.connection,
+        pet_id: int
+):
+    """
+    Returns a pet by the given id
+
+    Arguments:
+        connection: postgres connection
+        pet_id: id of pet
+    Returns:
+        A pet
+    """
+
+    cur = connection.cursor()
+
+    query = """SELECT * FROM pets WHERE id = %s LIMIT 1;"""
+
+    try:
+        # Execute query
+        cur.execute(query, (pet_id,))
+        pet = cur.fetchall()
+        print(f"Query executed successfully: {query}")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+        return False
+
+    cur.close()
+
+    res = pet[0]
+    pet = {
+        "id": res[0],
+        "name": res[1],
+        "animal": res[2],
+        "breed": res[3],
+        "description": res[4],
+        "image_url": res[5],
+        "owner_id": res[6]
+    }
+
+    return pet
+
+
 def add_pet(
     connection: psycopg2.extensions.connection, 
     name: str, 
