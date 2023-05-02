@@ -4,8 +4,12 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 import sys
-from db.pets import *
+from pathlib import Path
 
+file = Path(__file__).resolve()
+db_parent = file.parents[1]
+sys.path.append(str(db_parent))
+from db.pets import *
 
 app = Flask(__name__)
 

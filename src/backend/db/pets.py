@@ -1,5 +1,12 @@
 import psycopg2
+import sys
+from pathlib import Path
+
+file = Path(__file__).resolve()
+parent = file.parents[0]
+sys.path.append(str(parent))
 from authentication import verify_access_token
+
 
 def get_all_pets(
     connection: psycopg2.extensions.connection, 
