@@ -71,7 +71,7 @@ if __name__ == '__main__':
             host=os.getenv("DATABASE_HOST"),
             port=os.getenv("DATABASE_PORT"),
         )
-        app.run(debug=True)
+        app.run(host="0.0.0.0", debug=True)
 
 
 
