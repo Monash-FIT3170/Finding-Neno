@@ -39,6 +39,7 @@ def insert_pet():
     auth_header = flask.request.headers.get('Authorization')
     token = auth_header.split()[1]
 
+
     pet = add_pet(
         connection=conn,
         name=data["name"],
@@ -49,7 +50,9 @@ def insert_pet():
         owner_id=data["owner_id"],
         access_token=token
     )
-    return "", 201
+    if pet:
+        return "", 201
+    return ""
 
 
 if __name__ == '__main__':
