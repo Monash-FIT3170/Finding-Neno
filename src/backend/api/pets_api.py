@@ -4,11 +4,13 @@ import psycopg2
 import os
 from dotenv import load_dotenv
 import sys
+
 from pathlib import Path
 
 file = Path(__file__).resolve()
-db_parent = file.parents[1]
-sys.path.append(str(db_parent))
+package_root_directory = file.parents[1]
+sys.path.append(str(package_root_directory))
+
 from db.pets import *
 
 app = Flask(__name__)
@@ -31,6 +33,7 @@ def get_pet_api(pet_id):
 
 @app.route("/insert_pet", methods=["POST"])
 def insert_pet():
+
     data = request.get_json()
 
     auth_header = flask.request.headers.get('Authorization')
