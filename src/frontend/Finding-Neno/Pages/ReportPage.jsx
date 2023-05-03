@@ -31,6 +31,23 @@ const ReportPage = () => {
         />
         </View>
 
+        <Text style={{ marginBottom: 8, fontSize: 16 }}>Last seen:</Text>
+        <View
+            style={{
+                borderWidth: 1,
+                borderRadius: 8,
+                borderColor: '#ddd',
+                padding: 8,
+                marginBottom: 16,
+            }}>
+            <TextInput
+                style={{ fontSize: 16 }}
+                placeholder="Enter last seen time"
+                value={lastSeen}
+                onChangeText={setLastSeen}
+            />
+        </View>
+
         </KeyboardAvoidingView>
         </ScrollView>
     )
