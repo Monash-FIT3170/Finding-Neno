@@ -48,6 +48,23 @@ const ReportPage = () => {
             />
         </View>
 
+        <Text style={{ marginBottom: 8, fontSize: 16 }}>Last Known Location:</Text>
+        <View
+            style={{
+                borderWidth: 1,
+                borderRadius: 8,
+                borderColor: '#ddd',
+                padding: 8,
+                marginBottom: 16,
+            }}>
+            <TextInput
+                style={{ fontSize: 16 }}
+                placeholder="Enter last known location"
+                value={lastLocation}
+                onChangeText={setLastLocation}
+            />
+        </View>
+
         </KeyboardAvoidingView>
         </ScrollView>
     )
