@@ -162,6 +162,7 @@ def edit_pet(
 
     Arguments:
         connection: postgres connection
+        id: id of the pet
         name: name of the pet
         animal: type of animal
         breed: breed of the pet
@@ -188,6 +189,48 @@ def edit_pet(
         print(f"Error while executing query: {e}")
         return False
 
+    cur.close()
+    connection.commit()
+
+    return True
+
+def delete_pet(
+    connection: psycopg2.extensions.connection, 
+    id: int,
+    access_token: str,
+):
+    """
+    Deletes an existing pet in the database
+
+    Arguments:
+        connection: postgres connection
+        id: id of the pet
+        access_token: access token of the pet owner
+    Returns:
+        True if successful, False otherwise
+    """
+
+    cur = connection.cursor()
+
+
+    try:
+        # Get the pet's owner's ID
+        query = """SELECT owner_id FROM pets WHERE id = %s;"""
+        cur.execute(query, (id,))
+        owner_id = cur.fetchone()[0]
+        
+        # Verify access token
+        if not verify_access_token(connection, owner_id, access_token):
+            return False
+        
+        # Delete the pet
+        query = """DELETE FROM pets WHERE id = %s;"""
+        cur.execute(query, (id,))
+        print(f"Query executed successfully: {query}")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+        return False
+    
     cur.close()
     connection.commit()
 
