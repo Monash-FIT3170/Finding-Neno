@@ -1,5 +1,5 @@
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
-import { View, Text, TextInput, Button, ScrollView } from 'react-native';
+import { View, Text, TextInput, Button, ScrollView, KeyboardAvoidingView } from 'react-native';
 import Dropdown from './Dropdown';
 
 import { Color } from "../components/atomic/Theme";
