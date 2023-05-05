@@ -1,8 +1,69 @@
-import { NavigationContainer, useNavigation  } from '@react-navigation/native';
-import { Text } from 'react-native';
+import React, { useState } from 'react';
+import {View, Text, TextInput, ScrollView,} from 'react-native';
+import Dropdown from './Dropdown';
 
-export default function ReportPage() {
-    const navigation = useNavigation();
+const ReportPage = () => {
+  const [missingPet, setMissingPet] = useState('');
+  const options = ['Option 1', 'Option 2', 'Add new Pet'];
+  const handleSelectOption = (option) => setMissingPet(option);
 
-    return (<Text>Report page</Text>)
-}
+  const [lastSeen, setLastSeen] = useState('');
+  const [lastLocation, setLastLocation] = useState('');
+
+  const [dropdownHeight, setDropdownHeight] = useState(150);
+
+
+  return (
+    <ScrollView>
+        <View style={{ padding: 16 }}>
+
+            <Text style={{ marginBottom: 8, fontSize: 16 }}>Choose Pet:</Text>
+            <View style={{ marginBottom: 8, height: dropdownHeight }}>
+                <Dropdown
+                    options={options}
+                    selectedOption={missingPet}
+                    onSelect={handleSelectOption}
+                    onLayout={(event) => setDropdownHeight(event.nativeEvent.layout.height)}
+                    placeholder="Select a pet"
+                />
+            </View>
+
+            <Text style={{ marginBottom: 8, fontSize: 16 }}>Last seen:</Text>
+            <View
+                style={{
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    borderColor: '#ddd',
+                    padding: 8,
+                    marginBottom: 16,
+                }}>
+                <TextInput
+                    style={{ fontSize: 16 }}
+                    placeholder="Enter last seen time"
+                    value={lastSeen}
+                    onChangeText={setLastSeen}
+                />
+            </View>
+
+            <Text style={{ marginBottom: 8, fontSize: 16 }}>Last Known Location:</Text>
+            <View
+                style={{
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    borderColor: '#ddd',
+                    padding: 8,
+                    marginBottom: 16,
+                }}>
+                <TextInput
+                    style={{ fontSize: 16 }}
+                    placeholder="Enter last known location"
+                    value={lastLocation}
+                    onChangeText={setLastLocation}
+                />
+            </View>
+        </View>
+    </ScrollView>
+  );
+};
+
+export default ReportPage;
