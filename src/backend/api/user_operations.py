@@ -1,5 +1,6 @@
 from flask import Flask, request, jsonify
 import psycopg2
+import psycopg2.pool
 import sys, os
 from dotenv import load_dotenv
 from pathlib import Path
@@ -12,6 +13,18 @@ from db.users_operations import insert_user
 
 app = Flask(__name__)
 conn = None
+database_pool = None
+
+def create_database_pool():
+    return psycopg2.pool.SimpleConnectionPool(
+        minconn=1,
+        maxconn=10,
+        dbname=os.getenv("DATABASE_NAME"),
+        user=os.getenv("DATABASE_USER"),
+        password=os.getenv("DATABASE_PASSWORD"),
+        host=os.getenv("DATABASE_HOST"),
+        port=os.getenv("DATABASE_PORT")
+    )
 
 
 @app.route("/")
@@ -30,7 +43,6 @@ def post_insert_user():
     insert_user(conn, email, phoneNumber, username, password)
     return "", 201
 
-
 if __name__ == "__main__":
     # Get environment file path from command line arguments
     if len(sys.argv) < 2:
@@ -46,13 +58,11 @@ if __name__ == "__main__":
         # Load environment variables
         load_dotenv(environment_file_path)
 
-        # Connect to your postgres DB
-        conn = psycopg2.connect(
-            dbname=os.getenv("DATABASE_NAME"),
-            user=os.getenv("DATABASE_USER"),
-            password=os.getenv("DATABASE_PASSWORD"),
-            host=os.getenv("DATABASE_HOST"),
-            port=os.getenv("DATABASE_PORT"),
-        )
+        database_pool = create_database_pool()
 
         app.run(host="0.0.0.0", debug=True)
+
+
+def get_db():
+    if database_pool is not None:
+        return database_pool
