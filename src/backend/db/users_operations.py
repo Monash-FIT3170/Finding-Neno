@@ -53,7 +53,7 @@ def insert_user_to_database(conn, email, phone, user_name, password):
 
     # Execute the query
     try:
-        cur.execute(query, (email, phone, user_name, hashed_pass, salt, access_token))
+        cur.execute(query, (email, phone, name, hashed_pass, salt, access_token))
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")

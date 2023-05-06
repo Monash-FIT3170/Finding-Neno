@@ -32,6 +32,10 @@ const SignupPage = () => {
     // Validates details. If details are valid, send formData object to onSignupPress.
     foundErrors = {};
 
+    if (!formData.name || formData.name == "") {
+      foundErrors = {...foundErrors, name: 'Name is required'}
+    }
+
     if (!formData.email || formData.email == "") {
       foundErrors = {...foundErrors, email: 'Email is required'}
     } else if (!validEmail(formData.email)) {
@@ -75,6 +79,12 @@ const SignupPage = () => {
           Sign Up
         </Heading>
         <VStack space={3} mt="5">
+
+          <FormControl isInvalid={'name' in errors}>
+            <FormControl.Label>Name</FormControl.Label>
+            <Input onChangeText={value => setFormData({...formData, name: value})} />
+            {'name' in errors && <FormControl.ErrorMessage>{errors.name}</FormControl.ErrorMessage>}
+          </FormControl>
           
           <FormControl isInvalid={'email' in errors}>
             <FormControl.Label>Email</FormControl.Label>
