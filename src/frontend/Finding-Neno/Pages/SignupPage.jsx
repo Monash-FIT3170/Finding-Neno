@@ -21,8 +21,8 @@ const SignupPage = () => {
       body: JSON.stringify(formData),
     })
       .then((res) => {
-        if (res.status == 201) {
-          alert("inserted user successfully");
+        if (res.status == 201 || res.status == 200) {
+          navigation.navigate("Login");
         }
       })
       .catch((error) => alert(error));
