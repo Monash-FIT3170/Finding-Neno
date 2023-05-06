@@ -1,4 +1,4 @@
-import { Box, Center, Heading, VStack, HStack, FormControl, Input, Link, Button, Text } from "native-base";
+import { Box, Center, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert } from "native-base";
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 
 import { Color } from "../components/atomic/Theme";
@@ -9,6 +9,7 @@ import { IP, PORT } from "@env";
 const SignupPage = () => {
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
+  const [isRegistered, setIsRegistered] = useState(false); 
   
   const navigation = useNavigation();
 
@@ -22,7 +23,7 @@ const SignupPage = () => {
     })
       .then((res) => {
         if (res.status == 201 || res.status == 200) {
-          navigation.navigate("Login");
+          setIsRegistered(true);
         }
       })
       .catch((error) => alert(error));
@@ -68,6 +69,46 @@ const SignupPage = () => {
   return (
     <Center w="100%">
       <Box safeArea p="2" py="8" w="90%" maxW="290">
+        {
+          isRegistered ? (
+            // TODO: Make this into a component called MyAlert, with headerText, bodyText, link, onLinkPress as props 
+            // this will make this file a little less messy 
+          <Alert w="100%" status="success">
+          <VStack space={1} flexShrink={1} w="100%" alignItems="center">
+            <Alert.Icon size="md" />
+            <Text fontSize="md" fontWeight="medium" _dark={{
+            color: "coolGray.800"
+          }}>
+              Thanks for signing up!
+            </Text>
+
+            <HStack>
+            <Link
+              _text={{
+                color: Color.NENO_BLUE,
+                fontWeight: "medium",
+                fontSize: "sm",
+              }}
+              onPress={() => {
+                navigation.navigate("Login");
+              }}
+            >
+              Log In
+            </Link>
+            <Text
+              fontSize="sm"
+              color="coolGray.600"
+              _dark={{
+                color: "warmGray.200",
+              }}
+            >
+              {" "}to begin using Finding Neno!
+            </Text>
+            </HStack>
+          </VStack>
+        </Alert> 
+        ) : (
+        <VStack>
         <Heading
           size="lg"
           fontWeight="600"
@@ -137,6 +178,8 @@ const SignupPage = () => {
             </Link>
           </HStack>
         </VStack>
+        </VStack>
+        )}
       </Box>
     </Center>
   );
