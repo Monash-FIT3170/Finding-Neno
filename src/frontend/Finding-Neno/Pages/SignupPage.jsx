@@ -72,7 +72,7 @@ const SignupPage = () => {
             color: "warmGray.50",
           }}
         >
-          Signup Page
+          Sign Up
         </Heading>
         <VStack space={3} mt="5">
           
@@ -120,7 +120,7 @@ const SignupPage = () => {
                 fontSize: "sm",
               }}
               onPress={() => {
-                navigation.navigate("SignupPage");
+                navigation.navigate("Login");
               }}
             >
               Sign In

@@ -98,7 +98,7 @@ const LoginPage = () => {
                 }}
                 href=""
                 onPress={() => {
-                  navigation.navigate("SignupPage");
+                  navigation.navigate("Signup");
                 }}
               >
                 Sign Up
