@@ -11,8 +11,11 @@ database_pool = None
 
 app = Flask(__name__)
 
-# Creates a PostgreSQL connection pool which can be accessed by multiple instances.
+
 def create_database_pool():
+    """
+    Creates a PostgreSQL connection pool which can be accessed by multiple instances.
+    """
     return psycopg2.pool.SimpleConnectionPool(
         minconn=1,
         maxconn=10,
@@ -24,9 +27,14 @@ def create_database_pool():
     )
 
 
-def get_db():
+def get_connection():
+    """
+    Returns the connection to the database.
+    """
     if database_pool is not None:
-        return database_pool
+        return database_pool.getconn()
+    else:
+        return None
     
 
 @app.route("/")
@@ -36,7 +44,7 @@ def root():
 
 @app.route("/insert_user", methods=["POST"])
 def post_insert_user():
-    insert_user()
+    insert_user(get_connection())
 
 if __name__ == "__main__":
     # Get environment file path from command line arguments
