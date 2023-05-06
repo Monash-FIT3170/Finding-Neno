@@ -22,7 +22,7 @@ const SignupPage = () => {
       body: JSON.stringify(formData),
     })
       .then((res) => {
-        if (res.status == 201 || res.status == 200) {
+        if (res.status == 201) {
           setIsRegistered(true);
         }
       })
