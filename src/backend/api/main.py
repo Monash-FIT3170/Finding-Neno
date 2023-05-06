@@ -44,8 +44,7 @@ def root():
 
 @app.route("/insert_user", methods=["POST"])
 def post_insert_user():
-    print("received",file=sys.stderr)
-    insert_user(database_pool.getconn())
+    insert_user(get_connection())
 
 if __name__ == "__main__":
     # Get environment file path from command line arguments
