@@ -24,9 +24,11 @@ def create_database_pool():
     )
 
 
-def get_db():
+def get_connection():
     if database_pool is not None:
-        return database_pool
+        return database_pool.getconn()
+    else:
+        return None
     
 
 @app.route("/")
@@ -36,7 +38,7 @@ def root():
 
 @app.route("/insert_user", methods=["POST"])
 def post_insert_user():
-    insert_user()
+    insert_user(database_pool.getconn())
 
 if __name__ == "__main__":
     # Get environment file path from command line arguments
