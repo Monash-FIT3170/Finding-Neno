@@ -44,7 +44,7 @@ def root():
 
 @app.route("/insert_user", methods=["POST"])
 def post_insert_user():
-    insert_user(get_connection())
+    return insert_user(get_connection())
 
 if __name__ == "__main__":
     # Get environment file path from command line arguments

@@ -14,6 +14,6 @@ def insert_user(conn):
     email = json_data["email"]
     phoneNumber = json_data["phoneNumber"]
     password = json_data["password"]
-    username = "John"  # TODO signup with username?
-    insert_user_to_database(conn, email, phoneNumber, username, password)
+    name = json_data["name"]
+    insert_user_to_database(conn, email, phoneNumber, name, password)
     return "", 201
