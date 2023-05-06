@@ -13,7 +13,7 @@ const SignupPage = () => {
   const navigation = useNavigation();
 
   const onSignupPress = async (formData) => {
-    const url = `${IP.toString()}:${PORT.toString()}/insert_user`;
+    const url = `${IP}:${PORT}/insert_user`;
 
     fetch(url, {
       method: "POST",
