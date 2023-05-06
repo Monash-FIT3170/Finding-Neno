@@ -33,7 +33,7 @@ def generate_access_token():
     return token
 
 
-def insert_user(conn, email, phone, user_name, password):
+def insert_user(conn, email, phone, name, password):
     #
     """
     This function is used to add a new user to the database
@@ -53,7 +53,7 @@ def insert_user(conn, email, phone, user_name, password):
 
     # Execute the query
     try:
-        cur.execute(query, (email, phone, user_name, hashed_pass, salt, access_token))
+        cur.execute(query, (email, phone, name, hashed_pass, salt, access_token))
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
