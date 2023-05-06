@@ -33,7 +33,7 @@ def generate_access_token():
     return token
 
 
-def insert_user(conn, email, phone, user_name, password):
+def insert_user_to_database(conn, email, phone, user_name, password):
     #
     """
     This function is used to add a new user to the database
