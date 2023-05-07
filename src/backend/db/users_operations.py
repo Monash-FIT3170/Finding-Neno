@@ -79,11 +79,11 @@ def check_user_exists_in_database(conn, email, password):
     try:
         cur.execute(query, email)
         result_set = cur.fetchall()
-        if len(result_set) == 0:
+        if len(result_set) == 0:  # If a user with the provided email could not be found
             print("No user found with the provided email address.")
-        else:
+        else: # If user is found
             user = result_set[0]
-            if user[4] == hashed_pass and user[5] == salt:
+            if user[4] == hashed_pass and user[5] == salt:  # Check if password and salt matches
                 print("User found with the provided email address and matching password.")
             else:
                 print("User found with the provided email address, but password does not match.")
