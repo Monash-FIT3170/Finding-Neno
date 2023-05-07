@@ -61,9 +61,10 @@ def insert_user_to_database(conn, email, phone, name, password):
     conn.commit()
     cur.close()
 
+
 def check_user_exists_in_database(conn, email, password):
     """
-    This function is used to check if a user exists in the database
+    This function is used to check if a user exists in the database and if the password match
     """
 
     cur = conn.cursor()
@@ -81,12 +82,15 @@ def check_user_exists_in_database(conn, email, password):
         result_set = cur.fetchall()
         if len(result_set) == 0:  # If a user with the provided email could not be found
             print("No user found with the provided email address.")
+            return False
         else: # If user is found
             user = result_set[0]
             if user[4] == hashed_pass and user[5] == salt:  # Check if password and salt matches
                 print("User found with the provided email address and matching password.")
+                return True
             else:
                 print("User found with the provided email address, but password does not match.")
+                return False
     except Exception as e:
         print(f"Error while executing query: {e}")
 
