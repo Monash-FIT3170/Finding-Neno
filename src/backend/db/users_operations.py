@@ -34,7 +34,6 @@ def generate_access_token():
 
 
 def insert_user_to_database(conn, email, phone, name, password):
-    #
     """
     This function is used to add a new user to the database
     """
@@ -47,7 +46,7 @@ def insert_user_to_database(conn, email, phone, name, password):
     # Hash the password input
     hashed_pass, salt = salt_and_hash(password)
 
-    # Construct and INSERT query to insert this user into the DB
+    # Construct an INSERT query to insert this user into the DB
     query = """INSERT INTO users (email_address, phone_number, name, password, salt, access_token) VALUES (%s, %s, %s, %s, %s,
     %s);"""
 
@@ -61,3 +60,38 @@ def insert_user_to_database(conn, email, phone, name, password):
     # Commit the change and close the connection
     conn.commit()
     cur.close()
+
+def check_user_exists_in_database(conn, email, password):
+    """
+    This function is used to check if a user exists in the database
+    """
+
+    cur = conn.cursor()
+
+    # Hash the password input
+    hashed_pass, salt = salt_and_hash(password)
+
+    # Check if a user with this email exists in the database
+    # Construct a SELECT query to check if the user exists in the database
+    query = """SELECT * FROM users WHERE email_address = %s"""
+
+    # Execute the query
+    try:
+        cur.execute(query, email)
+        result_set = cur.fetchall()
+        if len(result_set) == 0:
+            print("No user found with the provided email address.")
+        else:
+            user = result_set[0]
+            if user[4] == hashed_pass and user[5] == salt:
+                print("User found with the provided email address and matching password.")
+            else:
+                print("User found with the provided email address, but password does not match.")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Commit the change and close the connection
+    conn.commit()
+    cur.close()
+
+
