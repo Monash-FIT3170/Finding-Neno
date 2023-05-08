@@ -43,3 +43,37 @@ def test_finding_user():
     assert check_user_exists_in_database(conn, "jonathanbanks@example.com", "password2") is False  # Email match, pass doesn't
     assert check_user_exists_in_database(conn, "cenajohn@example.com", "password2") is False  # Email doesn't match
 
+
+# TODO: Something I stole from chatgpt, please remove if using something else
+# import pytest
+# from unittest.mock import MagicMock
+# from your_flask_app import app
+#
+# @pytest.fixture
+# def client():
+#     app.testing = True
+#     with app.test_client() as client:
+#         yield client
+#
+# def test_insert_user(client):
+#     # Set up the mock psycopg2 connection and cursor objects
+#     connection_mock = MagicMock()
+#     cursor_mock = MagicMock()
+#     connection_mock.cursor.return_value.__enter__.return_value = cursor_mock
+#     connection_mock.getconn.return_value = connection_mock
+#
+#     # Replace the get_connection function with the mock connection
+#     from your_flask_app import get_connection
+#     get_connection = MagicMock(return_value=connection_mock)
+#
+#     # Make a request to the API endpoint
+#     response = client.post('/insert_user', data={'username': 'test_user', 'password': 'password123'})
+#
+#     # Assert that the API call was successful
+#     assert response.status_code == 200
+#     assert response.data == b'Success'
+#
+#     # Assert that the insert_user function was called with the correct arguments
+#     from your_flask_app.api.user_service import insert_user
+#     insert_user.assert_called_once_with(cursor_mock, 'test_user', 'password123')
+#
