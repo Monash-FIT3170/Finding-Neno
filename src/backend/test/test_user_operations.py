@@ -2,7 +2,7 @@ import subprocess
 import pytest
 
 from db.users_operations import insert_user_to_database, check_user_exists_in_database
-from api.main import create_database_pool
+from api.main import get_connection
 
 setup_db_path = "../db/setup_db.py"
 
@@ -27,8 +27,9 @@ def insert_basic_users(conn):
 
 
 @pytest.fixture(autouse=True)
-def setup_db_for_local(conn):
+def setup_db_for_local():
     try:
+        conn = get_connection()
         run_script(setup_db_path)
         insert_basic_users(conn)
     except Exception as e:
@@ -37,7 +38,7 @@ def setup_db_for_local(conn):
 
 def test_finding_user():
 
-    conn = create_database_pool()
+    conn = get_connection()
 
     assert check_user_exists_in_database(conn, "jonathanbanks@example.com", "password1") is True  # Email and pass match
     assert check_user_exists_in_database(conn, "jonathanbanks@example.com", "password2") is False  # Email match, pass doesn't
