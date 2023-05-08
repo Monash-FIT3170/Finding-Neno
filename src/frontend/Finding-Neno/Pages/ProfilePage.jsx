@@ -1,7 +1,10 @@
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Button } from 'react-native';
-import { Box, Center, LinearGradient, Image, Heading} from "native-base";
+import { Box, Center, Image, Heading, HStack, VStack, Link, Text} from "native-base";
 import {Dimensions} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import { Color } from "../components/atomic/Theme";
+
   
 
 const App = () => {
@@ -32,55 +35,101 @@ export default function ProfilePage({ navigation: { navigate}}) {
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
+    const name = "Human Being";
+    const email = "sample@student.monash.edu"
+    const phone = "0412 345 678"
 
     return (
         <Box alignItems="center" justifyContent="center">
-            <Center>            
+            <Center>        
             <Box>
-            <Box alignSelf="center" // bg="primary.500"
-            _text={{
-            alignSelf:"center",
-            fontSize: "md",
-            fontWeight: "medium",
-            color: "warmGray.50",
-            letterSpacing: "lg"
-            }} bg={["blue.400"]}
-            width={windowWidth}
-            height={windowHeight/4}>
-                <Box height={windowHeight/32}/>
-                <Image alignSelf="center" size={windowWidth/4} borderRadius={100} 
+              <Box 
+                alignSelf="center"
+                _text={{
+                  alignSelf:"center",
+                  justifyContent:"center",
+                  fontSize: "lg",
+                  fontWeight: "medium",
+                  color: "warmGray.50",
+                  letterSpacing: "lg"
+                }} 
+                bg={Color.NENO_BLUE}
+                width={windowWidth}
+                height={windowHeight/8}
+              >
+                <Box height={3}/>
+                <HStack>
+                <Box width={8}/>
+                <Box
+                  bg="#FFFFFF"
+                  height={76}
+                  width={76}
+                  borderRadius={38}
+                  alignSelf="center"
+                  alignItems="center"
+                  justifyContent="center"
+                >
+                  <Image 
+                    alignSelf="center" size={70} borderRadius={35} 
                     source={{
                     uri: "https://wallpaperaccess.com/full/317501.jpg"
-                    }} alt="Alternate Text" />
-                    
-                    <Heading
+                    }} alt="Alternate Text" 
+                  />
+
+                </Box>
+                <Box width={9}/>
+                <Heading
                     alignSelf="center"
                     size="lg"
                     fontWeight="600"
                     color="warmGray.50"
                     >
-                    Sample Name
-                    </Heading>
-
-                    <Heading
-                    alignSelf="center"
-                    size="md"
-                    fontWeight="300"
-                    color="warmGray.50"
-                    >
-                    0412345678
-                    </Heading>
-
-                    <Heading
-                    alignSelf="center"
-                    size="md"
-                    fontWeight="300"
-                    color="warmGray.50"
-                    >
-                    sample@gmial.com
-                    </Heading>
+                    {name}
+                </Heading>
+                </HStack>
+              </Box>
             </Box>
-            </Box>
+
+        <VStack>
+          <HStack mt="6" justifyContent="space-between">
+          <Heading fontSize="sm" color="coolGray.600" _dark={{color: "warmGray.200",}} pr={windowWidth/3.5}>
+            USER DETAILS
+          </Heading>
+          <Text pl={windowWidth/3.5}>
+          </Text>
+          </HStack>
+          
+          <HStack mt="2" justifyContent="space-between">
+          <Heading fontSize="sm" color="coolGray.600" _dark={{color: "warmGray.200",}}>
+              Email
+            </Heading>
+            <Text fontSize="sm" color="coolGray.600" _dark={{color: "warmGray.200",}}>
+              {email}
+            </Text>
+          </HStack>
+          
+          <HStack mt="2" justifyContent="space-between">
+            <Heading fontSize="sm" color="coolGray.600" _dark={{color: "warmGray.200",}}>
+              Phone
+            </Heading>
+            <Text fontSize="sm" color="coolGray.600" _dark={{color: "warmGray.200",}}>
+              {phone}
+            </Text>
+          </HStack>
+        </VStack>
+        
+        <Box width={8}/>
+
+        <VStack>
+        <HStack mt="6" justifyContent="space-between">
+          <Heading fontSize="sm" color="coolGray.600" _dark={{color: "warmGray.200",}} pr={windowWidth/3.5}>
+            PETS     
+          </Heading>
+          <Text pl={windowWidth/2.2}>
+          </Text>
+          </HStack>
+
+        </VStack>
             
             <Button
                 onPress={() => navigate('New Pet Page')} 
