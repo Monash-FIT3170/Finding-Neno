@@ -2,7 +2,6 @@ import subprocess
 import pytest
 
 from db.users_operations import insert_user_to_database, check_user_exists_in_database
-from api.main import get_connection
 
 setup_db_path = "../db/setup_db.py"
 
