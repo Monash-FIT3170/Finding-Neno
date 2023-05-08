@@ -1,6 +1,7 @@
 import secrets
 import string
 import hashlib
+import psycopg2
 
 
 def salt_and_hash(password):
@@ -60,4 +61,30 @@ def insert_user_to_database(conn, email, phone, name, password):
 
     # Commit the change and close the connection
     conn.commit()
+    cur.close()
+
+def change_password_in_database(connection: psycopg2.extensions.connection, email: int, new_password: str):
+    """
+    This function updates the password of the row in the database which matches the email provided.
+    """
+
+    # Open cursor to access the conection.
+    cur = connection.cursor()
+        
+    query = """ UPDATE users SET password = %s, salt = %s WHERE email_address = %s; """
+
+    # Hash and salt password
+    hashed_password, salt = salt_and_hash(new_password)
+
+    # Execute query
+    try:
+        cur.execute(query, (hashed_password, salt, email))
+
+        # Commit the change
+        connection.commit()
+        print(f"Password successfully changed")
+    except Exception as e:
+        print(f"Error with changing password: {e}")
+
+    # Close the cursor
     cur.close()
