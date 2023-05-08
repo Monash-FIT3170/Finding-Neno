@@ -5,4 +5,8 @@ export const validEmail = (inputEmail) => {
     }
     return false
 }
-        
+
+export const validPhoneNumber = (inputPhoneNumber) => {
+    phoneNumberRegex = new RegExp(/^0[45]\d{8}$/)
+    return inputPhoneNumber.match(phoneNumberRegex);
+}
