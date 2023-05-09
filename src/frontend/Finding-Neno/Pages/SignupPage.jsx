@@ -2,7 +2,7 @@ import { Box, Center, Heading, VStack, HStack, FormControl, Input, Link, Button,
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 
 import { Color } from "../components/atomic/Theme";
-import { validEmail } from "./validation";
+import { validEmail, validPhoneNumber } from "./validation";
 import { useState } from "react";
 import { IP, PORT } from "@env";
 
@@ -15,7 +15,7 @@ const SignupPage = () => {
 
   const onSignupPress = async (formData) => {
     const url = `${IP}:${PORT}/insert_user`;
-
+ 
     fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -45,6 +45,8 @@ const SignupPage = () => {
 
     if (!formData.phoneNumber || formData.phoneNumber == "") {
       foundErrors = {...foundErrors, phoneNumber: 'Phone number is required'}
+    } else if (!validPhoneNumber(formData.phoneNumber)) {
+      foundErrors = {...foundErrors, phoneNumber: 'Phone number is invalid'}
     }
 
     if (!formData.password || formData.password == "") {
@@ -135,7 +137,7 @@ const SignupPage = () => {
 
           <FormControl isInvalid={'phoneNumber' in errors}>
             <FormControl.Label>Phone Number</FormControl.Label>
-            <Input keyboardType="numeric" onChangeText={value => setFormData({...formData, phoneNumber: value})} />
+            <Input keyboardType="numeric" maxLength={10} onChangeText={value => setFormData({...formData, phoneNumber: value})} />
             {'phoneNumber' in errors && <FormControl.ErrorMessage>{errors.phoneNumber}</FormControl.ErrorMessage>}
           </FormControl>
 
