@@ -48,6 +48,7 @@ const ForgotPasswordPage = () => {
         <Box flex={1} alignItems="center" justifyContent="center">
             <Center w="100%">
                 <Box safeArea p="2" py="8" w="90%" maxW="290">
+                    
                     <Heading
                         size="lg"
                         fontWeight="600"
