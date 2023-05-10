@@ -6,14 +6,18 @@ import { Picker } from '@react-native-picker/picker';
 import { KeyboardAvoidingView } from 'react-native';
 import { IP, PORT } from "@env";
 
-export default function NewPetPage( {this_user} ) {
+export default function NewPetPage( {route} ) {
+
     const navigation = useNavigation();
 
-    const [petName, setPetName] = useState('');
-    const [petImage, setPetImage] = useState(null);
-    const [petType, setPetType] = useState('');
-    const [petBreed, setPetBreed] = useState('');
-    const [petDescription, setPetDescription] = useState('');
+    const { pet } = route.params;
+
+
+    const [petName, setPetName] = useState(pet ? pet.name : '');
+    const [petImage, setPetImage] = useState(pet ? pet.image_url : null);
+    const [petType, setPetType] = useState(pet ? pet.animal : '');
+    const [petBreed, setPetBreed] = useState(pet ? pet.breed : '');
+    const [petDescription, setPetDescription] = useState(pet ? pet.description : '');
 
     const handleChoosePhoto = async () => {
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
@@ -86,13 +90,16 @@ export default function NewPetPage( {this_user} ) {
             <TextInput
                 style={{ fontSize: 16 }}
                 placeholder="Enter pet name"
-                value={petName}
+                defaultValue={petName}
                 onChangeText={setPetName}
             />
         </View>
 
         <Text style={{ marginBottom: 8, fontSize: 16 }}>Pet Image</Text>
-        {petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} />}
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+            {petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} />}
+        </View>
+
         <Button title="Choose Photo" onPress={handleChoosePhoto} />
     
         <Text style={{  fontSize: 16 }}>Pet Type</Text>
