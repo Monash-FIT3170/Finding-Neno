@@ -11,7 +11,10 @@ export default function NewPetPage( {route} ) {
     const navigation = useNavigation();
 
     const { pet, ownder_id, access_token } = route.params;
+    
 
+    const isPet = Object.keys(pet).length > 0;
+      
 
     const [petName, setPetName] = useState(pet ? pet.name : '');
     const [petImage, setPetImage] = useState(pet ? pet.image_url : null);
@@ -39,7 +42,7 @@ export default function NewPetPage( {route} ) {
         let url;
         let method;
       
-        if (pet) {
+        if (isPet) {
           url = `${IP.toString()}:${PORT.toString()}/update_pet/${pet.id}`;
           method = 'PUT';
         } else {
