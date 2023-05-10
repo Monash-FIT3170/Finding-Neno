@@ -61,6 +61,10 @@ export default function NewPetPage( {this_user} ) {
           .catch((error) => alert(error));
     };
 
+    const isFormValid = () => {
+        return petName && petImage && petType && petDescription;
+      }
+
     return (
         
         <ScrollView>
@@ -137,8 +141,11 @@ export default function NewPetPage( {this_user} ) {
                 onChangeText={setPetDescription}
             />
         </View>
-    
-        <Button title="Submit" onPress={handleSubmit} />
+
+
+        <View style={{ marginBottom: 16 }}>
+        <Button title="Submit" onPress={handleSubmit} disabled={!isFormValid()} />
+        </View>
 
 
         
@@ -148,6 +155,8 @@ export default function NewPetPage( {this_user} ) {
         </ScrollView>
         
       );
+    
+
     
 
 }
