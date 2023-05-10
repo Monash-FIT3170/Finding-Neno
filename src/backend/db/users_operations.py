@@ -27,7 +27,7 @@ def salt_and_hash(password):
     hasher.update(salted_password.encode('utf-8'))
     hashed_password = hasher.hexdigest()
 
-    return hashed_password,salt
+    return hashed_password
 
 
 def generate_access_token():
