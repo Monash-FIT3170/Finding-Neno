@@ -12,6 +12,38 @@ const ForgotPasswordPage = () => {
 
     const navigation = useNavigation();
 
+    const onForgotPasswordPress = (formData) => {
+        alert("password reset data: " + JSON.stringify(formData));
+      };
+
+      const validateDetails = () => {
+        // Validates details. If details are valid, send formData object to onForgotPasswordPress.
+        foundErrors = {};
+    
+        if (!formData.resetCode || formData.resetCode == "") {
+          foundErrors = {...foundErrors, resetCode: 'Reset Code is required'}
+        }
+    
+        if (!formData.password || formData.password == "") {
+          foundErrors = {...foundErrors, password: 'Password is required'}
+        }
+    
+        if (!formData.confirmPassword || formData.confirmPassword == "") {
+          foundErrors = {...foundErrors, confirmPassword: 'Password confirmation is required'}
+        }
+    
+        if (formData.confirmPassword !== formData.password) {
+          foundErrors = {...foundErrors, confirmPassword: 'Passwords must match'}
+        }
+    
+        setErrors(foundErrors);
+    
+        if (Object.keys(foundErrors).length === 0) {
+          // no errors!
+          onForgotPasswordPress(formData)
+        }
+      }
+
     return (
         <Box flex={1} alignItems="center" justifyContent="center">
             <Center w="100%">
