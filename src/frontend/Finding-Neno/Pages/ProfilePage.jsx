@@ -145,7 +145,7 @@ export default function ProfilePage({ navigation: { navigate}}, this_user) {
       <Box h="4"></Box>
 
       <Button
-        onPress={() => navigate('New Pet Page', {pet: myPet})} 
+        onPress={() => navigate('New Pet Page', {pet: myPet, ownerId: 1, accessToken: "PLACE ACCESS TOKEN HERE"})} 
         width={windowWidth - 100}
         height="40px"
       >

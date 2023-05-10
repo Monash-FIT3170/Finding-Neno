@@ -10,7 +10,7 @@ export default function NewPetPage( {route} ) {
 
     const navigation = useNavigation();
 
-    const { pet } = route.params;
+    const { pet, ownder_id, access_token } = route.params;
 
 
     const [petName, setPetName] = useState(pet ? pet.name : '');
@@ -36,7 +36,16 @@ export default function NewPetPage( {route} ) {
 
     const handleSubmit = () => {
 
-        const url = `${IP.toString()}:${PORT.toString()}/insert_pet`;
+        let url;
+        let method;
+      
+        if (pet) {
+          url = `${IP.toString()}:${PORT.toString()}/update_pet/${pet.id}`;
+          method = 'PUT';
+        } else {
+          url = `${IP.toString()}:${PORT.toString()}/insert_pet`;
+          method = 'POST';
+        }
 
         const pet = {
             name: petName,
@@ -44,12 +53,12 @@ export default function NewPetPage( {route} ) {
             breed: petBreed,
             description: petDescription,
             image_url: petImage.toString(),
-            owner_id: this_user.id       
+            owner_id: ownder_id      
         };
         fetch(url, {
-            method: 'POST',
+            method: method,
             headers: {
-                'Authorization': `Bearer ${this_user.token}`,
+                'Authorization': `Bearer ${access_token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(pet),
