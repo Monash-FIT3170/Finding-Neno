@@ -59,10 +59,31 @@ const ForgotPasswordPage = () => {
                         Password Reset
                     </Heading>
 
-                    <Button mt="2" bgColor={Color.NENO_BLUE} onPress={validateDetails}>
-                        Reset Password
-                    </Button>
+                    <VStack space={3} mt="5">
 
+                        <FormControl isInvalid={'resetCode' in errors}>
+                            <FormControl.Label>Reset Code</FormControl.Label>
+                            <Input onChangeText={value => setFormData({...formData, resetCode: value})} />
+                            {'resetCode' in errors && <FormControl.ErrorMessage>{errors.resetCode}</FormControl.ErrorMessage>}
+                        </FormControl>
+
+                        <FormControl isInvalid={'password' in errors}>
+                            <FormControl.Label>Password</FormControl.Label>
+                            <Input type="password" onChangeText={value => setFormData({...formData, password: value})} />
+                            {'password' in errors && <FormControl.ErrorMessage>{errors.password}</FormControl.ErrorMessage>}
+                        </FormControl>
+
+                        <FormControl isInvalid={'confirmPassword' in errors}>
+                            <FormControl.Label>Confirm Password</FormControl.Label>
+                            <Input type="password" onChangeText={value => setFormData({...formData, confirmPassword: value})} />
+                            {'confirmPassword' in errors && <FormControl.ErrorMessage>{errors.confirmPassword}</FormControl.ErrorMessage>}
+                        </FormControl>
+
+                        <Button mt="2" bgColor={Color.NENO_BLUE} onPress={validateDetails}>
+                            Reset Password
+                        </Button>
+
+                    </VStack>
                 </Box>
             </Center>
         </Box>
