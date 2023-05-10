@@ -3,6 +3,15 @@ import string
 import hashlib
 
 
+def get_salt(password):
+    # Convert the password to bytes
+    password_bytes = password.encode()
+
+    # Use SHA256 to generate the salt
+    salt = hashlib.sha256(password_bytes).hexdigest()
+
+    return salt
+
 def salt_and_hash(password):
     """
     This function is responsible to salt and hash the password it receives
@@ -12,7 +21,7 @@ def salt_and_hash(password):
     """
 
 
-    salt = secrets.token_hex(16)
+    salt = get_salt(password)
     salted_password = f"{password}{salt}"
     hasher = hashlib.sha256()
     hasher.update(salted_password.encode('utf-8'))
@@ -44,15 +53,15 @@ def insert_user_to_database(conn, email, phone, name, password):
     access_token = generate_access_token()
 
     # Hash the password input
-    hashed_pass, salt = salt_and_hash(password)
+    hashed_pass= salt_and_hash(password)
 
     # Construct an INSERT query to insert this user into the DB
-    query = """INSERT INTO users (email_address, phone_number, name, password, salt, access_token) VALUES (%s, %s, %s, %s, %s,
+    query = """INSERT INTO users (email_address, phone_number, name, password, access_token) VALUES (%s, %s, %s, %s, %s,
     %s);"""
 
     # Execute the query
     try:
-        cur.execute(query, (email, phone, name, hashed_pass, salt, access_token))
+        cur.execute(query, (email, phone, name, hashed_pass, access_token))
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
@@ -70,7 +79,7 @@ def check_user_exists_in_database(conn, email, password):
     cur = conn.cursor()
 
     # Hash the password input
-    hashed_pass, salt = salt_and_hash(password)
+    hashed_pass= salt_and_hash(password)
 
     # Check if a user with this email exists in the database
     # Construct a SELECT query to check if the user exists in the database
@@ -85,7 +94,7 @@ def check_user_exists_in_database(conn, email, password):
             return False
         else: # If user is found
             user = result_set[0]
-            if user[4] == hashed_pass and user[5] == salt:  # Check if password and salt matches
+            if user[4] == hashed_pass:  # Check if password and salt matches
                 print("User found with the provided email address and matching password.")
                 return True
             else:
