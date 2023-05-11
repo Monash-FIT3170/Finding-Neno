@@ -58,7 +58,11 @@ const ForgotPasswordPage = () => {
                 {'email' in errors && <FormControl.ErrorMessage>{errors.email}</FormControl.ErrorMessage>}
               </FormControl>
 
-              <Button mt="2" bgColor={Color.NENO_BLUE} onPress={validateDetails}>
+              <Button mt="2" bgColor={Color.NENO_BLUE} 
+              onPress={() => {
+                validateDetails
+                navigation.navigate("PasswordReset");
+              }}>
                   Send Reset Code
               </Button>
 
