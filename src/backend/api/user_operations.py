@@ -11,7 +11,7 @@ from db.users_operations import insert_user_to_database, change_password_in_data
 def insert_user(conn):
     json_data = request.get_json(force=True)
     print("inserting user: ", json_data)
-    email = json_data["email"].toLowerCase()
+    email = json_data["email"].lower()
     phoneNumber = json_data["phoneNumber"]
     password = json_data["password"]
     name = json_data["name"]
