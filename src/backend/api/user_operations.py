@@ -29,3 +29,50 @@ def change_password(connection):
     change_password_in_database(connection = connection, email = email, new_password = new_password)
     return "", 200
 
+def validate_password_reset(username, reset_token, new_password):
+    if not verify_username(username):
+        return False
+    if not verify_reset_token(username, reset_token):
+        return False
+
+        # Validate new password
+    if not verify_password_requirements(new_password):
+        return False
+
+        # Reset password and update user credentials
+    reset_password(username, new_password)
+    return True
+
+
+def verify_username(username):
+    # Check if username exists in the database
+    # Perform necessary validations (e.g., username format, uniqueness, etc.)
+    # Return True if the username is valid; otherwise, return False
+    return True  # Placeholder, replace with actual validation logic
+
+
+def verify_reset_token(username, reset_token):
+    # Verify if the reset token is valid for the given username
+    # Perform necessary validations (e.g., token expiration, uniqueness, etc.)
+    # Return True if the token is valid; otherwise, return False
+    return True  # Placeholder, replace with actual validation logic
+
+
+def verify_password_requirements(password):
+    # Perform password validation
+
+    # Return True if the password meets the requirements; otherwise, return False
+    if len(password) < 8:
+        return False
+    if not any(char.isdigit() for char in password):
+        return False
+    if not sys.search(r'[A-Za-z]', password):
+        return False
+    return True
+
+
+def reset_password(username, new_password):
+    # Update  user's password in database
+    # Return True if the password reset was successful; otherwise, return False
+    return True
+    # Replace with password reset logic
