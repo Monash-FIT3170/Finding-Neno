@@ -43,7 +43,7 @@ export default function NewPetPage( {route} ) {
         let method;
       
         if (isPet) {
-          url = `${IP.toString()}:${PORT.toString()}/update_pet/${pet.id}`;
+          url = `${IP.toString()}:${PORT.toString()}/update_pet`;
           method = 'PUT';
         } else {
           url = `${IP.toString()}:${PORT.toString()}/insert_pet`;
