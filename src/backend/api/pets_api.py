@@ -33,12 +33,9 @@ def get_pet_api(pet_id):
 
 @app.route("/insert_pet", methods=["POST"])
 def insert_pet():
-
     data = request.get_json()
-
     auth_header = flask.request.headers.get('Authorization')
     token = auth_header.split()[1]
-
 
     pet = add_pet(
         connection=conn,
@@ -51,6 +48,43 @@ def insert_pet():
         access_token=token
     )
     if pet:
+        return "", 201
+    return ""
+
+
+@app.route("/update_pet", methods=["PUT"])
+def update_pet_api():
+    data = request.get_json()
+    auth_header = flask.request.headers.get('Authorization')
+    token = auth_header.split()[1]
+
+    success = edit_pet(
+        connection=conn,
+        id=data["id"],
+        name=data["name"],
+        animal=data["animal"],
+        breed=data["breed"],
+        description=data["description"],
+        image_url=data["image_url"],
+        owner_id=data["owner_id"],
+        access_token=token
+    )
+    if success:
+        return "", 201
+    return ""
+
+
+@app.route("/delete_pet/<pet_id>", methods=["DELETE"])
+def delete_pet_api(pet_id):
+    auth_header = flask.request.headers.get('Authorization')
+    token = auth_header.split()[1]
+
+    success = delete_pet(
+        connection=conn,
+        id=pet_id,
+        access_token=token
+    )
+    if success:
         return "", 201
     return ""
 
