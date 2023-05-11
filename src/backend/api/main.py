@@ -4,7 +4,7 @@ import sys, os
 from dotenv import load_dotenv
 from flask import Flask, request
 
-from user_operations import insert_user, change_password
+from user_operations import insert_user, change_password, login
 
 
 database_pool = None
@@ -45,6 +45,10 @@ def root():
 @app.route("/insert_user", methods=["POST"])
 def post_insert_user():
     return insert_user(get_connection())
+
+@app.route("/login", methods=["POST"])
+def post_login():
+    return login(get_connection())
 
 @app.route("/change_password", methods=["POST"])
 def post_change_password():

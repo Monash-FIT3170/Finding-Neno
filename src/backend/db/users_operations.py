@@ -88,3 +88,7 @@ def change_password_in_database(connection: psycopg2.extensions.connection, emai
 
     # Close the cursor
     cur.close()
+
+def check_user_exists_in_database(conn, email, password):
+    # DUMMY METHOD FOR TESTING FRONTEND LOGIN;
+    return True
