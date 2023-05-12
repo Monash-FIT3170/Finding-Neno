@@ -3,6 +3,9 @@ import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Center} 
 import {Dimensions} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Color } from "../components/atomic/Theme";
+import { IP, PORT } from "@env";
+import { useEffect, useState } from 'react';
+
 
   
 
@@ -31,12 +34,41 @@ export default function ProfilePage({ navigation: { navigate}}, this_user) {
 
     {/. Call a get user function ./}
 
+    const [pets, setPets] = useState([]);
+    // Set up an empty pet object here
+    const [myPet, setMyPet] = useState({
+      name: '',
+      image_url: '',
+      animal: '',
+      breed: '',
+      description: '',
+      owner_id: null,
+    });
+
+    useEffect(() => {
+      const fetchOwnerPets = async () => {
+        try {
+          const response = await fetch(`${IP}:${PORT}/get_owner_pets/1`);
+          const data = await response.json();
+          setPets(data);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      fetchOwnerPets();
+
+    }, []);
+
+
+
+
     const name = "Human Being";
     const email = "sample@student.monash.edu";
     const phone = "0412 345 678";
 
-    //const myPet = {name: 'Fluffy', image_url: 'image URL goes here', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
-    //const myPet = {}
+    //const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
+  
 
     return (
       <ScrollView>
@@ -131,13 +163,13 @@ export default function ProfilePage({ navigation: { navigate}}, this_user) {
           </Text>
         </HStack>
         
-        <Box width={windowWidth - 20} height={100} bg={Color.NENO_BLUE}/>
+        <Box width={windowWidth - 60} height={100} bg={Color.NENO_BLUE}/>
         <Box height={1}/>
-        <Box width={windowWidth - 20} height={100} bg={Color.NENO_BLUE}/>
+        <Box width={windowWidth - 60} height={100} bg={Color.NENO_BLUE}/>
         <Box height={1}/>
-        <Box width={windowWidth - 20} height={100} bg={Color.NENO_BLUE}/>
+        <Box width={windowWidth - 60} height={100} bg={Color.NENO_BLUE}/>
         <Box height={1}/>
-        <Box width={windowWidth - 20} height={100} bg={Color.NENO_BLUE}/>
+        <Box width={windowWidth - 60} height={100} bg={Color.NENO_BLUE}/>
         <Box height={1}/>
 
       </VStack>
