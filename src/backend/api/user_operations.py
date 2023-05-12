@@ -34,10 +34,7 @@ def validate_password_reset(username, reset_token, new_password):
         return False
     if not verify_reset_token(username, reset_token):
         return False
-
-        """ 
-        Validate new password
-        """
+#validate new password
     if not verify_password_requirements(new_password):
         return False
 
@@ -49,10 +46,10 @@ def validate_password_reset(username, reset_token, new_password):
 
 
 def verify_username(username):
-    # Check if username exists in the database
-    # Perform necessary validations (e.g., username format, uniqueness, etc.)
+    # To Check if username exists in database
+    # Perform necessary validations such as username format, uniqueness
     # Return True if the username is valid; otherwise, return False
-    return True  # Placeholder, replace with actual validation logic
+    return True  # Placeholder, replace with validation logic
 
 
 def verify_reset_token(username, reset_token):
@@ -81,4 +78,4 @@ def reset_password(username, new_password):
     # Update  user's password in database
     # Return True if the password reset was successful; otherwise, return False
     return True
-    # Replace with password reset logic
+    # Replace with password reset
