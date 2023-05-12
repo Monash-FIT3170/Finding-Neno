@@ -7,6 +7,12 @@ import { KeyboardAvoidingView } from 'react-native';
 import { IP, PORT } from "@env";
 
 export default function NewPetPage( {route} ) {
+    /**
+     * This page is used to create a new pet or edit an existing pet.
+     * It takes in the pet object as a parameter, if the pet object is empty, it will create a new pet.
+     * Otherwise, it will edit the existing pet, and call the PUT method '/update_pet' to update the pet.
+     * 
+     */
 
     const navigation = useNavigation();
 
@@ -23,6 +29,11 @@ export default function NewPetPage( {route} ) {
     const [petDescription, setPetDescription] = useState(pet ? pet.description : '');
 
     const handleChoosePhoto = async () => {
+        /**
+         * This function is used to choose a photo from the user's photo library.
+         * It will call the ImagePicker API to open the photo library and allow the user to choose a photo.
+         * It will then set the petImage state to the chosen photo.
+         */
         const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
         if (status === 'granted') {
           let result = await ImagePicker.launchImageLibraryAsync({
@@ -38,10 +49,14 @@ export default function NewPetPage( {route} ) {
       };
 
     const handleSubmit = () => {
-
+        /**
+         * This function is used to submit the pet information to the backend.
+         * It will call the POST method '/insert_pet' to create a new pet.
+         * Or, it will call the PUT method '/update_pet' to update an existing pet.
+         */
         let url;
         let method;
-      
+        // check if this is a new pet or an existing pet
         if (isPet) {
           url = `${IP.toString()}:${PORT.toString()}/update_pet`;
           method = 'PUT';
@@ -49,7 +64,7 @@ export default function NewPetPage( {route} ) {
           url = `${IP.toString()}:${PORT.toString()}/insert_pet`;
           method = 'POST';
         }
-
+        // create the pet object
         const pet = {
             name: petName,
             animal: petType,
@@ -58,6 +73,7 @@ export default function NewPetPage( {route} ) {
             image_url: petImage.toString(),
             owner_id: ownder_id      
         };
+        // call the backend API
         fetch(url, {
             method: method,
             headers: {
@@ -78,11 +94,19 @@ export default function NewPetPage( {route} ) {
     };
 
     const isFormValid = () => {
+        /**
+         * This function is used to check if the form is valid.
+         * It will check if the pet name, pet image, pet type, and pet description are not empty.
+         */
         return petName && petImage && petType && petDescription;
       }
 
     return (
-        
+        /**
+         * This page is used to create a new pet or edit an existing pet.
+         * It takes in the pet object as a parameter, if the pet object is empty, it will have the form to insert a new pet.
+         * Otherwise, it will have the form to edit the existing pet.
+         */
         <ScrollView>
         <KeyboardAvoidingView behavior="padding" enabled keyboardVerticalOffset={250}>
         <View style={{ padding: 16 }}>
