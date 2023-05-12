@@ -13,21 +13,10 @@ const LoginPage = () => {
   const navigation = useNavigation();
   
   const onLoginPress = (formData) => {
-  const url = `${IP}:${PORT}/change_password`;
+    alert("login data: " + JSON.stringify(formData));
   };
 
-    fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(formData),
-  })
-    .then((res) => {
-      if (res.status === 201) {
-        setIsRegistered(true);
-      }
-    })
-    .catch((error) => alert(error));
-};
+
 
   const validateDetails = () => {
     // Validates details. If details are valid, send formData object to onLoginPress.

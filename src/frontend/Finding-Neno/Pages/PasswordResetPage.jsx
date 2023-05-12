@@ -13,6 +13,21 @@ const PasswordResetPage = () => {
     const navigation = useNavigation();
 
     const onPasswordResetPress = (formData) => {
+    const url = '${IP}:${PORT}/change_password';
+
+    fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json"},
+    body: JSON.stringify(formData),
+    })
+
+    .then((res) => {
+    if(res.status == 201){
+    setIsRegistered(true);
+    }
+    })
+    .catch((error) => alert(error));
+    
         alert("password reset data: " + JSON.stringify(formData));
       };
 
