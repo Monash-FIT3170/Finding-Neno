@@ -1,30 +1,10 @@
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
-import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Center} from "native-base";
+import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link} from "native-base";
 import {Dimensions} from 'react-native';
 import LinearGradient from 'react-native-linear-gradient';
 import { Color } from "../components/atomic/Theme";
 import { IP, PORT } from "@env";
 import { useEffect, useState } from 'react';
-
-
-  
-
-const App = () => {
-    return <Box bg={{
-      linearGradient: {
-        colors: ['lightBlue.300', 'violet.800'],
-        start: [0, 0],
-        end: [1, 0]
-      }
-    }} p="12" rounded="xl" _text={{
-      fontSize: 'md',
-      fontWeight: 'medium',
-      color: 'warmGray.50',
-      textAlign: 'center'
-    }}>
-        This is a Box with Linear Gradient
-      </Box>;
-  };
 
 
 export default function ProfilePage({ navigation: { navigate}}, this_user) {
@@ -155,12 +135,13 @@ export default function ProfilePage({ navigation: { navigate}}, this_user) {
       <Box height={1}/>
 
       <VStack>
-        <HStack mt="6" justifyContent="space-between">
+        <HStack mt="6" justifyContent="space-between" alignItems="center">
           <Heading fontSize="sm" color="coolGray.600" _dark={{color: "warmGray.200",}} pr={windowWidth/3.5}>
             PETS     
           </Heading>
-          <Text pl={windowWidth/2.2}>
-          </Text>
+          <Button pl={windowWidth/3} variant="link">
+            Edit
+          </Button>
         </HStack>
         
         <Box width={windowWidth - 60} height={100} bg={Color.NENO_BLUE}/>
