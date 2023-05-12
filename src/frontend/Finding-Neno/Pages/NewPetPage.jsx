@@ -27,6 +27,7 @@ export default function NewPetPage( {route} ) {
     const [petType, setPetType] = useState(pet ? pet.animal : '');
     const [petBreed, setPetBreed] = useState(pet ? pet.breed : '');
     const [petDescription, setPetDescription] = useState(pet ? pet.description : '');
+    const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
 
     const handleChoosePhoto = async () => {
         /**
@@ -47,6 +48,10 @@ export default function NewPetPage( {route} ) {
           }
         }
     };
+
+    const handlePreview = () => {
+      setIsPreviewExpanded(!isPreviewExpanded);
+    };      
 
     const handleTakePhoto = async () => {
         /**
@@ -131,9 +136,6 @@ export default function NewPetPage( {route} ) {
         <ScrollView>
         <KeyboardAvoidingView behavior="padding" enabled keyboardVerticalOffset={250}>
         <View style={{ padding: 16 }}>
-        
-        
-        
 
         <Text style={{ marginBottom: 8, fontSize: 16 }}>Pet name:</Text>
         <View
@@ -209,20 +211,43 @@ export default function NewPetPage( {route} ) {
         </View>
 
 
-        <View style={{ marginBottom: 16 }}>
-        <Button title="Submit" onPress={handleSubmit} disabled={!isFormValid()} />
+        <Button title="Preview" onPress={handlePreview} />
+
+        {isPreviewExpanded && (
+          <View style={{ marginTop: -200, backgroundColor: '#f2f2f2', padding: 16 }}>
+          <Text style={{ marginBottom: 8, fontSize: 16 }}>Preview:</Text>
+          <View
+            style={{
+              backgroundColor: '#fff',
+              borderRadius: 16,
+              shadowColor: '#000',
+              shadowOffset: {
+                width: 0,
+                height: 2,
+              },
+              shadowOpacity: 0.25,
+              shadowRadius: 3.84,
+              elevation: 5,
+              padding: 16,
+              marginBottom: 16,
+            }}
+          >
+            <Text style={{ fontSize: 16 }}>Pet name: {petName}</Text>
+            <Text style={{ fontSize: 16 }}>Pet type: {petType}</Text>
+            <Text style={{ fontSize: 16 }}>Pet breed: {petBreed}</Text>
+            <Text style={{ fontSize: 16 }}>Pet description: {petDescription}</Text>
+            {petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} />}
+          </View>
+          <Button title="Submit" onPress={handleSubmit} disabled={!isFormValid()}/>
+       
         </View>
+        )}
 
-
-        
         </View>
         
         </KeyboardAvoidingView>
         </ScrollView>
         
       );
-    
-
-    
-
 }
+
