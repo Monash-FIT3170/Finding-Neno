@@ -2,9 +2,8 @@ import { Box, Center, Heading, VStack, HStack, FormControl, Input, Link, Button,
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 
 import { Color } from "../components/atomic/Theme";
-import {validEmail} from "./validation"
 import { useState } from "react";
-import { IP, PORT } from "@env";
+import {ScrollView,} from 'react-native';
 
 const PasswordResetPage = () => {
     const [formData, setFormData] = useState({});
@@ -45,6 +44,7 @@ const PasswordResetPage = () => {
       }
 
     return (
+      <ScrollView>
         <Box flex={1} alignItems="center" justifyContent="center">
             <Center w="100%">
                 <Box safeArea p="2" py="8" w="90%" maxW="290">
@@ -88,6 +88,7 @@ const PasswordResetPage = () => {
                 </Box>
             </Center>
         </Box>
+      </ScrollView>
     );
 };
 
