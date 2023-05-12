@@ -88,6 +88,10 @@ const LoginPage = () => {
                 }}
                 alignSelf="flex-end"
                 mt="1"
+                href=""
+                onPress={() => {
+                  navigation.navigate("ForgotPassword");
+                }}
               >
                 Forgot Password
               </Link>
