@@ -1,4 +1,5 @@
-import { Box, Center, Heading, VStack, HStack, FormControl, Input, Link, Button, Text } from "native-base";
+import { Box, Center, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Pressable, Icon, KeyboardAvoidingView } from "native-base";
+import { MaterialIcons } from '@expo/vector-icons'
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 
 import { Color } from "../components/atomic/Theme";
@@ -9,12 +10,15 @@ import { IP, PORT } from "@env";
 const PasswordResetPage = () => {
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});
+	const [show, setShow] = useState(false);
+	const [showConfirm, setShowConfirm] = useState(false);
 
     const navigation = useNavigation();
 
     const onPasswordResetPress = (formData) => {
     	alert("password reset data: " + JSON.stringify(formData));
     };
+
 
     const validateDetails = () => {
       // Validates details. If details are valid, send formData object to onPasswordResetPress.
@@ -45,49 +49,56 @@ const PasswordResetPage = () => {
     }
 
     return (
-        <Box flex={1} alignItems="center" justifyContent="center">
-            <Center w="100%">
-                <Box safeArea p="2" py="8" w="90%" maxW="290">
-                    
-                    <Heading
-                        size="lg"
-                        fontWeight="600"
-                        color="coolGray.800"
-                        _dark={{
-                        color: "warmGray.50",
-                        }}
-                    >
-                        Password Reset
-                    </Heading>
+		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+			<Box flex={1} alignItems="center" justifyContent="center">
+				<Center w="100%">
+					<Box safeArea p="2" py="8" w="90%" maxW="290">
+						
+						<Heading
+							size="lg"
+							fontWeight="600"
+							color="coolGray.800"
+							_dark={{
+							color: "warmGray.50",
+							}}
+						>
+							Password Reset
+						</Heading>
 
-                    <VStack space={3} mt="5">
 
-                        <FormControl isInvalid={'resetCode' in errors}>
-                            <FormControl.Label>Reset Code</FormControl.Label>
-                            <Input onChangeText={value => setFormData({...formData, resetCode: value})} />
-                            {'resetCode' in errors && <FormControl.ErrorMessage>{errors.resetCode}</FormControl.ErrorMessage>}
-                        </FormControl>
+						<VStack space={3} mt="5">
 
-                        <FormControl isInvalid={'password' in errors}>
-                            <FormControl.Label>Password</FormControl.Label>
-                            <Input type="password" onChangeText={value => setFormData({...formData, password: value})} />
-                            {'password' in errors && <FormControl.ErrorMessage>{errors.password}</FormControl.ErrorMessage>}
-                        </FormControl>
+							<FormControl isInvalid={'resetCode' in errors}>
+								<FormControl.Label>Reset Code</FormControl.Label>
+								<Input onChangeText={value => setFormData({...formData, resetCode: value})} />
+								{'resetCode' in errors && <FormControl.ErrorMessage>{errors.resetCode}</FormControl.ErrorMessage>}
+							</FormControl>
 
-                        <FormControl isInvalid={'confirmPassword' in errors}>
-                            <FormControl.Label>Confirm Password</FormControl.Label>
-                            <Input type="password" onChangeText={value => setFormData({...formData, confirmPassword: value})} />
-                            {'confirmPassword' in errors && <FormControl.ErrorMessage>{errors.confirmPassword}</FormControl.ErrorMessage>}
-                        </FormControl>
+							<FormControl isInvalid={'password' in errors}>
+								<FormControl.Label>Password</FormControl.Label>
+								<Input type={show ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShow(!show)}> 
+								<Icon as={<MaterialIcons name={show ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
+								</Pressable>} onChangeText={value => setFormData({...formData, password: value})} />
+								{'password' in errors && <FormControl.ErrorMessage>{errors.password}</FormControl.ErrorMessage>}
+							</FormControl>
 
-                        <Button mt="2" bgColor={Color.NENO_BLUE} onPress={validateDetails}>
-                            Reset Password
-                        </Button>
+							<FormControl isInvalid={'confirmPassword' in errors}>
+								<FormControl.Label>Confirm Password</FormControl.Label>
+								<Input type={showConfirm ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowConfirm(!showConfirm)}> 
+								<Icon as={<MaterialIcons name={showConfirm ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
+								</Pressable>} onChangeText={value => setFormData({...formData, confirmPassword: value})} />
+								{'confirmPassword' in errors && <FormControl.ErrorMessage>{errors.confirmPassword}</FormControl.ErrorMessage>}
+							</FormControl>
 
-                    </VStack>
-                </Box>
-            </Center>
-        </Box>
+							<Button mt="2" bgColor={Color.NENO_BLUE} onPress={validateDetails}>
+								Reset Password
+							</Button>
+
+						</VStack>
+					</Box>
+				</Center>
+			</Box>
+		</KeyboardAvoidingView>
     );
 };
 

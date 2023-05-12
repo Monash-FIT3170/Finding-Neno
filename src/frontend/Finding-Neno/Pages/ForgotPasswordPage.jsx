@@ -1,4 +1,4 @@
-import { Box, Center, Heading, VStack, FormControl, Input, Button } from "native-base";
+import { Box, Center, Heading, VStack, FormControl, Input, Button, KeyboardAvoidingView } from "native-base";
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 
 import { Color } from "../components/atomic/Theme";
@@ -35,40 +35,42 @@ const ForgotPasswordPage = () => {
     }
 
     return (
-      <Box flex={1} alignItems="center" justifyContent="center">
-        <Center w="100%">
-          <Box safeArea p="2" py="8" w="90%" maxW="290">
-              
-            <Heading
-                size="lg"
-                fontWeight="600"
-                color="coolGray.800"
-                _dark={{
-                color: "warmGray.50",
-                }}
-            >
-                Forgot Password
-            </Heading>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+        <Box flex={1} alignItems="center" justifyContent="center">
+          <Center w="100%">
+            <Box safeArea p="2" py="8" w="90%" maxW="290">
+                
+              <Heading
+                  size="lg"
+                  fontWeight="600"
+                  color="coolGray.800"
+                  _dark={{
+                  color: "warmGray.50",
+                  }}
+              >
+                  Forgot Password
+              </Heading>
 
-            <VStack space={3} mt="5">
+              <VStack space={3} mt="5">
 
-              <FormControl isInvalid={'email' in errors}>
-                <FormControl.Label>Email</FormControl.Label>
-                <Input onChangeText={value => setFormData({...formData, email: value})} />
-                {'email' in errors && <FormControl.ErrorMessage>{errors.email}</FormControl.ErrorMessage>}
-              </FormControl>
+                <FormControl isInvalid={'email' in errors}>
+                  <FormControl.Label>Email</FormControl.Label>
+                  <Input onChangeText={value => setFormData({...formData, email: value})} />
+                  {'email' in errors && <FormControl.ErrorMessage>{errors.email}</FormControl.ErrorMessage>}
+                </FormControl>
 
-              <Button mt="2" bgColor={Color.NENO_BLUE} 
-              onPress={
-                validateDetails
-              }>
-                  Send Reset Code
-              </Button>
+                <Button mt="2" bgColor={Color.NENO_BLUE} 
+                onPress={
+                  validateDetails
+                }>
+                    Send Reset Code
+                </Button>
 
-            </VStack>
-          </Box>
-        </Center>
-      </Box>
+              </VStack>
+            </Box>
+          </Center>
+        </Box>
+      </KeyboardAvoidingView>
     );
 };
 
