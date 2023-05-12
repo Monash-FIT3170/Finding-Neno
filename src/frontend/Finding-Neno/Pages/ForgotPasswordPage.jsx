@@ -28,10 +28,7 @@ const ForgotPasswordPage = () => {
     
         setErrors(foundErrors);
     
-        if (Object.keys(foundErrors).length === 0) {
-          // no errors!
-          onForgotPasswordPress(formData)
-        }
+        return Object.keys(foundErrors).length !== 0;
       }
 
     return (
@@ -60,8 +57,10 @@ const ForgotPasswordPage = () => {
 
               <Button mt="2" bgColor={Color.NENO_BLUE} 
               onPress={() => {
-                validateDetails
-                navigation.navigate("PasswordReset");
+                const hasErrors = validateDetails();
+                if (!hasErrors) {
+                  navigation.navigate("PasswordReset");
+                }
               }}>
                   Send Reset Code
               </Button>
