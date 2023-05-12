@@ -46,7 +46,28 @@ export default function NewPetPage( {route} ) {
             setPetImage(result.assets[0].uri);
           }
         }
+    };
+
+    const handleTakePhoto = async () => {
+        /**
+         * This function is used to take a photo from the user's camera.
+         * It will call the ImagePicker API to open the camera and allow the user to take a photo.
+         * It will then set the petImage state to the taken photo.
+         */
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status === 'granted') {
+          let result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+          });
+          if (!result.canceled) {
+            setPetImage(result.assets[0].uri);
+          }
+        }
       };
+      
+      
 
     const handleSubmit = () => {
         /**
@@ -136,7 +157,9 @@ export default function NewPetPage( {route} ) {
             {petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} />}
         </View>
 
-        <Button title="Choose Photo" onPress={handleChoosePhoto} />
+        <Button title="Choose Existing Photo" onPress={handleChoosePhoto} />
+
+        <Button title="Take Photo" onPress={handleTakePhoto} />
     
         <Text style={{  fontSize: 16 }}>Pet Type</Text>
         <Picker selectedValue={petType} onValueChange={setPetType} >
