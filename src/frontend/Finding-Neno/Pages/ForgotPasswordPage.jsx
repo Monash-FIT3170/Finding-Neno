@@ -1,10 +1,9 @@
-import { Box, Center, Heading, VStack, HStack, FormControl, Input, Link, Button, Text } from "native-base";
+import { Box, Center, Heading, VStack, FormControl, Input, Button } from "native-base";
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
-import { IP, PORT } from "@env";
 
 const ForgotPasswordPage = () => {
     const [formData, setFormData] = useState({});
@@ -16,23 +15,24 @@ const ForgotPasswordPage = () => {
         alert("forgot password data: " + JSON.stringify(formData));
       };
 
-      const validateDetails = () => {
-        // Validates details. If details are valid, send formData object to onForgotPasswordPress.
-        foundErrors = {};
-    
-        if (!formData.email || formData.email == "") {
-          foundErrors = {...foundErrors, email: 'Email is required'}
-        } else if (!validEmail(formData.email)) {
-          foundErrors = {...foundErrors, email: 'Email is invalid'}
-        }
-    
-        setErrors(foundErrors);
-    
-        if (Object.keys(foundErrors).length === 0) {
-          // no errors!
-          onForgotPasswordPress(formData)
-        }
+    const validateDetails = () => {
+      // Validates details. If details are valid, send formData object to onForgotPasswordPress.
+      foundErrors = {};
+      console.log(formData)
+      if (!formData.email) {
+        foundErrors = {...foundErrors, email: 'Email is required'}
+      } else if (!validEmail(formData.email)) {
+        foundErrors = {...foundErrors, email: 'Email is invalid'}
       }
+  
+      setErrors(foundErrors);
+  
+      if (Object.keys(foundErrors).length === 0) {
+        // no errors!
+        onForgotPasswordPress(formData);
+        navigation.navigate("PasswordReset");
+      }
+    }
 
     return (
       <Box flex={1} alignItems="center" justifyContent="center">
@@ -59,10 +59,9 @@ const ForgotPasswordPage = () => {
               </FormControl>
 
               <Button mt="2" bgColor={Color.NENO_BLUE} 
-              onPress={() => {
+              onPress={
                 validateDetails
-                navigation.navigate("PasswordReset");
-              }}>
+              }>
                   Send Reset Code
               </Button>
 
