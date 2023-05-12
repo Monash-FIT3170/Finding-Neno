@@ -13,7 +13,7 @@ const LoginPage = () => {
   const navigation = useNavigation();
   
   const onLoginPress = (formData) => {
-    alert("login data: " + JSON.stringify(formData));
+  const url = `${IP}:${PORT}/change_password`;
   };
 
   const validateDetails = () => {
