@@ -35,11 +35,15 @@ def validate_password_reset(username, reset_token, new_password):
     if not verify_reset_token(username, reset_token):
         return False
 
-        # Validate new password
+        """ 
+        Validate new password
+        """
     if not verify_password_requirements(new_password):
         return False
 
-        # Reset password and update user credentials
+        """
+        Reset password and update user credentials
+        """
     reset_password(username, new_password)
     return True
 
@@ -59,7 +63,9 @@ def verify_reset_token(username, reset_token):
 
 
 def verify_password_requirements(password):
-    # Perform password validation
+    """
+    Perform password validation
+    """
 
     # Return True if the password meets the requirements; otherwise, return False
     if len(password) < 8:
