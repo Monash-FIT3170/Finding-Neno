@@ -151,6 +151,7 @@ export default function NewPetPage( {route} ) {
                 placeholder="Enter pet name"
                 defaultValue={petName}
                 onChangeText={setPetName}
+                returnKeyType='done'
             />
         </View>
 
@@ -188,6 +189,7 @@ export default function NewPetPage( {route} ) {
                 placeholder="Enter pet breed"
                 value={petBreed}
                 onChangeText={setPetBreed}
+                returnKeyType='done'
             />
         </View>
 
@@ -202,11 +204,11 @@ export default function NewPetPage( {route} ) {
                 marginBottom: 16,
             }}>
             <TextInput
-                multiline
                 style={{ fontSize: 16 }}
                 placeholder="Enter pet description"
                 value={petDescription}
                 onChangeText={setPetDescription}
+                returnKeyType='done'
             />
         </View>
 
@@ -214,7 +216,7 @@ export default function NewPetPage( {route} ) {
         <Button title="Preview" onPress={handlePreview} />
 
         {isPreviewExpanded && (
-          <View style={{ marginTop: -200, backgroundColor: '#f2f2f2', padding: 16 }}>
+          <View style={{ marginTop: 0, backgroundColor: '#f2f2f2', padding: 16 }}>
           <Text style={{ marginBottom: 8, fontSize: 16 }}>Preview:</Text>
           <View
             style={{
