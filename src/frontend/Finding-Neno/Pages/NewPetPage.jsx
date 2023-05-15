@@ -27,7 +27,6 @@ export default function NewPetPage( {route} ) {
     const [petType, setPetType] = useState(pet ? pet.animal : '');
     const [petBreed, setPetBreed] = useState(pet ? pet.breed : '');
     const [petDescription, setPetDescription] = useState(pet ? pet.description : '');
-    const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleChoosePhoto = async () => {
@@ -214,14 +213,14 @@ export default function NewPetPage( {route} ) {
         </View>
 
         <View style={{ flex: 1 }}> 
-        <Button title="Preview" onPress={() => setModalVisible(true)} /> 
-        <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => { Alert.alert('Modal has been closed.'); setModalVisible(false); }}> 
-        <TouchableOpacity activeOpacity={1} onPressOut={() => setModalVisible(false)} style={{ flex: 1, backgroundColor: 'white', opacity: 0.7 }} />
+        <Button title="Preview" onPress={() => setModalVisible(true)} disabled={!isFormValid()}/> 
+        <Modal animationType={'fade'} transparent={true} visible={modalVisible} onRequestClose={() => { Alert.alert('Modal has been closed.'); setModalVisible(false); }}> 
+        <TouchableOpacity activeOpacity={1} onPressOut={() => setModalVisible(false)} style={{ flex: 1, backgroundColor: 'white', opacity: 0.8 }} />
         <View
           style={{
-            height: '25%',
+            height: '35%',
             marginTop: 'auto',
-            backgroundColor:'grey',
+            backgroundColor:'#F2F2F7',
             position: 'absolute',
             bottom: 0,
             left: 0,
@@ -229,14 +228,39 @@ export default function NewPetPage( {route} ) {
             borderTopLeftRadius: 20,
             borderTopRightRadius: 20,
           }}>
-          <View style={{margin: '5%'}}>
-          <Text style={{ fontSize: 16 }}>Pet name: {petName}</Text>
-            <Text style={{ fontSize: 16 }}>Pet type: {petType}</Text>
-            <Text style={{ fontSize: 16 }}>Pet breed: {petBreed}</Text>
-            <Text style={{ fontSize: 16 }}>Pet description: {petDescription}</Text>
-            {petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} />}
+          <View style={{margin: '5%', paddingTop: '1%', height: 'auto', maxHeight: '65%'}}>
 
-            <Button title="Submit" onPress={handleSubmit} disabled={!isFormValid()}/>
+            <View style={{
+                backgroundColor: '#B8B8B8',
+                borderTopLeftRadius: 20,
+                borderBottomRightRadius: 20,
+              }}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <View style={{width: '35%', height: '100%'}}>
+                  {petImage && <Image source={{ uri: petImage }} style={{ width: '100%', height: '100%', borderTopLeftRadius: 20 }} />}
+                </View>
+
+                <View style={{flex: 1, marginLeft: '5%', padding: '2%'}}>
+                  <Text style={{ fontSize: 30, paddingBottom: 10 }}>{petName}</Text>
+                  <View style={{flexDirection: 'row', alignItems: 'center', paddingBottom: 10}}>
+                    <View style={{flexDirection: 'column', alignItems: 'left'}}>
+                      <Text style={{ fontSize: 12, color: "#F2F2F7" }}>Species:</Text>
+                      <Text style={{ fontSize: 20, textTransform: 'capitalize' }}>{petType}</Text>
+                    </View>
+                    <View style={{flexDirection: 'column', alignItems: 'left', marginLeft: '15%'}}>
+                      <Text style={{ fontSize: 12, color: "#F2F2F7" }}>Breed:</Text>
+                      <Text style={{ fontSize: 20 }}>{petBreed}</Text>
+                    </View>
+                  </View>
+                  <Text style={{ fontSize: 12, color: "#F2F2F7", marginBottom: '1%' }}>Details:</Text>
+                  <Text style={{ fontSize: 14 }}>{petDescription}</Text>
+                </View>
+                
+              </View>
+            </View>
+            <View style={{justifyContent: 'space-between', marginTop: '3%'}}>
+              <Button title="Add Pet" onPress={handleSubmit}/>
+            </View>
           </View> 
         </View>
         </Modal> 
