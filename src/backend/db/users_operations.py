@@ -97,11 +97,11 @@ def retrieve_all_missing_reports_from_database(connection: psycopg2.extensions.c
         cur.execute(query)
 
         # Retrieve rows as an array
-        missing_reports = cur.fetchall()
+        all_missing_reports = cur.fetchall()
 
         print(f"Missing reports successfully retrieved")
 
-        return missing_reports
+        return all_missing_reports
     except Exception as e:
         print(f"Error with retrieving missing reports: {e}")
 
