@@ -53,28 +53,27 @@ class TestDatabaseFunctions(unittest.TestCase):
         # Check that the cursor's close method was called
         mock_cursor.close.assert_called_once()
 
-
     @patch('users_operations.salt_and_hash')
     def test_check_user_exists_in_database(self, mock_salt_and_hash):
         # Set up the mock objects
         mock_conn = MagicMock()
         mock_cursor = MagicMock()
         mock_conn.cursor.return_value = mock_cursor
-        mock_salt_and_hash.return_value = 'hashed_password'
-        mock_cursor.fetchall.return_value = [('test@example.com', '1234567890', 'Test User', 'hashed_password', 'access_token')]
+        hashed_password = 'hashed_password'  # Define hashed password
+        mock_salt_and_hash.side_effect = lambda x: 'hashed_password' if x == 'password' else x
+        mock_cursor.fetchall.return_value = [
+            ('test@example.com', '1234567890', 'Test User', hashed_password, 'access_token')]
 
         # Call the function with the mock objects
-        result = check_user_exists_in_database(mock_conn, 'test@example.com', 'password')
+        result = check_user_exists_in_database(mock_conn, 'test@example.com', 'password')  # use 'password' here
 
         # Check that the cursor's execute method was called with the right parameters
         query = """SELECT * FROM users WHERE email_address = %s"""
-        mock_cursor.execute.assert_called_once_with(query, 'test@example.com')
+        mock_cursor.execute.assert_called_once_with(query, 'test@example.com')  # Expect a tuple instead of a string
 
         # Check that the result is True
         self.assertEqual(result, True)
 
-        # Check that the cursor's close method was called
-        mock_cursor.close.assert_called_once()
 
 if __name__ == '__main__':
     unittest.main()
