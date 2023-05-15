@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, Image, ScrollView } from 'react-native';
+import { View, Text, TextInput,TouchableOpacity, Modal, Button, Image, ScrollView } from 'react-native';
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
@@ -28,6 +28,7 @@ export default function NewPetPage( {route} ) {
     const [petBreed, setPetBreed] = useState(pet ? pet.breed : '');
     const [petDescription, setPetDescription] = useState(pet ? pet.description : '');
     const [isPreviewExpanded, setIsPreviewExpanded] = useState(false);
+    const [modalVisible, setModalVisible] = useState(false);
 
     const handleChoosePhoto = async () => {
         /**
@@ -212,44 +213,38 @@ export default function NewPetPage( {route} ) {
             />
         </View>
 
-
-        <Button title="Preview" onPress={handlePreview} />
-
-        {isPreviewExpanded && (
-          <View style={{ marginTop: 0, backgroundColor: '#f2f2f2', padding: 16 }}>
-          <Text style={{ marginBottom: 8, fontSize: 16 }}>Preview:</Text>
-          <View
-            style={{
-              backgroundColor: '#fff',
-              borderRadius: 16,
-              shadowColor: '#000',
-              shadowOffset: {
-                width: 0,
-                height: 2,
-              },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.84,
-              elevation: 5,
-              padding: 16,
-              marginBottom: 16,
-            }}
-          >
-            <Text style={{ fontSize: 16 }}>Pet name: {petName}</Text>
+        <View style={{ flex: 1 }}> 
+        <Button title="Preview" onPress={() => setModalVisible(true)} /> 
+        <Modal animationType="slide" transparent={true} visible={modalVisible} onRequestClose={() => { Alert.alert('Modal has been closed.'); setModalVisible(false); }}> 
+        <TouchableOpacity activeOpacity={1} onPressOut={() => setModalVisible(false)} style={{ flex: 1, backgroundColor: 'white', opacity: 0.7 }} />
+        <View
+          style={{
+            height: '25%',
+            marginTop: 'auto',
+            backgroundColor:'grey',
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            borderTopLeftRadius: 20,
+            borderTopRightRadius: 20,
+          }}>
+          <View style={{margin: '5%'}}>
+          <Text style={{ fontSize: 16 }}>Pet name: {petName}</Text>
             <Text style={{ fontSize: 16 }}>Pet type: {petType}</Text>
             <Text style={{ fontSize: 16 }}>Pet breed: {petBreed}</Text>
             <Text style={{ fontSize: 16 }}>Pet description: {petDescription}</Text>
             {petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} />}
-          </View>
-          <Button title="Submit" onPress={handleSubmit} disabled={!isFormValid()}/>
-       
-        </View>
-        )}
 
+            <Button title="Submit" onPress={handleSubmit} disabled={!isFormValid()}/>
+          </View> 
         </View>
-        
+        </Modal> 
+        </View>
+        </View>
+
         </KeyboardAvoidingView>
-        </ScrollView>
-        
+        </ScrollView>        
       );
 }
 
