@@ -39,8 +39,7 @@ def create_tables(connection: psycopg2.extensions.connection):
     queries = [
         # Create users table
         """CREATE TABLE "users" (id SERIAL PRIMARY KEY, email_address VARCHAR(255) NOT NULL, phone_number VARCHAR(
-        255), name VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL,salt VARCHAR(255) NOT NULL, 
-        access_token VARCHAR(255) NOT NULL);""",
+        255), name VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL,access_token VARCHAR(255) NOT NULL);""",
         # Create user settings table
         """CREATE TABLE "user_settings" (user_id INTEGER PRIMARY KEY REFERENCES "users"(id));""",
         # Create pets table

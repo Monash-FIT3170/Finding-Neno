@@ -11,6 +11,7 @@ const ReportPage = () => {
 
   const [lastSeen, setLastSeen] = useState('');
   const [lastLocation, setLastLocation] = useState('');
+  const [description, setDescription] = useState('');
 
   const [dropdownHeight, setDropdownHeight] = useState(150);
 
@@ -41,7 +42,7 @@ const ReportPage = () => {
                 }}>
                 <TextInput
                     style={{ fontSize: 16 }}
-                    placeholder="Enter last seen time"
+                    placeholder="dd/mm/yyyy hh:mm"
                     value={lastSeen}
                     onChangeText={setLastSeen}
                 />
@@ -61,6 +62,23 @@ const ReportPage = () => {
                     placeholder="Enter last known location"
                     value={lastLocation}
                     onChangeText={setLastLocation}
+                />
+            </View>
+
+            <Text style={{ marginBottom: 8, fontSize: 16 }}>Pet Description:</Text>
+            <View
+                style={{
+                    borderWidth: 1,
+                    borderRadius: 8,
+                    borderColor: '#ddd',
+                    padding: 8,
+                    marginBottom: 16,
+                }}>
+                <TextInput
+                    style={{ fontSize: 16 }}
+                    placeholder="Enter pet description"
+                    value={description}
+                    onChangeText={setDescription}
                 />
             </View>
 
