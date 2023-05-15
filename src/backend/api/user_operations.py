@@ -1,6 +1,7 @@
 from flask import request, jsonify
 from pathlib import Path
 import sys
+import datetime
 
 file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
@@ -24,8 +25,15 @@ def insert_missing_report(conn):
     print("inserting report: ", json_data)
     author_id = None
     pet_id = None
-    # pet_id = json_data[""].lower()
-    # last_seen = date
+    # pet_id = json_data["pet_id"]
+
+    year = None
+    month = None
+    day = None
+    hour = None
+    minute = None
+
+    last_seen = datetime.datetime(year, month, day, hour, minute)
     location_longitude = json_data["location_longitude"]
     location_latitude = json_data["location_latitude"]
     description = json_data["description"]
@@ -35,12 +43,13 @@ def insert_missing_report(conn):
 
 def retrieve_missing_reports_of_user(conn):
     user_id = None
+    # user_id = json_data["user_id"]
 
     missing_reports = retrieve_missing_reports_of_user_from_database(conn, user_id)
 
-    if missing_reports == None:
-        return "Success", 200
-    elif missing_reports.len == 0:
+    if len(missing_reports) > 0:
+        return jsonify(missing_reports), 200
+    elif len(missing_reports) == 0:
         return "Empty", 204
     else:
         return "Fail", 400
@@ -50,7 +59,7 @@ def retrieve_all_missing_reports(conn):
     print(all_missing_reports)
 
     if len(all_missing_reports) > 0:
-        return "Success", 200
+        return jsonify(all_missing_reports), 200
     elif len(all_missing_reports) == 0:
         return "Empty", 204
     else:
