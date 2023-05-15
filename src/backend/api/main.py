@@ -4,7 +4,7 @@ import sys, os
 from dotenv import load_dotenv
 from flask import Flask, request
 
-from user_operations import insert_user, change_password, login
+from user_operations import insert_user, retrieve_missing_reports_of_user, retrieve_all_missing_reports, change_password, login
 
 
 database_pool = None
@@ -53,6 +53,11 @@ def post_login():
 @app.route("/change_password", methods=["POST"])
 def post_change_password():
     return change_password(get_connection())
+
+@app.route("/get_missing_reports", methods=["GET"])
+def get_missing_reports_of_user():
+    return retrieve_missing_reports_of_user(get_connection())
+    
 
 if __name__ == "__main__": 
     # Get environment file path from command line arguments
