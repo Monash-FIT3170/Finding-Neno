@@ -35,7 +35,6 @@ def generate_access_token():
 
 
 def insert_user_to_database(conn, email, phone, name, password):
-    #
     """
     This function is used to add a new user to the database
     """
@@ -63,6 +62,77 @@ def insert_user_to_database(conn, email, phone, name, password):
     conn.commit()
     cur.close()
 
+def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id, pet_id, last_seen, location_longitude, location_latitude, description):
+    """
+    This function is used to add a new missing report to the database
+    """
+
+    cur = connection.cursor()
+
+    # Construct and INSERT query to insert this user into the DB
+    query = """INSERT INTO missing_reports (pet_id, author_id, date_time, location_longitude, 
+    location_latitude, description, status) VALUES (%s, %s, %s, %s, %s, %s, FALSE);"""
+
+    # Execute the query
+    try:
+        cur.execute(query, (author_id, pet_id, last_seen, location_longitude, location_latitude, description))
+        print(f"Query executed successfully: {query}")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Commit the change and close the connection
+    connection.commit()
+    cur.close()
+
+def retrieve_all_missing_reports_from_database(connection: psycopg2.extensions.connection):
+    """
+    This function retrieves all missing reports from the database.
+    """
+
+    cur = connection.cursor()
+
+    query = """SELECT * FROM missing_reports;"""
+
+    try:
+        cur.execute(query)
+
+        # Retrieve rows as an array
+        missing_reports = cur.fetchall()
+
+        print(f"Missing reports successfully retrieved")
+
+        return missing_reports
+    except Exception as e:
+        print(f"Error with retrieving missing reports: {e}")
+
+    cur.close()
+    return None
+
+def retrieve_missing_reports_of_user_from_database(connection: psycopg2.extensions.connection, author_id):
+    """
+    This function retrieves the missing reports of the logged in user.
+    """
+
+    cur = connection.cursor()
+
+    query = """SELECT * FROM missing_reports WHERE author_id = %s;"""
+
+    try:
+        cur.execute(query, (author_id, ))
+
+        # Retrieve rows as an array
+        missing_reports = cur.fetchall()
+
+        print(f"Missing reports successfully retrieved")
+
+        return missing_reports
+    except Exception as e:
+        print(f"Error with retrieving missing reports: {e}")
+
+    cur.close()
+    return None
+
+
 def change_password_in_database(connection: psycopg2.extensions.connection, email: int, new_password: str):
     """
     This function updates the password of the row in the database which matches the email provided.
@@ -71,7 +141,7 @@ def change_password_in_database(connection: psycopg2.extensions.connection, emai
     # Open cursor to access the conection.
     cur = connection.cursor()
         
-    query = """ UPDATE users SET password = %s, salt = %s WHERE email_address = %s; """
+    query = """UPDATE users SET password = %s, salt = %s WHERE email_address = %s;"""
 
     # Hash and salt password
     hashed_password, salt = salt_and_hash(new_password)
