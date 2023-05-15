@@ -1,20 +1,20 @@
-import React, { useState } from 'react';
-import {View, Text, TextInput, ScrollView,} from 'react-native';
-import { Button} from "native-base";
+import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, KeyboardAvoidingView } from "native-base";
+
+import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
-import Dropdown from './Dropdown';
 
 const ReportPage = () => {
-  const [missingPet, setMissingPet] = useState('');
-  const options = ['Option 1', 'Option 2', 'Add new Pet'];
-  const handleSelectOption = (option) => setMissingPet(option);
+  const [formData, setFormData] = useState({});
+  const [dropdownOptions, setDropdownOptions] = useState([]);
+  const [errors, setErrors] = useState({});
 
-  const [lastSeen, setLastSeen] = useState('');
-  const [lastLocation, setLastLocation] = useState('');
-  const [description, setDescription] = useState('');
-
-  const [dropdownHeight, setDropdownHeight] = useState(150);
-
+  useEffect(() => {
+    // Simulating asynchronous data fetching
+    setTimeout(() => {
+      const fetchedOptions = ['Pet 1', 'Pet 2', 'Add new Pet'];
+      setDropdownOptions(fetchedOptions);
+    }, 2000);
+  }, []);
 
   const onCreateReportPress = async (formData) => {
     const url = `${IP}:${PORT}/insert_missing_report`;
@@ -33,116 +33,88 @@ const ReportPage = () => {
   };
 
   const validateDetails = () => {
-    // Validates details. If details are valid, send formData object to onSignupPress.
+    // Validates details. If details are valid, send formData object to onCreateReportPress.
     foundErrors = {};
 
-    // if (!formData.name || formData.name == "") {
-    //   foundErrors = {...foundErrors, name: 'Name is required'}
-    // }
+    if (!formData.missingPet) {
+      foundErrors = {...foundErrors, missingPet: 'Please select a pet'}
+    }
 
-    // if (!formData.email || formData.email == "") {
-    //   foundErrors = {...foundErrors, email: 'Email is required'}
-    // } else if (!validEmail(formData.email)) {
-    //   foundErrors = {...foundErrors, email: 'Email is invalid'}
-    // }
+    if (!formData.lastSeen || formData.lastSeen == "") {
+      foundErrors = {...foundErrors, lastSeen: 'Last seen is required'}
+    }
 
-    // if (!formData.phoneNumber || formData.phoneNumber == "") {
-    //   foundErrors = {...foundErrors, phoneNumber: 'Phone number is required'}
-    // } else if (!validPhoneNumber(formData.phoneNumber)) {
-    //   foundErrors = {...foundErrors, phoneNumber: 'Phone number is invalid'}
-    // }
-
-    // if (!formData.password || formData.password == "") {
-    //   foundErrors = {...foundErrors, password: 'Password is required'}
-    // }
-
-    // if (!formData.confirmPassword || formData.confirmPassword == "") {
-    //   foundErrors = {...foundErrors, confirmPassword: 'Password confirmation is required'}
-    // }
-
-    // if (formData.confirmPassword !== formData.password) {
-    //   foundErrors = {...foundErrors, confirmPassword: 'Passwords must match'}
-    // }
+    if (!formData.lastLocation || formData.lastLocation == "") {
+      foundErrors = {...foundErrors, lastLocation: 'Last known location is required'}
+    }
 
     setErrors(foundErrors);
 
     if (Object.keys(foundErrors).length === 0) {
       // no errors!
-      onSignupPress(formData)
+      onCreateReportPress(formData)
     }
   }
 
   return (
-    <ScrollView>
-        <View style={{ padding: 16 }}>
+      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+        <Box flex={1} alignItems="center" justifyContent="center">
+          <Center w="100%">
+            <Box safeArea p="2" py="8" w="90%" maxW="290">
+                
+              <Heading
+                  size="lg"
+                  fontWeight="600"
+                  color="coolGray.800"
+                  _dark={{
+                  color: "warmGray.50",
+                  }}
+              >
+                  Create a Report
+              </Heading>
 
-            <Text style={{ marginBottom: 8, fontSize: 16 }}>Choose Pet:</Text>
-            <View style={{ marginBottom: 8, height: dropdownHeight }}>
-                <Dropdown
-                    options={options}
-                    selectedOption={missingPet}
-                    onSelect={handleSelectOption}
-                    onLayout={(event) => setDropdownHeight(event.nativeEvent.layout.height)}
-                    placeholder="Select a pet"
-                />
-            </View>
+              <VStack space={3} mt="5">
 
-            <Text style={{ marginBottom: 8, fontSize: 16 }}>Last seen:</Text>
-            <View
-                style={{
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    borderColor: '#ddd',
-                    padding: 8,
-                    marginBottom: 16,
-                }}>
-                <TextInput
-                    style={{ fontSize: 16 }}
-                    placeholder="dd/mm/yyyy hh:mm"
-                    value={lastSeen}
-                    onChangeText={setLastSeen}
-                />
-            </View>
+                <FormControl isInvalid={'missingPet' in errors}>
+                  <FormControl.Label>Choose Pet</FormControl.Label>
+                  <Select
+                    selectedValue={formData.missingPet}
+                    onValueChange={(value) => setFormData({...formData, missingPet: value})}
+                  >
+                    {dropdownOptions.map((option, index) => (
+                      <Select.Item key={index} label={option} value={option} />
+                    ))}
+                  </Select>
+                  {'missingPet' in errors && <FormControl.ErrorMessage>{errors.missingPet}</FormControl.ErrorMessage>}
+                </FormControl>
 
-            <Text style={{ marginBottom: 8, fontSize: 16 }}>Last Known Location:</Text>
-            <View
-                style={{
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    borderColor: '#ddd',
-                    padding: 8,
-                    marginBottom: 16,
-                }}>
-                <TextInput
-                    style={{ fontSize: 16 }}
-                    placeholder="Enter last known location"
-                    value={lastLocation}
-                    onChangeText={setLastLocation}
-                />
-            </View>
+                <FormControl isInvalid={'lastSeen' in errors}>
+                  <FormControl.Label>Last Seen</FormControl.Label>
+                  <Input onChangeText={value => setFormData({...formData, lastSeen: value})} placeholder="dd/mm/yy hh:mm" />
+                  {'lastSeen' in errors && <FormControl.ErrorMessage>{errors.lastSeen}</FormControl.ErrorMessage>}
+                </FormControl>
 
-            <Text style={{ marginBottom: 8, fontSize: 16 }}>Pet Description:</Text>
-            <View
-                style={{
-                    borderWidth: 1,
-                    borderRadius: 8,
-                    borderColor: '#ddd',
-                    padding: 8,
-                    marginBottom: 16,
-                }}>
-                <TextInput
-                    style={{ fontSize: 16 }}
-                    placeholder="Enter pet description"
-                    value={description}
-                    onChangeText={setDescription}
-                />
-            </View>
+                <FormControl isInvalid={'lastLocation' in errors}>
+                  <FormControl.Label>Last Known Location</FormControl.Label>
+                  <Input onChangeText={value => setFormData({...formData, lastLocation: value})} />
+                  {'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
+                </FormControl>
 
-            <Button mt="2" bgColor={Color.NENO_BLUE} >
-                Submit Report
-            </Button>
-        </View>
-    </ScrollView>
+                <FormControl isInvalid={'description' in errors}>
+                  <FormControl.Label>Pet Description</FormControl.Label>
+                  <Input onChangeText={value => setFormData({...formData, description: value})} />
+                  {'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
+                </FormControl>
+
+                <Button mt="2" bgColor={Color.NENO_BLUE} onPress={validateDetails}>
+                    Submit Report
+                </Button>
+
+              </VStack>
+            </Box>
+          </Center>
+        </Box>
+      </KeyboardAvoidingView>
   );
 };
 
