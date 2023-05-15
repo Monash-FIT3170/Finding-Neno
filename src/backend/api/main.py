@@ -2,9 +2,9 @@ import psycopg2
 import psycopg2.pool
 import sys, os
 from dotenv import load_dotenv
-from flask import Flask
+from flask import Flask, request
 
-from api.user_service import insert_user
+from user_service import insert_user, change_password, login
 
 
 database_pool = None
@@ -46,7 +46,15 @@ def root():
 def post_insert_user():
     return insert_user(get_connection())
 
-if __name__ == "__main__":
+@app.route("/login", methods=["POST"])
+def post_login():
+    return login(get_connection())
+
+@app.route("/change_password", methods=["POST"])
+def post_change_password():
+    return change_password(get_connection())
+
+if __name__ == "__main__": 
     # Get environment file path from command line arguments
     if len(sys.argv) < 2:
         raise Exception(

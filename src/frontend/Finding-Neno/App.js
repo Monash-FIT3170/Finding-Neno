@@ -11,6 +11,8 @@ import NewPetPage from "./Pages/NewPetPage";
 import ProfilePage from "./Pages/ProfilePage";
 import ReportPage from "./Pages/ReportPage";
 import SignupPage from "./Pages/SignupPage";
+import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
+import PasswordResetPage from "./Pages/PasswordResetPage";
 import SightingsPage from "./Pages/SightingsPage";
 
 const Stack = createStackNavigator();
@@ -22,9 +24,11 @@ export default function App() {
     <NativeBaseProvider>
       <NavigationContainer>
         {/* To skip login/signup pages, replace initalRouteName="Login" to initalRouteName="Tab Navigator" */}
-        <Stack.Navigator initialRouteName="Tab Navigator">
+        <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Login" component={LoginPage} />
           <Stack.Screen name="Signup" component={SignupPage} /> 
+          <Stack.Screen name="ForgotPassword" component={ForgotPasswordPage} />
+          <Stack.Screen name="PasswordReset" component={PasswordResetPage} /> 
           <Stack.Screen 
             name="Tab Navigator" 
             component={TabNavigator}
