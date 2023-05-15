@@ -57,8 +57,7 @@ def insert_user_to_database(conn, email, phone, name, password):
     hashed_pass= salt_and_hash(password)
 
     # Construct an INSERT query to insert this user into the DB
-    query = """INSERT INTO users (email_address, phone_number, name, password, access_token) VALUES (%s, %s, %s, %s, %s,
-    %s);"""
+    query = """INSERT INTO users (email_address, phone_number, name, password, access_token) VALUES (%s, %s, %s, %s, %s);"""
 
     # Execute the query
     try:
