@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import {View, Text, TextInput, ScrollView,} from 'react-native';
+import { Button} from "native-base";
+import { Color } from "../components/atomic/Theme";
 import Dropdown from './Dropdown';
 
 const ReportPage = () => {
@@ -61,6 +63,10 @@ const ReportPage = () => {
                     onChangeText={setLastLocation}
                 />
             </View>
+
+            <Button mt="2" bgColor={Color.NENO_BLUE} >
+                Submit Report
+            </Button>
         </View>
     </ScrollView>
   );
