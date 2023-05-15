@@ -4,6 +4,15 @@ import hashlib
 import psycopg2
 
 
+def get_salt(password):
+    # Convert the password to bytes
+    password_bytes = password.encode()
+
+    # Use SHA256 to generate the salt
+    salt = hashlib.sha256(password_bytes).hexdigest()
+
+    return salt
+
 def salt_and_hash(password):
     """
     This function is responsible to salt and hash the password it receives
@@ -13,13 +22,13 @@ def salt_and_hash(password):
     """
 
 
-    salt = secrets.token_hex(16)
+    salt = get_salt(password)
     salted_password = f"{password}{salt}"
     hasher = hashlib.sha256()
     hasher.update(salted_password.encode('utf-8'))
     hashed_password = hasher.hexdigest()
 
-    return hashed_password,salt
+    return hashed_password
 
 
 def generate_access_token():
@@ -35,7 +44,6 @@ def generate_access_token():
 
 
 def insert_user_to_database(conn, email, phone, name, password):
-    #
     """
     This function is used to add a new user to the database
     """
@@ -46,15 +54,15 @@ def insert_user_to_database(conn, email, phone, name, password):
     access_token = generate_access_token()
 
     # Hash the password input
-    hashed_pass, salt = salt_and_hash(password)
+    hashed_pass= salt_and_hash(password)
 
-    # Construct and INSERT query to insert this user into the DB
-    query = """INSERT INTO users (email_address, phone_number, name, password, salt, access_token) VALUES (%s, %s, %s, %s, %s,
+    # Construct an INSERT query to insert this user into the DB
+    query = """INSERT INTO users (email_address, phone_number, name, password, access_token) VALUES (%s, %s, %s, %s, %s,
     %s);"""
 
     # Execute the query
     try:
-        cur.execute(query, (email, phone, name, hashed_pass, salt, access_token))
+        cur.execute(query, (email, phone, name, hashed_pass, access_token))
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
@@ -62,6 +70,44 @@ def insert_user_to_database(conn, email, phone, name, password):
     # Commit the change and close the connection
     conn.commit()
     cur.close()
+
+
+def check_user_exists_in_database(conn, email, password):
+    """
+    This function is used to check if a user exists in the database and if the password match
+    """
+
+    cur = conn.cursor()
+
+    # Hash the password input
+    hashed_pass= salt_and_hash(password)
+
+    # Check if a user with this email exists in the database
+    # Construct a SELECT query to check if the user exists in the database
+    query = """SELECT * FROM users WHERE email_address = %s"""
+
+    # Execute the query
+    try:
+        cur.execute(query, email)
+        result_set = cur.fetchall()
+        if len(result_set) == 0:  # If a user with the provided email could not be found
+            print("No user found with the provided email address.")
+            return False
+        else: # If user is found
+            user = result_set[0]
+            if user[3] == hashed_pass:  # Check if password and salt matches
+                print("User found with the provided email address and matching password.")
+                return True
+            else:
+                print("User found with the provided email address, but password does not match.")
+                return False
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Commit the change and close the connection
+    conn.commit()
+    cur.close()
+
 
 def change_password_in_database(connection: psycopg2.extensions.connection, email: int, new_password: str):
     """
@@ -88,7 +134,3 @@ def change_password_in_database(connection: psycopg2.extensions.connection, emai
 
     # Close the cursor
     cur.close()
-
-def check_user_exists_in_database(conn, email, password):
-    # DUMMY METHOD FOR TESTING FRONTEND LOGIN;
-    return True

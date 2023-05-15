@@ -5,3 +5,5 @@ REM FOR WINDOWS USERS
 
 pip install psycopg2
 pip install python-dotenv
+pip install pytest
+pip install pytest-mock
