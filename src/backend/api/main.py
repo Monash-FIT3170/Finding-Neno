@@ -50,7 +50,7 @@ def post_insert_user():
 def post_login():
     return login(get_connection())
 
-@app.route("/change_password", methods=["POST"])
+@app.route("/change_password", methods=["PATCH"])
 def post_change_password():
     return change_password(get_connection())
 
