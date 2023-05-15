@@ -6,7 +6,7 @@ file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
 sys.path.append(str(package_root_directory))
 
-from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_of_user_from_database, change_password_in_database, check_user_exists_in_database
+from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_of_user_from_database, retrieve_all_missing_reports_from_database, change_password_in_database, check_user_exists_in_database
 
 
 def insert_user(conn):
@@ -34,14 +34,24 @@ def insert_missing_report(conn):
     return "", 201
 
 def retrieve_missing_reports_of_user(conn):
-    user_id = 0
+    user_id = None
 
     missing_reports = retrieve_missing_reports_of_user_from_database(conn, user_id)
-    print(missing_reports)
 
     if missing_reports == None:
         return "Success", 200
     elif missing_reports.len == 0:
+        return "Empty", 204
+    else:
+        return "Fail", 400
+    
+def retrieve_all_missing_reports(conn):
+    all_missing_reports = retrieve_all_missing_reports_from_database(conn)
+    print(all_missing_reports)
+
+    if len(all_missing_reports) > 0:
+        return "Success", 200
+    elif len(all_missing_reports) == 0:
         return "Empty", 204
     else:
         return "Fail", 400
