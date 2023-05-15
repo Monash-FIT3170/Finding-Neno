@@ -71,8 +71,11 @@ const SignupPage = () => {
       onSignupPress(formData)
     }
   }
+
+  const keyboardVerticalOffset = Platform.OS === 'ios' ? 170 : 0
+
   return (
-		<KeyboardAvoidingView style={{ flex: 1}} behavior="position">
+		<KeyboardAvoidingView style={{ flex: 1}} behavior="padding" keyboardVerticalOffset={keyboardVerticalOffset}>
       <Center w="100%">
         <Box safeArea p="2" py="8" w="90%" maxW="290">
           {

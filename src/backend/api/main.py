@@ -4,7 +4,7 @@ import sys, os
 from dotenv import load_dotenv
 from flask import Flask, request
 
-from user_operations import insert_user, change_password, login
+from user_service import insert_user, change_password, login
 
 
 database_pool = None
