@@ -87,7 +87,7 @@ def check_user_exists_in_database(conn, email, password):
 
     # Execute the query
     try:
-        cur.execute(query, email)
+        cur.execute(query, (email,))
         result_set = cur.fetchall()
         if len(result_set) == 0:  # If a user with the provided email could not be found
             print("No user found with the provided email address.")
