@@ -15,7 +15,23 @@ const LoginPage = () => {
   const navigation = useNavigation();
   
   const onLoginPress = (formData) => {
-    alert("login data: " + JSON.stringify(formData));
+    const url = `${IP}:${PORT}/login`;
+    fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(formData),
+    })
+      .then((res) => {
+        if (res.status == 200) {
+          navigation.navigate('Tab Navigator', { screen: 'Dashboard' });
+        } else {
+          setErrors({
+            email: 'Email or password is invalid',
+            password: 'Email or password is invalid'
+          });
+        }
+      })
+      .catch((error) => alert(error));
   };
 
   const validateDetails = () => {
