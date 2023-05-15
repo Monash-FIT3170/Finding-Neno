@@ -6,7 +6,7 @@ file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
 sys.path.append(str(package_root_directory))
 
-from db.users_operations import insert_user_to_database, change_password_in_database, check_user_exists_in_database
+from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_of_user_from_database, change_password_in_database, check_user_exists_in_database
 
 
 def insert_user(conn):
@@ -19,6 +19,32 @@ def insert_user(conn):
     insert_user_to_database(conn, email, phoneNumber, name, password)
     return "", 201
 
+def insert_missing_report(conn):
+    json_data = request.get_json(force=True)
+    print("inserting report: ", json_data)
+    author_id = None
+    pet_id = None
+    # pet_id = json_data[""].lower()
+    # last_seen = date
+    location_longitude = json_data["location_longitude"]
+    location_latitude = json_data["location_latitude"]
+    description = json_data["description"]
+
+    insert_missing_report_to_database(conn, author_id, pet_id, last_seen, location_longitude, location_latitude, description)
+    return "", 201
+
+def retrieve_missing_reports_of_user(conn):
+    user_id = 0
+
+    missing_reports = retrieve_missing_reports_of_user_from_database(conn, user_id)
+    print(missing_reports)
+
+    if missing_reports == None:
+        return "Success", 200
+    elif missing_reports.len == 0:
+        return "Empty", 204
+    else:
+        return "Fail", 400
 
 def login(conn):
     json_data = request.get_json(force=True)
