@@ -117,7 +117,7 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
 
     # Construct and INSERT query to insert this user into the DB
     query = """INSERT INTO missing_reports (pet_id, author_id, date_time, location_longitude, 
-    location_latitude, description, status) VALUES (%s, %s, %s, %s, %s, %s, FALSE);"""
+    location_latitude, description, isActive) VALUES (%s, %s, %s, %s, %s, %s, FALSE);"""
 
     # Execute the query
     try:
