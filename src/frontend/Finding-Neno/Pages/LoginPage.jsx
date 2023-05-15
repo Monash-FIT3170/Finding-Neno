@@ -57,7 +57,7 @@ const LoginPage = () => {
   }
 
   return (
-		<KeyboardAvoidingView style={{ flex: 1 }} behavior="positions">
+		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
       <Box flex={1} alignItems="center" justifyContent="center">
         <Center w="100%">
           <Box safeArea p="2" py="8" w="90%" maxW="290">
