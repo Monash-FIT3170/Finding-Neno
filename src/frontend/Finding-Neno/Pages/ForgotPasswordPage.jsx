@@ -12,7 +12,7 @@ const ForgotPasswordPage = () => {
     const navigation = useNavigation();
 
     const onForgotPasswordPress = (formData) => {
-        alert("forgot password data: " + JSON.stringify(formData));
+        //alert("forgot password data: " + JSON.stringify(formData));
       };
 
     const validateDetails = () => {
