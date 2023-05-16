@@ -12,6 +12,8 @@ export default function ProfilePage({ navigation: { navigate}}, this_user) {
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
 
+    const {ownder_id, access_token } = route.params;
+
     {/. Call a get user function ./}
 
     const [pets, setPets] = useState([]);
@@ -37,7 +39,7 @@ export default function ProfilePage({ navigation: { navigate}}, this_user) {
       }
 
       fetchOwnerPets();
-
+  
     }, []);
 
 
@@ -158,7 +160,7 @@ export default function ProfilePage({ navigation: { navigate}}, this_user) {
       <Box h="4"></Box>
 
       <Button
-        onPress={() => navigate('New Pet Page', {pet: myPet, ownerId: 1, accessToken: "PLACE ACCESS TOKEN HERE"})} 
+        onPress={() => navigate('New Pet Page', {pet: myPet, ownerId: owner_id, accessToken: access_token})} 
         width={windowWidth - 100}
         height="40px"
       >
