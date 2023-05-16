@@ -4,7 +4,7 @@ import sys, os
 from dotenv import load_dotenv
 from flask import Flask, request
 
-from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports_of_user
+from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports
 
 
 database_pool = None
@@ -59,8 +59,8 @@ def post_insert_missing_report():
     return insert_missing_report(get_connection())
 
 @app.route("/get_missing_reports", methods=["GET"])
-def get_missing_reports_of_user():
-    return retrieve_missing_reports_of_user(get_connection())
+def get_missing_reports():
+    return retrieve_missing_reports(get_connection())
     
 
 if __name__ == "__main__": 
