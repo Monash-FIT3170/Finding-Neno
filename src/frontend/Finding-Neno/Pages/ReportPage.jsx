@@ -6,7 +6,7 @@ import { IP, PORT } from "@env";
 import { validDateTime, validateCoordinates } from "./validation"
 
 const ReportPage = () => {
-  const [formData, setFormData] = useState({});
+  const [formData, setFormData] = useState({ description: '' });
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [errors, setErrors] = useState({});
   const [isCreated, setIsCreated] = useState(false);
