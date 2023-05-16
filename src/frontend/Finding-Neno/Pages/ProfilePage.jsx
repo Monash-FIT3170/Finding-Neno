@@ -1,18 +1,15 @@
-import { NavigationContainer, useNavigation  } from '@react-navigation/native';
+import { useNavigation  } from '@react-navigation/native';
 import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link} from "native-base";
 import {Dimensions} from 'react-native';
-import LinearGradient from 'react-native-linear-gradient';
 import { Color } from "../components/atomic/Theme";
 import { IP, PORT } from "@env";
 import { useEffect, useState } from 'react';
 
 
-export default function ProfilePage({ navigation: { navigate}}, this_user) {
+export default function ProfilePage({ navigation: { navigate}}, ownerId, accessToken) {
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
-
-    const {ownder_id, access_token } = route.params;
 
     {/. Call a get user function ./}
 
@@ -30,7 +27,7 @@ export default function ProfilePage({ navigation: { navigate}}, this_user) {
     useEffect(() => {
       const fetchOwnerPets = async () => {
         try {
-          const response = await fetch(`${IP}:${PORT}/get_owner_pets/1`);
+          const response = await fetch(`${IP}:${PORT}/get_owner_pets/${ownerId}`);
           const data = await response.json();
           setPets(data);
         } catch (error) {
@@ -39,12 +36,12 @@ export default function ProfilePage({ navigation: { navigate}}, this_user) {
       }
 
       fetchOwnerPets();
-  
+
     }, []);
 
 
 
-
+  
     const name = "Human Being";
     const email = "sample@student.monash.edu";
     const phone = "0412 345 678";
@@ -160,7 +157,7 @@ export default function ProfilePage({ navigation: { navigate}}, this_user) {
       <Box h="4"></Box>
 
       <Button
-        onPress={() => navigate('New Pet Page', {pet: myPet, ownerId: owner_id, accessToken: access_token})} 
+        onPress={() => navigate('New Pet Page', {pet: myPet, ownerId: ownerId, accessToken: accessToken})} 
         width={windowWidth - 100}
         height="40px"
       >
