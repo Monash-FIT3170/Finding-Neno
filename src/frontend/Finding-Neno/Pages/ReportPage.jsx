@@ -2,6 +2,8 @@ import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Keybo
 
 import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
+import { IP, PORT } from "@env";
+import { validDateTime, validateCoordinates } from "./validation"
 
 const ReportPage = () => {
   const [formData, setFormData] = useState({});
@@ -26,7 +28,8 @@ const ReportPage = () => {
     })
       .then((res) => {
         if (res.status == 201) {
-          setIsRegistered(true);
+            // Show success
+            // Clear fields?
         }
       })
       .catch((error) => alert(error));
@@ -36,17 +39,25 @@ const ReportPage = () => {
     // Validates details. If details are valid, send formData object to onCreateReportPress.
     foundErrors = {};
 
-    if (!formData.missingPet) {
-      foundErrors = {...foundErrors, missingPet: 'Please select a pet'}
+    if (!formData.missingPetId) {
+      foundErrors = {...foundErrors, missingPetId: 'Please select a pet'}
     }
 
-    if (!formData.lastSeen || formData.lastSeen == "") {
-      foundErrors = {...foundErrors, lastSeen: 'Last seen is required'}
+    if (!formData.lastSeenDateTime || formData.lastSeenDateTime == "") {
+      foundErrors = {...foundErrors, lastSeenDateTime: 'Last seen date is required'}
+    } else if (!validDateTime(formData.lastSeenDateTime)) {
+      foundErrors = {...foundErrors, lastSeenDateTime: 'Date is invalid'}
     }
 
     if (!formData.lastLocation || formData.lastLocation == "") {
       foundErrors = {...foundErrors, lastLocation: 'Last known location is required'}
+    } else if (!validateCoordinates(formData.lastLocation)) {
+      foundErrors = {...foundErrors, lastLocation: 'Location coordinates is inalid'}
     }
+
+    if (formData.description.length > 500) {
+        foundErrors = {...foundErrors, description: 'Must not exceed 500 characters'}
+      }
 
     setErrors(foundErrors);
 
@@ -75,33 +86,34 @@ const ReportPage = () => {
 
               <VStack space={3} mt="5">
 
-                <FormControl isInvalid={'missingPet' in errors}>
+                <FormControl isInvalid={'missingPetId' in errors}>
                   <FormControl.Label>Choose Pet</FormControl.Label>
                   <Select
-                    selectedValue={formData.missingPet}
-                    onValueChange={(value) => setFormData({...formData, missingPet: value})}
+                    selectedValue={formData.missingPetId}
+                    onValueChange={(value) => setFormData({...formData, missingPetId: value})}
                   >
                     {dropdownOptions.map((option, index) => (
-                      <Select.Item key={index} label={option} value={option} />
+                        // <Select.Item key={index} label={option} value={pet_id} />
+                      <Select.Item key={index} label={option} value={index+1} />
                     ))}
                   </Select>
-                  {'missingPet' in errors && <FormControl.ErrorMessage>{errors.missingPet}</FormControl.ErrorMessage>}
+                  {'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPet}</FormControl.ErrorMessage>}
                 </FormControl>
 
-                <FormControl isInvalid={'lastSeen' in errors}>
+                <FormControl isInvalid={'lastSeenDateTime' in errors}>
                   <FormControl.Label>Last Seen</FormControl.Label>
-                  <Input onChangeText={value => setFormData({...formData, lastSeen: value})} placeholder="dd/mm/yy hh:mm" />
-                  {'lastSeen' in errors && <FormControl.ErrorMessage>{errors.lastSeen}</FormControl.ErrorMessage>}
+                  <Input onChangeText={value => setFormData({...formData, lastSeenDateTime: value})} placeholder="hh:mm dd/mm/yy" />
+                  {'lastSeenDateTime' in errors && <FormControl.ErrorMessage>{errors.lastSeenDateTime}</FormControl.ErrorMessage>}
                 </FormControl>
 
                 <FormControl isInvalid={'lastLocation' in errors}>
                   <FormControl.Label>Last Known Location</FormControl.Label>
-                  <Input onChangeText={value => setFormData({...formData, lastLocation: value})} />
+                  <Input onChangeText={value => setFormData({...formData, lastLocation: value})} placeholder="long (-180, 180), lat (-90 to 90)"/>
                   {'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
                 </FormControl>
 
                 <FormControl isInvalid={'description' in errors}>
-                  <FormControl.Label>Pet Description</FormControl.Label>
+                  <FormControl.Label>Additional Info</FormControl.Label>
                   <Input onChangeText={value => setFormData({...formData, description: value})} />
                   {'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
                 </FormControl>
