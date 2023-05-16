@@ -108,20 +108,22 @@ def check_user_exists_in_database(conn, email, password):
     cur.close()
 
 
-def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id, pet_id, last_seen, location_longitude, location_latitude, description):
+def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id: str, pet_id, last_seen, location_longitude, location_latitude, description):
     """
     This function is used to add a new missing report to the database
     """
 
     cur = connection.cursor()
 
+    isActive = True
+
     # Construct and INSERT query to insert this user into the DB
     query = """INSERT INTO missing_reports (pet_id, author_id, date_time, location_longitude, 
-    location_latitude, description, isActive) VALUES (%s, %s, %s, %s, %s, %s, FALSE);"""
+    location_latitude, description, isActive) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
 
     # Execute the query
     try:
-        cur.execute(query, (author_id, pet_id, last_seen, location_longitude, location_latitude, description))
+        cur.execute(query, (author_id, pet_id, last_seen, location_longitude, location_latitude, description, isActive))
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
@@ -130,41 +132,24 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     connection.commit()
     cur.close()
 
-def retrieve_all_missing_reports_from_database(connection: psycopg2.extensions.connection):
-    """
-    This function retrieves all missing reports from the database.
-    """
 
-    cur = connection.cursor()
-
-    query = """SELECT * FROM missing_reports;"""
-
-    try:
-        cur.execute(query)
-
-        # Retrieve rows as an array
-        all_missing_reports = cur.fetchall()
-
-        print(f"Missing reports successfully retrieved")
-
-        return all_missing_reports
-    except Exception as e:
-        print(f"Error with retrieving missing reports: {e}")
-
-    cur.close()
-    return None
-
-def retrieve_missing_reports_of_user_from_database(connection: psycopg2.extensions.connection, author_id):
+def retrieve_missing_reports_from_database(connection: psycopg2.extensions.connection, author_id):
     """
     This function retrieves the missing reports of the logged in user.
     """
 
     cur = connection.cursor()
 
-    query = """SELECT * FROM missing_reports WHERE author_id = %s;"""
+    if author_id == None:
+        query = """SELECT * FROM missing_reports;"""
+    else:
+        query = """SELECT * FROM missing_reports WHERE author_id = %s;"""
 
     try:
-        cur.execute(query, (author_id, ))
+        if author_id == None:
+            cur.execute(query)
+        else:
+            cur.execute(query, (author_id, ))
 
         # Retrieve rows as an array
         missing_reports = cur.fetchall()
