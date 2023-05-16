@@ -1,4 +1,4 @@
-import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, KeyboardAvoidingView } from "native-base";
+import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
 
 import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
@@ -9,6 +9,7 @@ const ReportPage = () => {
   const [formData, setFormData] = useState({});
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [errors, setErrors] = useState({});
+  const [isCreated, setIsCreated] = useState(false);
 
   useEffect(() => {
     // Simulating asynchronous data fetching
@@ -30,6 +31,7 @@ const ReportPage = () => {
         if (res.status == 201) {
             // Show success
             // Clear fields?
+            setIsCreated(true)
         }
       })
       .catch((error) => alert(error));
@@ -72,7 +74,25 @@ const ReportPage = () => {
         <Box flex={1} alignItems="center" justifyContent="center">
           <Center w="100%">
             <Box safeArea p="2" py="8" w="90%" maxW="290">
+              
+            {
+              isCreated ? (
+                // TODO: Make this into a component called MyAlert, with headerText, bodyText, link, onLinkPress as props 
+                // this will make this file a little less messy 
+              <Alert w="100%" status="success">
+                <VStack space={1} flexShrink={1} w="100%" alignItems="center">
+                  <Alert.Icon size="md" />
+                  <Text fontSize="md" fontWeight="medium" _dark={{
+                  color: "coolGray.800"
+                }}>
+                    Your report has been created!
+                  </Text>
+                </VStack>
+              </Alert>
+
+              ) : (
                 
+              <VStack>
               <Heading
                   size="lg"
                   fontWeight="600"
@@ -123,6 +143,8 @@ const ReportPage = () => {
                 </Button>
 
               </VStack>
+              </VStack>
+              )}
             </Box>
           </Center>
         </Box>
