@@ -139,7 +139,7 @@ const ReportPage = () => {
                 </FormControl>
 
                 <Button mt="2" bgColor={Color.NENO_BLUE} onPress={validateDetails}>
-                    Submit Report
+                    Create Report
                 </Button>
 
               </VStack>
