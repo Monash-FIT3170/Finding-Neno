@@ -16,11 +16,10 @@ export default function NewPetPage( {route} ) {
 
     const navigation = useNavigation();
 
-    const { pet, ownder_id, access_token } = route.params;
+    const { pet, owner_id, access_token } = route.params;
     
-
-    const isPet = Object.keys(pet).length > 0;
-      
+    //if the pet name is empty then it is a new pet, otherwise it is an existing pet
+    const isExistingPet = pet.name != '';
 
     const [petName, setPetName] = useState(pet ? pet.name : '');
     const [petImage, setPetImage] = useState(pet ? pet.image_url : null);
@@ -72,7 +71,6 @@ export default function NewPetPage( {route} ) {
         }
       };
       
-      
 
     const handleSubmit = () => {
         /**
@@ -83,7 +81,7 @@ export default function NewPetPage( {route} ) {
         let url;
         let method;
         // check if this is a new pet or an existing pet
-        if (isPet) {
+        if (isExistingPet) {
           url = `${IP.toString()}:${PORT.toString()}/update_pet`;
           method = 'PUT';
         } else {
@@ -97,13 +95,13 @@ export default function NewPetPage( {route} ) {
             breed: petBreed,
             description: petDescription,
             image_url: petImage.toString(),
-            owner_id: ownder_id      
+            owner_id: 1      
         };
         // call the backend API
         fetch(url, {
             method: method,
             headers: {
-                'Authorization': `Bearer ${access_token}`,
+                'Authorization': `Bearer ${"fake token"}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(pet),
