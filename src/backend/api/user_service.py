@@ -1,12 +1,13 @@
 from flask import request, jsonify
 from pathlib import Path
 import sys
+import datetime
 
 file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
 sys.path.append(str(package_root_directory))
 
-from db.users_operations import insert_user_to_database, change_password_in_database, check_user_exists_in_database
+from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_of_user_from_database, retrieve_all_missing_reports_from_database, change_password_in_database, check_user_exists_in_database
 
 
 def insert_user(conn):
@@ -19,6 +20,50 @@ def insert_user(conn):
     insert_user_to_database(conn, email, phoneNumber, name, password)
     return "", 201
 
+def insert_missing_report(conn):
+    json_data = request.get_json(force=True)
+    print("inserting report: ", json_data)
+    author_id = None
+    pet_id = None
+    # pet_id = json_data["pet_id"]
+
+    year = None
+    month = None
+    day = None
+    hour = None
+    minute = None
+
+    last_seen = datetime.datetime(year, month, day, hour, minute)
+    location_longitude = json_data["location_longitude"]
+    location_latitude = json_data["location_latitude"]
+    description = json_data["description"]
+
+    insert_missing_report_to_database(conn, author_id, pet_id, last_seen, location_longitude, location_latitude, description)
+    return "", 201
+
+def retrieve_missing_reports_of_user(conn):
+    user_id = None
+    # user_id = json_data["user_id"]
+
+    missing_reports = retrieve_missing_reports_of_user_from_database(conn, user_id)
+
+    if len(missing_reports) > 0:
+        return jsonify(missing_reports), 200
+    elif len(missing_reports) == 0:
+        return "Empty", 204
+    else:
+        return "Fail", 400
+    
+def retrieve_all_missing_reports(conn):
+    all_missing_reports = retrieve_all_missing_reports_from_database(conn)
+    print(all_missing_reports)
+
+    if len(all_missing_reports) > 0:
+        return jsonify(all_missing_reports), 200
+    elif len(all_missing_reports) == 0:
+        return "Empty", 204
+    else:
+        return "Fail", 400
 
 def login(conn):
     json_data = request.get_json(force=True)
