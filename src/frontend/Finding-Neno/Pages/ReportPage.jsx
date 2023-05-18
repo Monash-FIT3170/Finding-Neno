@@ -1,7 +1,9 @@
+import React from 'react';
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
-import { ScrollView, Button } from 'native-base';
-import { Text } from 'react-native';
+import { ScrollView, Button, Box } from 'native-base';
 import {Dimensions} from 'react-native';
+
+import Report from "../components/Report";
 
 export default function ReportPage({ navigation: { navigate}}, {route}) {
     const navigation = useNavigation();
@@ -11,16 +13,29 @@ export default function ReportPage({ navigation: { navigate}}, {route}) {
 
     return (
     <ScrollView>
-        <Text>Map page</Text>
-
+    <Box alignItems="center" bg="#FFFFFF" height={windowHeight}>
+        <Box height={3}/>
         <Button
+        bg="#FA8072"
         onPress={() => navigate('New Report Page')} 
-        width={windowWidth - 100}
+        width={windowWidth - 60}
         height="40px"
         >
-        Add New Reprot
-        </Button> 
+        Add New Report
+        </Button>
+
+        <Box height={3}/>
+
+        <Report windowWidth={windowWidth}/>
+        <Box height={1}/>
+        <Report windowWidth={windowWidth}/>
+        <Box height={1}/>
+        <Report windowWidth={windowWidth}/>
+        <Box height={1}/>
+        <Report windowWidth={windowWidth}/>
+        <Box height={1}/>
         
+    </Box>
     </ScrollView>
     
     )
