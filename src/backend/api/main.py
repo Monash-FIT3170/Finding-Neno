@@ -69,7 +69,7 @@ def get_missing_reports():
         owner_id, owner_name, owner_email, owner_phone_number
     ]
     """
-    owner_id = request.args.get("name")
+    owner_id = request.args.get("owner_id")
     return jsonify(retrieve_missing_reports(get_connection(), owner_id))
     
 
