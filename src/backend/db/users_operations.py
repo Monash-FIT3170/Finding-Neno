@@ -141,9 +141,23 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
     cur = connection.cursor()
 
     if author_id == None:
-        query = """SELECT * FROM missing_reports;"""
+        query = """SELECT mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, 
+                    p.id AS pet_id, p.name AS pet_name, p.animal, p.breed,
+                    u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+                    FROM missing_reports AS mr 
+                    JOIN pets AS p ON mr.pet_id = p.id 
+                    JOIN users AS u ON mr.author_id = u.id
+                    ORDER BY mr.date_time DESC;;"""
+
     else:
-        query = """SELECT * FROM missing_reports WHERE author_id = %s;"""
+        query = """SELECT mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
+                    p.id AS pet_id, p.name AS pet_name, p.animal, p.breed,
+                    u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+                    FROM missing_reports AS mr 
+                    JOIN pets AS p ON mr.pet_id = p.id 
+                    JOIN users AS u ON mr.author_id = u.id
+                    WHERE u.id = %s
+                    ORDER BY mr.date_time DESC;;"""
 
     try:
         if author_id == None:
