@@ -18,7 +18,9 @@ const Report = ({ windowWidth }) => {
     const petName = "Peanutbutter";
     const petSpecies = "Dog";
     const petBreed = "Labrador";
-    const petDesc = "Is this a crossever episode";
+    const petDesc = "Is this a crossever episode and i am testing that this is wrapping around";
+    const petLastSeen = "3:00 pm, 18/05/2023";
+    const petLastKnownLocaton = "Clayton";
 
     const [isHidden, setIsHidden] = useState(true);
 
@@ -29,7 +31,7 @@ const Report = ({ windowWidth }) => {
 
   return (
     <View>
-    <Box width={windowWidth - 60} height={300} bg="#F5F5F5" borderRadius={15} padding={2}>
+    <Box width={windowWidth - 60} height={375} bg="#F5F5F5" borderRadius={15} padding={2}>
       <HStack alignItems="center">
           <Image 
               alignSelf="center" size={36} borderRadius={18} 
@@ -64,6 +66,52 @@ const Report = ({ windowWidth }) => {
         <Heading size = "md">
             {petName}
         </Heading>
+      </HStack>
+      <HStack justifyContent="flex-start" space={10}>
+        <VStack>
+          <Heading size = "sm" color="#B8B8B8">
+            Pet Type
+          </Heading>
+          <Text fontSize="sm">
+              {petSpecies}
+          </Text>
+        </VStack>
+
+        <VStack>
+          <Heading size = "sm" color="#B8B8B8">
+            Breed
+          </Heading>
+          <Text fontSize="sm">
+              {petBreed}
+          </Text>
+        </VStack>
+      </HStack>
+      
+      <VStack>
+          <Heading size = "sm" color="#B8B8B8">
+            Description
+          </Heading>
+          <Text fontSize="sm">
+              {petDesc}
+          </Text>
+      </VStack>
+
+      <HStack justifyContent="space-between">
+      <Heading size = "sm">
+            Last Seen
+          </Heading>
+          <Text fontSize="sm">
+              {petLastSeen}
+          </Text>
+      </HStack>
+      
+      <HStack justifyContent="space-between">
+      <Heading size = "sm">
+            Last Known Location
+          </Heading>
+          <Text fontSize="sm">
+              {petLastKnownLocaton}
+          </Text>
       </HStack>
       
     </Box>

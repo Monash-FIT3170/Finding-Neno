@@ -13,7 +13,7 @@ export default function ReportPage({ navigation: { navigate}}, {route}) {
 
     return (
     <ScrollView>
-    <Box alignItems="center" bg="#FFFFFF" height={windowHeight}>
+    <Box alignItems="center" bg="#FFFFFF">
         <Box height={3}/>
         <Button
         bg="#FA8072"
@@ -27,13 +27,13 @@ export default function ReportPage({ navigation: { navigate}}, {route}) {
         <Box height={3}/>
 
         <Report windowWidth={windowWidth}/>
-        <Box height={1}/>
+        <Box height={5}/>
         <Report windowWidth={windowWidth}/>
-        <Box height={1}/>
+        <Box height={5}/>
         <Report windowWidth={windowWidth}/>
-        <Box height={1}/>
+        <Box height={5}/>
         <Report windowWidth={windowWidth}/>
-        <Box height={1}/>
+        <Box height={5}/>
         
     </Box>
     </ScrollView>

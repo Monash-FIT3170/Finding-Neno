@@ -12,8 +12,8 @@ export default function ProfilePage({ navigation: { navigate}}) {
     const windowHeight = Dimensions.get('window').height;
 
     {/. Call a get user function ./}
-    //const ownerId = formData[0]
-    //const accessToken = formData[1]
+    const ownerId = "1"
+    const accessToken = "Fake Token"
 
     const [pets, setPets] = useState([]);
     // Set up an empty pet object here
