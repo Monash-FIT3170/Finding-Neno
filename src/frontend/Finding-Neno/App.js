@@ -33,7 +33,7 @@ export default function App() {
             name="Tab Navigator" 
             component={TabNavigator}
             options={{ headerShown: false }}
-          />       
+          />      
         </Stack.Navigator>
       </NavigationContainer>
     </NativeBaseProvider>

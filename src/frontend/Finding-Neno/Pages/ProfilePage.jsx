@@ -6,12 +6,14 @@ import { IP, PORT } from "@env";
 import { useEffect, useState } from 'react';
 
 
-export default function ProfilePage({ navigation: { navigate}}, ownerId, accessToken) {
+export default function ProfilePage({ navigation: { navigate}}, formData) {
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
 
     {/. Call a get user function ./}
+    const ownerId = formData[0]
+    const accessToken = formData[1]
 
     const [pets, setPets] = useState([]);
     // Set up an empty pet object here
