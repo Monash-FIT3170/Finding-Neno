@@ -122,7 +122,7 @@ const NewReportPage = () => {
 
                 <FormControl isInvalid={'lastSeenDateTime' in errors}>
                   <FormControl.Label>Last Seen</FormControl.Label>
-                  <Input onChangeText={value => setFormData({...formData, lastSeenDateTime: value})} placeholder="hh:mm dd/mm/yy" />
+                  <Input onChangeText={value => setFormData({...formData, lastSeenDateTime: value})} placeholder="HH:MM dd/mm/yy" />
                   {'lastSeenDateTime' in errors && <FormControl.ErrorMessage>{errors.lastSeenDateTime}</FormControl.ErrorMessage>}
                 </FormControl>
 
