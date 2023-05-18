@@ -54,7 +54,7 @@ const ReportPage = () => {
     if (!formData.lastLocation || formData.lastLocation == "") {
       foundErrors = {...foundErrors, lastLocation: 'Last known location is required'}
     } else if (!validateCoordinates(formData.lastLocation)) {
-      foundErrors = {...foundErrors, lastLocation: 'Location coordinates is inalid'}
+      foundErrors = {...foundErrors, lastLocation: 'Location coordinates is invalid'}
     }
 
     if (formData.description.length > 500) {
@@ -128,7 +128,7 @@ const ReportPage = () => {
 
                 <FormControl isInvalid={'lastLocation' in errors}>
                   <FormControl.Label>Last Known Location</FormControl.Label>
-                  <Input onChangeText={value => setFormData({...formData, lastLocation: value})} placeholder="long (-180, 180), lat (-90 to 90)"/>
+                  <Input onChangeText={value => setFormData({...formData, lastLocation: value})} placeholder="long (-180 to 180), lat (-90 to 90)"/>
                   {'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
                 </FormControl>
 
