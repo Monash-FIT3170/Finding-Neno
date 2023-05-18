@@ -133,37 +133,39 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     cur.close()
 
 
-def retrieve_missing_reports_from_database(connection: psycopg2.extensions.connection, author_id):
+def retrieve_missing_reports_from_database(connection: psycopg2.extensions.connection, owner_id):
     """
     This function retrieves the missing reports of the logged in user.
     """
 
     cur = connection.cursor()
 
-    if author_id == None:
+    print(owner_id)
+
+    if owner_id == None:
         query = """SELECT mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, 
                     p.id AS pet_id, p.name AS pet_name, p.animal, p.breed,
                     u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
-                    FROM missing_reports AS mr 
-                    JOIN pets AS p ON mr.pet_id = p.id 
+                    FROM missing_reports AS mr
+                    JOIN pets AS p ON mr.pet_id = p.id
                     JOIN users AS u ON mr.author_id = u.id
-                    ORDER BY mr.date_time DESC;;"""
+                    ORDER BY mr.date_time DESC;"""
 
     else:
         query = """SELECT mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
                     p.id AS pet_id, p.name AS pet_name, p.animal, p.breed,
                     u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
-                    FROM missing_reports AS mr 
-                    JOIN pets AS p ON mr.pet_id = p.id 
+                    FROM missing_reports AS mr
+                    JOIN pets AS p ON mr.pet_id = p.id
                     JOIN users AS u ON mr.author_id = u.id
                     WHERE u.id = %s
-                    ORDER BY mr.date_time DESC;;"""
+                    ORDER BY mr.date_time DESC;"""
 
     try:
-        if author_id == None:
+        if owner_id == None:
             cur.execute(query)
         else:
-            cur.execute(query, (author_id, ))
+            cur.execute(query, (owner_id, ))
 
         # Retrieve rows as an array
         missing_reports = cur.fetchall()
