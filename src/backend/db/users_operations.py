@@ -140,8 +140,6 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
 
     cur = connection.cursor()
 
-    print(owner_id)
-
     if owner_id == None:
         query = """SELECT mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, 
                     p.id AS pet_id, p.name AS pet_name, p.animal, p.breed,
