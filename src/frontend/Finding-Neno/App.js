@@ -24,7 +24,7 @@ export default function App() {
     <NativeBaseProvider>
       <NavigationContainer>
         {/* To skip login/signup pages, replace initalRouteName="Login" to initalRouteName="Tab Navigator" */}
-        <Stack.Navigator initialRouteName="Login">
+        <Stack.Navigator initialRouteName="Tab Navigator">
           <Stack.Screen name="Login" component={LoginPage} />
           <Stack.Screen name="Signup" component={SignupPage} /> 
           <Stack.Screen name="ForgotPassword" component={ForgotPasswordPage} />
