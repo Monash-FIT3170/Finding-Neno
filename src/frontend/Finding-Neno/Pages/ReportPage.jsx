@@ -14,7 +14,7 @@ export default function ReportPage({ navigation: { navigate}}, {route}) {
     const user = {
         name: "Human Being",
         image: "https://wallpaperaccess.com/full/317501.jpg",
-        number: "0412 345 678"
+        phone: "0412 345 678"
     };
 
     const pet1 = {
