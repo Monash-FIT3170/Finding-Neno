@@ -2,9 +2,9 @@ import psycopg2
 import psycopg2.pool
 import sys, os
 from dotenv import load_dotenv
-from flask import Flask, request
+from flask import Flask, request, jsonify
 
-from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports_of_user
+from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports
 
 
 database_pool = None
@@ -59,8 +59,18 @@ def post_insert_missing_report():
     return insert_missing_report(get_connection())
 
 @app.route("/get_missing_reports", methods=["GET"])
-def get_missing_reports_of_user():
-    return retrieve_missing_reports_of_user(get_connection())
+def get_missing_reports():
+    """
+    Returns an array of missing reports, sorted by latest to oldest, of the following format.
+
+    [
+        missing_report_id, date_time (last seen), description (additional info), location_longitude, location_latitude,
+        pet_id, pet_name, pet_animal, pet_breed, 
+        owner_id, owner_name, owner_email, owner_phone_number
+    ]
+    """
+    owner_id = request.args.get("name")
+    return jsonify(retrieve_missing_reports(get_connection(), owner_id))
     
 
 if __name__ == "__main__": 
