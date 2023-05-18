@@ -1,4 +1,4 @@
-from flask import request, jsonify
+from flask import request
 from pathlib import Path
 import sys
 import datetime
@@ -23,10 +23,10 @@ def insert_user(conn) -> Tuple[str, int]:
 def insert_missing_report(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("inserting report: ", json_data)
-    author_id = None
+    author_id = json_data["authorId"]
     pet_id = json_data["missingPetId"]
 
-    last_seen_input = json_data["lastSeen"]
+    last_seen_input = json_data["lastSeenDateTime"]
     hour, minute, day, month, year = separate_datetime(last_seen_input)
     last_seen = datetime.datetime(year, month, day, hour, minute)
 
@@ -39,6 +39,10 @@ def insert_missing_report(conn) -> Tuple[str, int]:
     return "Success", 201
 
 def separate_datetime(datetime: str) -> Tuple[int, int, int, int, int]:
+    """
+    This function takes a datetime (HH:MM dd/mm/yyyy) string and separates the hour, minute, day, month,
+    and year into individual components. 
+    """
     time, date = datetime.split(" ")
 
     hour, minute = time.split(":")
@@ -46,14 +50,14 @@ def separate_datetime(datetime: str) -> Tuple[int, int, int, int, int]:
 
     return int(hour), int(minute), int(day), int(month), int(year)
 
-def retrieve_missing_reports(conn) -> Tuple[str, int]:
-    # Retrieve logged in user id
-    user_id = None
-
-    missing_reports = retrieve_missing_reports_from_database(conn, user_id)
+def retrieve_missing_reports(conn, owner_id) -> Tuple[str, int]:
+    """
+    This function calls the function that connects to the db to retrieve missing reports of an owner.
+    """
+    missing_reports = retrieve_missing_reports_from_database(conn, owner_id)
 
     if len(missing_reports) > 0:
-        return jsonify(missing_reports), 200
+        return missing_reports, 200
     elif len(missing_reports) == 0:
         return "Empty", 204
     else:
