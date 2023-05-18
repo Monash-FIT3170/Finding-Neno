@@ -2,25 +2,25 @@ import React, {useState} from 'react';
 import { View } from 'react-native'
 import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 
-const Report = ({ windowWidth }) => {
+const Report = ({windowWidth , user, pet}) => {
   const Color = {
     NENO_BLUE: 'blue' // Example color value
   };
 
     // DUMMY DATAr
     // User Data
-    const userName = "Human Being";
-    const userImage = "https://wallpaperaccess.com/full/317501.jpg";
-    const userEmail = "sample@student.monash.edu";
+    const userName = user.name;
+    const userImage = user.image;
     const userPhoneHidden = "04xx xxx xxx";
-    const userPhone = "0412 345 678";
+    const userPhone = user.phone;
+
     // Pet Data
-    const petName = "Peanutbutter";
-    const petSpecies = "Dog";
-    const petBreed = "Labrador";
-    const petDesc = "Is this a crossever episode and i am testing that this is wrapping around";
-    const petLastSeen = "3:00 pm, 18/05/2023";
-    const petLastKnownLocaton = "Clayton";
+    const petName = pet.name;
+    const petSpecies = pet.species;
+    const petBreed = pet.breed;
+    const petDesc = pet.desc;
+    const petLastSeen = pet.lastSeen;
+    const petLastKnownLocaton = pet.lastKnownLocation;
 
     const [isHidden, setIsHidden] = useState(true);
 

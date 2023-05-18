@@ -11,6 +11,30 @@ export default function ReportPage({ navigation: { navigate}}, {route}) {
     const windowHeight = Dimensions.get('window').height;
     //const {ownerId, accessToken} = route.params;
 
+    const user = {
+        name: "Human Being",
+        image: "https://wallpaperaccess.com/full/317501.jpg",
+        number: "0412 345 678"
+    };
+
+    const pet1 = {
+        name: "Peanutbutter",
+        species: "Dog",
+        breed: "Labrador",
+        desc: "Is this a crossever episode and i am testing that this is wrapping around",
+        lastSeen: "3:00 pm, 18/05/2023",
+        lastKnownLocation: "Clayton"
+    };
+
+    const pet2 = {
+        name: "Princess Carolyn",
+        species: "Cat",
+        breed: "Manager",
+        desc: "Is this a crossever episode and i am testing that this is wrapping around",
+        lastSeen: "3:00 pm, 18/05/2023",
+        lastKnownLocation: "Clayton"
+    };
+
     return (
     <ScrollView>
     <Box alignItems="center" bg="#FFFFFF">
@@ -26,13 +50,9 @@ export default function ReportPage({ navigation: { navigate}}, {route}) {
 
         <Box height={3}/>
 
-        <Report windowWidth={windowWidth}/>
+        <Report windowWidth={windowWidth} user={user} pet={pet1}/>
         <Box height={5}/>
-        <Report windowWidth={windowWidth}/>
-        <Box height={5}/>
-        <Report windowWidth={windowWidth}/>
-        <Box height={5}/>
-        <Report windowWidth={windowWidth}/>
+        <Report windowWidth={windowWidth} user={user} pet={pet2}/>
         <Box height={5}/>
         
     </Box>
