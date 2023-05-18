@@ -14,6 +14,7 @@ import SignupPage from "./Pages/SignupPage";
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import PasswordResetPage from "./Pages/PasswordResetPage";
 import SightingsPage from "./Pages/SightingsPage";
+import NewReportPage from "./Pages/NewReportPage";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -45,7 +46,11 @@ function TabNavigator(){
     <Tab.Navigator initialRouteName="Dashboard">
       <Tab.Screen name="Dashboard" component={DashboardPage}/>
       <Tab.Screen name="Map" component={MapPage} />
-      <Tab.Screen name="Report" component={ReportPage} />
+      <Tab.Screen 
+        name="Report" 
+        component={ReportStackNavigator} 
+        options={{ headerShown: false }}
+      />
       <Tab.Screen name="Sightings" component={SightingsPage}/>
       <Tab.Screen 
         name="Profile" 
@@ -53,6 +58,15 @@ function TabNavigator(){
         options={{ headerShown: false }}
       />
     </Tab.Navigator>
+  )
+}
+
+function ReportStackNavigator() {
+  return (
+    <Stack.Navigator initialRouteName="ReportPage">
+      <Stack.Screen name="Report Page" component={ReportPage}/>
+      <Stack.Screen name="New Report Page" component={NewReportPage}/>
+    </Stack.Navigator>
   )
 }
 

@@ -7,7 +7,7 @@ const NewReportPage = ({route}) => {
   const [formData, setFormData] = useState({});
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [errors, setErrors] = useState({});
-  const {ownerId, accessToken} = route.params;
+  // const {ownerId, accessToken} = route.params;
 
   useEffect(() => {
     // Simulating asynchronous data fetching
