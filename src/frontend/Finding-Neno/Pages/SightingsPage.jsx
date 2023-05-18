@@ -3,7 +3,7 @@ import { Text } from 'react-native';
 
 export default function SightingsPage({route}) {
     const navigation = useNavigation();
-    // const {ownerId, accessToken} = route.params;
+    const {ownerId, accessToken} = route.params;
 
     return (<Text>Sightings page</Text>)
 }
