@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 
 from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, update_missing_report, archive_missing_report
-
+from pets_api import get_owner_pets_operation, get_pet_operation, insert_pet_operation, update_pet_operation, \
+    delete_pet_operation
 
 database_pool = None
 
@@ -53,6 +54,28 @@ def post_login():
 @app.route("/change_password", methods=["PATCH"])
 def post_change_password():
     return change_password(get_connection())
+
+# pet operations
+@app.route("/get_owner_pets/<owner_id>", methods=["GET"])
+def get_owner_pets(owner_id):
+    return get_owner_pets_operation(get_connection(), owner_id)
+
+@app.route("/get_pet/<pet_id>", methods=["GET"])
+def get_pet_api(pet_id):
+    return get_pet_operation(get_connection(), pet_id)
+
+@app.route("/insert_pet", methods=["POST"])
+def insert_pet():
+    return insert_pet_operation(get_connection())
+
+@app.route("/update_pet", methods=["PUT"])
+def update_pet_api():
+    return update_pet_operation(get_connection())
+
+@app.route("/delete_pet/<pet_id>", methods=["DELETE"])
+def delete_pet_api(pet_id):
+    return delete_pet_operation(get_connection(), pet_id)
+
 
 @app.route("/insert_missing_report", methods=["POST"])
 def post_insert_missing_report():
