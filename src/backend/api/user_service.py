@@ -8,7 +8,7 @@ file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
 sys.path.append(str(package_root_directory))
 
-from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_from_database, change_password_in_database, check_user_exists_in_database
+from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_from_database, change_password_in_database, check_user_exists_in_database, update_missing_report_in_database, archive_missing_report_in_database
 
 def insert_user(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
@@ -37,6 +37,35 @@ def insert_missing_report(conn) -> Tuple[str, int]:
     description = json_data["description"]
     
     insert_missing_report_to_database(conn, pet_id, author_id, last_seen, location_longitude, location_latitude, description)
+    return "Success", 201
+
+def update_missing_report(conn) -> Tuple[str, int]:
+    json_data = request.get_json(force=True)
+
+    report_id = json_data["reportId"]
+    pet_id = json_data["missingPetId"]
+    author_id = 1  # TODO
+
+    last_seen_input = json_data["lastSeen"]
+    hour, minute, day, month, year = separate_datetime(last_seen_input)
+    last_seen = datetime.datetime(year, month, day, hour, minute)
+
+    coordinates = json_data["lastLocation"]
+    location_longitude, location_latitude = coordinates.split(",")
+
+    description = json_data["description"]
+    is_active = json_data["isActive"]
+
+    update_missing_report_in_database(conn, report_id, pet_id, author_id, last_seen, location_longitude,
+                                      location_latitude, description, is_active)
+    return "Success", 201
+
+def archive_missing_report(conn) -> Tuple[str, int]:
+    json_data = request.get_json(force=True)
+    report_id = json_data["reportId"]
+    is_active = json_data["isActive"]
+
+    archive_missing_report_in_database(conn, report_id, is_active)
     return "Success", 201
 
 def separate_datetime(datetime: str) -> Tuple[int, int, int, int, int]:

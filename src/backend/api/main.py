@@ -4,7 +4,7 @@ import sys, os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 
-from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports
+from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, update_missing_report, archive_missing_report
 
 
 database_pool = None
@@ -71,6 +71,14 @@ def get_missing_reports():
     """
     owner_id = request.args.get("owner_id")
     return jsonify(retrieve_missing_reports(get_connection(), owner_id))
+
+@app.route("/update_missing_report", methods=["PUT"])
+def put_update_missing_report():
+    return update_missing_report(get_connection())
+
+@app.route("/archive_missing_report", methods=["PUT"])
+def put_archive_missing_report():
+    return archive_missing_report(get_connection())
     
 
 if __name__ == "__main__": 
