@@ -44,7 +44,7 @@ def update_missing_report(conn) -> Tuple[str, int]:
 
     report_id = json_data["reportId"]
     pet_id = json_data["missingPetId"]
-    author_id = 1  # TODO
+    author_id = json_data["ownerId"]
 
     last_seen_input = json_data["lastSeen"]
     hour, minute, day, month, year = separate_datetime(last_seen_input)
