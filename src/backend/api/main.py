@@ -3,6 +3,7 @@ import psycopg2.pool
 import sys, os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
+import flask
 
 from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports
 
@@ -36,11 +37,14 @@ def get_connection():
     else:
         return None
     
-
 @app.route("/")
 def root():
     return "Finding Neno Server is Up!"
 
+@app.route("/close-connection")
+def close_connection():
+    database_pool.closeall()
+    return "Connection closed successfully"
 
 @app.route("/insert_user", methods=["POST"])
 def post_insert_user():
