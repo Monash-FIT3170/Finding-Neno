@@ -13,10 +13,22 @@ const NewReportPage = () => {
 
   useEffect(() => {
     // Simulating asynchronous data fetching
-    setTimeout(() => {
-      const fetchedOptions = ['Pet 1', 'Pet 2', 'Add new Pet'];
-      setDropdownOptions(fetchedOptions);
-    }, 2000);
+    const fetchOwnerPets = async () => {
+      try {
+        const response = await fetch(`${IP}:${PORT}/get_owner_pets/${ownerId}`);
+        const data = await response.json();
+        setDropdownOptions = data.map(function(pet) {
+          return {
+            name: pet.name,
+            id: pet.id
+          };
+        });
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchOwnerPets();
   }, []);
 
   const onCreateReportPress = async (formData) => {
