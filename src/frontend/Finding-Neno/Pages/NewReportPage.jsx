@@ -27,7 +27,7 @@ const NewReportPage = () => {
 
   useEffect(() => {
     // Simulating asynchronous data fetching
-    ownerId = 2
+    // ownerId = 2
     const fetchOwnerPets = async () => {
       try {
         const response = await fetch(`${IP}:${PORT}/get_owner_pets/${ownerId}`);
@@ -36,7 +36,7 @@ const NewReportPage = () => {
         console.log(data)
 
         const petTuples = data.map( (pet) => [pet["name"], pet["id"]]);
-        console.log(petTuples)
+        // console.log(petTuples)
 
 
 
