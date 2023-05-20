@@ -1,65 +1,167 @@
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { Text, ScrollView, View, TouchableHighlight} from 'react-native';
-import icon from'../assets/icon.png';
+import {useNavigation} from '@react-navigation/native';
+import { Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView} from "native-base";
+import {Dimensions} from 'react-native';
+import { Color } from "../components/atomic/Theme";
+import { useState } from "react";
 
-export default function DashboardPage() {
-    const navigation = useNavigation();
-    
-    const mocks = [{ownerName: 'Sashenka', petName:'Piggy', species: 'Dog', breed: 'Shiba', isActive: true, lastLocation: 'Clayton, Victoria', lastDateTime: '12th May, 12:45pm'},
-                    {ownerName: 'Sash', petName:'Bunny', species: 'Rabbit', breed: 'RabbitBreed', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm'},
-                    {ownerName: 'Ana', petName:'Noni', species: 'Cat', breed: 'House cat', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm'},
-                    {ownerName: 'Alina', petName:'Liza', species: 'Dog', breed: 'Yorkshire Terrier', isActive: true, lastLocation: 'Berwick, Victoria', lastDateTime: '11th May, 11:00pm'},
-                    {ownerName: 'Jason', petName:'Yoyo', species: 'Bird', breed: 'Parrot', isActive: true, lastLocation: 'Glen Waverley, Victoria', lastDateTime: '11th May, 1:00pm'}
-                ]
+const DashboardPage = () => {
+  const windowWidth = Dimensions.get('window').width; 
+  const navigation = useNavigation();
+  const toast = useToast();
+
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const handlePress = () => {
+    setModalVisible(!modalVisible);
+  };
+
+  const handleConfirm = () => {
+    setModalVisible(false);
+    toast.show({
+      description: "Owner has been alerted of your sighting!",
+      placement: "top"
+    })
+  };
+
+  // TODO: replace mock data with real data 
+  const image = "https://wallpaperaccess.com/full/317501.jpg";
+  const mocks = [{ownerName: 'Sashenka', petName:'Piggy', species: 'Dog', breed: 'Shiba', isActive: true, lastLocation: 'Clayton, Victoria', lastDateTime: '12th May, 12:45pm'},
+                  {ownerName: 'Sash', petName:'Bunny', species: 'Rabbit', breed: 'RabbitBreed', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm'},
+                  {ownerName: 'Ana', petName:'Noni', species: 'Cat', breed: 'House cat', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm'},
+                  {ownerName: 'Alina', petName:'Liza', species: 'Dog', breed: 'Yorkshire Terrier', isActive: true, lastLocation: 'Berwick, Victoria', lastDateTime: '11th May, 11:00pm'},
+                  {ownerName: 'Jason', petName:'Yoyo', species: 'Bird', breed: 'Parrot', isActive: true, lastLocation: 'Glen Waverley, Victoria', lastDateTime: '11th May, 1:00pm'}
+              ]
+  const description = "cute and fluffy"
 
     return (
         <ScrollView style={{backgroundColor: 'white'}}>
+
+          {/* REPORT SIGHTING MODAL */}
+          <Modal isOpen={modalVisible} onClose={setModalVisible} >
+        <Modal.Content maxH="212">
+          <Modal.CloseButton />
+          <Modal.Header>Confirm sighting</Modal.Header>
+          <Modal.Body>
+            <ScrollView>
+              <Text>
+                Please confirm that you have made a sighting of this pet before we alert the owner.
+              </Text>
+            </ScrollView>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Group space={2}>
+              <Button variant="ghost" colorScheme="blueGray" onPress={() => {
+              setModalVisible(false);
+            }}>
+                Cancel
+              </Button>
+              <Button bgColor={Color.NENO_BLUE} onPress={() => handleConfirm()}>
+                Confirm 
+              </Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+
+
             {mocks.map(({ownerName, petName, species, breed, isActive, lastLocation, lastDateTime}) => (
-                <View style={{paddingBottom: 50}}>
-                    <View style={{
-                // backgroundColor: '#B8B8B8',
-                backgroundColor: '#edede9',
-                borderTopLeftRadius: 20,
-                borderBottomRightRadius: 20,
-              }}>
-                <View style={{ paddingTop: 10, paddingLeft: 20, paddingBottom: 5, backgroundColor: '#ced4da'}}>
-                {/* TODO: put owner profile pic here */}
-                    <Text style={{ fontSize: 30}}>{ownerName}</Text>
-                </View>
-                
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-              
-                  
-                <View style={{width: '35%', height: '100%'}}>
-                  {/* {petImage && <Image source={{ uri: petImage }} style={{ width: '100%', height: '100%', borderTopLeftRadius: 20 }} />} */}
-                </View>
-
-                <View style={{flex: 1, marginLeft: '5%', padding: '2%'}}>
-                  <Text style={{ fontSize: 30, paddingBottom: 10 }}>{petName}</Text>
-                  <View style={{flexDirection: 'row', alignItems: 'center', paddingBottom: 10}}>
-                    <View style={{flexDirection: 'column', alignItems: 'left'}}>
-                      <Text style={{ fontSize: 12, color: "#6c757d" }}>Species:</Text>
-                      <Text style={{ fontSize: 20, textTransform: 'capitalize' }}>{species}</Text>
-                    </View>
-                    <View style={{flexDirection: 'column', alignItems: 'left', marginLeft: '15%'}}>
-                      <Text style={{ fontSize: 12, color: "#6c757d" }}>Breed:</Text>
-                      <Text style={{ fontSize: 20 }}>{breed}</Text>
-                    </View>
-                  </View>
-                  <Text style={{ fontSize: 12, color: "#6c757d", marginBottom: '1%' }}>Last seen location:</Text>
-                  <Text style={{ fontSize: 14 }}>{lastLocation}</Text>
-                  <Text style={{ fontSize: 12, color: "#6c757d", marginBottom: '1%' }}>Last seen time:</Text>
-                  <Text style={{ fontSize: 14 }}>{lastDateTime}</Text>
-                </View>
-                
-              </View>
-            </View>
-
-                </View>
+               <View alignContent="center" paddingBottom={30}>
+               <Box bg="#F5F5F5" borderRadius={15} padding={5} >
+                 <HStack alignItems="center">
+                     <Image 
+                         alignSelf="center" size={36} borderRadius={18} 
+                         source={{
+                           uri: image
+                         }} 
+                         alt="User Image" 
+                     /> 
+                     <Box width={2}></Box>
+                     <VStack>
+                     <Heading size = "sm">
+                       {ownerName}
+                     </Heading>
+                     {/* <Text style={{ color: 'black' }} fontSize="xs">{isHidden ? userPhoneHidden : userPhone}</Text> */}
+                     </VStack>
+                     <Box width={70}></Box>
+                     {/* <Button onPress={toggleVisibility}>
+                     <Text>Show/Hide</Text>
+                     </Button> */}
+                 </HStack>
+           
+                 <Box height={5}></Box>
+                 <Image 
+                         alignSelf="center" width={windowWidth} height={125} borderRadius={5}
+                         source={{
+                           uri: image
+                         }} 
+                         alt="Pet Image" 
+                     /> 
+                 <Box height={2}></Box>
+                 <HStack>
+                   <Heading size = "md">
+                       {petName}
+                   </Heading>
+                 </HStack>
+                 <HStack justifyContent="flex-start" space={10}>
+                   <VStack>
+                     <Heading size = "sm" color="#B8B8B8">
+                       Pet Type
+                     </Heading>
+                     <Text fontSize="sm">
+                         {species}
+                     </Text>
+                   </VStack>
+           
+                   <VStack>
+                     <Heading size = "sm" color="#B8B8B8">
+                       Breed
+                     </Heading>
+                     <Text fontSize="sm">
+                         {breed}
+                     </Text>
+                   </VStack>
+                 </HStack>
+                 
+                 <VStack>
+                     <Heading size = "sm" color="#B8B8B8">
+                       Description
+                     </Heading>
+                     <Text fontSize="sm">
+                       {description}
+                         {/* {petDesc} */}
+                     </Text>
+                 </VStack>
+           
+                 <HStack justifyContent="space-between">
+                 <Heading size = "sm">
+                       Last Seen Time
+                     </Heading>
+                     <Text fontSize="sm">
+                         {lastDateTime}
+                     </Text>
+                 </HStack>
+                 
+                 <HStack justifyContent="space-between">
+                 <Heading size = "sm">
+                       Last Known Location
+                     </Heading>
+                     <Text fontSize="sm">
+                         {lastLocation}
+                     </Text>
+                     
+                 </HStack>
+                 <VStack>
+                 <Button mt="2" bgColor={Color.NENO_BLUE} onPress={() => handlePress()}>
+                    Report a sighting
+                  </Button>
+                 </VStack>
+                 
+                 
+               </Box>
+               </View>
             ))}
-            
-
-
         </ScrollView>
     );
 }
+
+export default DashboardPage;
