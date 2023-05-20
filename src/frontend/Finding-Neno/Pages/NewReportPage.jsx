@@ -5,6 +5,20 @@ import { Color } from "../components/atomic/Theme";
 import { IP, PORT } from "@env";
 import { validDateTime, validateCoordinates } from "./validation"
 
+const AlertComponent = ({ onClose }) => (
+  <Alert w="100%" status="success">
+    <VStack space={1} flexShrink={1} w="100%" alignItems="center">
+      <Alert.Icon size="md" />
+      <Text fontSize="md" fontWeight="medium" _dark={{ color: "coolGray.800" }}>
+        Your report has been created!
+      </Text>
+      <Button mt="2" bgColor={Color.NENO_BLUE} onPress={onClose}>
+        Close
+      </Button>
+    </VStack>
+  </Alert>
+);
+
 const NewReportPage = () => {
   const [formData, setFormData] = useState({ description: '' });
   const [dropdownOptions, setDropdownOptions] = useState([]);
@@ -81,6 +95,10 @@ const NewReportPage = () => {
     }
   }
 
+  const closeAlert = () => {
+    setIsCreated(false);
+  };
+
   return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <Box flex={1} alignItems="center" justifyContent="center">
@@ -89,18 +107,7 @@ const NewReportPage = () => {
               
             {
               isCreated ? (
-                // TODO: Make this into a component called MyAlert, with headerText, bodyText, link, onLinkPress as props 
-                // this will make this file a little less messy 
-              <Alert w="100%" status="success">
-                <VStack space={1} flexShrink={1} w="100%" alignItems="center">
-                  <Alert.Icon size="md" />
-                  <Text fontSize="md" fontWeight="medium" _dark={{
-                  color: "coolGray.800"
-                }}>
-                    Your report has been created!
-                  </Text>
-                </VStack>
-              </Alert>
+                <AlertComponent onClose={closeAlert} />
 
               ) : (
                 
