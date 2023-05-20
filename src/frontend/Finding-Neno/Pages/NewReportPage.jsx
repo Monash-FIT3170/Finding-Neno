@@ -1,4 +1,5 @@
 import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
+import DateTimePickerModal from 'react-native-modal-datetime-picker'
 
 import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
@@ -25,6 +26,9 @@ const NewReportPage = () => {
   const [errors, setErrors] = useState({});
   const [isCreated, setIsCreated] = useState(false);
 
+  const [selectedDatetime, setSelectedDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
+
   useEffect(() => {
     // Simulating asynchronous data fetching
     const fetchOwnerPets = async () => {
@@ -44,6 +48,24 @@ const NewReportPage = () => {
 
     fetchOwnerPets();
   }, []);
+
+  const handleConfirm = (date) => {
+    setShowPicker(false);
+    if (date) {
+      setSelectedDate(date);
+      setFormData({...formData, lastSeenDateTime: selectedDatetime})
+    }
+  };
+
+  const handleCancel = () => {
+    setShowPicker(false);
+  }
+
+  var maximumDate;
+  const openPicker = () => {
+    maximumDate = new Date();
+    setShowPicker(true);
+  };
 
   const onCreateReportPress = async (formData) => {
     const url = `${IP}:${PORT}/insert_missing_report`;
@@ -71,7 +93,7 @@ const NewReportPage = () => {
       foundErrors = {...foundErrors, missingPetId: 'Please select a pet'}
     }
 
-    if (!formData.lastSeenDateTime || formData.lastSeenDateTime == "") {
+    if (!formData.lastSeenDateTime || formData.lastSeenDateTime) {
       foundErrors = {...foundErrors, lastSeenDateTime: 'Last seen date is required'}
     } else if (!validDateTime(formData.lastSeenDateTime)) {
       foundErrors = {...foundErrors, lastSeenDateTime: 'Date is invalid'}
@@ -105,12 +127,6 @@ const NewReportPage = () => {
           <Center w="100%">
             <Box safeArea p="2" py="8" w="90%" maxW="290">
               
-            {
-              isCreated ? (
-                <AlertComponent onClose={closeAlert} />
-
-              ) : (
-                
               <VStack>
               <Heading
                   size="lg"
@@ -139,9 +155,10 @@ const NewReportPage = () => {
                   {'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPet}</FormControl.ErrorMessage>}
                 </FormControl>
 
-                <FormControl isInvalid={'lastSeenDateTime' in errors}>
+                <FormControl>
                   <FormControl.Label>Last Seen</FormControl.Label>
-                  <Input onChangeText={value => setFormData({...formData, lastSeenDateTime: value})} placeholder="HH:MM dd/mm/yy" />
+                  <Button onPress={openPicker}>{selectedDatetime.toLocaleTimeString() + " " + selectedDatetime.toDateString()}</Button>
+                  <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={maximumDate} onConfirm={handleConfirm} onCancel={handleCancel} />
                   {'lastSeenDateTime' in errors && <FormControl.ErrorMessage>{errors.lastSeenDateTime}</FormControl.ErrorMessage>}
                 </FormControl>
 
@@ -163,7 +180,7 @@ const NewReportPage = () => {
 
               </VStack>
               </VStack>
-              )}
+            
             </Box>
           </Center>
         </Box>
