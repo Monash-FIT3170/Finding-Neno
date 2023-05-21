@@ -145,7 +145,9 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
             Edit
           </Button>
         </HStack>
-
+        
+        <PetCard color={Color.NENO_BLUE} height={150} pet={pet1} />
+        
 
       </VStack>
       
