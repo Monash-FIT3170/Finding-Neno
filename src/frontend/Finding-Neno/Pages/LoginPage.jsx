@@ -23,7 +23,7 @@ const LoginPage = () => {
     })
       .then((res) => {
         if (res.status == 200) {
-          navigation.navigate('Tab Navigator', { screen: 'Dashboard' });
+          navigation.navigate('Tab Navigator', { screen: 'Dashboard' }, {ownerId: formData[0], accessToken: formData[1]});
         } else {
           setErrors({
             email: 'Email or password is invalid',

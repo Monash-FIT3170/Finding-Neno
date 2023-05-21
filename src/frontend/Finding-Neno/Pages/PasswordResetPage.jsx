@@ -15,10 +15,11 @@ const PasswordResetPage = () => {
 
     const navigation = useNavigation();
 
+	var resetCodeAttempts = 3;
+
     const onPasswordResetPress = (formData) => {
     	alert("password reset data: " + JSON.stringify(formData));
     };
-
 
     const validateDetails = () => {
       // Validates details. If details are valid, send formData object to onPasswordResetPress.
@@ -26,6 +27,13 @@ const PasswordResetPage = () => {
   
 		if (!formData.resetCode || formData.resetCode == "") {
 			foundErrors = {...foundErrors, resetCode: 'Reset Code is required'}
+		}
+
+		// If reset code is wrong
+		// resetCodeAttempts -= 1
+
+		if (resetCodeAttempts == 0) {
+			foundErrors = {...foundErrors, resetCode: "Out of attempts. Generate a new code"}
 		}
 	
 		if (!formData.password || formData.password == "") {

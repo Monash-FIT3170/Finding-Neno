@@ -1,16 +1,16 @@
-from flask import request, jsonify
+from flask import request
 from pathlib import Path
 import sys
 import datetime
+from typing import Tuple
 
 file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
 sys.path.append(str(package_root_directory))
 
-from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_of_user_from_database, retrieve_all_missing_reports_from_database, change_password_in_database, check_user_exists_in_database
+from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_from_database, change_password_in_database, check_user_exists_in_database
 
-
-def insert_user(conn):
+def insert_user(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("inserting user: ", json_data)
     email = json_data["email"].lower()
@@ -20,52 +20,51 @@ def insert_user(conn):
     insert_user_to_database(conn, email, phoneNumber, name, password)
     return "", 201
 
-def insert_missing_report(conn):
+def insert_missing_report(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("inserting report: ", json_data)
-    author_id = None
-    pet_id = None
-    # pet_id = json_data["pet_id"]
+    # author_id = json_data["authorId"]
+    author_id = 1
+    pet_id = json_data["missingPetId"]
 
-    year = None
-    month = None
-    day = None
-    hour = None
-    minute = None
-
+    last_seen_input = json_data["lastSeenDateTime"]
+    hour, minute, day, month, year = separate_datetime(last_seen_input)
     last_seen = datetime.datetime(year, month, day, hour, minute)
-    location_longitude = json_data["location_longitude"]
-    location_latitude = json_data["location_latitude"]
+
+    coordinates = json_data["lastLocation"]
+    location_longitude, location_latitude = coordinates.split(",")
+
     description = json_data["description"]
+    
+    insert_missing_report_to_database(conn, pet_id, author_id, last_seen, location_longitude, location_latitude, description)
+    return "Success", 201
 
-    insert_missing_report_to_database(conn, author_id, pet_id, last_seen, location_longitude, location_latitude, description)
-    return "", 201
+def separate_datetime(datetime: str) -> Tuple[int, int, int, int, int]:
+    """
+    This function takes a datetime (HH:MM dd/mm/yyyy) string and separates the hour, minute, day, month,
+    and year into individual components. 
+    """
+    time, date = datetime.split(" ")
 
-def retrieve_missing_reports_of_user(conn):
-    user_id = None
-    # user_id = json_data["user_id"]
+    hour, minute = time.split(":")
+    day, month, year = date.split("/")
 
-    missing_reports = retrieve_missing_reports_of_user_from_database(conn, user_id)
+    return int(hour), int(minute), int(day), int(month), int(year)
+
+def retrieve_missing_reports(conn, owner_id) -> Tuple[str, int]:
+    """
+    This function calls the function that connects to the db to retrieve missing reports of an owner.
+    """
+    missing_reports = retrieve_missing_reports_from_database(conn, owner_id)
 
     if len(missing_reports) > 0:
-        return jsonify(missing_reports), 200
+        return missing_reports, 200
     elif len(missing_reports) == 0:
         return "Empty", 204
     else:
         return "Fail", 400
-    
-def retrieve_all_missing_reports(conn):
-    all_missing_reports = retrieve_all_missing_reports_from_database(conn)
-    print(all_missing_reports)
 
-    if len(all_missing_reports) > 0:
-        return jsonify(all_missing_reports), 200
-    elif len(all_missing_reports) == 0:
-        return "Empty", 204
-    else:
-        return "Fail", 400
-
-def login(conn):
+def login(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("user login attempt: ", json_data)
     email = json_data["email"].lower()
@@ -77,7 +76,7 @@ def login(conn):
         return "Fail", 401
 
 
-def change_password(connection):
+def change_password(connection) -> Tuple[str, int]:
     """
     This function receives the user inputs and calls the change_password_in_database function to change password.
     """
