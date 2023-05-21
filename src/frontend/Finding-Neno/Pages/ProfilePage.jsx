@@ -4,6 +4,7 @@ import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { IP, PORT } from "@env";
 import { useEffect, useState } from 'react';
+import { PetCard } from "../components/PetCard"
 
 
 export default function ProfilePage({ navigation: { navigate}}) {
@@ -145,9 +146,7 @@ export default function ProfilePage({ navigation: { navigate}}) {
           </Button>
         </HStack>
         
-        <Box width={windowWidth - 60} height={100} bg={Color.NENO_BLUE}/>
-        <Box height={1}/>
-        <Box width={windowWidth - 60} height={100} bg={Color.NENO_BLUE}/>
+        <PetCard/>
         <Box height={1}/>
         <Box width={windowWidth - 60} height={100} bg={Color.NENO_BLUE}/>
         <Box height={1}/>
