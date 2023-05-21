@@ -1,10 +1,10 @@
-import React, {useState} from 'react';
+import React from 'react';
 import { View } from 'react-native'
-import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
+import { Image, Text } from 'native-base';
 
-const PetCard = () => {
+const PetCard = ({color, height}) => {
   const Color = {
-    NENO_BLUE: 'blue' // Example color value
+    NENO_BLUE: 'blue' 
   };
 
   const petImage = "https://wallpaperaccess.com/full/317501.jpg";
@@ -15,10 +15,11 @@ const PetCard = () => {
 
   return (
     <View style={{
-        backgroundColor: '#B8B8B8',
+        backgroundColor: color,
         borderTopLeftRadius: 20,
         borderBottomRightRadius: 20,
-      }}>
+      }}
+      height={height}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <View style={{width: '35%', height: '100%'}}>
           {petImage && <Image source={{ uri: petImage }} style={{ width: '100%', height: '100%', borderTopLeftRadius: 20 }} />}
