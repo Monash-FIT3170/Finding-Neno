@@ -2,6 +2,7 @@ import React from 'react';
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { ScrollView, Button, Box } from 'native-base';
 import {Dimensions} from 'react-native';
+import { IP, PORT } from "@env";
 
 import Report from "../components/Report";
 
@@ -11,6 +12,8 @@ export default function ReportPage({ navigation: { navigate}}, {route}) {
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
     //const {ownerId, accessToken} = route.params;
+
+    console.log("Report: " + user);
 
     const user = {
         name: "Human Being",

@@ -42,7 +42,7 @@ export default function App() {
 }
 function TabNavigator({ route }) {
   const { user } = route.params;
-  console.log(user);
+  console.log("Tab Navigator: " + user);
   
   return (
     <Tab.Navigator initialRouteName="Dashboard">
@@ -89,6 +89,7 @@ function ReportStackNavigator({route}) {
 
 function ProfileStackNavigator({route}) {
   const { user } = route.params;
+  console.log("Profile Stack Navigator: " + user);
   return (
     <Stack.Navigator initialRouteName="ProfilePage">
       <Stack.Screen name="Profile Page" component={ProfilePage} initialParams={{user}}/>

@@ -11,7 +11,8 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
     const navigation = useNavigation();
     const {user} = route.params;
 
-    console.log(user)
+    // console.log("Profile: " + user);
+    // console.log(user)
 
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
@@ -25,34 +26,11 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
     }
 
     {/. Call a get user function ./}
-    const ownerId = "1"
-    const accessToken = "Fake Token"
+    const ownerId = user["userid"];
+    const accessToken = user["accesstoken"]
 
-    const [pets, setPets] = useState([]);
-    // Set up an empty pet object here
-    const [myPet, setMyPet] = useState({
-      name: '',
-      image_url: '',
-      animal: '',
-      breed: '',
-      description: '',
-      owner_id: null,
-    });
-
-    useEffect(() => {
-      const fetchOwnerPets = async () => {
-        try {
-          const response = await fetch(`${IP}:${PORT}/get_owner_pets/${ownerId}`);
-          const data = await response.json();
-          setPets(data);
-        } catch (error) {
-          console.error(error);
-        }
-      }
-
-      fetchOwnerPets();
-
-    }, []);
+    console.log(ownerId);
+    console.log(accessToken);
 
 
     const name = "Human Being";
@@ -61,6 +39,18 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
 
     //const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
   
+    fetch(`/get_owner_pets/${ownerId}`)
+      .then(response => response.json())
+      .then(data => {
+        // Handle the response data
+        console.log(data);
+        // Perform any necessary operations with the pet data
+      })
+      .catch(error => {
+        // Handle any errors that occurred during the request
+        console.error(error);
+    });
+
 
     return (
       <ScrollView>
@@ -155,13 +145,7 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
             Edit
           </Button>
         </HStack>
-        
-        <PetCard color='#8fd6e3' height={150} pet={pet1}/>
-        <Box height={3}/>
-        <PetCard color='#8fd6e3' height={150} pet={pet1}/>
-        <Box height={3}/>
-        <PetCard color='#8fd6e3' height={150} pet={pet1}/>
-        <Box height={3}/>
+
 
       </VStack>
       

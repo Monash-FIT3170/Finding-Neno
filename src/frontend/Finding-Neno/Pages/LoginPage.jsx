@@ -31,9 +31,8 @@ const LoginPage = () => {
             accesstoken: accessToken
           }
 
-          navigation.navigate('Tab Navigator', { screen: 'Dashboard', params: {user: user} });
+          navigation.navigate('Tab Navigator', {user: user});
         } else {
-          console.log(res.status)
           setErrors({
             email: 'Email or password is invalid',
             password: 'Email or password is invalid'
