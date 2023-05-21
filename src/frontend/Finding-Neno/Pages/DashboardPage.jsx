@@ -50,8 +50,10 @@ const DashboardPage = () => {
 
       fetchAllReports();
 
+    }, []);
+
 //   // TODO: replace mock data with real data
-//   const image = "https://wallpaperaccess.com/full/317501.jpg";
+  const image = "https://wallpaperaccess.com/full/317501.jpg";
 //
 //   const mocks = [{ownerName: 'Sashenka', petName:'Piggy', species: 'Dog', breed: 'Shiba', isActive: true, lastLocation: 'Clayton, Victoria', lastDateTime: '12th May, 12:45pm', petImage: "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"},
 //                   {ownerName: 'Sash', petName:'Bunny', species: 'Rabbit', breed: 'RabbitBreed', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm', petImage: "https://cf.ltkcdn.net/small-mammals/small-mammal-names/images/orig/322037-1600x1066-white-rabbit.jpg"},
@@ -60,6 +62,8 @@ const DashboardPage = () => {
 //                   {ownerName: 'Jason', petName:'Yoyo', species: 'Bird', breed: 'Parrot', isActive: true, lastLocation: 'Glen Waverley, Victoria', lastDateTime: '11th May, 1:00pm', petImage: "https://www.thesprucepets.com/thmb/iMtikD4KQeIl73kPe134Hu2TOH4=/4933x0/filters:no_upscale():strip_icc()/blue-budgie-511936470-dff4c0952d4a45ec80f9ac7f406cc71f.jpg"}
 //               ]
 //   const description = "cute and fluffy"
+
+    const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
 
     return (
         <ScrollView style={{backgroundColor: 'white'}}>
@@ -92,7 +96,7 @@ const DashboardPage = () => {
       </Modal>
 
 
-            {reports.map(({ownerName, petName, species, breed, isActive, lastLocation, lastDateTime, petImage}) => (
+            {reports.map(({owner_name, pet_name, pet_animal, pet_breed, location_latitude, location_longitude, date_time, description}) => (
                <View alignContent="center" paddingBottom={30}>
                <Box bg="#F5F5F5" borderRadius={15} padding={5} >
                  <HStack alignItems="center">
@@ -106,7 +110,7 @@ const DashboardPage = () => {
                      <Box width={2}></Box>
                      <VStack>
                      <Heading size = "sm">
-                       {ownerName}
+                       {owner_name}
                      </Heading>
                      {/* <Text style={{ color: 'black' }} fontSize="xs">{isHidden ? userPhoneHidden : userPhone}</Text> */}
                      </VStack>
@@ -127,7 +131,7 @@ const DashboardPage = () => {
                  <Box height={2}></Box>
                  <HStack>
                    <Heading size = "md">
-                       {petName}
+                       {pet_name}
                    </Heading>
                  </HStack>
                  <HStack justifyContent="flex-start" space={10}>
@@ -136,7 +140,7 @@ const DashboardPage = () => {
                        Pet Type
                      </Heading>
                      <Text fontSize="sm">
-                         {species}
+                         {pet_animal}
                      </Text>
                    </VStack>
            
@@ -145,7 +149,7 @@ const DashboardPage = () => {
                        Breed
                      </Heading>
                      <Text fontSize="sm">
-                         {breed}
+                         {pet_breed}
                      </Text>
                    </VStack>
                  </HStack>
@@ -165,7 +169,7 @@ const DashboardPage = () => {
                        Last Seen Time
                      </Heading>
                      <Text fontSize="sm">
-                         {lastDateTime}
+                         {date_time}
                      </Text>
                  </HStack>
                  
@@ -174,7 +178,7 @@ const DashboardPage = () => {
                        Last Known Location
                      </Heading>
                      <Text fontSize="sm">
-                         {lastLocation}
+                         {location_latitude}
                      </Text>
                      
                  </HStack>
