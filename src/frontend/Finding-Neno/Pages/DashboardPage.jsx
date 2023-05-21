@@ -2,7 +2,8 @@ import {useNavigation} from '@react-navigation/native';
 import { Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView} from "native-base";
 import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
-import { useState } from "react";
+import { useEffect, useState } from 'react';
+
 
 const DashboardPage = () => {
   const windowWidth = Dimensions.get('window').width; 
@@ -23,16 +24,42 @@ const DashboardPage = () => {
     })
   };
 
-  // TODO: replace mock data with real data 
-  const image = "https://wallpaperaccess.com/full/317501.jpg";
-  
-  const mocks = [{ownerName: 'Sashenka', petName:'Piggy', species: 'Dog', breed: 'Shiba', isActive: true, lastLocation: 'Clayton, Victoria', lastDateTime: '12th May, 12:45pm', petImage: "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"},
-                  {ownerName: 'Sash', petName:'Bunny', species: 'Rabbit', breed: 'RabbitBreed', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm', petImage: "https://cf.ltkcdn.net/small-mammals/small-mammal-names/images/orig/322037-1600x1066-white-rabbit.jpg"},
-                  {ownerName: 'Ana', petName:'Noni', species: 'Cat', breed: 'House cat', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm', petImage:"https://images.saymedia-content.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:eco%2Cw_1200/MTk2NzY3MjA5ODc0MjY5ODI2/top-10-cutest-cat-photos-of-all-time.jpg"},
-                  {ownerName: 'Alina', petName:'Liza', species: 'Dog', breed: 'Yorkshire Terrier', isActive: true, lastLocation: 'Berwick, Victoria', lastDateTime: '11th May, 11:00pm', petImage: "https://www.shutterstock.com/image-photo/cute-dog-photography-yorkshire-terrier-260nw-1792147286.jpg"},
-                  {ownerName: 'Jason', petName:'Yoyo', species: 'Bird', breed: 'Parrot', isActive: true, lastLocation: 'Glen Waverley, Victoria', lastDateTime: '11th May, 1:00pm', petImage: "https://www.thesprucepets.com/thmb/iMtikD4KQeIl73kPe134Hu2TOH4=/4933x0/filters:no_upscale():strip_icc()/blue-budgie-511936470-dff4c0952d4a45ec80f9ac7f406cc71f.jpg"}
-              ]
-  const description = "cute and fluffy"
+    const [reports, setReports] = useState([]);
+    // Set up an empty report object here
+//     const [myReport, setMyReport] = useState({
+//       ownerName: '',
+//       petName: '',
+//       species: '',
+//       breed: '',
+//       isActive: false,
+//       lastLocation: '',
+//       lastDateTime: '',
+//       petImage: '',
+//     });
+
+    useEffect(() => {
+      const fetchAllReports = async () => {
+        try {
+          const response = await fetch(`${IP}:${PORT}/get_missing_reports`);
+          const data = await response.json();
+          setReports(data);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      fetchAllReports();
+
+//   // TODO: replace mock data with real data
+//   const image = "https://wallpaperaccess.com/full/317501.jpg";
+//
+//   const mocks = [{ownerName: 'Sashenka', petName:'Piggy', species: 'Dog', breed: 'Shiba', isActive: true, lastLocation: 'Clayton, Victoria', lastDateTime: '12th May, 12:45pm', petImage: "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"},
+//                   {ownerName: 'Sash', petName:'Bunny', species: 'Rabbit', breed: 'RabbitBreed', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm', petImage: "https://cf.ltkcdn.net/small-mammals/small-mammal-names/images/orig/322037-1600x1066-white-rabbit.jpg"},
+//                   {ownerName: 'Ana', petName:'Noni', species: 'Cat', breed: 'House cat', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm', petImage:"https://images.saymedia-content.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:eco%2Cw_1200/MTk2NzY3MjA5ODc0MjY5ODI2/top-10-cutest-cat-photos-of-all-time.jpg"},
+//                   {ownerName: 'Alina', petName:'Liza', species: 'Dog', breed: 'Yorkshire Terrier', isActive: true, lastLocation: 'Berwick, Victoria', lastDateTime: '11th May, 11:00pm', petImage: "https://www.shutterstock.com/image-photo/cute-dog-photography-yorkshire-terrier-260nw-1792147286.jpg"},
+//                   {ownerName: 'Jason', petName:'Yoyo', species: 'Bird', breed: 'Parrot', isActive: true, lastLocation: 'Glen Waverley, Victoria', lastDateTime: '11th May, 1:00pm', petImage: "https://www.thesprucepets.com/thmb/iMtikD4KQeIl73kPe134Hu2TOH4=/4933x0/filters:no_upscale():strip_icc()/blue-budgie-511936470-dff4c0952d4a45ec80f9ac7f406cc71f.jpg"}
+//               ]
+//   const description = "cute and fluffy"
 
     return (
         <ScrollView style={{backgroundColor: 'white'}}>
@@ -65,7 +92,7 @@ const DashboardPage = () => {
       </Modal>
 
 
-            {mocks.map(({ownerName, petName, species, breed, isActive, lastLocation, lastDateTime, petImage}) => (
+            {reports.map(({ownerName, petName, species, breed, isActive, lastLocation, lastDateTime, petImage}) => (
                <View alignContent="center" paddingBottom={30}>
                <Box bg="#F5F5F5" borderRadius={15} padding={5} >
                  <HStack alignItems="center">
