@@ -176,7 +176,7 @@ const NewReportPage = () => {
 
                 <FormControl isInvalid={'lastSeenDateTime' in errors}>
                   <FormControl.Label>Last Seen</FormControl.Label>
-                  <Button onPress={openPicker}>{`${selectedDatetime.getHours()}:${selectedDatetime.getMinutes()} ${selectedDatetime.toDateString()}`}</Button>
+                  <Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
                   <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={maximumDate} onConfirm={(date) => handleConfirm(date)} onCancel={hidePicker} />
 
                   {/* <DatePicker date={selectedDatetime} mode="datetime" placeholder="Select date and time" maxDate={maximumDate} /> */}
