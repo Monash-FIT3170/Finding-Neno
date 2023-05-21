@@ -22,9 +22,18 @@ const LoginPage = () => {
       body: JSON.stringify(formData),
     })
       .then((res) => {
-        if (res.status == 200) {
-          navigation.navigate('Tab Navigator', { screen: 'Dashboard' }, {ownerId: formData[0], accessToken: formData[1]});
+        if (res.status == 200|| res.status == 201) {
+          const accessToken = res.headers.map.accesstoken
+          const userId = res.headers.map.userid
+
+          const user = {
+            userid: userId,
+            accesstoken: accessToken
+          }
+
+          navigation.navigate('Tab Navigator', { screen: 'Dashboard', params: {user: user} });
         } else {
+          console.log(res.status)
           setErrors({
             email: 'Email or password is invalid',
             password: 'Email or password is invalid'

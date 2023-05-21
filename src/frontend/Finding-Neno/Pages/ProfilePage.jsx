@@ -1,4 +1,4 @@
-import { useNavigation  } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link} from "native-base";
 import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
@@ -7,10 +7,22 @@ import { useEffect, useState } from 'react';
 import PetCard  from "../components/PetCard";
 
 
-export default function ProfilePage({ navigation: { navigate}}) {
+export default function ProfilePage({ navigation: { navigate}, route}) {
     const navigation = useNavigation();
+    const {user} = route.params;
+
+    console.log(user)
+
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
+
+    const pet1 = {
+      image: "https://wallpaperaccess.com/full/317501.jpg",
+      name: "Fluffy",
+      type: "Rabbit",
+      breed: "Angora",
+      description: "A fluffy rabbit",
+    }
 
     {/. Call a get user function ./}
     const ownerId = "1"
@@ -43,8 +55,6 @@ export default function ProfilePage({ navigation: { navigate}}) {
     }, []);
 
 
-
-  
     const name = "Human Being";
     const email = "sample@student.monash.edu";
     const phone = "0412 345 678";
@@ -146,11 +156,11 @@ export default function ProfilePage({ navigation: { navigate}}) {
           </Button>
         </HStack>
         
-        <PetCard color='#8fd6e3' height={175}/>
+        <PetCard color='#8fd6e3' height={150} pet={pet1}/>
         <Box height={3}/>
-        <PetCard color='#8fd6e3' height={175}/>
+        <PetCard color='#8fd6e3' height={150} pet={pet1}/>
         <Box height={3}/>
-        <PetCard color='#8fd6e3' height={175}/>
+        <PetCard color='#8fd6e3' height={150} pet={pet1}/>
         <Box height={3}/>
 
       </VStack>

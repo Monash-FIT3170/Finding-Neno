@@ -2,16 +2,16 @@ import React from 'react';
 import { View } from 'react-native'
 import { Image, Text } from 'native-base';
 
-const PetCard = ({color, height}) => {
+const PetCard = ({color, height, pet}) => {
   const Color = {
     NENO_BLUE: 'blue' 
   };
 
-  const petImage = "https://wallpaperaccess.com/full/317501.jpg";
-  const petName = "Test";
-  const petType = "Test";
-  const petBreed = "Test";
-  const petDescription = "Test";
+  const petImage = pet.image;
+  const petName = pet.name;
+  const petType = pet.type;
+  const petBreed = pet.breed;
+  const petDescription = pet.description;
 
   return (
     <View style={{

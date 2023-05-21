@@ -48,7 +48,13 @@ def post_insert_user():
 
 @app.route("/login", methods=["POST"])
 def post_login():
-    return login(get_connection())
+    data = login(get_connection())
+    headers = {
+        'userId': data[2],
+        'accessToken': data[3]
+    }
+
+    return data[0], data[1], headers
 
 @app.route("/change_password", methods=["PATCH"])
 def post_change_password():

@@ -71,7 +71,8 @@ def login(conn) -> Tuple[str, int]:
     password = json_data["password"]
     user_exists = check_user_exists_in_database(conn, email, password)
     if user_exists:
-        return "Success", 200  # TODO: Return Access Token
+        user_id, access_token = user_exists  # Unpack the tuple
+        return "Success", 200, user_id, access_token  # Return user_id and access_token
     else:
         return "Fail", 401
 

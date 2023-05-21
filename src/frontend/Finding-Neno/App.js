@@ -25,7 +25,7 @@ export default function App() {
     <NativeBaseProvider>
       <NavigationContainer>
         {/* To skip login/signup pages, replace initalRouteName="Login" to initalRouteName="Tab Navigator" */}
-        <Stack.Navigator initialRouteName="Tab Navigator">
+        <Stack.Navigator initialRouteName="Login">
           <Stack.Screen name="Login" component={LoginPage} />
           <Stack.Screen name="Signup" component={SignupPage} /> 
           <Stack.Screen name="ForgotPassword" component={ForgotPasswordPage} />
@@ -40,40 +40,58 @@ export default function App() {
     </NativeBaseProvider>
   );
 }
-
-function TabNavigator(){
-  return(
+function TabNavigator({ route }) {
+  const { user } = route.params;
+  console.log(user);
+  
+  return (
     <Tab.Navigator initialRouteName="Dashboard">
-      <Tab.Screen name="Dashboard" component={DashboardPage}/>
-      <Tab.Screen name="Map" component={MapPage} />
-      <Tab.Screen 
-        name="Report" 
-        component={ReportStackNavigator} 
+      <Tab.Screen
+        name="Dashboard"
+        component={DashboardPage}
+        initialParams={{ user }}
+      />
+      <Tab.Screen
+        name="Map"
+        component={MapPage}
+        initialParams={{ user }}
+      />
+      <Tab.Screen
+        name="Report"
+        component={ReportStackNavigator}
+        initialParams={{ user }}
         options={{ headerShown: false }}
       />
-      <Tab.Screen name="Sightings" component={SightingsPage}/>
-      <Tab.Screen 
-        name="Profile" 
-        component={ProfileStackNavigator} 
+      <Tab.Screen
+        name="Sightings"
+        component={SightingsPage}
+        initialParams={{ user }}
+      />
+      <Tab.Screen
+        name="Profile"
+        component={ProfileStackNavigator}
+        initialParams={{ user }}
         options={{ headerShown: false }}
       />
     </Tab.Navigator>
-  )
+  );
 }
 
-function ReportStackNavigator() {
+function ReportStackNavigator({route}) {
+  const { user } = route.params;
   return (
     <Stack.Navigator initialRouteName="ReportPage">
-      <Stack.Screen name="Report Page" component={ReportPage}/>
+      <Stack.Screen name="Report Page" component={ReportPage} initialParams={{user}}/>
       <Stack.Screen name="New Report Page" component={NewReportPage}/>
     </Stack.Navigator>
   )
 }
 
-function ProfileStackNavigator() {
+function ProfileStackNavigator({route}) {
+  const { user } = route.params;
   return (
     <Stack.Navigator initialRouteName="ProfilePage">
-      <Stack.Screen name="Profile Page" component={ProfilePage}/>
+      <Stack.Screen name="Profile Page" component={ProfilePage} initialParams={{user}}/>
       <Stack.Screen name="New Pet Page" component={NewPetPage}/>
     </Stack.Navigator>
   )

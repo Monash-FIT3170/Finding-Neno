@@ -3,7 +3,9 @@ import { Text } from 'react-native';
 
 export default function DashboardPage({route}) {
     const navigation = useNavigation();
-    //const {ownerId, accessToken} = route.params;
+    const {user} = route.params;
+
+    console.log(user)
 
     return (<Text>Dashboard page</Text>)
 }

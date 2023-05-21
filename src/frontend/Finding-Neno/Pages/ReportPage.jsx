@@ -6,6 +6,7 @@ import {Dimensions} from 'react-native';
 import Report from "../components/Report";
 
 export default function ReportPage({ navigation: { navigate}}, {route}) {
+    console.log(IP, PORT)
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
