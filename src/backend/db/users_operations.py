@@ -132,6 +132,51 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     connection.commit()
     cur.close()
 
+def update_missing_report_in_database(connection: psycopg2.extensions.connection, report_id,  pet_id, author_id,
+                                      last_seen, location_longitude, location_latitude, description, isActive):
+    """
+    This function is used to update a missing report in the database
+    """
+
+    cur = connection.cursor()
+
+    # UPDATE query to update missing report
+    query = """UPDATE missing_reports SET pet_id = %s, author_id = %s, date_time = %s, location_longitude = %s, 
+        location_latitude = %s, description = %s, isActive = %s WHERE id = %s;"""
+
+    # Execute the query
+    try:
+        cur.execute(query, (pet_id, author_id, last_seen, location_longitude, location_latitude, description, isActive, report_id))
+        print(f"Query executed successfully: {query}")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Commit the change and close the connection
+    connection.commit()
+    cur.close()
+
+
+def archive_missing_report_in_database(connection: psycopg2.extensions.connection, reportId, isActive):
+    """
+    This function is used to archive a missing report
+    """
+
+    cur = connection.cursor()
+
+    # UPDATE query to archive report
+    query = """UPDATE missing_reports SET isActive = %s WHERE id = %s;"""
+
+    # Execute the query
+    try:
+        cur.execute(query, (isActive, reportId))
+        print(f"Query executed successfully: {query}")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Commit the change and close the connection
+    connection.commit()
+    cur.close()
+
 
 def retrieve_missing_reports_from_database(connection: psycopg2.extensions.connection, owner_id):
     """

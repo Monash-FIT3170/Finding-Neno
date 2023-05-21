@@ -3,9 +3,11 @@ import psycopg2.pool
 import sys, os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
+import flask
 
-from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports
-
+from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, update_missing_report, archive_missing_report
+from pets_api import get_owner_pets_operation, get_pet_operation, insert_pet_operation, update_pet_operation, \
+    delete_pet_operation
 
 database_pool = None
 
@@ -36,11 +38,14 @@ def get_connection():
     else:
         return None
     
-
 @app.route("/")
 def root():
     return "Finding Neno Server is Up!"
 
+@app.route("/close-connection")
+def close_connection():
+    database_pool.closeall()
+    return "Connection closed successfully"
 
 @app.route("/insert_user", methods=["POST"])
 def post_insert_user():
@@ -60,6 +65,28 @@ def post_login():
 def post_change_password():
     return change_password(get_connection())
 
+# pet operations
+@app.route("/get_owner_pets/<owner_id>", methods=["GET"])
+def get_owner_pets(owner_id):
+    return get_owner_pets_operation(get_connection(), owner_id)
+
+@app.route("/get_pet/<pet_id>", methods=["GET"])
+def get_pet_api(pet_id):
+    return get_pet_operation(get_connection(), pet_id)
+
+@app.route("/insert_pet", methods=["POST"])
+def insert_pet():
+    return insert_pet_operation(get_connection())
+
+@app.route("/update_pet", methods=["PUT"])
+def update_pet_api():
+    return update_pet_operation(get_connection())
+
+@app.route("/delete_pet/<pet_id>", methods=["DELETE"])
+def delete_pet_api(pet_id):
+    return delete_pet_operation(get_connection(), pet_id)
+
+
 @app.route("/insert_missing_report", methods=["POST"])
 def post_insert_missing_report():
     return insert_missing_report(get_connection())
@@ -77,6 +104,14 @@ def get_missing_reports():
     """
     owner_id = request.args.get("owner_id")
     return jsonify(retrieve_missing_reports(get_connection(), owner_id))
+
+@app.route("/update_missing_report", methods=["PUT"])
+def put_update_missing_report():
+    return update_missing_report(get_connection())
+
+@app.route("/archive_missing_report", methods=["PUT"])
+def put_archive_missing_report():
+    return archive_missing_report(get_connection())
     
 
 if __name__ == "__main__": 

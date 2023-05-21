@@ -27,16 +27,20 @@ const NewReportPage = () => {
 
   useEffect(() => {
     // Simulating asynchronous data fetching
+    // ownerId = 2
     const fetchOwnerPets = async () => {
       try {
         const response = await fetch(`${IP}:${PORT}/get_owner_pets/${ownerId}`);
         const data = await response.json();
-        setDropdownOptions = data.map(function(pet) {
-          return {
-            name: pet.name,
-            id: pet.id
-          };
-        });
+        console.log("here")
+        console.log(data)
+
+        const petTuples = data.map( (pet) => [pet["name"], pet["id"]]);
+        // console.log(petTuples)
+
+
+
+        setDropdownOptions(petTuples)
       } catch (error) {
         console.error(error);
       }
@@ -67,7 +71,7 @@ const NewReportPage = () => {
     // Validates details. If details are valid, send formData object to onCreateReportPress.
     foundErrors = {};
 
-    if (!formData.missingPetId) {
+    if (!formData.missingPetId || formData.missingPetId == "") {
       foundErrors = {...foundErrors, missingPetId: 'Please select a pet'}
     }
 
@@ -127,16 +131,16 @@ const NewReportPage = () => {
 
                 <FormControl isInvalid={'missingPetId' in errors}>
                   <FormControl.Label>Choose Pet</FormControl.Label>
-                  <Select
+                  <Select placeholder="Select a pet"
                     selectedValue={formData.missingPetId}
                     onValueChange={(value) => setFormData({...formData, missingPetId: value})}
                   >
+                    <Select.Item label="Select a pet" value="" disabled hidden />
                     {dropdownOptions.map((option, index) => (
-                        // <Select.Item key={index} label={option} value={pet_id} />
-                      <Select.Item key={index} label={option} value={index+1} />
+                      <Select.Item key={index} label={option[0]} value={option[1]} />
                     ))}
                   </Select>
-                  {'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPet}</FormControl.ErrorMessage>}
+                  {'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPetId}</FormControl.ErrorMessage>}
                 </FormControl>
 
                 <FormControl isInvalid={'lastSeenDateTime' in errors}>
