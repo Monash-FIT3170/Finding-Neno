@@ -2,7 +2,9 @@ import {useNavigation} from '@react-navigation/native';
 import { Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView} from "native-base";
 import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
-import { useState } from "react";
+import { useEffect, useState } from 'react';
+import { IP, PORT } from "@env";
+
 
 const DashboardPage = () => {
   const windowWidth = Dimensions.get('window').width; 
@@ -22,17 +24,40 @@ const DashboardPage = () => {
       placement: "top"
     })
   };
+    // TODO: change report structure to be an array of dictionaries? Refer to mock data that is commented out for desired structure
+    const [reports, setReports] = useState([]);
 
-  // TODO: replace mock data with real data 
+    useEffect(() => {
+      const fetchAllReports = async () => {
+        try {
+          const response = await fetch(`${IP}:${PORT}/get_missing_reports`);
+          const data = await response.json();
+          setReports(data[0]);
+        } catch (error) {
+          console.error(error);
+        }
+      }
+
+      fetchAllReports();
+
+    }, []);
+   // TODO: replace mock data with real data
   const image = "https://wallpaperaccess.com/full/317501.jpg";
-  
-  const mocks = [{ownerName: 'Sashenka', petName:'Piggy', species: 'Dog', breed: 'Shiba', isActive: true, lastLocation: 'Clayton, Victoria', lastDateTime: '12th May, 12:45pm', petImage: "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"},
-                  {ownerName: 'Sash', petName:'Bunny', species: 'Rabbit', breed: 'RabbitBreed', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm', petImage: "https://cf.ltkcdn.net/small-mammals/small-mammal-names/images/orig/322037-1600x1066-white-rabbit.jpg"},
-                  {ownerName: 'Ana', petName:'Noni', species: 'Cat', breed: 'House cat', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm', petImage:"https://images.saymedia-content.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:eco%2Cw_1200/MTk2NzY3MjA5ODc0MjY5ODI2/top-10-cutest-cat-photos-of-all-time.jpg"},
-                  {ownerName: 'Alina', petName:'Liza', species: 'Dog', breed: 'Yorkshire Terrier', isActive: true, lastLocation: 'Berwick, Victoria', lastDateTime: '11th May, 11:00pm', petImage: "https://www.shutterstock.com/image-photo/cute-dog-photography-yorkshire-terrier-260nw-1792147286.jpg"},
-                  {ownerName: 'Jason', petName:'Yoyo', species: 'Bird', breed: 'Parrot', isActive: true, lastLocation: 'Glen Waverley, Victoria', lastDateTime: '11th May, 1:00pm', petImage: "https://www.thesprucepets.com/thmb/iMtikD4KQeIl73kPe134Hu2TOH4=/4933x0/filters:no_upscale():strip_icc()/blue-budgie-511936470-dff4c0952d4a45ec80f9ac7f406cc71f.jpg"}
-              ]
-  const description = "cute and fluffy"
+//
+//   const mocks = [{ownerName: 'Sashenka', petName:'Piggy', species: 'Dog', breed: 'Shiba', isActive: true, lastLocation: 'Clayton, Victoria', lastDateTime: '12th May, 12:45pm', petImage: "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"},
+//                   {ownerName: 'Sash', petName:'Bunny', species: 'Rabbit', breed: 'RabbitBreed', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm', petImage: "https://cf.ltkcdn.net/small-mammals/small-mammal-names/images/orig/322037-1600x1066-white-rabbit.jpg"},
+//                   {ownerName: 'Ana', petName:'Noni', species: 'Cat', breed: 'House cat', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm', petImage:"https://images.saymedia-content.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:eco%2Cw_1200/MTk2NzY3MjA5ODc0MjY5ODI2/top-10-cutest-cat-photos-of-all-time.jpg"},
+//                   {ownerName: 'Alina', petName:'Liza', species: 'Dog', breed: 'Yorkshire Terrier', isActive: true, lastLocation: 'Berwick, Victoria', lastDateTime: '11th May, 11:00pm', petImage: "https://www.shutterstock.com/image-photo/cute-dog-photography-yorkshire-terrier-260nw-1792147286.jpg"},
+//                   {ownerName: 'Jason', petName:'Yoyo', species: 'Bird', breed: 'Parrot', isActive: true, lastLocation: 'Glen Waverley, Victoria', lastDateTime: '11th May, 1:00pm', petImage: "https://www.thesprucepets.com/thmb/iMtikD4KQeIl73kPe134Hu2TOH4=/4933x0/filters:no_upscale():strip_icc()/blue-budgie-511936470-dff4c0952d4a45ec80f9ac7f406cc71f.jpg"}
+//               ]
+//   const description = "cute and fluffy"
+
+    const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
+
+    reports.map((report) => {
+      console.log("TESTING", report)
+      }  
+    );
 
     return (
         <ScrollView style={{backgroundColor: 'white'}}>
@@ -65,8 +90,9 @@ const DashboardPage = () => {
       </Modal>
 
 
-            {mocks.map(({ownerName, petName, species, breed, isActive, lastLocation, lastDateTime, petImage}) => (
-               <View alignContent="center" paddingBottom={30}>
+            {/* {reports.map(({missing_report_id, owner_name, pet_name, pet_animal, pet_breed, location_latitude, location_longitude, date_time, description}) => ( */}
+              {reports.map((report, index) => (
+               <View key={index} alignContent="center" paddingBottom={30}>
                <Box bg="#F5F5F5" borderRadius={15} padding={5} >
                  <HStack alignItems="center">
                      <Image 
@@ -79,7 +105,7 @@ const DashboardPage = () => {
                      <Box width={2}></Box>
                      <VStack>
                      <Heading size = "sm">
-                       {ownerName}
+                       {report[10]}
                      </Heading>
                      {/* <Text style={{ color: 'black' }} fontSize="xs">{isHidden ? userPhoneHidden : userPhone}</Text> */}
                      </VStack>
@@ -100,7 +126,7 @@ const DashboardPage = () => {
                  <Box height={2}></Box>
                  <HStack>
                    <Heading size = "md">
-                       {petName}
+                   {report[6]}
                    </Heading>
                  </HStack>
                  <HStack justifyContent="flex-start" space={10}>
@@ -109,7 +135,7 @@ const DashboardPage = () => {
                        Pet Type
                      </Heading>
                      <Text fontSize="sm">
-                         {species}
+                     {report[7]}
                      </Text>
                    </VStack>
            
@@ -118,7 +144,7 @@ const DashboardPage = () => {
                        Breed
                      </Heading>
                      <Text fontSize="sm">
-                         {breed}
+                     {report[7]}
                      </Text>
                    </VStack>
                  </HStack>
@@ -128,8 +154,7 @@ const DashboardPage = () => {
                        Description
                      </Heading>
                      <Text fontSize="sm">
-                       {description}
-                         {/* {petDesc} */}
+                     {report[2]}
                      </Text>
                  </VStack>
            
@@ -138,7 +163,7 @@ const DashboardPage = () => {
                        Last Seen Time
                      </Heading>
                      <Text fontSize="sm">
-                         {lastDateTime}
+                     {report[1]}
                      </Text>
                  </HStack>
                  
@@ -147,7 +172,11 @@ const DashboardPage = () => {
                        Last Known Location
                      </Heading>
                      <Text fontSize="sm">
-                         {lastLocation}
+                       Longitude: 
+                     {report[3]}
+                     , 
+                     Latitude:
+                     {report[4]}
                      </Text>
                      
                  </HStack>
