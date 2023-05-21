@@ -26,7 +26,7 @@ const PetCard = ({color, height}) => {
         </View>
 
         <View style={{flex: 1, marginLeft: '5%', padding: '2%'}}>
-          <Text style={{ fontSize: 30, paddingBottom: 10 }}>{petName}</Text>
+          <Text style={{ fontSize: 30, paddingBottom: 10, paddingTop: 10 }}>{petName}</Text>
           <View style={{flexDirection: 'row', alignItems: 'center', paddingBottom: 10}}>
             <View style={{flexDirection: 'column', alignItems: 'left'}}>
               <Text style={{ fontSize: 12, color: "#F2F2F7" }}>Species:</Text>
