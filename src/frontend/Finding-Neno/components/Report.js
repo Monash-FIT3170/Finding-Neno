@@ -6,8 +6,6 @@ const Report = ({windowWidth , user, pet}) => {
   const Color = {
     NENO_BLUE: 'blue' // Example color value
   };
-
-    // DUMMY DATAr
     // User Data
     const userName = user.name;
     const userImage = user.image;

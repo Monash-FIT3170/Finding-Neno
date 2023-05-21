@@ -4,6 +4,7 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
+import { IP, PORT } from "@env";
 
 const ForgotPasswordPage = () => {
     const [formData, setFormData] = useState({});

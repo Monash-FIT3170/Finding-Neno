@@ -6,11 +6,15 @@ import { useEffect, useState } from 'react';
 import { IP, PORT } from "@env";
 
 
-const DashboardPage = () => {
+const DashboardPage = ({route}) => {
   const windowWidth = Dimensions.get('window').width; 
   const navigation = useNavigation();
   const toast = useToast();
+  
+  const {user} = route.params;
 
+  console.log(user
+  
   const [modalVisible, setModalVisible] = useState(false);
 
   const handlePress = () => {

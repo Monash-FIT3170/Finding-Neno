@@ -1,9 +1,11 @@
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Text } from 'react-native';
+import { IP, PORT } from "@env";
 
-export default function MapPage({route}) {
+export default function MapPage(user) {
     const navigation = useNavigation();
-    // const {ownerId, accessToken} = route.params;
+
+    console.log("Map: " + user);
 
     return (<Text>Map page</Text>)
 }

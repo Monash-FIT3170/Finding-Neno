@@ -18,6 +18,7 @@ const SignupPage = () => {
 
   const onSignupPress = async (formData) => {
     const url = `${IP}:${PORT}/insert_user`;
+    console.log(url)
  
     fetch(url, {
       method: "POST",
