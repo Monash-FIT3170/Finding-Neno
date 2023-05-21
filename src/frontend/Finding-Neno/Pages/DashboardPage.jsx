@@ -3,6 +3,7 @@ import { Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack,
 import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
+import { IP, PORT } from "@env";
 
 
 const DashboardPage = () => {
@@ -23,26 +24,15 @@ const DashboardPage = () => {
       placement: "top"
     })
   };
-
+    // TODO: change report structure to be an array of dictionaries? Refer to mock data that is commented out for desired structure
     const [reports, setReports] = useState([]);
-    // Set up an empty report object here
-//     const [myReport, setMyReport] = useState({
-//       ownerName: '',
-//       petName: '',
-//       species: '',
-//       breed: '',
-//       isActive: false,
-//       lastLocation: '',
-//       lastDateTime: '',
-//       petImage: '',
-//     });
 
     useEffect(() => {
       const fetchAllReports = async () => {
         try {
           const response = await fetch(`${IP}:${PORT}/get_missing_reports`);
           const data = await response.json();
-          setReports(data);
+          setReports(data[0]);
         } catch (error) {
           console.error(error);
         }
@@ -51,8 +41,7 @@ const DashboardPage = () => {
       fetchAllReports();
 
     }, []);
-
-//   // TODO: replace mock data with real data
+   // TODO: replace mock data with real data
   const image = "https://wallpaperaccess.com/full/317501.jpg";
 //
 //   const mocks = [{ownerName: 'Sashenka', petName:'Piggy', species: 'Dog', breed: 'Shiba', isActive: true, lastLocation: 'Clayton, Victoria', lastDateTime: '12th May, 12:45pm', petImage: "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"},
@@ -64,6 +53,11 @@ const DashboardPage = () => {
 //   const description = "cute and fluffy"
 
     const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
+
+    reports.map((report) => {
+      console.log("TESTING", report)
+      }  
+    );
 
     return (
         <ScrollView style={{backgroundColor: 'white'}}>
@@ -96,8 +90,9 @@ const DashboardPage = () => {
       </Modal>
 
 
-            {reports.map(({owner_name, pet_name, pet_animal, pet_breed, location_latitude, location_longitude, date_time, description}) => (
-               <View alignContent="center" paddingBottom={30}>
+            {/* {reports.map(({missing_report_id, owner_name, pet_name, pet_animal, pet_breed, location_latitude, location_longitude, date_time, description}) => ( */}
+              {reports.map((report, index) => (
+               <View key={index} alignContent="center" paddingBottom={30}>
                <Box bg="#F5F5F5" borderRadius={15} padding={5} >
                  <HStack alignItems="center">
                      <Image 
@@ -110,7 +105,7 @@ const DashboardPage = () => {
                      <Box width={2}></Box>
                      <VStack>
                      <Heading size = "sm">
-                       {owner_name}
+                       {report[10]}
                      </Heading>
                      {/* <Text style={{ color: 'black' }} fontSize="xs">{isHidden ? userPhoneHidden : userPhone}</Text> */}
                      </VStack>
@@ -131,7 +126,7 @@ const DashboardPage = () => {
                  <Box height={2}></Box>
                  <HStack>
                    <Heading size = "md">
-                       {pet_name}
+                   {report[6]}
                    </Heading>
                  </HStack>
                  <HStack justifyContent="flex-start" space={10}>
@@ -140,7 +135,7 @@ const DashboardPage = () => {
                        Pet Type
                      </Heading>
                      <Text fontSize="sm">
-                         {pet_animal}
+                     {report[7]}
                      </Text>
                    </VStack>
            
@@ -149,7 +144,7 @@ const DashboardPage = () => {
                        Breed
                      </Heading>
                      <Text fontSize="sm">
-                         {pet_breed}
+                     {report[7]}
                      </Text>
                    </VStack>
                  </HStack>
@@ -159,8 +154,7 @@ const DashboardPage = () => {
                        Description
                      </Heading>
                      <Text fontSize="sm">
-                       {description}
-                         {/* {petDesc} */}
+                     {report[2]}
                      </Text>
                  </VStack>
            
@@ -169,7 +163,7 @@ const DashboardPage = () => {
                        Last Seen Time
                      </Heading>
                      <Text fontSize="sm">
-                         {date_time}
+                     {report[1]}
                      </Text>
                  </HStack>
                  
@@ -178,7 +172,11 @@ const DashboardPage = () => {
                        Last Known Location
                      </Heading>
                      <Text fontSize="sm">
-                         {location_latitude}
+                       Longitude: 
+                     {report[3]}
+                     , 
+                     Latitude:
+                     {report[4]}
                      </Text>
                      
                  </HStack>
