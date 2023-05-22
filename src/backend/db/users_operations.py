@@ -94,7 +94,8 @@ def check_user_exists_in_database(conn, email, password):
             return False
         else: # If user is found
             user = result_set[0]
-            if user[4] == hashed_pass:  # Check if password and salt matches
+            
+            if salt_and_hash(user[4]) == hashed_pass:  # Check if password and salt matches
                 print("User found with the provided email address and matching password.")
                 return user[0], user[5]# returns user[0] (user_id), and user[5] (access_token)
             else:

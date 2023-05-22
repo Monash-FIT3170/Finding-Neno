@@ -54,6 +54,7 @@ def post_insert_user():
 @app.route("/login", methods=["POST"])
 def post_login():
     data = login(get_connection())
+    print(data)
     headers = {
         'userId': data[2],
         'accessToken': data[3]

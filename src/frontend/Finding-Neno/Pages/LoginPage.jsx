@@ -16,6 +16,7 @@ const LoginPage = () => {
   
   const onLoginPress = (formData) => {
     const url = `${IP}:${PORT}/login`;
+    console.log(url);
     fetch(url, {
       method: "POST",
       headers: { "Content-Type": "application/json" },

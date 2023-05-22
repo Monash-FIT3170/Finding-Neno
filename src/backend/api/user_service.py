@@ -98,6 +98,7 @@ def login(conn) -> Tuple[str, int]:
     print("user login attempt: ", json_data)
     email = json_data["email"].lower()
     password = json_data["password"]
+    print(password)
     user_exists = check_user_exists_in_database(conn, email, password)
     if user_exists:
         user_id, access_token = user_exists  # Unpack the tuple

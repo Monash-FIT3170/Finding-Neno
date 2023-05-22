@@ -13,6 +13,14 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
 
     // console.log("Profile: " + user);
     // console.log(user)
+    const myPet = {
+      name: '',
+      image_url: '',
+      animal: '',
+      breed: '',
+      description: '',
+      owner_id: null,
+    };
 
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
