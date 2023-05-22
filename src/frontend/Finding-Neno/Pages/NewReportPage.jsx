@@ -48,21 +48,15 @@ const NewReportPage = ({ navigation: { navigate}, route}) => {
         const response = await fetch(url, {
           headers: { 
             method: "GET",
-            'Authorization': `Bearer ${"fake token"}`}
+            'Authorization': `Bearer ${accessToken}`}
         });
 
         if (!response.ok) {
           throw new Error('Request failed with status ' + response.status);
         }
-      
         const data = await response.json();
-        console.log("here")
-        console.log(data)
 
         const petTuples = data.map( (pet) => [pet["name"], pet["id"]]);
-        // console.log(petTuples)
-
-
 
         setDropdownOptions(petTuples)
       } catch (error) {
@@ -169,6 +163,23 @@ const NewReportPage = ({ navigation: { navigate}, route}) => {
           <Center w="100%">
             <Box safeArea p="2" py="8" w="90%" maxW="290">
               
+            {
+              isCreated ? (
+                // TODO: Make this into a component called MyAlert, with headerText, bodyText, link, onLinkPress as props 
+                // this will make this file a little less messy 
+              <Alert w="100%" status="success">
+                <VStack space={1} flexShrink={1} w="100%" alignItems="center">
+                  <Alert.Icon size="md" />
+                  <Text fontSize="md" fontWeight="medium" _dark={{
+                  color: "coolGray.800"
+                }}>
+                    Your report has been created!
+                  </Text>
+                </VStack>
+              </Alert>
+
+              ) : (
+
               <VStack>
               <Heading
                   size="lg"
@@ -226,7 +237,7 @@ const NewReportPage = ({ navigation: { navigate}, route}) => {
 
               </VStack>
               </VStack>
-            
+              )}
             </Box>
           </Center>
         </Box>

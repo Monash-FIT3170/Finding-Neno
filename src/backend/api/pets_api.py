@@ -14,8 +14,6 @@ from db.pets import *
 def get_owner_pets_operation(conn, owner_id):
     auth_header = flask.request.headers.get('Authorization')
     token = auth_header.split()[1]
-    print("heeeeere")
-    print(token)
     
 
     db_output = get_all_pets(connection=conn, owner_id=owner_id, access_token=token)
