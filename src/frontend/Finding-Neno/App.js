@@ -38,7 +38,7 @@ export default function App() {
         </Stack.Navigator>
       </NavigationContainer>
     </NativeBaseProvider>
-  );
+  );  
 }
 function TabNavigator({ route }) {
   const { user } = route.params;

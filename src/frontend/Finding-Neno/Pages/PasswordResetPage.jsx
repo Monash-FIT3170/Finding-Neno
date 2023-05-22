@@ -5,9 +5,11 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
-import { IP, PORT } from "@env";
+
 
 const PasswordResetPage = () => {
+	const IP="http://118.138.82.228"
+	const PORT=5000
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});
 	const [show, setShow] = useState(false);
@@ -16,7 +18,7 @@ const PasswordResetPage = () => {
     const navigation = useNavigation();
 
 	var resetCodeAttempts = 3;
-
+    
     const onPasswordResetPress = (formData) => {
     	alert("password reset data: " + JSON.stringify(formData));
     };

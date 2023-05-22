@@ -17,7 +17,7 @@ const LogoutButton = () => {
       index: 0,
       routes: [{ name: 'LoginPage' }],
     });
-  };
+  };  
 
   return (
     <Button onPress={handleLogout}>

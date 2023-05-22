@@ -4,9 +4,11 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
-import { IP, PORT } from "@env";
+
 
 const ForgotPasswordPage = () => {
+    const IP="http://118.138.82.228"
+    const PORT=5000
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});
 
@@ -15,7 +17,7 @@ const ForgotPasswordPage = () => {
     const onForgotPasswordPress = (formData) => {
         //alert("forgot password data: " + JSON.stringify(formData));
       };
-
+      
     const validateDetails = () => {
       // Validates details. If details are valid, send formData object to onForgotPasswordPress.
       foundErrors = {};

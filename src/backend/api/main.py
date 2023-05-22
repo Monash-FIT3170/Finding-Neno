@@ -20,7 +20,7 @@ def create_database_pool():
     """
     return psycopg2.pool.SimpleConnectionPool(
         minconn=1,
-        maxconn=10,
+        maxconn=1000,
         dbname=os.getenv("DATABASE_NAME"),
         user=os.getenv("DATABASE_USER"),
         password=os.getenv("DATABASE_PASSWORD"),

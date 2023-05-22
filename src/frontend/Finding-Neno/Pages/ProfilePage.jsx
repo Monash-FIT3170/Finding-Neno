@@ -2,14 +2,20 @@ import { useNavigation } from '@react-navigation/native';
 import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link} from "native-base";
 import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
-import { IP, PORT } from "@env";
+
 import { useEffect, useState } from 'react';
 import PetCard  from "../components/PetCard";
 
 
 export default function ProfilePage({ navigation: { navigate}, route}) {
+    const IP="http://118.138.82.228"
+    const PORT=5000
     const navigation = useNavigation();
     const {user} = route.params;
+  
+    console.log(IP);
+    console.log(PORT);
+    
 
     // console.log("Profile: " + user);
     // console.log(user)

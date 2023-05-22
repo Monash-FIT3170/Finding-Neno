@@ -5,14 +5,19 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
-import { IP, PORT } from "@env";
+
 
 const LoginPage = () => {
+  const IP="http://118.138.82.228"
+  const PORT=5000
   const [formData, setFormData] = useState({});
   const [errors, setErrors] = useState({});
   const [show, setShow] = useState(false);
 
   const navigation = useNavigation();
+  
+  console.log(IP);
+  console.log(PORT);
   
   const onLoginPress = (formData) => {
     const url = `${IP}:${PORT}/login`;

@@ -7,12 +7,14 @@ import { IP, PORT } from "@env";
 import Report from "../components/Report";
 
 export default function ReportPage({ navigation: { navigate}}, {route}) {
-    console.log(IP, PORT)
+    const IP="http://118.138.82.228"
+    const PORT=5000
+
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
     //const {ownerId, accessToken} = route.params;
-
+    
     console.log("Report: " + user);
 
     const user = {

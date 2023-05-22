@@ -15,7 +15,9 @@ export default function NewPetPage({ navigation: { navigate}, route}) {
      */
 
     const navigation = useNavigation();
-
+    const IP="http://118.138.82.228"
+    const PORT=5000
+   
     console.log("parsms");
     console.log(route.params);
     console.log(route.params["accessToken"]);
