@@ -37,8 +37,6 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
     const ownerId = user["userid"];
     const accessToken = user["accesstoken"]
 
-    console.log(ownerId);
-    console.log(accessToken);
 
 
     const name = "Human Being";
@@ -47,7 +45,13 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
 
     //const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
   
-    fetch(`/get_owner_pets/${ownerId}`)
+
+    console.log(IP)
+    fetch(`${IP}:${PORT}/get_owner_pets/${ownerId}`, {
+      headers: { 
+        method: "GET",
+        'Authorization': `Bearer ${accessToken}`}} 
+    )
       .then(response => response.json())
       .then(data => {
         // Handle the response data
