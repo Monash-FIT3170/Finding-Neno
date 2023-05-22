@@ -23,8 +23,8 @@ def insert_user(conn) -> Tuple[str, int]:
 def insert_missing_report(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("inserting report: ", json_data)
-    # author_id = json_data["authorId"]
-    author_id = 1
+    author_id = json_data["authorId"]
+    # author_id = 1
     pet_id = json_data["missingPetId"]
 
     last_seen_input = json_data["lastSeenDateTime"]

@@ -72,7 +72,10 @@ const NewReportPage = ({ navigation: { navigate}, route}) => {
 
 
   const onCreateReportPress = async (formData) => {
+    setFormData({...formData, authorId: ownerId})
     console.log(IP)
+
+    //)
     const url = `${IP}:${PORT}/insert_missing_report`;
  
     fetch(url, {

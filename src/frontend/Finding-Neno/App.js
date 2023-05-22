@@ -15,6 +15,8 @@ import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import PasswordResetPage from "./Pages/PasswordResetPage";
 import SightingsPage from "./Pages/SightingsPage";
 import NewReportPage from "./Pages/NewReportPage";
+import { Ionicons } from '@expo/vector-icons'; // Import the desired icon library
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -26,7 +28,10 @@ export default function App() {
       <NavigationContainer>
         {/* To skip login/signup pages, replace initalRouteName="Login" to initalRouteName="Tab Navigator" */}
         <Stack.Navigator initialRouteName="Login">
-          <Stack.Screen name="Login" component={LoginPage} />
+          <Stack.Screen name="Login" component={LoginPage}     
+          options={{
+            headerShown: false
+          }}/>
           <Stack.Screen name="Signup" component={SignupPage} /> 
           <Stack.Screen name="ForgotPassword" component={ForgotPasswordPage} />
           <Stack.Screen name="PasswordReset" component={PasswordResetPage} /> 
@@ -45,35 +50,40 @@ function TabNavigator({ route }) {
   console.log("Tab Navigator: " + user);
   
   return (
-    <Tab.Navigator initialRouteName="Dashboard">
-      <Tab.Screen
-        name="Dashboard"
-        component={DashboardPage}
-        initialParams={{ user }}
-      />
-      <Tab.Screen
-        name="Map"
-        component={MapPage}
-        initialParams={{ user }}
-      />
-      <Tab.Screen
-        name="Report"
-        component={ReportStackNavigator}
-        initialParams={{ user }}
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen
-        name="Sightings"
-        component={SightingsPage}
-        initialParams={{ user }}
-      />
-      <Tab.Screen
-        name="Profile"
-        component={ProfileStackNavigator}
-        initialParams={{ user }}
-        options={{ headerShown: false }}
-      />
-    </Tab.Navigator>
+<Tab.Navigator initialRouteName="Dashboard">
+  <Tab.Screen
+    name="Dashboard"
+    component={DashboardPage}
+    initialParams={{ user }}
+    options={{
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="home" color={color} size={size} />
+      ),
+    }}
+  />
+  <Tab.Screen
+    name="Report"
+    component={ReportStackNavigator}
+    initialParams={{ user }}
+    options={{
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="document-text" color={color} size={size} />
+      ),
+      headerShown: false
+    }}
+  />
+  <Tab.Screen
+    name="Profile"
+    component={ProfileStackNavigator}
+    initialParams={{ user }}
+    options={{
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="person" color={color} size={size} />
+      ),
+      headerShown: false
+    }}
+  />
+</Tab.Navigator>
   );
 }
 

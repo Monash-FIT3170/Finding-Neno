@@ -19,8 +19,6 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
     console.log(PORT);
     
 
-    // console.log("Profile: " + user);
-    // console.log(user)
     const myPet = {
       name: '',
       image_url: '',
@@ -53,9 +51,7 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
           throw new Error('Request failed with status ' + response.status);
         }
         const pets = await response.json();
-        
-        //console.log(data);
-
+        setPets(pets);
         //const petTuples = data.map( (pet) => [pet["name"], pet["id"]]);
 
         //setDropdownOptions(petTuples)
@@ -64,9 +60,6 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
       }
     }
 
-    fetchOwnerPets();
-
-    //console.log(pets);
 
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
@@ -86,7 +79,7 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
 
 
     const name = "Rutvik Dave";
-    const email = "rutvikdave24@gmail.com";
+    const email = "rdav0013@student.monash.edu";
     const phone = "0412 345 678";
 
     //const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
@@ -101,7 +94,6 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
       .then(response => response.json())
       .then(data => {
         // Handle the response data
-        console.log(data);
         // Perform any necessary operations with the pet data
       })
       .catch(error => {
@@ -205,15 +197,15 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
         </HStack>
         
         
-          {pets.map((pet, index) => (
-            console.log("TESTING"),
-            <PetCard
-              key={index}
-              color={Color.NENO_BLUE}
-              height={150}
-              pet={pet}
-            />
-          ))}
+        {pets.map((pet, index) => (
+        <PetCard
+          key={index}
+          color={Color.NENO_BLUE}
+          height={150}
+          pet={pet}
+        />
+        
+      ))}
         
         
 

@@ -1,6 +1,6 @@
 import React from 'react';
 import { View } from 'react-native'
-import { Image, Text } from 'native-base';
+import { Image, Text, Box } from 'native-base';
 
 const PetCard = ({color, height, pet}) => {
   const Color = {
@@ -8,17 +8,17 @@ const PetCard = ({color, height, pet}) => {
   };
 
   console.log("pet")
-  console.log(pet)
+  console.log(pet.image_url)
 
-  const petImage = pet.image_url;
+  const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
   const petName = pet.name;
   const petType = pet.animal;
   const petBreed = pet.breed;
   const petDescription = pet.description;
 
   
-
   return (
+    <View>
     <View style={{
         backgroundColor: color,
         borderTopLeftRadius: 20,
@@ -27,7 +27,7 @@ const PetCard = ({color, height, pet}) => {
       height={height}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <View style={{width: '35%', height: '100%'}}>
-          {petImage && <Image source={{ uri: petImage }} style={{ width: '100%', height: '100%', borderTopLeftRadius: 20 }} />}
+          {petImage && <Image source={{ uri: petImage }} style={{ width: '100%', height: '100%', borderTopLeftRadius: 20 }} alt='pet' />}
         </View>
 
         <View style={{flex: 1, marginLeft: '5%', padding: '2%'}}>
@@ -47,6 +47,8 @@ const PetCard = ({color, height, pet}) => {
         </View>
         
       </View>
+    </View>
+    <Box h="4"></Box>
     </View>
   );
 };

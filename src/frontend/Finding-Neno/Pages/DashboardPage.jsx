@@ -68,7 +68,10 @@ const DashboardPage = ({route}) => {
 
     const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
 
-
+    reports.map((report) => {
+      console.log("TESTING", report)
+      }  
+    );
 
     return (
         <ScrollView style={{backgroundColor: 'white'}}>
