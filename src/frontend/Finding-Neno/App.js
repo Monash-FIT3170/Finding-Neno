@@ -82,7 +82,7 @@ function ReportStackNavigator({route}) {
   return (
     <Stack.Navigator initialRouteName="ReportPage">
       <Stack.Screen name="Report Page" component={ReportPage} initialParams={{user}}/>
-      <Stack.Screen name="New Report Page" component={NewReportPage}/>
+      <Stack.Screen name="New Report Page" component={NewReportPage} initialParams={{user}}/>
     </Stack.Navigator>
   )
 }

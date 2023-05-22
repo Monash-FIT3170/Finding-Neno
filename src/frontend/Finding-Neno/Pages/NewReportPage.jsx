@@ -1,3 +1,4 @@
+import { useNavigation } from '@react-navigation/native';
 import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import DateTimePicker from '@react-native-community/datetimepicker';
@@ -9,7 +10,7 @@ import { Color } from "../components/atomic/Theme";
 import { IP, PORT } from "@env";
 import { validDateTime, validateCoordinates } from "./validation"
 
-const AlertComponent = ({ onClose }) => (
+const AlertComponent = ({ onClose }) => ( 
   <Alert w="100%" status="success">
     <VStack space={1} flexShrink={1} w="100%" alignItems="center">
       <Alert.Icon size="md" />
@@ -23,7 +24,13 @@ const AlertComponent = ({ onClose }) => (
   </Alert>
 );
 
-const NewReportPage = () => {
+const NewReportPage = ({ navigation: { navigate}, route}) => {
+  const navigation = useNavigation();
+  const {user} = route.params; 
+
+  const ownerId = user["userid"];
+  const accessToken = user["accesstoken"];
+
   const [formData, setFormData] = useState({ description: '' });
   const [dropdownOptions, setDropdownOptions] = useState([]);
   const [errors, setErrors] = useState({});
@@ -37,7 +44,17 @@ const NewReportPage = () => {
     // ownerId = 2
     const fetchOwnerPets = async () => {
       try {
-        const response = await fetch(`${IP}:${PORT}/get_owner_pets/${ownerId}`);
+        const url = `${IP}:${PORT}/get_owner_pets/${ownerId}`;
+        const response = await fetch(url, {
+          headers: { 
+            method: "GET",
+            'Authorization': `Bearer ${"fake token"}`}
+        });
+
+        if (!response.ok) {
+          throw new Error('Request failed with status ' + response.status);
+        }
+      
         const data = await response.json();
         console.log("here")
         console.log(data)
@@ -58,11 +75,13 @@ const NewReportPage = () => {
 
 
   const onCreateReportPress = async (formData) => {
+    console.log(IP)
     const url = `${IP}:${PORT}/insert_missing_report`;
  
     fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { 
+        "Content-Type": "application/json" },
       body: JSON.stringify(formData),
     })
       .then((res) => {
