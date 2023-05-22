@@ -7,11 +7,16 @@ const PetCard = ({color, height, pet}) => {
     NENO_BLUE: 'blue' 
   };
 
-  const petImage = pet.image;
+  console.log("pet")
+  console.log(pet)
+
+  const petImage = pet.image_url;
   const petName = pet.name;
-  const petType = pet.type;
+  const petType = pet.animal;
   const petBreed = pet.breed;
   const petDescription = pet.description;
+
+  
 
   return (
     <View style={{

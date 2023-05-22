@@ -2,7 +2,7 @@ import { useNavigation } from '@react-navigation/native';
 import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link} from "native-base";
 import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
-
+import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import PetCard  from "../components/PetCard";
 
@@ -13,6 +13,8 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
     const navigation = useNavigation();
     const {user} = route.params;
   
+    const isFocused = useIsFocused();
+
     console.log(IP);
     console.log(PORT);
     
@@ -27,6 +29,44 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
       description: '',
       owner_id: null,
     };
+
+    var data;
+
+    const [pets, setPets] = useState([]);
+
+    useEffect(() => {
+      if (isFocused) {
+        fetchOwnerPets();
+      }
+    }, [isFocused]);
+  
+    const fetchOwnerPets = async () => {
+      try {
+        const url = `${IP}:${PORT}/get_owner_pets/${ownerId}`;
+        const response = await fetch(url, {
+          headers: { 
+            method: "GET",
+            'Authorization': `Bearer ${accessToken}`}
+        });
+
+        if (!response.ok) {
+          throw new Error('Request failed with status ' + response.status);
+        }
+        const pets = await response.json();
+        
+        //console.log(data);
+
+        //const petTuples = data.map( (pet) => [pet["name"], pet["id"]]);
+
+        //setDropdownOptions(petTuples)
+      } catch (error) {
+        console.error(error);
+      }
+    }
+
+    fetchOwnerPets();
+
+    //console.log(pets);
 
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
@@ -45,8 +85,8 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
 
 
 
-    const name = "Human Being";
-    const email = "sample@student.monash.edu";
+    const name = "Rutvik Dave";
+    const email = "rutvikdave24@gmail.com";
     const phone = "0412 345 678";
 
     //const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
@@ -164,7 +204,17 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
           </Button>
         </HStack>
         
-        <PetCard color={Color.NENO_BLUE} height={150} pet={pet1} />
+        
+          {pets.map((pet, index) => (
+            console.log("TESTING"),
+            <PetCard
+              key={index}
+              color={Color.NENO_BLUE}
+              height={150}
+              pet={pet}
+            />
+          ))}
+        
         
 
       </VStack>

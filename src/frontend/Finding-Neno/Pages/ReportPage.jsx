@@ -55,11 +55,6 @@ export default function ReportPage({ navigation: { navigate}}, {route}) {
         </Button>
 
         <Box height={3}/>
-
-        <Report windowWidth={windowWidth} user={user} pet={pet1}/>
-        <Box height={5}/>
-        <Report windowWidth={windowWidth} user={user} pet={pet2}/>
-        <Box height={5}/>
         
     </Box>
     </ScrollView>
