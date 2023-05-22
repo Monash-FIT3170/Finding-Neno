@@ -1,4 +1,8 @@
 import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import DateTimePicker from '@react-native-community/datetimepicker';
+import DatePicker from 'react-native-datepicker'
+
 
 import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
@@ -25,6 +29,9 @@ const NewReportPage = () => {
   const [errors, setErrors] = useState({});
   const [isCreated, setIsCreated] = useState(false);
 
+  const [selectedDatetime, setSelectedDate] = useState(new Date());
+  const [showPicker, setShowPicker] = useState(false);
+
   useEffect(() => {
     // Simulating asynchronous data fetching
     // ownerId = 2
@@ -48,6 +55,7 @@ const NewReportPage = () => {
 
     fetchOwnerPets();
   }, []);
+
 
   const onCreateReportPress = async (formData) => {
     const url = `${IP}:${PORT}/insert_missing_report`;
@@ -75,16 +83,19 @@ const NewReportPage = () => {
       foundErrors = {...foundErrors, missingPetId: 'Please select a pet'}
     }
 
-    if (!formData.lastSeenDateTime || formData.lastSeenDateTime == "") {
+    console.log(selectedDatetime >= new Date())
+    if (!formData.lastSeenDateTime) {
       foundErrors = {...foundErrors, lastSeenDateTime: 'Last seen date is required'}
-    } else if (!validDateTime(formData.lastSeenDateTime)) {
-      foundErrors = {...foundErrors, lastSeenDateTime: 'Date is invalid'}
+    // } else if (!validDateTime(formData.lastSeenDateTime)) {
+    } else if (selectedDatetime >= new Date()) {
+      foundErrors = {...foundErrors, lastSeenDateTime: 'Last seen date cannot be in the future'}
     }
-
+    // formData.lastSeenDateTime = formatDatetimeString(formData.lastSeenDateTime)
+    
     if (!formData.lastLocation || formData.lastLocation == "") {
-      foundErrors = {...foundErrors, lastLocation: 'Last known location is required'}
+      foundErrors = {...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122'}
     } else if (!validateCoordinates(formData.lastLocation)) {
-      foundErrors = {...foundErrors, lastLocation: 'Location coordinates is invalid'}
+      foundErrors = {...foundErrors, lastLocation: 'Location coordinates is invalid e.g. 24.212, -54.122'}
     }
 
     if (formData.description.length > 500) {
@@ -95,6 +106,7 @@ const NewReportPage = () => {
 
     if (Object.keys(foundErrors).length === 0) {
       // no errors!
+      console.log("making report")
       onCreateReportPress(formData)
     }
   }
@@ -103,18 +115,41 @@ const NewReportPage = () => {
     setIsCreated(false);
   };
 
+  const formatDatetimeString = (date) => {
+    const hours = date.getHours().toString().padStart(2, '0');
+    const minutes = date.getMinutes().toString().padStart(2, '0');
+    const day = date.getDate().toString().padStart(2, '0');
+    const month = (date.getMonth() + 1).toString().padStart(2, '0');
+    const year = date.getFullYear().toString();
+
+    return `${hours}:${minutes} ${day}/${month}/${year}`;
+  };
+
+  const handleConfirm = (date) => {
+    hidePicker();
+    if (date) {
+      setSelectedDate(date);
+      setFormData({...formData, lastSeenDateTime: formatDatetimeString(date)})
+    }
+  };
+
+
+  var maximumDate;
+  const openPicker = () => {
+    maximumDate = new Date();
+    setShowPicker(true);
+  };
+
+  const hidePicker = () => {
+    setShowPicker(false);
+  }
+
   return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <Box flex={1} alignItems="center" justifyContent="center">
           <Center w="100%">
             <Box safeArea p="2" py="8" w="90%" maxW="290">
               
-            {
-              isCreated ? (
-                <AlertComponent onClose={closeAlert} />
-
-              ) : (
-                
               <VStack>
               <Heading
                   size="lg"
@@ -145,9 +180,14 @@ const NewReportPage = () => {
 
                 <FormControl isInvalid={'lastSeenDateTime' in errors}>
                   <FormControl.Label>Last Seen</FormControl.Label>
-                  <Input onChangeText={value => setFormData({...formData, lastSeenDateTime: value})} placeholder="HH:MM dd/mm/yy" />
+                  <Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
+                  <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={maximumDate} onConfirm={(date) => handleConfirm(date)} onCancel={hidePicker} />
+
+                  {/* <DatePicker date={selectedDatetime} mode="datetime" placeholder="Select date and time" maxDate={maximumDate} /> */}
                   {'lastSeenDateTime' in errors && <FormControl.ErrorMessage>{errors.lastSeenDateTime}</FormControl.ErrorMessage>}
                 </FormControl>
+
+
 
                 <FormControl isInvalid={'lastLocation' in errors}>
                   <FormControl.Label>Last Known Location</FormControl.Label>
@@ -167,7 +207,7 @@ const NewReportPage = () => {
 
               </VStack>
               </VStack>
-              )}
+            
             </Box>
           </Center>
         </Box>
