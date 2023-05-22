@@ -84,7 +84,9 @@ def get_pet_api(pet_id):
 
 @app.route("/insert_pet", methods=["POST"])
 def insert_pet():
-    return insert_pet_operation(get_connection())
+    owner_id = request.args.get("owner_id")
+    print(owner_id)
+    return insert_pet_operation(get_connection(), owner_id)
 
 @app.route("/update_pet", methods=["PUT"])
 def update_pet_api():
