@@ -22,6 +22,8 @@ const DashboardPage = ({route}) => {
   console.log(IP);
   console.log(PORT);
   
+    const {user} = route.params; 
+
   console.log(user)
 
   const [modalVisible, setModalVisible] = useState(false);

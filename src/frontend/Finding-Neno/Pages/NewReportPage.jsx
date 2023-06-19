@@ -34,10 +34,12 @@ const NewReportPage = ({ navigation: { navigate}, route}) => {
   const ownerId = user["userid"];
   const accessToken = user["accesstoken"];
 
-  const [formData, setFormData] = useState({ description: '' });
-  const [dropdownOptions, setDropdownOptions] = useState([]);
-  const [errors, setErrors] = useState({});
-  const [isCreated, setIsCreated] = useState(false);
+	const [formData, setFormData] = useState({ description: '' });
+	const [dropdownOptions, setDropdownOptions] = useState([]);
+	const [errors, setErrors] = useState({});
+	const [isCreated, setIsCreated] = useState(false);
+	const [buttonText, setButtonText] = useState("Sign in")
+	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
   const [selectedDatetime, setSelectedDate] = useState(new Date());
   const [showPicker, setShowPicker] = useState(false);
@@ -70,31 +72,35 @@ const NewReportPage = ({ navigation: { navigate}, route}) => {
     fetchOwnerPets();
   }, []);
 
+  const onCreateReportPress = () => {
+	setIsButtonDisabled(true);
+	setButtonText("Creating report...");
 
-  const onCreateReportPress = async (formData) => {
-    setFormData({...formData, authorId: ownerId})
-    console.log(IP)
+	let isValid = validateDetails(formData);
 
-    //)
-    const url = `${IP}:${PORT}/insert_missing_report`;
- 
-    fetch(url, {
-      method: "POST",
-      headers: { 
-        "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => {
-        if (res.status == 201) {
-            // Show success
-            // Clear fields?
-            setIsCreated(true)
-        }
-      })
-      .catch((error) => alert(error));
-  };
+	if (isValid) {
+		const url = `${IP}:${PORT}/insert_missing_report`;
+	
+		fetch(url, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify(formData),
+		})
+		.then((res) => {
+			if (res.status == 201) {
+				// Show success
+				// Clear fields?
+				setIsCreated(true);
+			}
+		})
+		.catch((error) => alert(error));
+	};
 
-  const validateDetails = () => {
+	setButtonText("Create report")
+	setIsButtonDisabled(false);
+  }
+
+  const validateDetails = (formData) => {
     // Validates details. If details are valid, send formData object to onCreateReportPress.
     foundErrors = {};
 
@@ -121,133 +127,71 @@ const NewReportPage = ({ navigation: { navigate}, route}) => {
         foundErrors = {...foundErrors, description: 'Must not exceed 500 characters'}
       }
 
-    setErrors(foundErrors);
+    	setErrors(foundErrors);
 
-    if (Object.keys(foundErrors).length === 0) {
-      // no errors!
-      console.log("making report")
-      onCreateReportPress(formData)
-    }
+		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
+    	return Object.keys(foundErrors).length === 0;
   }
 
-  const closeAlert = () => {
-    setIsCreated(false);
-  };
+  	const closeAlert = () => {
+    	setIsCreated(false);
+  	};
 
-  const formatDatetimeString = (date) => {
-    const hours = date.getHours().toString().padStart(2, '0');
-    const minutes = date.getMinutes().toString().padStart(2, '0');
-    const day = date.getDate().toString().padStart(2, '0');
-    const month = (date.getMonth() + 1).toString().padStart(2, '0');
-    const year = date.getFullYear().toString();
-
-    return `${hours}:${minutes} ${day}/${month}/${year}`;
-  };
-
-  const handleConfirm = (date) => {
-    hidePicker();
-    if (date) {
-      setSelectedDate(date);
-      setFormData({...formData, lastSeenDateTime: formatDatetimeString(date)})
-    }
-  };
-
-
-  var maximumDate;
-  const openPicker = () => {
-    maximumDate = new Date();
-    setShowPicker(true);
-  };
-
-  const hidePicker = () => {
-    setShowPicker(false);
-  }
-
-  return (
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+  	return (
+	<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
         <Box flex={1} alignItems="center" justifyContent="center">
           <Center w="100%">
             <Box safeArea p="2" py="8" w="90%" maxW="290">
-              
-            {
-              isCreated ? (
-                // TODO: Make this into a component called MyAlert, with headerText, bodyText, link, onLinkPress as props 
-                // this will make this file a little less messy 
-              <Alert w="100%" status="success">
-                <VStack space={1} flexShrink={1} w="100%" alignItems="center">
-                  <Alert.Icon size="md" />
-                  <Text fontSize="md" fontWeight="medium" _dark={{
-                  color: "coolGray.800"
-                }}>
-                    Your report has been created!
-                  </Text>
-                </VStack>
-              </Alert>
+               
+            { isCreated ? (<AlertComponent onClose={closeAlert} /> ) : 
+				(
+					<VStack>
+              			<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{color: "warmGray.50",}}>Create a Report</Heading>
 
-              ) : (
+              			<VStack space={3} mt="5">
 
-              <VStack>
-              <Heading
-                  size="lg"
-                  fontWeight="600"
-                  color="coolGray.800"
-                  _dark={{
-                  color: "warmGray.50",
-                  }}
-              >
-                  Create a Report
-              </Heading>
+							<FormControl isInvalid={'missingPetId' in errors}>
+								<FormControl.Label>Choose Pet</FormControl.Label>
+								<Select placeholder="Select a pet"
+									selectedValue={formData.missingPetId}
+									onValueChange={(value) => setFormData({...formData, missingPetId: value})}>
+									<Select.Item label="Select a pet" value="" disabled hidden />
+									{dropdownOptions.map((option, index) => (
+									<Select.Item key={index} label={option[0]} value={option[1]} />
+									))}
+								</Select>
+								{'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPetId}</FormControl.ErrorMessage>}
+							</FormControl>
 
-              <VStack space={3} mt="5">
+							<FormControl isInvalid={'lastSeenDateTime' in errors}>
+								<FormControl.Label>Last Seen</FormControl.Label>
+								<Input onChangeText={value => setFormData({...formData, lastSeenDateTime: value})} placeholder="HH:MM dd/mm/yy" />
+								{'lastSeenDateTime' in errors && <FormControl.ErrorMessage>{errors.lastSeenDateTime}</FormControl.ErrorMessage>}
+							</FormControl>
 
-                <FormControl isInvalid={'missingPetId' in errors}>
-                  <FormControl.Label>Choose Pet</FormControl.Label>
-                  <Select placeholder="Select a pet"
-                    selectedValue={formData.missingPetId}
-                    onValueChange={(value) => setFormData({...formData, missingPetId: value})}
-                  >
-                    <Select.Item label="Select a pet" value="" disabled hidden />
-                    {dropdownOptions.map((option, index) => (
-                      <Select.Item key={index} label={option[0]} value={option[1]} />
-                    ))}
-                  </Select>
-                  {'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPetId}</FormControl.ErrorMessage>}
-                </FormControl>
+							<FormControl isInvalid={'lastLocation' in errors}>
+								<FormControl.Label>Last Known Location</FormControl.Label>
+								<Input onChangeText={value => setFormData({...formData, lastLocation: value})} placeholder="long (-180 to 180), lat (-90 to 90)"/>
+								{'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
+							</FormControl>
 
-                <FormControl isInvalid={'lastSeenDateTime' in errors}>
-                  <FormControl.Label>Last Seen</FormControl.Label>
-                  <Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
-                  <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={maximumDate} onConfirm={(date) => handleConfirm(date)} onCancel={hidePicker} />
+							<FormControl isInvalid={'description' in errors}>
+								<FormControl.Label>Additional Info</FormControl.Label>
+								<Input onChangeText={value => setFormData({...formData, description: value})} />
+								{'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
+							</FormControl>
 
-                  {/* <DatePicker date={selectedDatetime} mode="datetime" placeholder="Select date and time" maxDate={maximumDate} /> */}
-                  {'lastSeenDateTime' in errors && <FormControl.ErrorMessage>{errors.lastSeenDateTime}</FormControl.ErrorMessage>}
-                </FormControl>
+							<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onCreateReportPress}>
+								{buttonText}
+							</Button>
 
-
-
-                <FormControl isInvalid={'lastLocation' in errors}>
-                  <FormControl.Label>Last Known Location</FormControl.Label>
-                  <Input onChangeText={value => setFormData({...formData, lastLocation: value})} placeholder="long (-180 to 180), lat (-90 to 90)"/>
-                  {'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
-                </FormControl>
-
-                <FormControl isInvalid={'description' in errors}>
-                  <FormControl.Label>Additional Info</FormControl.Label>
-                  <Input onChangeText={value => setFormData({...formData, description: value})} />
-                  {'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
-                </FormControl>
-
-                <Button mt="2" bgColor={Color.NENO_BLUE} onPress={validateDetails}>
-                    Create Report
-                </Button>
-
-              </VStack>
-              </VStack>
-              )}
-            </Box>
-          </Center>
+             			 </VStack>
+             		 </VStack>
+              		)}
+            	</Box>
+          	</Center>
         </Box>
-      </KeyboardAvoidingView>
+	</KeyboardAvoidingView>
   );
 };
 

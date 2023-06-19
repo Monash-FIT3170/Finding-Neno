@@ -1,4 +1,5 @@
-import { Box, Center, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView } from "native-base";
+import { Box, Button, Center, FormControl, Heading, HStack, Icon, Input, KeyboardAvoidingView, Link, VStack, Pressable, Text} from "native-base";
+import { StyleSheet } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons'
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 
@@ -8,72 +9,77 @@ import { useState } from "react";
 
 
 const SignupPage = () => {
-  const IP="http://118.138.82.228"
-  const PORT=5000
-  const [formData, setFormData] = useState({});
-  const [errors, setErrors] = useState({});
-  const [isRegistered, setIsRegistered] = useState(false); 
-	const [show, setShow] = useState(false);
-	const [showConfirm, setShowConfirm] = useState(false);
-    
-  const navigation = useNavigation();
+	const [formData, setFormData] = useState({});
+	const [errors, setErrors] = useState({});
+	const [isRegistered, setIsRegistered] = useState(false); 
+	const [showPassword, setShowPassword] = useState(false);
+	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+	const [buttonText, setButtonText] = useState("Sign in")
+	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+  
+	const navigation = useNavigation();
 
-  const onSignupPress = async (formData) => {
-    const url = `${IP}:${PORT}/insert_user`;
-    console.log(url)
-    console.log(url)
- 
-    fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => {
-        if (res.status == 201) {
-          setIsRegistered(true);
-        }
-      })
-      .catch((error) => alert(error));
-  };
+	const onSignupPress = () => { 
+		setIsButtonDisabled(true);
+		setButtonText("Signing up...")
 
-  const validateDetails = () => {
-    // Validates details. If details are valid, send formData object to onSignupPress.
-    foundErrors = {};
+		let isValid = validateDetails(formData);
+		if (isValid) {
+			const url = `${IP}:${PORT}/insert_user`;
+		
+			fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+			})
+			.then((res) => {
+				if (res.status == 201) {
+				  setIsRegistered(true);
+				}
+			})
+			.catch((error) => alert(error));
+		}
 
-    if (!formData.name || formData.name == "") {
-      foundErrors = {...foundErrors, name: 'Name is required'}
-    }
+		setButtonText("Sign up"); 
+    setIsButtonDisabled(false);
+	};
 
-    if (!formData.email || formData.email == "") {
-      foundErrors = {...foundErrors, email: 'Email is required'}
-    } else if (!validEmail(formData.email)) {
-      foundErrors = {...foundErrors, email: 'Email is invalid'}
-    }
+  	const validateDetails = (formData) => {
+		// Validates details. If details are valid, send formData object to onSignupPress.
+		foundErrors = {};
 
-    if (!formData.phoneNumber || formData.phoneNumber == "") {
-      foundErrors = {...foundErrors, phoneNumber: 'Phone number is required'}
-    } else if (!validPhoneNumber(formData.phoneNumber)) {
-      foundErrors = {...foundErrors, phoneNumber: 'Phone number is invalid'}
-    }
+		if (!formData.name || formData.name == "") {
+			foundErrors = {...foundErrors, name: 'Name is required'}
+		}
 
-    if (!formData.password || formData.password == "") {
-      foundErrors = {...foundErrors, password: 'Password is required'}
-    }
+		if (!formData.email || formData.email == "") {
+			foundErrors = {...foundErrors, email: 'Email is required'}
+		} else if (!validEmail(formData.email)) {
+			foundErrors = {...foundErrors, email: 'Email is invalid'}
+		}
 
-    if (!formData.confirmPassword || formData.confirmPassword == "") {
-      foundErrors = {...foundErrors, confirmPassword: 'Password confirmation is required'}
-    }
+		if (!formData.phoneNumber || formData.phoneNumber == "") {
+			foundErrors = {...foundErrors, phoneNumber: 'Phone number is required'}
+		} else if (!validPhoneNumber(formData.phoneNumber)) {
+			foundErrors = {...foundErrors, phoneNumber: 'Phone number is invalid'}
+		}
 
-    if (formData.confirmPassword !== formData.password) {
-      foundErrors = {...foundErrors, confirmPassword: 'Passwords must match'}
-    }
+		if (!formData.password || formData.password == "") {
+			foundErrors = {...foundErrors, password: 'Password is required'}
+		}
 
-    setErrors(foundErrors);
+		if (!formData.confirmPassword || formData.confirmPassword == "") {
+			foundErrors = {...foundErrors, confirmPassword: 'Password confirmation is required'}
+		}
 
-    if (Object.keys(foundErrors).length === 0) {
-      // no errors!
-      onSignupPress(formData)
-    }
+		if (formData.confirmPassword !== formData.password) {
+			foundErrors = {...foundErrors, confirmPassword: 'Passwords must match'}
+		}
+
+    	setErrors(foundErrors);
+	
+		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
+    	return Object.keys(foundErrors).length === 0;
   }
 
   const keyboardVerticalOffset = Platform.OS === 'ios' ? 170 : 0
@@ -142,7 +148,7 @@ const SignupPage = () => {
             
             <FormControl isInvalid={'email' in errors}>
               <FormControl.Label>Email</FormControl.Label>
-              <Input onChangeText={value => setFormData({...formData, email: value})} />
+              <TextInput autoCapitalize="none" onChangeText={value => setFormData({...formData, email: value})} />
               {'email' in errors && <FormControl.ErrorMessage>{errors.email}</FormControl.ErrorMessage>}
             </FormControl>
 
@@ -154,23 +160,24 @@ const SignupPage = () => {
 
             <FormControl isInvalid={'password' in errors}>
               <FormControl.Label>Password</FormControl.Label>
-              <Input type={show ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShow(!show)}> 
-              <Icon as={<MaterialIcons name={show ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
+              <Input type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}> 
+              <Icon as={<MaterialIcons name={showPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
               </Pressable>} onChangeText={value => setFormData({...formData, password: value})} />
               {'password' in errors && <FormControl.ErrorMessage>{errors.password}</FormControl.ErrorMessage>}
             </FormControl>
 
             <FormControl isInvalid={'confirmPassword' in errors}>
               <FormControl.Label>Confirm Password</FormControl.Label>
-              <Input type={showConfirm ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowConfirm(!showConfirm)}> 
-              <Icon as={<MaterialIcons name={showConfirm ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
+              <Input type={showConfirmPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}> 
+              <Icon as={<MaterialIcons name={showConfirmPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
               </Pressable>} onChangeText={value => setFormData({...formData, confirmPassword: value})} />
               {'confirmPassword' in errors && <FormControl.ErrorMessage>{errors.confirmPassword}</FormControl.ErrorMessage>}
             </FormControl>
 
-            <Button mt="2" bgColor={Color.NENO_BLUE} onPress={validateDetails}>
-              Sign up
+            <Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onSignupPress}>
+              {buttonText}
             </Button>
+            
             <HStack mt="6" justifyContent="center">
               <Text
                 fontSize="sm"
@@ -182,11 +189,7 @@ const SignupPage = () => {
                 Existing user?{" "}
               </Text>
               <Link
-                _text={{
-                  color: Color.NENO_BLUE,
-                  fontWeight: "medium",
-                  fontSize: "sm",
-                }}
+                _text={styles.actionButton}
                 onPress={() => {
                   navigation.navigate("Login");
                 }}
@@ -202,5 +205,13 @@ const SignupPage = () => {
     </KeyboardAvoidingView>
   );
 };
+
+const styles = StyleSheet.create({
+	actionButton: { 
+		color: Color.NENO_BLUE, 
+		fontWeight: "medium", 
+		fontSize: "sm"
+	}
+})
 
 export default SignupPage;
