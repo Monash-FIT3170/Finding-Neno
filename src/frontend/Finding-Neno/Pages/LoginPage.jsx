@@ -6,6 +6,7 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
+import { IP, PORT } from "@env";
 
 
 const LoginPage = () => {
@@ -47,11 +48,13 @@ const LoginPage = () => {
 					});
 				}
 			})
-			.catch((error) => alert(error));
+			.catch((error) => alert(error))
+			.finally(() => {
+				setButtonText("Sign in"); 
+				setIsButtonDisabled(false);
+			})
     	}
 
-		setButtonText("Sign in"); 
-      	setIsButtonDisabled(false);
   	};
 
   	const validateDetails = (formData) => {

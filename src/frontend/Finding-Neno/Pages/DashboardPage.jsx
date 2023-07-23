@@ -4,27 +4,18 @@ import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
+import { IP, PORT } from "@env";
 
 
 
 
 const DashboardPage = ({route}) => {
-  const IP="http://118.138.82.228"
-  const PORT=5000
-
   const windowWidth = Dimensions.get('window').width; 
   const navigation = useNavigation();
   const toast = useToast();
   const {user} = route.params;
 
   const isFocused = useIsFocused();
-
-  console.log(IP);
-  console.log(PORT);
-  
-    const {user} = route.params; 
-
-  console.log(user)
 
   const [modalVisible, setModalVisible] = useState(false);
 
