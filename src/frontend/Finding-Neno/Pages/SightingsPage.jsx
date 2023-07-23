@@ -1,5 +1,6 @@
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Text } from 'react-native';
+import { IP, PORT } from "@env";
 
 
 export default function SightingsPage({route}) {

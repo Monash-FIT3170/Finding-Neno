@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
+import { IP, PORT } from "@env";
 
 const LogoutButton = () => {
   const navigation = useNavigation();
