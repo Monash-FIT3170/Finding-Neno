@@ -61,10 +61,7 @@ def post_login():
     print("logging in")
     data = login(get_connection())
     print(data)
-    headers = {
-        'userId': data[2],
-        'accessToken': data[3]
-    }
+    headers = {}
 
     return data[0], data[1], headers
 
