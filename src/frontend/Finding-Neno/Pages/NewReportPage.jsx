@@ -1,8 +1,8 @@
 import { useNavigation } from '@react-navigation/native';
 import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import DateTimePicker from '@react-native-community/datetimepicker';
-import DatePicker from 'react-native-datepicker'
+// import DateTimePickerModal from 'react-native-modal-datetime-picker';
+// import DateTimePicker from '@react-native-community/datetimepicker';
+// import DatePicker from 'react-native-datepicker'
 
 
 import React, { useEffect, useState } from 'react';
