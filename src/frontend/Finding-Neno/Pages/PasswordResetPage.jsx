@@ -42,13 +42,11 @@ const PasswordResetPage = () => {
 			.catch((error) => {
 				alert(error);
 			})
-			.finally(() => {
-				setButtonText("Set Password");
-				setIsButtonDisabled(false);
-			})
 		}
 
 
+		setButtonText("Set Password");
+		setIsButtonDisabled(false);
 
 
     	alert("password reset data: " + JSON.stringify(formData));

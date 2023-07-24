@@ -49,12 +49,10 @@ const LoginPage = () => {
 				}
 			})
 			.catch((error) => alert(error))
-			.finally(() => {
-				setButtonText("Sign in"); 
-				setIsButtonDisabled(false);
-			})
     	}
 
+		setButtonText("Sign in"); 
+		setIsButtonDisabled(false);
   	};
 
   	const validateDetails = (formData) => {
