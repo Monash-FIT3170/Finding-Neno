@@ -6,16 +6,16 @@ import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { IP, PORT } from "@env";
 
+import store from '../store/store';
 
-
-
-const DashboardPage = ({route}) => {
+const DashboardPage = () => {
   const windowWidth = Dimensions.get('window').width; 
   const navigation = useNavigation();
   const toast = useToast();
-  const headers = route.params;
-
   const isFocused = useIsFocused();
+
+  const userId = store.getState().userId;
+  const accessToken = store.getState().accessToken;
 
   const [modalVisible, setModalVisible] = useState(false);
 

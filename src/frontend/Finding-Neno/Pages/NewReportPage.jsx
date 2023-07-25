@@ -10,6 +10,8 @@ import { Color } from "../components/atomic/Theme";
 import { IP, PORT } from "@env";
 import { validDateTime, validateCoordinates } from "./validation"
 
+import store from '../store/store';
+
 const AlertComponent = ({ onClose }) => (
 	<Alert w="100%" status="success">
 		<VStack space={1} flexShrink={1} w="100%" alignItems="center">
@@ -24,12 +26,11 @@ const AlertComponent = ({ onClose }) => (
 	</Alert>
 );
 
-const NewReportPage = ({ navigation: { navigate }, route }) => {
+const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
-	const { headers } = route.params;
 
-	const ownerId = headers["userid"];
-	const accessToken = headers["accesstoken"];
+    const ownerId = store.getState().userId;
+    const accessToken = store.getState().accessToken;
 
 	const [formData, setFormData] = useState({ description: '' });
 	const [dropdownOptions, setDropdownOptions] = useState([]);

@@ -7,18 +7,17 @@ import { useIsFocused } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import { IP, PORT } from "@env";
 
-
-
 import Report from "../components/Report";
+import store from '../store/store';
 
-export default function ReportPage({ navigation: { navigate}, route}) {
+export default function ReportPage({ navigation: { navigate}}) {
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
     
-    const {headers} = route.params;
-    const ownerId = headers["userid"];
-    const accessToken = headers["accesstoken"]
+    const ownerId = store.getState().userId;
+    const accessToken = store.getState().accessToken;
+  
 
 
 

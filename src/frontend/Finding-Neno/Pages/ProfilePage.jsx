@@ -7,16 +7,17 @@ import { useEffect, useState } from 'react';
 import PetCard  from "../components/PetCard";
 import { IP, PORT } from "@env";
 
+import { useSelector, useDispatch } from "react-redux";
+import store from '../store/store';
 
-export default function ProfilePage({ navigation: { navigate}, route}) {
+export default function ProfilePage({ navigation: { navigate}}) {
     const navigation = useNavigation();
-    const {headers} = route.params;
-    const ownerId = headers["userid"];
-    const accessToken = headers["accesstoken"]
+    const ownerId = store.getState().userId;
+    const accessToken = store.getState().accessToken;
   
     const isFocused = useIsFocused();
     
-
+    const dispatch = useDispatch();
     const myPet = {
       name: '',
       image_url: '',
@@ -25,8 +26,12 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
       description: '',
       owner_id: null,
     };
-
-    var data;
+    const action = {
+      type: "SELECT_PET",
+      pet: myPet,
+    }
+    dispatch(action);
+    console.log(store.getState());
 
     const [pets, setPets] = useState([]);
 
@@ -192,7 +197,9 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
       <Box h="4"></Box>
 
       <Button
-        onPress={() => navigate('New Pet Page', {pet: myPet, ownerId: ownerId, accessToken: accessToken})} 
+        onPress={() => {
+          navigate('New Pet Page')}
+        } 
         width={windowWidth - 100}
         height="40px"
       >

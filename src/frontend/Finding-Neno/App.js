@@ -4,6 +4,10 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 
+import { Provider, connect, useSelector, useDispatch  } from "react-redux";
+import store from "./store/store";
+
+
 import DashboardPage from "./Pages/DashboardPage";
 import LoginPage from "./Pages/LoginPage";
 import MapPage from "./Pages/MapPage";
@@ -26,8 +30,10 @@ export default function App() {
   console.log("APP")
   console.log(IP)
   console.log(PORT)
+  console.log(store.getState());
   return (
     <NativeBaseProvider>
+      <Provider store={store}>
       <NavigationContainer>
         {/* To skip login/signup pages, replace initalRouteName="Login" to initalRouteName="Tab Navigator" */}
         <Stack.Navigator initialRouteName="Login">
@@ -50,18 +56,16 @@ export default function App() {
           />      
         </Stack.Navigator>
       </NavigationContainer>
+      </Provider>
     </NativeBaseProvider>
   );  
 }
-function TabNavigator({ route }) {
-  const { headers } = route.params;
-  
+function TabNavigator() {
   return (
 <Tab.Navigator initialRouteName="Dashboard">
   <Tab.Screen
     name="Dashboard"
     component={DashboardPage}
-    initialParams={{ headers }}
     options={{
       tabBarIcon: ({ color, size }) => (
         <Ionicons name="home" color={color} size={size} />
@@ -71,7 +75,6 @@ function TabNavigator({ route }) {
   <Tab.Screen
     name="Report"
     component={ReportStackNavigator}
-    initialParams={{ headers }}
     options={{
       tabBarIcon: ({ color, size }) => (
         <Ionicons name="document-text" color={color} size={size} />
@@ -82,7 +85,6 @@ function TabNavigator({ route }) {
   <Tab.Screen
     name="Profile"
     component={ProfileStackNavigator}
-    initialParams={{ headers }}
     options={{
       tabBarIcon: ({ color, size }) => (
         <Ionicons name="person" color={color} size={size} />
@@ -94,21 +96,19 @@ function TabNavigator({ route }) {
   );
 }
 
-function ReportStackNavigator({route}) {
-  const { headers } = route.params;
+function ReportStackNavigator() {
   return (
     <Stack.Navigator initialRouteName="ReportPage">
-      <Stack.Screen name="Report Page" component={ReportPage} initialParams={{headers}}/>
-      <Stack.Screen name="New Report Page" component={NewReportPage} initialParams={{headers}}/>
+      <Stack.Screen name="Report Page" component={ReportPage}/>
+      <Stack.Screen name="New Report Page" component={NewReportPage}/>
     </Stack.Navigator>
   )
 }
 
-function ProfileStackNavigator({route}) {
-  const { headers } = route.params;
+function ProfileStackNavigator() {
   return (
     <Stack.Navigator initialRouteName="ProfilePage">
-      <Stack.Screen name="Profile Page" component={ProfilePage} initialParams={{headers}}/>
+      <Stack.Screen name="Profile Page" component={ProfilePage}/>
       <Stack.Screen name="New Pet Page" component={NewPetPage}/>
     </Stack.Navigator>
   )
