@@ -2,10 +2,10 @@ import { createStore } from "redux";
 
 const initialState = {
     // change IP and PORT to your own IP and PORT for the app to work with redux
-    IP: "http://192.168.1.102",
-    PORT: "5000",
-    userId: "testing redux",
-    accessToken: "this is random text",
+    IP: undefined,
+    PORT: undefined,
+    userId: undefined,
+    accessToken: undefined,
 };
 
 function handleState(state = initialState, action) {
