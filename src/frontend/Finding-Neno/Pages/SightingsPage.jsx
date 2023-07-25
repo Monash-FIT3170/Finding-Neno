@@ -1,12 +1,16 @@
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Text } from 'react-native';
+import { IP, PORT } from "@env";
 
 
 export default function SightingsPage({route}) {
-    const IP="http://118.138.82.228"
-    const PORT=5000
     const navigation = useNavigation();
-    const {user} = route.params;
+    const windowWidth = Dimensions.get('window').width; 
+    const windowHeight = Dimensions.get('window').height;
+    
+    const {headers} = route.params;
+    const ownerId = headers["userid"];
+    const accessToken = headers["accesstoken"]
 
     console.log("Sighting: " + user);
   

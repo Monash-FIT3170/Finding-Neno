@@ -4,25 +4,18 @@ import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
+import { IP, PORT } from "@env";
 
 
 
 
 const DashboardPage = ({route}) => {
-  const IP="http://118.138.82.228"
-  const PORT=5000
-
   const windowWidth = Dimensions.get('window').width; 
   const navigation = useNavigation();
   const toast = useToast();
-  const {user} = route.params;
+  const headers = route.params;
 
   const isFocused = useIsFocused();
-
-  console.log(IP);
-  console.log(PORT);
-  
-  console.log(user)
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -67,11 +60,6 @@ const DashboardPage = ({route}) => {
 //   const description = "cute and fluffy"
 
     const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
-
-    reports.map((report) => {
-      console.log("TESTING", report)
-      }  
-    );
 
     return (
         <ScrollView style={{backgroundColor: 'white'}}>
