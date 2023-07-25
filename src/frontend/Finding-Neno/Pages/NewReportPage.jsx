@@ -26,10 +26,10 @@ const AlertComponent = ({ onClose }) => (
 
 const NewReportPage = ({ navigation: { navigate }, route }) => {
 	const navigation = useNavigation();
-	const { user } = route.params;
+	const { headers } = route.params;
 
-	const ownerId = user["userid"];
-	const accessToken = user["accesstoken"];
+	const ownerId = headers["userid"];
+	const accessToken = headers["accesstoken"];
 
 	const [formData, setFormData] = useState({ description: '' });
 	const [dropdownOptions, setDropdownOptions] = useState([]);

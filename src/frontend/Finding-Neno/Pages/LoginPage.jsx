@@ -6,10 +6,9 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
-import { IP, PORT } from "@env";
 
 
-const LoginPage = () => {
+const LoginPage = ({route}) => {
 	const [formData, setFormData] = useState({});
 	const [errors, setErrors] = useState({});
 	const [show, setShow] = useState(false);
@@ -17,6 +16,10 @@ const LoginPage = () => {
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
 	const navigation = useNavigation();
+	const apiInfo = route.params;
+	const IP = apiInfo.IP;
+	const PORT = apiInfo.PORT;
+
 	
 	const onLoginPress = () => {
 		setIsButtonDisabled(true); 
@@ -35,12 +38,12 @@ const LoginPage = () => {
 					const accessToken = res.headers.map.accesstoken;
 					const userId = res.headers.map.userid;
 
-					const user = {
+					const headers = {
 						userid: userId,
 						accesstoken: accessToken
 					};
 
-					navigation.navigate('Tab Navigator', {user: user});
+					navigation.navigate('Tab Navigator', {headers: headers});
 				} else {
 					setErrors({
 						email: 'Email or password is invalid',

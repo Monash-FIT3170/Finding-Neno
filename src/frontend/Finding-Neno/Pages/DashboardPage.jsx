@@ -13,7 +13,7 @@ const DashboardPage = ({route}) => {
   const windowWidth = Dimensions.get('window').width; 
   const navigation = useNavigation();
   const toast = useToast();
-  const {user} = route.params;
+  const headers = route.params;
 
   const isFocused = useIsFocused();
 
@@ -60,11 +60,6 @@ const DashboardPage = ({route}) => {
 //   const description = "cute and fluffy"
 
     const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
-
-    reports.map((report) => {
-      console.log("TESTING", report)
-      }  
-    );
 
     return (
         <ScrollView style={{backgroundColor: 'white'}}>

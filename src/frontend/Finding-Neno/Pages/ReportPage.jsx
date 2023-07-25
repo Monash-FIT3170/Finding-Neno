@@ -16,9 +16,9 @@ export default function ReportPage({ navigation: { navigate}, route}) {
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
     
-    const {user} = route.params;
-    const ownerId = user["userid"];
-    const accessToken = user["accesstoken"]
+    const {headers} = route.params;
+    const ownerId = headers["userid"];
+    const accessToken = headers["accesstoken"]
 
 
 

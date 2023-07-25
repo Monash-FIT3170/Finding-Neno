@@ -5,7 +5,12 @@ import { IP, PORT } from "@env";
 
 export default function SightingsPage({route}) {
     const navigation = useNavigation();
-    const {user} = route.params;
+    const windowWidth = Dimensions.get('window').width; 
+    const windowHeight = Dimensions.get('window').height;
+    
+    const {headers} = route.params;
+    const ownerId = headers["userid"];
+    const accessToken = headers["accesstoken"]
 
     console.log("Sighting: " + user);
   

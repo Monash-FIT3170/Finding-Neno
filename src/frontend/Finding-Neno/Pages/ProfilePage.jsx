@@ -10,7 +10,9 @@ import { IP, PORT } from "@env";
 
 export default function ProfilePage({ navigation: { navigate}, route}) {
     const navigation = useNavigation();
-    const {user} = route.params;
+    const {headers} = route.params;
+    const ownerId = headers["userid"];
+    const accessToken = headers["accesstoken"]
   
     const isFocused = useIsFocused();
     
@@ -52,7 +54,8 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
 
         //setDropdownOptions(petTuples)
       } catch (error) {
-        console.error(error);
+        console.log("error in profile page")
+        console.log(error);
       }
     }
 
@@ -60,42 +63,30 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
 
-    const pet1 = {
-      image: "https://wallpaperaccess.com/full/317501.jpg",
-      name: "Fluffy",
-      type: "Rabbit",
-      breed: "Angora",
-      description: "A fluffy rabbit",
-    }
 
-    {/. Call a get user function ./}
-    const ownerId = user["userid"];
-    const accessToken = user["accesstoken"]
-
-
-
-    const name = "Rutvik Dave";
-    const email = "rdav0013@student.monash.edu";
-    const phone = "0412 345 678";
+    // TODO: Replace with actual data
+    const name = "TODO";
+    const email = "TODO";
+    const phone = "TODO";
 
     //const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
-  
 
-    fetch(`${IP}:${PORT}/get_owner_pets/${ownerId}`, {
-      headers: { 
-        method: "GET",
-        'Authorization': `Bearer ${accessToken}`}} 
-    )
-      .then(response => response.json())
-      .then(data => {
-        // Handle the response data
-        // Perform any necessary operations with the pet data
-      })
-      .catch(error => {
-        // Handle any errors that occurred during the request
-        console.error(error);
-    });
-
+    const petCards = () => {
+      console.log(pets);
+      if (pets.length > 0) {
+        return pets.map((pet, index) => (
+          <PetCard
+            key={index}
+            color={Color.NENO_BLUE}
+            height={150}
+            pet={pet}
+          />
+          
+        ));
+      } else {
+        return <></>
+      }
+    }
 
     return (
       <ScrollView>
@@ -192,15 +183,7 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
         </HStack>
         
         
-        {pets.map((pet, index) => (
-        <PetCard
-          key={index}
-          color={Color.NENO_BLUE}
-          height={150}
-          pet={pet}
-        />
-        
-      ))}
+        {petCards()}
         
         
 

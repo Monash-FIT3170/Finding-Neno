@@ -20,6 +20,8 @@ const SignupPage = () => {
 
 	const navigation = useNavigation();
 
+	console.log("SignupPage");
+
 	const onSignupPress = () => {
 		setIsButtonDisabled(true);
 		setButtonText("Signing up...")
@@ -38,7 +40,10 @@ const SignupPage = () => {
 						setIsRegistered(true);
 					}
 				})
-				.catch((error) => alert(error));
+				.catch((error) => {
+					console.log(error)
+					alert(error)
+				});
 		}
 
 		setButtonText("Sign up");

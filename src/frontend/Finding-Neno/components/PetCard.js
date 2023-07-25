@@ -9,8 +9,9 @@ const PetCard = ({color, height, pet}) => {
 
   console.log("pet")
   console.log(pet.image_url)
-
-  const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
+  
+  // need to fix image appearing on the application correctly
+  const petImage = pet.file;
   const petName = pet.name;
   const petType = pet.animal;
   const petBreed = pet.breed;

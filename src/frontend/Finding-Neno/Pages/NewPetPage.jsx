@@ -16,9 +16,7 @@ export default function NewPetPage({ navigation: { navigate}, route}) {
 
     const navigation = useNavigation();
    
-    console.log("parsms");
-    console.log(route.params);
-    console.log(route.params["accessToken"]);
+
 
     const access_token = route.params["accessToken"];
     const owner_id = route.params["ownerId"]
