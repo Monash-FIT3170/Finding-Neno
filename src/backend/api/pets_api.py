@@ -14,8 +14,11 @@ from db.pets import *
 def get_owner_pets_operation(conn, owner_id):
     auth_header = flask.request.headers.get('Authorization')
     token = auth_header.split()[1]
+    
 
     db_output = get_all_pets(connection=conn, owner_id=owner_id, access_token=token)
+
+    print(db_output)
     return jsonify(db_output)
 
 
@@ -24,10 +27,12 @@ def get_pet_operation(conn, pet_id):
     return jsonify(db_output)
 
 
-def insert_pet_operation(conn):
+def insert_pet_operation(conn, owner_id):
     data = request.get_json()
     auth_header = flask.request.headers.get('Authorization')
     token = auth_header.split()[1]
+
+    print(data)
 
     pet = add_pet(
         connection=conn,
@@ -36,7 +41,7 @@ def insert_pet_operation(conn):
         breed=data["breed"],
         description=data["description"],
         image_url=data["image_url"],
-        owner_id=data["owner_id"],
+        owner_id=owner_id,
         access_token=token
     )
     if pet:

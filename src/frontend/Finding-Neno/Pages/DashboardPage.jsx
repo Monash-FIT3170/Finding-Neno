@@ -3,17 +3,19 @@ import { Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack,
 import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
 import { IP, PORT } from "@env";
+
+
 
 
 const DashboardPage = ({route}) => {
   const windowWidth = Dimensions.get('window').width; 
-    const navigation = useNavigation();
+  const navigation = useNavigation();
   const toast = useToast();
-  
-    const {user} = route.params;
+  const headers = route.params;
 
-  console.log(user)
+  const isFocused = useIsFocused();
 
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -32,19 +34,20 @@ const DashboardPage = ({route}) => {
     const [reports, setReports] = useState([]);
 
     useEffect(() => {
-      const fetchAllReports = async () => {
-        try {
-          const response = await fetch(`${IP}:${PORT}/get_missing_reports`);
-          const data = await response.json();
-          setReports(data[0]);
-        } catch (error) {
-          console.error(error);
-        }
+      if (isFocused) {
+        fetchAllReports();
       }
-
-      fetchAllReports();
-
-    }, []);
+    }, [isFocused]);
+  
+    const fetchAllReports = async () => {
+      try {
+        const response = await fetch(`${IP}:${PORT}/get_missing_reports`);
+        const data = await response.json();
+        setReports(data[0]);
+      } catch (error) {
+        console.error(error);
+      }
+    };
    // TODO: replace mock data with real data
   const image = "https://wallpaperaccess.com/full/317501.jpg";
 //
@@ -57,11 +60,6 @@ const DashboardPage = ({route}) => {
 //   const description = "cute and fluffy"
 
     const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
-
-    reports.map((report) => {
-      console.log("TESTING", report)
-      }  
-    );
 
     return (
         <ScrollView style={{backgroundColor: 'white'}}>
@@ -95,7 +93,7 @@ const DashboardPage = ({route}) => {
 
 
             {/* {reports.map(({missing_report_id, owner_name, pet_name, pet_animal, pet_breed, location_latitude, location_longitude, date_time, description}) => ( */}
-              {reports.map((report, index) => (
+              {reports && reports.map((report, index) => (
                <View key={index} alignContent="center" paddingBottom={30}>
                <Box bg="#F5F5F5" borderRadius={15} padding={5} >
                  <HStack alignItems="center">

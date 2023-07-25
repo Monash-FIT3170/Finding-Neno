@@ -20,7 +20,7 @@ def create_database_pool():
     """
     return psycopg2.pool.SimpleConnectionPool(
         minconn=1,
-        maxconn=10,
+        maxconn=1000,
         dbname=os.getenv("DATABASE_NAME"),
         user=os.getenv("DATABASE_USER"),
         password=os.getenv("DATABASE_PASSWORD"),
@@ -42,7 +42,12 @@ def get_connection():
 def root():
     return "Finding Neno Server is Up!"
 
-@app.route("/close-connection")
+@app.route("/manual_start_connection")
+def manual_start_database_pool():
+    create_database_pool()
+    return "Database pool has been manually created successfully"
+
+@app.route("/close_connection")
 def close_connection():
     database_pool.closeall()
     return "Connection closed successfully"
@@ -53,11 +58,14 @@ def post_insert_user():
 
 @app.route("/login", methods=["POST"])
 def post_login():
+    print("logging in")
     data = login(get_connection())
+    print(data)
     headers = {
         'userId': data[2],
-        'accessToken': data[3]
+        'accessToken': data[3],
     }
+
 
     return data[0], data[1], headers
 
@@ -68,6 +76,7 @@ def post_change_password():
 # pet operations
 @app.route("/get_owner_pets/<owner_id>", methods=["GET"])
 def get_owner_pets(owner_id):
+    print("conected to api")
     return get_owner_pets_operation(get_connection(), owner_id)
 
 @app.route("/get_pet/<pet_id>", methods=["GET"])
@@ -76,7 +85,9 @@ def get_pet_api(pet_id):
 
 @app.route("/insert_pet", methods=["POST"])
 def insert_pet():
-    return insert_pet_operation(get_connection())
+    owner_id = request.args.get("owner_id")
+    print(owner_id)
+    return insert_pet_operation(get_connection(), owner_id)
 
 @app.route("/update_pet", methods=["PUT"])
 def update_pet_api():

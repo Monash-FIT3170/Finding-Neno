@@ -47,6 +47,7 @@ def insert_user_to_database(conn, email, phone, name, password):
     """
     This function is used to add a new user to the database
     """
+    print('HEHREHRHEHREHRHER')
 
     cur = conn.cursor()
 
@@ -85,6 +86,8 @@ def check_user_exists_in_database(conn, email, password):
     # Construct a SELECT query to check if the user exists in the database
     query = """SELECT * FROM users WHERE email_address = %s"""
 
+    
+
     # Execute the query
     try:
         cur.execute(query, (email,))
@@ -94,6 +97,8 @@ def check_user_exists_in_database(conn, email, password):
             return False
         else: # If user is found
             user = result_set[0]
+            print(user[4])
+            
             if user[4] == hashed_pass:  # Check if password and salt matches
                 print("User found with the provided email address and matching password.")
                 return user[0], user[5]# returns user[0] (user_id), and user[5] (access_token)

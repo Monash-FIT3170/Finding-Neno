@@ -2,55 +2,91 @@ import { useNavigation } from '@react-navigation/native';
 import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link} from "native-base";
 import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
-import { IP, PORT } from "@env";
+import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import PetCard  from "../components/PetCard";
+import { IP, PORT } from "@env";
 
 
 export default function ProfilePage({ navigation: { navigate}, route}) {
     const navigation = useNavigation();
-    const {user} = route.params;
+    const {headers} = route.params;
+    const ownerId = headers["userid"];
+    const accessToken = headers["accesstoken"]
+  
+    const isFocused = useIsFocused();
+    
 
-    // console.log("Profile: " + user);
-    // console.log(user)
+    const myPet = {
+      name: '',
+      image_url: '',
+      animal: '',
+      breed: '',
+      description: '',
+      owner_id: null,
+    };
+
+    var data;
+
+    const [pets, setPets] = useState([]);
+
+    useEffect(() => {
+      if (isFocused) {
+        fetchOwnerPets();
+      }
+    }, [isFocused]);
+  
+    const fetchOwnerPets = async () => {
+      try {
+        const url = `${IP}:${PORT}/get_owner_pets/${ownerId}`;
+        const response = await fetch(url, {
+          headers: { 
+            method: "GET",
+            'Authorization': `Bearer ${accessToken}`}
+        });
+
+        if (!response.ok) {
+          throw new Error('Request failed with status ' + response.status);
+        }
+        const pets = await response.json();
+        setPets(pets);
+        //const petTuples = data.map( (pet) => [pet["name"], pet["id"]]);
+
+        //setDropdownOptions(petTuples)
+      } catch (error) {
+        console.log("error in profile page")
+        console.log(error);
+      }
+    }
+
 
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
 
-    const pet1 = {
-      image: "https://wallpaperaccess.com/full/317501.jpg",
-      name: "Fluffy",
-      type: "Rabbit",
-      breed: "Angora",
-      description: "A fluffy rabbit",
-    }
 
-    {/. Call a get user function ./}
-    const ownerId = user["userid"];
-    const accessToken = user["accesstoken"]
-
-    console.log(ownerId);
-    console.log(accessToken);
-
-
-    const name = "Human Being";
-    const email = "sample@student.monash.edu";
-    const phone = "0412 345 678";
+    // TODO: Replace with actual data
+    const name = "TODO";
+    const email = "TODO";
+    const phone = "TODO";
 
     //const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
-  
-    fetch(`/get_owner_pets/${ownerId}`)
-      .then(response => response.json())
-      .then(data => {
-        // Handle the response data
-        console.log(data);
-        // Perform any necessary operations with the pet data
-      })
-      .catch(error => {
-        // Handle any errors that occurred during the request
-        console.error(error);
-    });
 
+    const petCards = () => {
+      console.log(pets);
+      if (pets.length > 0) {
+        return pets.map((pet, index) => (
+          <PetCard
+            key={index}
+            color={Color.NENO_BLUE}
+            height={150}
+            pet={pet}
+          />
+          
+        ));
+      } else {
+        return <></>
+      }
+    }
 
     return (
       <ScrollView>
@@ -146,7 +182,9 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
           </Button>
         </HStack>
         
-        <PetCard color={Color.NENO_BLUE} height={150} pet={pet1} />
+        
+        {petCards()}
+        
         
 
       </VStack>
