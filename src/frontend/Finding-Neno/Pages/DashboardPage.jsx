@@ -44,9 +44,6 @@ const DashboardPage = () => {
       try {
         const response = await fetch(`${IP}:${PORT}/get_missing_reports`);
         const data = await response.json();
-        console.log("======================")
-        console.log(data);
-        console.log("======================")
         setReports(data[0]);
       } catch (error) {
         console.error(error);
