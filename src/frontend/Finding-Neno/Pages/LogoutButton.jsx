@@ -1,9 +1,11 @@
 import React from 'react';
 import { Button } from 'native-base';
 import { useNavigation } from '@react-navigation/native';
-import { IP, PORT } from "@env";
+import store from "../store/store";
 
 const LogoutButton = () => {
+  const IP = store.getState().IP;
+  const PORT = store.getState().PORT;
   const navigation = useNavigation();
 
   const handleLogout = () => {

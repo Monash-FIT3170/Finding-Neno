@@ -20,17 +20,15 @@ import PasswordResetPage from "./Pages/PasswordResetPage";
 import SightingsPage from "./Pages/SightingsPage";
 import NewReportPage from "./Pages/NewReportPage";
 import { Ionicons } from '@expo/vector-icons'; // Import the desired icon library
-import { IP, PORT } from "@env";
 
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-  console.log("APP")
-  console.log(IP)
-  console.log(PORT)
   console.log(store.getState());
+  const IP = store.getState().IP;
+  const PORT = store.getState().PORT;
   return (
     <NativeBaseProvider>
       <Provider store={store}>

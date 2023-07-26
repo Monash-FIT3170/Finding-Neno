@@ -5,7 +5,6 @@ import {Dimensions} from 'react-native';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
-import { IP, PORT } from "@env";
 
 import Report from "../components/Report";
 import store from '../store/store';
@@ -14,12 +13,10 @@ export default function ReportPage({ navigation: { navigate}}) {
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
-    
-    const ownerId = store.getState().userId;
-    const accessToken = store.getState().accessToken;
-  
 
-
+    const IP = store.getState().IP;
+    const PORT = store.getState().PORT;
+    const USER_ID = store.getState().userId;
 
     const isFocused = useIsFocused();
     
@@ -38,7 +35,7 @@ export default function ReportPage({ navigation: { navigate}}) {
   
     const fetchAllReports = async () => {
       try {
-        const response = await fetch(`${IP}:${PORT}/get_missing_reports?owner_id=${ownerId}`);
+        const response = await fetch(`${IP}:${PORT}/get_missing_reports?owner_id=${USER_ID}`);
         const data = await response.json();
         setReports(data[0]);
       } catch (error) {

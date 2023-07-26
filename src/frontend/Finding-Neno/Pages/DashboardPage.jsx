@@ -4,11 +4,12 @@ import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { IP, PORT } from "@env";
 
 import store from '../store/store';
 
 const DashboardPage = () => {
+  const IP = store.getState().IP;
+  const PORT = store.getState().PORT;
   const windowWidth = Dimensions.get('window').width; 
   const navigation = useNavigation();
   const toast = useToast();
@@ -43,6 +44,9 @@ const DashboardPage = () => {
       try {
         const response = await fetch(`${IP}:${PORT}/get_missing_reports`);
         const data = await response.json();
+        console.log("======================")
+        console.log(data);
+        console.log("======================")
         setReports(data[0]);
       } catch (error) {
         console.error(error);

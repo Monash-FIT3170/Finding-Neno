@@ -5,15 +5,17 @@ import { Color } from "../components/atomic/Theme";
 import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import PetCard  from "../components/PetCard";
-import { IP, PORT } from "@env";
 
 import { useSelector, useDispatch } from "react-redux";
 import store from '../store/store';
 
 export default function ProfilePage({ navigation: { navigate}}) {
     const navigation = useNavigation();
-    const ownerId = store.getState().userId;
-    const accessToken = store.getState().accessToken;
+
+    const IP = store.getState().IP;
+    const PORT = store.getState().PORT;
+    const USER_ID = store.getState().userId;
+    const ACCESS_TOKEN = store.getState().accessToken;
   
     const isFocused = useIsFocused();
     
@@ -43,11 +45,11 @@ export default function ProfilePage({ navigation: { navigate}}) {
   
     const fetchOwnerPets = async () => {
       try {
-        const url = `${IP}:${PORT}/get_owner_pets/${ownerId}`;
+        const url = `${IP}:${PORT}/get_owner_pets/${USER_ID}`;
         const response = await fetch(url, {
           headers: { 
             method: "GET",
-            'Authorization': `Bearer ${accessToken}`}
+            'Authorization': `Bearer ${ACCESS_TOKEN}`}
         });
 
         if (!response.ok) {

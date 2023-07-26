@@ -4,10 +4,12 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import { validEmail } from "./validation"
 import { useState } from "react";
-import { IP, PORT } from "@env";
+import store from "../store/store";
 
 
 const ForgotPasswordPage = () => {
+	const IP = store.getState().IP;
+	const PORT = store.getState().PORT;
 	const [formData, setFormData] = useState({});
 	const [errors, setErrors] = useState({});
 	const [buttonText, setButtonText] = useState("Send Reset Code")

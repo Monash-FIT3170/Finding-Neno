@@ -1,9 +1,8 @@
 import { createStore } from "redux";
 
 const initialState = {
-    // change IP and PORT to your own IP and PORT for the app to work with redux
-    IP: undefined,
-    PORT: undefined,
+    IP: process.env.IP,
+    PORT: process.env.PORT,
     userId: undefined,
     accessToken: undefined,
 };

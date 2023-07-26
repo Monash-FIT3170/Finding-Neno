@@ -7,7 +7,6 @@ import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Alert
 
 import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { IP, PORT } from "@env";
 import { validDateTime, validateCoordinates } from "./validation"
 
 import store from '../store/store';
@@ -29,8 +28,10 @@ const AlertComponent = ({ onClose }) => (
 const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
 
-    const ownerId = store.getState().userId;
-    const accessToken = store.getState().accessToken;
+  const IP = store.getState().IP;
+  const PORT = store.getState().PORT;
+  const USER_ID = store.getState().userId;
+  const ACCESS_TOKEN = store.getState().accessToken;
 
 	const [formData, setFormData] = useState({ description: '' });
 	const [dropdownOptions, setDropdownOptions] = useState([]);
@@ -47,11 +48,11 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		// ownerId = 2
 		const fetchOwnerPets = async () => {
 			try {
-				const url = `${IP}:${PORT}/get_owner_pets/${ownerId}`;
+				const url = `${IP}:${PORT}/get_owner_pets/${USER_ID}`;
 				const response = await fetch(url, {
 					headers: {
 						method: "GET",
-						'Authorization': `Bearer ${accessToken}`
+						'Authorization': `Bearer ${ACCESS_TOKEN}`
 					}
 				});
 
@@ -78,7 +79,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		let isValid = validateDetails(formData);
 
 		if (isValid) {
-			setFormData({ ...formData, authorId: ownerId })
+			setFormData({ ...formData, authorId: USER_ID })
 			const url = `${IP}:${PORT}/insert_missing_report`;
 
 			fetch(url, {

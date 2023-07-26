@@ -4,7 +4,6 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import { KeyboardAvoidingView } from 'react-native';
-import { IP, PORT } from "@env";
 
 import store from '../store/store';
 
@@ -17,8 +16,10 @@ export default function NewPetPage({ navigation: { navigate}}) {
      */
 
     const navigation = useNavigation();
-    const ownerId = store.getState().userId;
-    const accessToken = store.getState().accessToken;
+    const IP = store.getState().IP;
+    const PORT = store.getState().PORT;
+    const USER_ID = store.getState().userId;
+    const ACCESS_TOKEN = store.getState().accessToken;
     const pet = store.getState().pet;
    
     
@@ -99,13 +100,13 @@ export default function NewPetPage({ navigation: { navigate}}) {
             breed: petBreed,
             description: petDescription,
             image_url: petImage.toString(),
-            owner_id: owner_id     
+            owner_id: USER_ID     
         };
         // call the backend API
         fetch(url, {
             method: method,
             headers: {
-                'Authorization': `Bearer ${access_token}`,
+                'Authorization': `Bearer ${ACCESS_TOKEN}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(pet),

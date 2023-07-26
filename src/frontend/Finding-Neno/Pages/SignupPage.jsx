@@ -6,7 +6,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import { validEmail, validPhoneNumber } from "./validation";
 import { useState } from "react";
-import { IP, PORT } from "@env";
+import store from "../store/store";
 
 
 const SignupPage = () => {
@@ -17,6 +17,9 @@ const SignupPage = () => {
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [buttonText, setButtonText] = useState("Sign up")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+	const IP = store.getState().IP;
+	const PORT = store.getState().PORT;
 
 	const navigation = useNavigation();
 
