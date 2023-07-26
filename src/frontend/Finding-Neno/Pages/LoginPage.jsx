@@ -18,10 +18,9 @@ const LoginPage = () => {
 	const [buttonText, setButtonText] = useState("Sign in")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-	const user = useSelector((state) => state.user);
 	const dispatch = useDispatch();
-	const IP = store.getState().IP;
-	const PORT = store.getState().PORT;
+	const IP = useSelector((state) => state.IP);
+	const PORT = useSelector((state) => state.PORT);
 
 	const navigation = useNavigation();
 	

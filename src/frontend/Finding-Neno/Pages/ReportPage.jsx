@@ -14,9 +14,10 @@ export default function ReportPage({ navigation: { navigate}}) {
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
 
-    const IP = store.getState().IP;
-    const PORT = store.getState().PORT;
-    const USER_ID = store.getState().userId;
+    const IP = useSelector((state) => state.IP);
+    const PORT = useSelector((state) => state.PORT);
+    const USER_ID = useSelector((state) => state.userId);
+    const ACCESS_TOKEN = useSelector((state) => state.accessToken);
 
     const isFocused = useIsFocused();
     

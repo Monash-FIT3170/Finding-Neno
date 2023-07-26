@@ -28,10 +28,10 @@ const AlertComponent = ({ onClose }) => (
 const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
 
-  const IP = store.getState().IP;
-  const PORT = store.getState().PORT;
-  const USER_ID = store.getState().userId;
-  const ACCESS_TOKEN = store.getState().accessToken;
+	const IP = useSelector((state) => state.IP);
+	const PORT = useSelector((state) => state.PORT);
+  	const USER_ID = useSelector((state) => state.userId);
+  	const ACCESS_TOKEN = useSelector((state) => state.accessToken);
 
 	const [formData, setFormData] = useState({ description: '' });
 	const [dropdownOptions, setDropdownOptions] = useState([]);

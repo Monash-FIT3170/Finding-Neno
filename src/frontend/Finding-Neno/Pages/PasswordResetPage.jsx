@@ -10,8 +10,8 @@ import store from "../store/store";
 
 const PasswordResetPage = () => {
 
-	const IP = store.getState().IP;
-	const PORT = store.getState().PORT;
+	const IP = useSelector((state) => state.IP);
+	const PORT = useSelector((state) => state.PORT);
 	
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});

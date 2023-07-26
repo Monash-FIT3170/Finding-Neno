@@ -6,17 +6,18 @@ import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 
 import store from '../store/store';
+import { useSelector } from 'react-redux';
 
 const DashboardPage = () => {
-  const IP = store.getState().IP;
-  const PORT = store.getState().PORT;
+	const IP = useSelector((state) => state.IP);
+	const PORT = useSelector((state) => state.PORT);
+  const USER_ID = useSelector((state) => state.userId);
+  const ACCESS_TOKEN = useSelector((state) => state.accessToken);
+
   const windowWidth = Dimensions.get('window').width; 
   const navigation = useNavigation();
   const toast = useToast();
   const isFocused = useIsFocused();
-
-  const userId = store.getState().userId;
-  const accessToken = store.getState().accessToken;
 
   const [modalVisible, setModalVisible] = useState(false);
 

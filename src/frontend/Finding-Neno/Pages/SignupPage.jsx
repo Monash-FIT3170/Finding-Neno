@@ -18,8 +18,8 @@ const SignupPage = () => {
 	const [buttonText, setButtonText] = useState("Sign up")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-	const IP = store.getState().IP;
-	const PORT = store.getState().PORT;
+	const IP = useSelector((state) => state.IP);
+	const PORT = useSelector((state) => state.PORT);
 
 	const navigation = useNavigation();
 
