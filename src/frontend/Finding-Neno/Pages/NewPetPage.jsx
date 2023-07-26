@@ -6,7 +6,7 @@ import { Picker } from '@react-native-picker/picker';
 import { KeyboardAvoidingView } from 'react-native';
 import { IP, PORT } from "@env";
 
-export default function NewPetPage( {route} ) {
+export default function NewPetPage({ navigation: { navigate}, route}) {
     /**
      * This page is used to create a new pet or edit an existing pet.
      * It takes in the pet object as a parameter, if the pet object is empty, it will create a new pet.
@@ -15,8 +15,20 @@ export default function NewPetPage( {route} ) {
      */
 
     const navigation = useNavigation();
+   
 
-    const { pet, owner_id, access_token } = route.params;
+
+    const access_token = route.params["accessToken"];
+    const owner_id = route.params["ownerId"]
+    const pet = route.params["pet"]
+
+    // const {user } = route.params;
+    // console.log(user);
+    // const owner_id = user["ownerId"]
+
+    // const { access_token, owner_id, pet } = route.params;
+    // console.log('OWNEEEERRRRRR and access token')
+    // console.log(access_token)
     
     //if the pet name is empty then it is a new pet, otherwise it is an existing pet
     const isExistingPet = pet.name != '';
@@ -85,7 +97,7 @@ export default function NewPetPage( {route} ) {
           url = `${IP.toString()}:${PORT.toString()}/update_pet`;
           method = 'PUT';
         } else {
-          url = `${IP.toString()}:${PORT.toString()}/insert_pet`;
+          url = `${IP.toString()}:${PORT.toString()}/insert_pet?owner_id=${owner_id}`;
           method = 'POST';
         }
         // create the pet object
@@ -95,13 +107,13 @@ export default function NewPetPage( {route} ) {
             breed: petBreed,
             description: petDescription,
             image_url: petImage.toString(),
-            owner_id: 1      
+            owner_id: owner_id     
         };
         // call the backend API
         fetch(url, {
             method: method,
             headers: {
-                'Authorization': `Bearer ${"fake token"}`,
+                'Authorization': `Bearer ${access_token}`,
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(pet),

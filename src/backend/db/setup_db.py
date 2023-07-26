@@ -44,7 +44,7 @@ def create_tables(connection: psycopg2.extensions.connection):
         """CREATE TABLE "user_settings" (user_id INTEGER PRIMARY KEY REFERENCES "users"(id));""",
         # Create pets table
         """CREATE TABLE "pets" (id SERIAL PRIMARY KEY, name VARCHAR(255), animal VARCHAR(255), breed VARCHAR(255), 
-        description VARCHAR(255), image_url VARCHAR(255), owner_id INTEGER REFERENCES "users"(id));""",
+        description VARCHAR(255), image_url VARCHAR(1000), owner_id INTEGER REFERENCES "users"(id));""",
         # Create missing_reports table
         """CREATE TABLE "missing_reports" (id SERIAL PRIMARY KEY, pet_id INTEGER REFERENCES pets(id), author_id 
         INTEGER REFERENCES "users"(id), date_time TIMESTAMP NOT NULL, location_longitude FLOAT, location_latitude 

@@ -23,8 +23,8 @@ def insert_user(conn) -> Tuple[str, int]:
 def insert_missing_report(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("inserting report: ", json_data)
-    # author_id = json_data["authorId"]
-    author_id = 1
+    author_id = json_data["authorId"]
+    # author_id = 1
     pet_id = json_data["missingPetId"]
 
     last_seen_input = json_data["lastSeenDateTime"]
@@ -89,7 +89,7 @@ def retrieve_missing_reports(conn, owner_id) -> Tuple[str, int]:
     if len(missing_reports) > 0:
         return missing_reports, 200
     elif len(missing_reports) == 0:
-        return "Empty", 204
+        return [], 204
     else:
         return "Fail", 400
 
@@ -98,9 +98,11 @@ def login(conn) -> Tuple[str, int]:
     print("user login attempt: ", json_data)
     email = json_data["email"].lower()
     password = json_data["password"]
+    print(password)
     user_exists = check_user_exists_in_database(conn, email, password)
     if user_exists:
-        return "Success", 200  # TODO: Return Access Token
+        user_id, access_token = user_exists  # Unpack the tuple
+        return "Success", 200, user_id, access_token  # Return user_id and access_token
     else:
         return "Fail", 401
 

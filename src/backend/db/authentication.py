@@ -20,6 +20,7 @@ def verify_access_token(connection: psycopg2.extensions.connection, user_id: int
         cur.execute(query, (user_id,))
         access_token_db = cur.fetchone()[0]
         print(f"Query executed successfully: {query}")
+        print("hello")
     except Exception as e:
         print(f"Error while executing query: {e}")
         return False

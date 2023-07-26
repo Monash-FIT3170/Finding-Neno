@@ -1,17 +1,53 @@
 import React from 'react';
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
-import { ScrollView, Button, Box } from 'native-base';
+import { ScrollView, Button, Box, Image, View, Heading, VStack, HStack, Text } from 'native-base';
 import {Dimensions} from 'react-native';
+import { useEffect, useState } from 'react';
+import { useIsFocused } from '@react-navigation/native';
+import { Color } from "../components/atomic/Theme";
+import { IP, PORT } from "@env";
+
+
 
 import Report from "../components/Report";
 
-export default function ReportPage({ navigation: { navigate}}, {route}) {
+export default function ReportPage({ navigation: { navigate}, route}) {
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
-    //const {ownerId, accessToken} = route.params;
+    
+    const {headers} = route.params;
+    const ownerId = headers["userid"];
+    const accessToken = headers["accesstoken"]
 
-    const user = {
+
+
+    const isFocused = useIsFocused();
+    
+    console.log("Report: " + owner);
+    const image = "https://wallpaperaccess.com/full/317501.jpg";
+    const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
+
+    const [reports, setReports] = useState([]);
+
+
+    useEffect(() => {
+      if (isFocused) {
+        fetchAllReports();
+      }
+    }, [isFocused]);
+  
+    const fetchAllReports = async () => {
+      try {
+        const response = await fetch(`${IP}:${PORT}/get_missing_reports?owner_id=${ownerId}`);
+        const data = await response.json();
+        setReports(data[0]);
+      } catch (error) {
+        console.error(error);
+      }
+    };
+
+    const owner = {
         name: "Human Being",
         image: "https://wallpaperaccess.com/full/317501.jpg",
         phone: "0412 345 678"
@@ -50,10 +86,6 @@ export default function ReportPage({ navigation: { navigate}}, {route}) {
 
         <Box height={3}/>
 
-        <Report windowWidth={windowWidth} user={user} pet={pet1}/>
-        <Box height={5}/>
-        <Report windowWidth={windowWidth} user={user} pet={pet2}/>
-        <Box height={5}/>
         
     </Box>
     </ScrollView>

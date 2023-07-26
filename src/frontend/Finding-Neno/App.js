@@ -15,65 +15,100 @@ import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import PasswordResetPage from "./Pages/PasswordResetPage";
 import SightingsPage from "./Pages/SightingsPage";
 import NewReportPage from "./Pages/NewReportPage";
+import { Ionicons } from '@expo/vector-icons'; // Import the desired icon library
+import { IP, PORT } from "@env";
+
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
-  
+  console.log("APP")
+  console.log(IP)
+  console.log(PORT)
   return (
     <NativeBaseProvider>
       <NavigationContainer>
         {/* To skip login/signup pages, replace initalRouteName="Login" to initalRouteName="Tab Navigator" */}
-        <Stack.Navigator initialRouteName="Tab Navigator">
-          <Stack.Screen name="Login" component={LoginPage} />
-          <Stack.Screen name="Signup" component={SignupPage} /> 
-          <Stack.Screen name="ForgotPassword" component={ForgotPasswordPage} />
-          <Stack.Screen name="PasswordReset" component={PasswordResetPage} /> 
+        <Stack.Navigator initialRouteName="Login">
+          <Stack.Screen name="Login" component={LoginPage} 
+          initialParams={{ IP, PORT }}    
+          options={{
+            headerShown: false
+          }}/>
+          <Stack.Screen name="Signup" component={SignupPage} 
+          initialParams={{ IP, PORT }}  /> 
+          <Stack.Screen name="ForgotPassword" component={ForgotPasswordPage} 
+          initialParams={{ IP, PORT }}  />
+          <Stack.Screen name="PasswordReset" component={PasswordResetPage} 
+          initialParams={{ IP, PORT }}  /> 
           <Stack.Screen 
             name="Tab Navigator" 
             component={TabNavigator}
+            initialParams={{ IP, PORT }}  
             options={{ headerShown: false }}
           />      
         </Stack.Navigator>
       </NavigationContainer>
     </NativeBaseProvider>
+  );  
+}
+function TabNavigator({ route }) {
+  const { headers } = route.params;
+  
+  return (
+<Tab.Navigator initialRouteName="Dashboard">
+  <Tab.Screen
+    name="Dashboard"
+    component={DashboardPage}
+    initialParams={{ headers }}
+    options={{
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="home" color={color} size={size} />
+      ),
+    }}
+  />
+  <Tab.Screen
+    name="Report"
+    component={ReportStackNavigator}
+    initialParams={{ headers }}
+    options={{
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="document-text" color={color} size={size} />
+      ),
+      headerShown: false
+    }}
+  />
+  <Tab.Screen
+    name="Profile"
+    component={ProfileStackNavigator}
+    initialParams={{ headers }}
+    options={{
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="person" color={color} size={size} />
+      ),
+      headerShown: false
+    }}
+  />
+</Tab.Navigator>
   );
 }
 
-function TabNavigator(){
-  return(
-    <Tab.Navigator initialRouteName="Dashboard">
-      <Tab.Screen name="Dashboard" component={DashboardPage}/>
-      <Tab.Screen name="Map" component={MapPage} />
-      <Tab.Screen 
-        name="Report" 
-        component={ReportStackNavigator} 
-        options={{ headerShown: false }}
-      />
-      <Tab.Screen name="Sightings" component={SightingsPage}/>
-      <Tab.Screen 
-        name="Profile" 
-        component={ProfileStackNavigator} 
-        options={{ headerShown: false }}
-      />
-    </Tab.Navigator>
-  )
-}
-
-function ReportStackNavigator() {
+function ReportStackNavigator({route}) {
+  const { headers } = route.params;
   return (
     <Stack.Navigator initialRouteName="ReportPage">
-      <Stack.Screen name="Report Page" component={ReportPage}/>
-      <Stack.Screen name="New Report Page" component={NewReportPage}/>
+      <Stack.Screen name="Report Page" component={ReportPage} initialParams={{headers}}/>
+      <Stack.Screen name="New Report Page" component={NewReportPage} initialParams={{headers}}/>
     </Stack.Navigator>
   )
 }
 
-function ProfileStackNavigator() {
+function ProfileStackNavigator({route}) {
+  const { headers } = route.params;
   return (
     <Stack.Navigator initialRouteName="ProfilePage">
-      <Stack.Screen name="Profile Page" component={ProfilePage}/>
+      <Stack.Screen name="Profile Page" component={ProfilePage} initialParams={{headers}}/>
       <Stack.Screen name="New Pet Page" component={NewPetPage}/>
     </Stack.Navigator>
   )

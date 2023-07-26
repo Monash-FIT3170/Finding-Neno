@@ -1,55 +1,92 @@
-import { useNavigation  } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link} from "native-base";
 import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
-import { IP, PORT } from "@env";
+import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
+import PetCard  from "../components/PetCard";
+import { IP, PORT } from "@env";
 
 
-export default function ProfilePage({ navigation: { navigate}}) {
+export default function ProfilePage({ navigation: { navigate}, route}) {
     const navigation = useNavigation();
-    const windowWidth = Dimensions.get('window').width; 
-    const windowHeight = Dimensions.get('window').height;
+    const {headers} = route.params;
+    const ownerId = headers["userid"];
+    const accessToken = headers["accesstoken"]
+  
+    const isFocused = useIsFocused();
+    
 
-    {/. Call a get user function ./}
-    const ownerId = "1"
-    const accessToken = "Fake Token"
-
-    const [pets, setPets] = useState([]);
-    // Set up an empty pet object here
-    const [myPet, setMyPet] = useState({
+    const myPet = {
       name: '',
       image_url: '',
       animal: '',
       breed: '',
       description: '',
       owner_id: null,
-    });
+    };
+
+    var data;
+
+    const [pets, setPets] = useState([]);
 
     useEffect(() => {
-      const fetchOwnerPets = async () => {
-        try {
-          const response = await fetch(`${IP}:${PORT}/get_owner_pets/${ownerId}`);
-          const data = await response.json();
-          setPets(data);
-        } catch (error) {
-          console.error(error);
-        }
+      if (isFocused) {
+        fetchOwnerPets();
       }
-
-      fetchOwnerPets();
-
-    }, []);
-
-
-
+    }, [isFocused]);
   
-    const name = "Human Being";
-    const email = "sample@student.monash.edu";
-    const phone = "0412 345 678";
+    const fetchOwnerPets = async () => {
+      try {
+        const url = `${IP}:${PORT}/get_owner_pets/${ownerId}`;
+        const response = await fetch(url, {
+          headers: { 
+            method: "GET",
+            'Authorization': `Bearer ${accessToken}`}
+        });
+
+        if (!response.ok) {
+          throw new Error('Request failed with status ' + response.status);
+        }
+        const pets = await response.json();
+        setPets(pets);
+        //const petTuples = data.map( (pet) => [pet["name"], pet["id"]]);
+
+        //setDropdownOptions(petTuples)
+      } catch (error) {
+        console.log("error in profile page")
+        console.log(error);
+      }
+    }
+
+
+    const windowWidth = Dimensions.get('window').width; 
+    const windowHeight = Dimensions.get('window').height;
+
+
+    // TODO: Replace with actual data
+    const name = "TODO";
+    const email = "TODO";
+    const phone = "TODO";
 
     //const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
-  
+
+    const petCards = () => {
+      console.log(pets);
+      if (pets.length > 0) {
+        return pets.map((pet, index) => (
+          <PetCard
+            key={index}
+            color={Color.NENO_BLUE}
+            height={150}
+            pet={pet}
+          />
+          
+        ));
+      } else {
+        return <></>
+      }
+    }
 
     return (
       <ScrollView>
@@ -145,14 +182,10 @@ export default function ProfilePage({ navigation: { navigate}}) {
           </Button>
         </HStack>
         
-        <Box width={windowWidth - 60} height={100} bg={Color.NENO_BLUE}/>
-        <Box height={1}/>
-        <Box width={windowWidth - 60} height={100} bg={Color.NENO_BLUE}/>
-        <Box height={1}/>
-        <Box width={windowWidth - 60} height={100} bg={Color.NENO_BLUE}/>
-        <Box height={1}/>
-        <Box width={windowWidth - 60} height={100} bg={Color.NENO_BLUE}/>
-        <Box height={1}/>
+        
+        {petCards()}
+        
+        
 
       </VStack>
       
