@@ -9,6 +9,7 @@ import { useState } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
+import { login } from "../store/user";
 
 
 const LoginPage = () => {
@@ -19,8 +20,7 @@ const LoginPage = () => {
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
 	const dispatch = useDispatch();
-	const IP = useSelector((state) => state.IP);
-	const PORT = useSelector((state) => state.PORT);
+	const { IP, PORT } = useSelector((state) => state.api);
 
 	const navigation = useNavigation();
 	
@@ -38,12 +38,11 @@ const LoginPage = () => {
 			})
 			.then((res) => {
 				if (res.status == 200|| res.status == 201) {
-					const action = {
-						type: "LOGIN",
-						userId: res.headers.map.userid,
-						accessToken: res.headers.map.accesstoken,
+					payload = {
+						USER_ID: res.headers.map.userid,
+						ACCESS_TOKEN: res.headers.map.accesstoken,
 					}
-					dispatch(action);
+					dispatch(login(payload));
 					console.log(store.getState());
 
 					navigation.navigate('Tab Navigator');

@@ -5,7 +5,10 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
+
+import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
+
 
 
 const PasswordResetPage = () => {

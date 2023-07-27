@@ -5,7 +5,9 @@ import * as ImagePicker from 'expo-image-picker';
 import { Picker } from '@react-native-picker/picker';
 import { KeyboardAvoidingView } from 'react-native';
 
+import { useSelector, useDispatch } from "react-redux";
 import store from '../store/store';
+
 
 export default function NewPetPage({ navigation: { navigate}}) {
     /**
@@ -16,11 +18,9 @@ export default function NewPetPage({ navigation: { navigate}}) {
      */
 
     const navigation = useNavigation();
-    const IP = useSelector((state) => state.IP);
-    const PORT = useSelector((state) => state.PORT);
-    const USER_ID = useSelector((state) => state.userId);
-    const ACCESS_TOKEN = useSelector((state) => state.accessToken);
-    const pet = store.getState().pet;
+    const {IP, PORT} = useSelector((state) => state.api)
+    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+    const pet = useSelector((state) => state.pet);
    
     
     //if the pet name is empty then it is a new pet, otherwise it is an existing pet

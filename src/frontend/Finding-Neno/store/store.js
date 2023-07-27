@@ -1,5 +1,18 @@
 import { createStore } from "redux";
+import { configureStore } from '@reduxjs/toolkit'
+import userReducer from './user'
+import apiReducer from './api'
+import petReducer from './pet'
 
+export default configureStore({
+    reducer: {
+        api: apiReducer,
+        user: userReducer,
+        pet: petReducer,
+    }
+});
+
+/*
 const initialState = {
     IP: process.env.IP,
     PORT: process.env.PORT,
@@ -36,4 +49,6 @@ function handleState(state = initialState, action) {
 
 const store = createStore(handleState);
 
-export default store;
+ export default store;
+
+ */

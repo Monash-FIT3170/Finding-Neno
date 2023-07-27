@@ -9,7 +9,9 @@ import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
 import { validDateTime, validateCoordinates } from "./validation"
 
-import store from '../store/store';
+import { useSelector, useDispatch } from "react-redux";
+import store from "../store/store";
+
 
 const AlertComponent = ({ onClose }) => (
 	<Alert w="100%" status="success">
@@ -28,10 +30,8 @@ const AlertComponent = ({ onClose }) => (
 const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
 
-	const IP = useSelector((state) => state.IP);
-	const PORT = useSelector((state) => state.PORT);
-  	const USER_ID = useSelector((state) => state.userId);
-  	const ACCESS_TOKEN = useSelector((state) => state.accessToken);
+	const {IP, PORT} = useSelector((state) => state.api)
+	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
 	const [formData, setFormData] = useState({ description: '' });
 	const [dropdownOptions, setDropdownOptions] = useState([]);

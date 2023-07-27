@@ -6,13 +6,11 @@ import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 
 import store from '../store/store';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from "react-redux";
 
 const DashboardPage = () => {
-	const IP = useSelector((state) => state.IP);
-	const PORT = useSelector((state) => state.PORT);
-  const USER_ID = useSelector((state) => state.userId);
-  const ACCESS_TOKEN = useSelector((state) => state.accessToken);
+	const {IP, PORT} = useSelector((state) => state.api)
+  const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
   const windowWidth = Dimensions.get('window').width; 
   const navigation = useNavigation();

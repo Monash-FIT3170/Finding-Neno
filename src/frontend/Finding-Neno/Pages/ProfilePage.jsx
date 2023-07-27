@@ -8,13 +8,13 @@ import PetCard  from "../components/PetCard";
 
 import { useSelector, useDispatch } from "react-redux";
 import store from '../store/store';
+import { selectPet } from '../store/pet';
 
 export default function ProfilePage({ navigation: { navigate}}) {
     const navigation = useNavigation();
-    const IP = useSelector((state) => state.IP);
-    const PORT = useSelector((state) => state.PORT);
-    const USER_ID = useSelector((state) => state.userId);
-    const ACCESS_TOKEN = useSelector((state) => state.accessToken);
+
+    const {IP, PORT} = useSelector((state) => state.api)
+    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
   
     const isFocused = useIsFocused();
     
@@ -25,13 +25,9 @@ export default function ProfilePage({ navigation: { navigate}}) {
       animal: '',
       breed: '',
       description: '',
-      owner_id: null,
+      owner_id: USER_ID,
     };
-    const action = {
-      type: "SELECT_PET",
-      pet: myPet,
-    }
-    dispatch(action);
+    dispatch(selectPet(myPet));
     console.log(store.getState());
 
     const [pets, setPets] = useState([]);
