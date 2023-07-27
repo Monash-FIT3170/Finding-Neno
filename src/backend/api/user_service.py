@@ -89,7 +89,7 @@ def retrieve_missing_reports(conn, owner_id) -> Tuple[str, int]:
     if len(missing_reports) > 0:
         return missing_reports, 200
     elif len(missing_reports) == 0:
-        return "Empty", 204
+        return [], 204
     else:
         return "Fail", 400
 
