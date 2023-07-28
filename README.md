@@ -49,7 +49,6 @@ Run the following commands from the root directory:
   pip3 install python-dotenv
   pip3 install pytest
   pip3 install pytest-mock
-  pip3 install psycopg2-binary
   ```
 Run the following command from the root directory: 
   ```
@@ -70,3 +69,10 @@ In a new terminal, run the following commands from the src/frontend/finding-neno
   ```
 
 Scan the QR code to start using Finding Neno!
+
+## Notes and Common Issues
+* Network error - Ensure that your devie is on the same IP/network as the server
+* psycho2 module not found - Try running the following command:
+  ```
+  pip3 install psycopg2-binary
+  ```
