@@ -48,7 +48,7 @@ Run the following commands from the root directory:
   ```
   src/backend/install_dependencies_windows.bat
   ```
-  If this does not work, run the following commands instead: 
+If this does not work, run the following commands instead: 
   ```
   pip3 install psycopg2
   pip3 install python-dotenv
