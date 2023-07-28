@@ -5,7 +5,11 @@ All documentation can be found in the team's [Google Drive](https://drive.google
 
 ## Getting Started
 
-### Requirements and Dependencies
+### Hardware Requirements 
+* A Windows or Mac machine
+* A smartphone 
+
+### Software Requirements and Dependencies
 
 * Python
 * pip
