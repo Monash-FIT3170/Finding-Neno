@@ -40,8 +40,13 @@ Create a .env file within the src/frontend/finding-neno directory. Add the follo
   PORT=5000
   ``` 
 Run the following commands from the root directory: 
+* Mac users:
   ```
   src/backend/install_dependencies_mac.sh
+  ```
+* Windows users:
+  ```
+  src/backend/install_dependencies_windows.bat
   ```
   If this does not work, run the following commands instead: 
   ```
@@ -62,7 +67,7 @@ Run the following command from the root directory:
   python3 src/backend/api/main.py .env
   ```
 
-In a new terminal, run the following commands from the src/frontend/finding-neno directory: 
+In a new terminal, run the following commands from the src/frontend/Finding-Neno directory: 
   ```
   npm install
   npx expo start
