@@ -6,7 +6,7 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 
 const LoginPage = ({route}) => {
 	const [formData, setFormData] = useState({});
@@ -42,10 +42,6 @@ const LoginPage = ({route}) => {
 						userid: userId,
 						accesstoken: accessToken
 					};
-
-					// Save to local storage for persistent log-in
-					AsyncStorage.setItem("userid", userId);
-					AsyncStorage.setItem("accesstoken", accessToken);
 
 					navigation.navigate('Tab Navigator', {headers: headers});
 				} else {
