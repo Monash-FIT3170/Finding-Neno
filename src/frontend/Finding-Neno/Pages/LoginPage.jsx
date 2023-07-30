@@ -6,6 +6,7 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const LoginPage = ({route}) => {
@@ -42,6 +43,9 @@ const LoginPage = ({route}) => {
 						userid: userId,
 						accesstoken: accessToken
 					};
+
+					AsyncStorage.setItem("userid", userId);
+					AsyncStorage.setItem("accesstoken", accessToken);
 
 					navigation.navigate('Tab Navigator', {headers: headers});
 				} else {

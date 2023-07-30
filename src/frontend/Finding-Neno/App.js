@@ -17,20 +17,37 @@ import SightingsPage from "./Pages/SightingsPage";
 import NewReportPage from "./Pages/NewReportPage";
 import { Ionicons } from '@expo/vector-icons'; // Import the desired icon library
 import { IP, PORT } from "@env";
+import { useEffect, useState } from "react";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
 export default function App() {
+  // uncomment this to log out
+  // AsyncStorage.multiRemove(["userid", "accesstoken"]);
+  
   console.log("APP")
   console.log(IP)
   console.log(PORT)
+
+  const [headers, setHeaders] = useState({});
+  useEffect(() => {
+    async function getHeaders() {
+      setHeaders({
+        userid: await AsyncStorage.getItem("userid"),
+        accesstoken: await AsyncStorage.getItem("accesstoken")
+      })
+    }
+    getHeaders()
+  }, []);
+
   return (
     <NativeBaseProvider>
       <NavigationContainer>
         {/* To skip login/signup pages, replace initalRouteName="Login" to initalRouteName="Tab Navigator" */}
-        <Stack.Navigator initialRouteName="Login">
+        <Stack.Navigator initialRouteName={(Object.keys(headers).length == 0 || !headers.userid || !headers.accesstoken) ? "Login" : "Tab Navigator" }>
           <Stack.Screen name="Login" component={LoginPage} 
           initialParams={{ IP, PORT }}    
           options={{
@@ -45,7 +62,7 @@ export default function App() {
           <Stack.Screen 
             name="Tab Navigator" 
             component={TabNavigator}
-            initialParams={{ IP, PORT }}  
+            initialParams={{ headers }}  
             options={{ headerShown: false }}
           />      
         </Stack.Navigator>
