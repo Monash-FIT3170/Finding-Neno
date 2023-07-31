@@ -86,6 +86,10 @@ Run the following command from the root directory:
     ```
     npm cache clean --force
     ```
+    or 
+    ```
+    npx react-native start --reset-cache
+    ```
   * Ensure that your device is on the same IP/network as the server
   * Run the app again 
 * psycho2 module not found:

@@ -14,6 +14,7 @@ import SignupPage from "./Pages/SignupPage";
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import PasswordResetPage from "./Pages/PasswordResetPage";
 import SightingsPage from "./Pages/SightingsPage";
+import NewSightingPage from "./Pages/NewSightingPage";
 import NewReportPage from "./Pages/NewReportPage";
 import { Ionicons } from '@expo/vector-icons'; // Import the desired icon library
 import { IP, PORT } from "@env";
@@ -69,6 +70,27 @@ function TabNavigator({ route }) {
     }}
   />
   <Tab.Screen
+    name="Map"
+    component={MapPage}
+    initialParams={{ headers }}
+    options={{
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="location" color={color} size={size} />
+      ),
+    }}
+  />
+  <Tab.Screen
+    name="Sightings"
+    component={SightingsStackNavigator}
+    initialParams={{ headers }}
+    options={{
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="search" color={color} size={size} />
+      ),
+      headerShown: false
+    }}
+  />
+  <Tab.Screen
     name="Report"
     component={ReportStackNavigator}
     initialParams={{ headers }}
@@ -92,6 +114,16 @@ function TabNavigator({ route }) {
   />
 </Tab.Navigator>
   );
+}
+
+function SightingsStackNavigator({route}) {
+  const { headers } = route.params;
+  return (
+    <Stack.Navigator initialRouteName="SightingsPage">
+      <Stack.Screen name="Sightings Page" component={SightingsPage} initialParams={{headers}}/>
+      <Stack.Screen name="New Sighting Page" component={NewSightingPage} initialParams={{headers}}/>
+    </Stack.Navigator>
+  )
 }
 
 function ReportStackNavigator({route}) {
