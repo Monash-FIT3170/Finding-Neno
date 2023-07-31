@@ -29,10 +29,12 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
     var data;
 
     const [pets, setPets] = useState([]);
+    const [user, setUser] = useState([]);
 
     useEffect(() => {
       if (isFocused) {
         fetchOwnerPets();
+        fetchProfileInfo();
       }
     }, [isFocused]);
   
@@ -53,6 +55,27 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
         //const petTuples = data.map( (pet) => [pet["name"], pet["id"]]);
 
         //setDropdownOptions(petTuples)
+      } catch (error) {
+        console.log("error in profile page")
+        console.log(error);
+      }
+    }
+
+    // Retrieve Profile Information
+    const fetchProfileInfo = async () => {
+      try {
+        const url = `${IP}:${PORT}/retrieve_profile/${ownerId}`;
+        const response = await fetch(url, {
+          headers: {
+            method: "GET",
+            'Authorization': `Bearer ${accessToken}`}
+        });
+
+        if (!response.ok) {
+          throw new Error('Request failed with status ' + response.status);
+        }
+        const profile_info = await response.json();
+        setUser(profile_info);
       } catch (error) {
         console.log("error in profile page")
         console.log(error);

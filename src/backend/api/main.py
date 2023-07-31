@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 import flask
 
-from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, update_missing_report, archive_missing_report
+from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, update_missing_report, archive_missing_report, retrieve_profile
 from pets_api import get_owner_pets_operation, get_pet_operation, insert_pet_operation, update_pet_operation, \
     delete_pet_operation
 
@@ -68,6 +68,11 @@ def post_login():
 
 
     return data[0], data[1], headers
+
+@app.route("/retrieve_profile/<user_id>", methods=["GET"])
+def retrieve_profile(user_id):
+    print("retrieving current user profile")
+    return retrieve_profile(get_connection(), user_id)
 
 @app.route("/change_password", methods=["PATCH"])
 def post_change_password():

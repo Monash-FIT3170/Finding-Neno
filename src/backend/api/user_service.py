@@ -1,4 +1,5 @@
-from flask import request
+import flask
+from flask import request, jsonify
 from pathlib import Path
 import sys
 import datetime
@@ -107,11 +108,13 @@ def login(conn) -> Tuple[str, int]:
         return "Fail", 401
 
 
-def retrieve_profile(conn) -> Tuple[str, str, str]:
-    json_data = request.get_json(force=True)
-    print("user profile retrieval attempt: ", json_data)
-    user_id = json_data["userId"]
-    user_info = retrieve_user(conn, user_id)
+def retrieve_profile(conn, user_id) -> Tuple[str, int, str, str, str]:
+
+    auth_header = flask.request.headers.get('Authorization')
+    token = auth_header.split()[1]
+
+    user_info = retrieve_user(conn, user_id, token)
+
     if user_info is not False:
         email, phone, name = user_info
         return "Success", 200, name, email, phone  # Return profile information

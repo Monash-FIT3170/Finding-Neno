@@ -1,6 +1,6 @@
 # Ignore all files containing environment variables
 .env*
-.idea*
+/.idea/
 package-lock.json
 package.json
 **/.DS_Store
