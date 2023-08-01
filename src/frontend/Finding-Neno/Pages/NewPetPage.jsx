@@ -8,6 +8,20 @@ import { Picker } from '@react-native-picker/picker';
 import { IP, PORT } from "@env";
 
 
+const AlertComponent = ({ onClose }) => (
+	<Alert w="100%" status="success">
+		<VStack space={1} flexShrink={1} w="100%" alignItems="center">
+			<Alert.Icon size="md" />
+			<Text fontSize="md" fontWeight="medium" _dark={{ color: "coolGray.800" }}>
+				Your pet has been added!
+			</Text>
+			<Button mt="2" bgColor={Color.NENO_BLUE} onPress={onClose}>
+				Close
+			</Button>
+		</VStack>
+	</Alert>
+);
+
 // export default function NewPetPage({ navigation: { navigate}, route}) {
 //     /**
 //      * This page is used to create a new pet or edit an existing pet.
