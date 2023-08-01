@@ -111,24 +111,26 @@ def put_update_missing_report():
 @app.route("/archive_missing_report", methods=["PUT"])
 def put_archive_missing_report():
     return archive_missing_report(get_connection())
-    
+
+@app.route("/test", methods=["GET"])
+def test():
+    return "Hello World!"
 
 if __name__ == "__main__": 
     # Get environment file path from command line arguments
-    if len(sys.argv) < 2:
-        raise Exception(
-            "No environment file path provided - see top of this file for instructions"
-        )
-    environment_file_path = sys.argv[1]
-    if environment_file_path is None or environment_file_path == "":
-        raise Exception(
-            "No environment file path provided - see top of this file for instructions"
-        )
-    else:
+    # if len(sys.argv) < 2:
+    #     raise Exception(
+    #         "No environment file path provided - see top of this file for instructions"
+    #     )
+    # environment_file_path = sys.argv[1]
+    # if environment_file_path is None or environment_file_path == "":
+    #     raise Exception(
+    #         "No environment file path provided - see top of this file for instructions"
+    #     )
         # Load environment variables
-        load_dotenv(environment_file_path)
+        # load_dotenv(environment_file_path)
 
-        database_pool = create_database_pool()
+    database_pool = create_database_pool()
 
-        app.run(host="0.0.0.0", debug=True)
+    app.run(host="0.0.0.0", debug=True)
 
