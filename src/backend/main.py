@@ -20,21 +20,12 @@ def create_database_pool():
     return psycopg2.pool.SimpleConnectionPool(
         minconn=1,
         maxconn=10,
-        dbname="fit3170",
-        user="postgres",
-        password="DatabasePassword",
-        host="localhost",
-        port=5432
+        dbname=os.getenv("DATABASE_NAME"),
+        user=os.getenv("DATABASE_USER"),
+        password=os.getenv("DATABASE_PASSWORD"),
+        host=os.getenv("DATABASE_HOST"),
+        port=os.getenv("DATABASE_PORT")
     )
-    # return psycopg2.pool.SimpleConnectionPool(
-    #     minconn=1,
-    #     maxconn=10,
-    #     dbname=os.getenv("DATABASE_NAME"),
-    #     user=os.getenv("DATABASE_USER"),
-    #     password=os.getenv("DATABASE_PASSWORD"),
-    #     host=os.getenv("DATABASE_HOST"),
-    #     port=os.getenv("DATABASE_PORT")
-    # )
 
 
 def get_connection():
@@ -113,20 +104,22 @@ def put_archive_missing_report():
     return archive_missing_report(get_connection())
 
 if __name__ == "__main__": 
-    # Get environment file path from command line arguments
-    # if len(sys.argv) < 2:
-    #     raise Exception(
-    #         "No environment file path provided - see top of this file for instructions"
-    #     )
-    # environment_file_path = sys.argv[1]
-    # if environment_file_path is None or environment_file_path == "":
-    #     raise Exception(
-    #         "No environment file path provided - see top of this file for instructions"
-    #     )
-        # Load environment variables
-        # load_dotenv(environment_file_path)
+    if len(sys.argv) >= 2:
+        # Get environment file path from command line arguments
+        environment_file_path = sys.argv[1]
+        if environment_file_path is None or environment_file_path == "":
+            raise Exception(
+                "No environment file path provided - see top of this file for instructions"
+            )
+        else:
+            # Load environment variables
+            load_dotenv(environment_file_path)
+    else:
+        print("Warning: no environment file path provided.")
+        
+    # Connect to database
+    database_pool = create_database_pool()
 
-    # database_pool = create_database_pool()
-
+    # Run Flask app
     app.run(host="0.0.0.0", debug=True)
 
