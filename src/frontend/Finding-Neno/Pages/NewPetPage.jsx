@@ -51,6 +51,53 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
   const isExistingPet = pet.name != '';
 
+  const onAddPetPress = () => {
+    /**
+     * This function is used to submit the pet information to the backend.
+     * It will call the POST method '/insert_pet' to create a new pet.
+     * Or, it will call the PUT method '/update_pet' to update an existing pet.
+     */
+    let url;
+    let method;
+    // check if this is a new pet or an existing pet
+    if (isExistingPet) {
+      url = `${IP}:${PORT}/update_pet`;
+      method = 'PUT';
+    } else {
+      url = `${IP}:${PORT}/insert_pet?owner_id=${owner_id}`;
+      method = 'POST';
+    }
+
+		setIsButtonDisabled(true);
+		setButtonText("Adding Pet...");
+
+		let isValid = validateDetails(formData);
+
+		if (isValid) {
+			setFormData({ ...formData, authorId: ownerId })
+
+			fetch(url, {
+				method: method,
+				headers: {
+          'Authorization': `Bearer ${access_token}`,
+          'Content-Type': 'application/json',
+        },
+				body: JSON.stringify(formData),
+			})
+				.then((res) => {
+					if (res.status == 201) {
+						// Show success
+						// Clear fields?
+						setIsCreated(true);
+					}
+				})
+				.catch((error) => alert(error));
+		};
+
+		setButtonText("Add Pet")
+		setIsButtonDisabled(false);
+  }
+
   const handlePreview = () => {
     setIsPreviewExpanded(!isPreviewExpanded);
   };    
@@ -59,7 +106,6 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
     setIsCreated(false);
   };
 
-  return ()
 }
 
 
