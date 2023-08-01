@@ -19,7 +19,7 @@ def create_database_pool():
     """
     return psycopg2.pool.SimpleConnectionPool(
         minconn=1,
-        maxconn=10,
+        maxconn=99999,
         dbname=os.getenv("DATABASE_NAME"),
         user=os.getenv("DATABASE_USER"),
         password=os.getenv("DATABASE_PASSWORD"),
@@ -32,10 +32,9 @@ def get_connection():
     """
     Returns the connection to the database.
     """
-    if database_pool is not None:
-        return database_pool.getconn()
-    else:
-        return None
+    if database_pool is None:
+        database_pool = create_database_pool()
+    return database_pool.getconn()
     
 
 @app.route("/")
