@@ -22,6 +22,47 @@ const AlertComponent = ({ onClose }) => (
 	</Alert>
 );
 
+const NewPetPage = ({ navigation: { navigate }, route }) => {
+  const navigation = useNavigation();
+	
+  // const access_token = route.params["accessToken"];
+  // const owner_id = route.params["ownerId"]
+  const pet = route.params["pet"]
+
+  const [formData, setFormData] = useState({ description: '' });
+	const [dropdownOptions, setDropdownOptions] = useState([]);
+	const [errors, setErrors] = useState({});
+	const [isCreated, setIsCreated] = useState(false);
+	const [buttonText, setButtonText] = useState("Add Pet")
+	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+  const [petImage, setPetImage] = useState(pet ? pet.image_url : null);
+  const [petType, setPetType] = useState(pet ? pet.animal : '');
+
+  const petTypeOptions = [
+    { label: "Dog", value: "dog" },
+    { label: "Cat", value: "cat" },
+    { label: "Rabbit", value: "rabbit" },
+    { label: "Mouse", value: "mouse" },
+    { label: "Snake", value: "snake" },
+    { label: "Bird", value: "bird" },
+    { label: "Other", value: "other" },
+  ];
+
+  const isExistingPet = pet.name != '';
+
+  const handlePreview = () => {
+    setIsPreviewExpanded(!isPreviewExpanded);
+  };    
+
+  const closeAlert = () => {
+    setIsCreated(false);
+  };
+
+  return ()
+}
+
+
 // export default function NewPetPage({ navigation: { navigate}, route}) {
 //     /**
 //      * This page is used to create a new pet or edit an existing pet.
