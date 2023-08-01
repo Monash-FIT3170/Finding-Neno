@@ -26,7 +26,6 @@ def create_database_pool():
         host="localhost",
         port=5432
     )
-
     # return psycopg2.pool.SimpleConnectionPool(
     #     minconn=1,
     #     maxconn=10,
