@@ -112,10 +112,6 @@ def put_update_missing_report():
 def put_archive_missing_report():
     return archive_missing_report(get_connection())
 
-@app.route("/test", methods=["GET"])
-def test():
-    return "Hello World!"
-
 if __name__ == "__main__": 
     # Get environment file path from command line arguments
     # if len(sys.argv) < 2:
@@ -130,7 +126,7 @@ if __name__ == "__main__":
         # Load environment variables
         # load_dotenv(environment_file_path)
 
-    database_pool = create_database_pool()
+    # database_pool = create_database_pool()
 
     app.run(host="0.0.0.0", debug=True)
 
