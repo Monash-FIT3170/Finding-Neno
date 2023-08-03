@@ -4,17 +4,17 @@ import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { IP, PORT } from "@env";
 
+import store from '../store/store';
+import { useSelector, useDispatch } from "react-redux";
 
+const DashboardPage = () => {
+	const {IP, PORT} = useSelector((state) => state.api)
+  const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
-
-const DashboardPage = ({route}) => {
   const windowWidth = Dimensions.get('window').width; 
   const navigation = useNavigation();
   const toast = useToast();
-  const headers = route.params;
-
   const isFocused = useIsFocused();
 
   const [modalVisible, setModalVisible] = useState(false);
