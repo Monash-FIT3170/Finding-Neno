@@ -90,7 +90,7 @@ export default function NewPetPage({ navigation: { navigate}}) {
           url = `${IP.toString()}:${PORT.toString()}/update_pet`;
           method = 'PUT';
         } else {
-          url = `${IP.toString()}:${PORT.toString()}/insert_pet?owner_id=${owner_id}`;
+          url = `${IP.toString()}:${PORT.toString()}/insert_pet?owner_id=${USER_ID}`;
           method = 'POST';
         }
         // create the pet object
