@@ -112,6 +112,27 @@ def check_user_exists_in_database(conn, email, password):
     conn.commit()
     cur.close()
 
+def insert_new_sighting_to_database(connection: psycopg2.extensions.connection, author_id: str, missing_report_id, date_time, location_longitude, location_latitude, image_url, description):
+    """
+    This function is used to add a new sighting to the database
+    """
+
+    cur = connection.cursor()
+
+    # Construct and INSERT query to insert this user into the DB
+    query = """INSERT INTO sightings (missing_report_id, author_id, date_time, location_longitude, 
+    location_latitude, image_url, description) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
+
+    # Execute the query
+    try:
+        cur.execute(query, (author_id, missing_report_id, date_time, location_longitude, location_latitude, image_url, description))
+        print(f"Query executed successfully: {query}")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Commit the change and close the connection
+    connection.commit()
+    cur.close()
 
 def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id: str, pet_id, last_seen, location_longitude, location_latitude, description):
     """

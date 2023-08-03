@@ -8,7 +8,7 @@ file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
 sys.path.append(str(package_root_directory))
 
-from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_from_database, change_password_in_database, check_user_exists_in_database, update_missing_report_in_database, archive_missing_report_in_database
+from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_from_database, change_password_in_database, check_user_exists_in_database, update_missing_report_in_database, archive_missing_report_in_database, insert_new_sighting_to_database
 
 def insert_user(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
@@ -19,6 +19,23 @@ def insert_user(conn) -> Tuple[str, int]:
     name = json_data["name"]
     insert_user_to_database(conn, email, phoneNumber, name, password)
     return "", 201
+
+def insert_new_sighting(conn) -> Tuple[str, int]:
+    json_data = request.get_json(force=True)
+    print("inserting pet sighting: ", json_data)
+    missing_report_id = 1 # this will have an associated value when user reports a sighting directly from dashboard (will implement this later)
+    author_id = json_data["authorId"]
+    date_time_input = json_data["dateTime"]
+    hour, minute, day, month, year = separate_datetime(date_time_input)
+    date_time = datetime.datetime(year, month, day, hour, minute)
+
+    coordinates = json_data["lastLocation"]
+    location_longitude, location_latitude = coordinates.split(",")
+    image_url = "xyz" # null for now 
+    description = json_data["description"]
+
+    insert_new_sighting_to_database(conn, missing_report_id, author_id, date_time, location_longitude, location_latitude, image_url, description)
+    return "Success", 201
 
 def insert_missing_report(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)

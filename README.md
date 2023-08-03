@@ -82,7 +82,7 @@ Run the following command from the root directory:
 ## Notes and Common Issues
 * Network error:
   * Stop the server
-  * Reset cache by running the command
+  * Reset cache by running this command from the src/frontend/Finding-Neno directory
     ```
     npm cache clean --force
     ```
