@@ -70,18 +70,12 @@ const NewSightingPage = ({navigation: {navigate}, route }) => {
 		// Validates details. If details are valid, send formData object to onCreateReportPress.
 		foundErrors = {};
 
-		if (!formData.missingPetId || formData.missingPetId == "") {
-			foundErrors = { ...foundErrors, missingPetId: 'Please select a pet' }
-		}
-
-		console.log(selectedDatetime >= new Date())
-		if (!formData.lastSeenDateTime) {
-			foundErrors = { ...foundErrors, lastSeenDateTime: 'Last seen date is required' }
-			// } else if (!validDateTime(formData.lastSeenDateTime)) {
+		if (!formData.dateTime) {
+			foundErrors = { ...foundErrors, dateTime: 'Last seen date and time is required' }
+			
 		} else if (selectedDatetime >= new Date()) {
-			foundErrors = { ...foundErrors, lastSeenDateTime: 'Last seen date cannot be in the future' }
+			foundErrors = { ...foundErrors, dateTime: 'Last seen date cannot be in the future' }
 		}
-		// formData.lastSeenDateTime = formatDatetimeString(formData.lastSeenDateTime)
 
 		if (!formData.lastLocation || formData.lastLocation == "") {
 			foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
@@ -103,10 +97,10 @@ const NewSightingPage = ({navigation: {navigate}, route }) => {
         setIsButtonDisabled(true);
         setButtonText("Adding sighting...");
 
-        //let isValid = validateDetails(formData);
+        let isValid = validateDetails(formData);
         
         // TODO: validation
-        // if (isValid) {
+        if (isValid) {
             setFormData({ ...formData, missing_report_id: null, authorId: authorId, animal: selectedAnimal, image_url: image});
 
             const url = `${IP}:${PORT}/insert_new_sighting`;
@@ -127,7 +121,7 @@ const NewSightingPage = ({navigation: {navigate}, route }) => {
                 }
             })
             .catch((error) => alert(error));
-        // };
+        };
         setButtonText("Add sighting");
 		setIsButtonDisabled(false);
     }
@@ -178,19 +172,19 @@ const NewSightingPage = ({navigation: {navigate}, route }) => {
                                     {/* TODO: Date picker here?? */}
                                     <FormControl.Label>Time of Sighting</FormControl.Label>
                                     <Input onChangeText={value => setFormData({ ...formData, dateTime: value })} placeholder="HH:MM dd/mm/yy" />
-                                    {/* {'lastSeenDateTime' in errors && <FormControl.ErrorMessage>{errors.lastSeenDateTime}</FormControl.ErrorMessage>} */}
+                                    {'dateTime' in errors && <FormControl.ErrorMessage>{errors.dateTime}</FormControl.ErrorMessage>}
                                 </FormControl>
 
                                 <FormControl>
                                     <FormControl.Label>Location of Sighting</FormControl.Label>
                                     <Input onChangeText={value => setFormData({ ...formData, lastLocation: value })} placeholder="long (-180 to 180), lat (-90 to 90)" />
-                                    {/* {'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>} */}
+                                    {'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
                                 </FormControl>
 
                                 <FormControl>
                                     <FormControl.Label>Description (Additional Info)</FormControl.Label>
                                     <Input onChangeText={value => setFormData({ ...formData, description: value })} />
-                                    {/* {'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>} */}
+                                    {'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
                                 </FormControl>
 
                                 <Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onPress}>
