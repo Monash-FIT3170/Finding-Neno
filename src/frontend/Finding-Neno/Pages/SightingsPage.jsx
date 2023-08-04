@@ -18,7 +18,7 @@ export default function SightingsPage({navigation: { navigate }, route}) {
   
     return (
         <ScrollView>
-            {/* TODO: fix this button at the top  */}
+            {/* TODO: freeze this button to the top of page */}
             <Box alignItems="center" bg="#FFFFFF">
                 <Box height={3}/>
                 <Button

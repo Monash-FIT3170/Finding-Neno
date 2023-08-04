@@ -51,7 +51,7 @@ def create_tables(connection: psycopg2.extensions.connection):
         FLOAT, description VARCHAR(255), isActive BOOLEAN NOT NULL);""",
         # Create sightings table
         """CREATE TABLE "sightings" (id SERIAL PRIMARY KEY, missing_report_id INTEGER REFERENCES missing_reports(id), 
-        author_id INTEGER REFERENCES "users"(id), date_time TIMESTAMP NOT NULL, location_longitude FLOAT, 
+        author_id INTEGER REFERENCES "users"(id), animal VARCHAR(255), breed VARCHAR(255), date_time TIMESTAMP NOT NULL, location_longitude FLOAT, 
         location_latitude FLOAT, image_url VARCHAR(255), description VARCHAR(255));""",
         # Create notification_type ENUM
         # TODO: add more notification types?

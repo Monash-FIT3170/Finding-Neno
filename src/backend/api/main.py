@@ -126,7 +126,6 @@ def put_archive_missing_report():
 
 @app.route("/insert_new_sighting", methods=["POST"])
 def post_insert_new_sighting():
-    print('In main')
     return insert_new_sighting(get_connection())
     
 
