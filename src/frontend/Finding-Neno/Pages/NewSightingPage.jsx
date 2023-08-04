@@ -14,7 +14,15 @@ const NewSightingPage = ({navigation: {navigate}, route }) => {
     const authorId = headers["userid"];
 	const accessToken = headers["accesstoken"];
 
-    const [formData, setFormData] = useState({ description: '' });
+    // default form values
+    const [formData, setFormData] = useState({ 
+        missing_report_id: null,
+        authorId: authorId, 
+        animal: 'dog',
+        breed: null,
+        image_url: null,
+        description: ''
+    });
 	const [errors, setErrors] = useState({});
 	const [isCreated, setIsCreated] = useState(false);
 	const [buttonText, setButtonText] = useState("Add sighting")
@@ -65,7 +73,6 @@ const NewSightingPage = ({navigation: {navigate}, route }) => {
         }
     };
 
-    // TODO: validation
     const validateDetails = (formData) => {
 		// Validates details. If details are valid, send formData object to onCreateReportPress.
 		foundErrors = {};
@@ -99,7 +106,6 @@ const NewSightingPage = ({navigation: {navigate}, route }) => {
 
         let isValid = validateDetails(formData);
         
-        // TODO: validation
         if (isValid) {
             setFormData({ ...formData, missing_report_id: null, authorId: authorId, animal: selectedAnimal, image_url: image});
 
@@ -149,7 +155,7 @@ const NewSightingPage = ({navigation: {navigate}, route }) => {
                             </Button>
                                     <FormControl.Label>Pet type</FormControl.Label>
                                     <View >
-                                    <Picker selectedValue={selectedAnimal} onValueChange={(itemValue, itemIndex) => setSelectedAnimal(itemValue)} >
+                                    <Picker selectedValue={selectedAnimal} onValueChange={(itemValue, itemIndex) => setSelectedAnimal(itemValue)}>
                                         <Picker.Item label="Dog" value="dog" />
                                         <Picker.Item label="Cat" value="cat" />
                                         <Picker.Item label="Rabbit" value="rabbit" />
@@ -168,20 +174,20 @@ const NewSightingPage = ({navigation: {navigate}, route }) => {
                                     />
                                 </FormControl>
 
-                                <FormControl>
+                                <FormControl isInvalid={'dateTime' in errors}>
                                     {/* TODO: Date picker here?? */}
                                     <FormControl.Label>Time of Sighting</FormControl.Label>
                                     <Input onChangeText={value => setFormData({ ...formData, dateTime: value })} placeholder="HH:MM dd/mm/yy" />
                                     {'dateTime' in errors && <FormControl.ErrorMessage>{errors.dateTime}</FormControl.ErrorMessage>}
                                 </FormControl>
 
-                                <FormControl>
+                                <FormControl isInvalid={'lastLocation' in errors}>
                                     <FormControl.Label>Location of Sighting</FormControl.Label>
                                     <Input onChangeText={value => setFormData({ ...formData, lastLocation: value })} placeholder="long (-180 to 180), lat (-90 to 90)" />
                                     {'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
                                 </FormControl>
 
-                                <FormControl>
+                                <FormControl isInvalid={'description' in errors}>
                                     <FormControl.Label>Description (Additional Info)</FormControl.Label>
                                     <Input onChangeText={value => setFormData({ ...formData, description: value })} />
                                     {'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
