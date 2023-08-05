@@ -1,6 +1,8 @@
 # Ignore all files containing environment variables
 .env*
 .idea*
+.idea/Finding-Neno.iml
+.idea/misc.xml
 package-lock.json
 package.json
 **/.DS_Store
