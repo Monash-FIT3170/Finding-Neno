@@ -15,7 +15,7 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
     const accessToken = headers["accesstoken"]
   
     const isFocused = useIsFocused();
-    
+
 
     const myPet = {
       name: '',
@@ -74,8 +74,9 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
         if (!response.ok) {
           throw new Error('Request failed with status ' + response.status);
         }
-        const profile_info = await response.json();
+        const profile_info = await response.headers.map;
         setUser(profile_info);
+        console.log(user)
       } catch (error) {
         console.log("error in profile page")
         console.log(error);
@@ -88,9 +89,9 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
 
 
     // TODO: Replace with actual data
-    const name = "TODO";
-    const email = "TODO";
-    const phone = "TODO";
+    const name = user.name;
+    const email = user.email;
+    const phone = user.phone;
 
     //const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
 

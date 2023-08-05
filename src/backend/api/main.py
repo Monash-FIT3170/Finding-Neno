@@ -70,9 +70,15 @@ def post_login():
     return data[0], data[1], headers
 
 @app.route("/retrieve_profile/<user_id>", methods=["GET"])
-def retrieve_profile(user_id):
-    print("retrieving current user profile")
-    return retrieve_profile(get_connection(), user_id)
+def retrieve_profile_information(user_id):
+    print("retrieving current user profile, ")
+    data = retrieve_profile(get_connection(), user_id)
+    headers = {
+        'name': data[2],
+        'email': data[3],
+        'phone': data[4]
+    }
+    return data[0], data[1], headers
 
 @app.route("/change_password", methods=["PATCH"])
 def post_change_password():
