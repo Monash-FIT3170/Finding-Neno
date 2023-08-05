@@ -1,8 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
-import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
-// import DateTimePickerModal from 'react-native-modal-datetime-picker';
-// import DateTimePicker from '@react-native-community/datetimepicker';
-// import DatePicker from 'react-native-datepicker'
+import { Box, Button, Center, Heading, VStack, FormControl, Input, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 
 import React, { useEffect, useState } from 'react';
@@ -38,7 +36,7 @@ const NewReportPage = ({ navigation: { navigate }, route }) => {
 	const [buttonText, setButtonText] = useState("Create report")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-	const [selectedDatetime, setSelectedDate] = useState(new Date());
+	const [selectedDatetime, setSelectedDatetime] = useState(new Date());
 	const [showPicker, setShowPicker] = useState(false);
 
 	useEffect(() => {
@@ -107,12 +105,14 @@ const NewReportPage = ({ navigation: { navigate }, route }) => {
 			foundErrors = { ...foundErrors, missingPetId: 'Please select a pet' }
 		}
 
-		console.log(selectedDatetime >= new Date())
+		console.log(selectedDatetime)
 		if (!formData.lastSeenDateTime) {
 			foundErrors = { ...foundErrors, lastSeenDateTime: 'Last seen date is required' }
+			console.log("error 1")
 			// } else if (!validDateTime(formData.lastSeenDateTime)) {
 		} else if (selectedDatetime >= new Date()) {
-			foundErrors = { ...foundErrors, lastSeenDateTime: 'Last seen date cannot be in the future' }
+			console.log("error 2")
+			foundErrors = { ...foundErrors, lastSeenDateTime: 'Last seen date and time cannot be in the future' }
 		}
 		// formData.lastSeenDateTime = formatDatetimeString(formData.lastSeenDateTime)
 
@@ -135,6 +135,32 @@ const NewReportPage = ({ navigation: { navigate }, route }) => {
 	const closeAlert = () => {
 		setIsCreated(false);
 	};
+
+	var maximumDate;
+	const openPicker = () => {
+		maximumDate = new Date();
+		setShowPicker(true);
+	}
+
+	const handleDatetimeConfirm = (datetime) => {
+		setSelectedDatetime(datetime);
+		setFormData({ ...formData, lastSeenDateTime: formatDatetime(datetime) });
+		closePicker();
+	}
+
+	const closePicker = () => {
+		setShowPicker(false);
+	}
+
+	const formatDatetime = (datetime) => {
+		const hours = datetime.getHours().toString().padStart(2,'0');
+		const minutes = datetime.getHours().toString().padStart(2,'0');
+		const day = datetime.getDate().toString().padStart(2,'0');
+		const month = (datetime.getMonth() + 1).toString().padStart(2,'0');
+		const year = datetime.getFullYear().toString();
+
+		return `${hours}:${minutes} ${day}/${month}/${year}`
+	}
 
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
@@ -164,8 +190,10 @@ const NewReportPage = ({ navigation: { navigate }, route }) => {
 
 										<FormControl isInvalid={'lastSeenDateTime' in errors}>
 											<FormControl.Label>Last Seen</FormControl.Label>
-											<Input onChangeText={value => setFormData({ ...formData, lastSeenDateTime: value })} placeholder="HH:MM dd/mm/yy" />
+											<Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2,'0')}:${selectedDatetime.getMinutes().toString().padStart(2,'0')} ${selectedDatetime.toDateString()}`}</Button>
+											<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 											{'lastSeenDateTime' in errors && <FormControl.ErrorMessage>{errors.lastSeenDateTime}</FormControl.ErrorMessage>}
+
 										</FormControl>
 
 										<FormControl isInvalid={'lastLocation' in errors}>
