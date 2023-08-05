@@ -73,12 +73,12 @@ def post_login():
 def retrieve_profile_information(user_id):
     print("retrieving current user profile, ")
     data = retrieve_profile(get_connection(), user_id)
-    headers = {
+    info = {
         'name': data[2],
         'email': data[3],
         'phone': data[4]
     }
-    return data[0], data[1], headers
+    return jsonify(info), data[1]
 
 @app.route("/change_password", methods=["PATCH"])
 def post_change_password():

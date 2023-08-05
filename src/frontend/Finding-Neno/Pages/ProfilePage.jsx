@@ -74,7 +74,7 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
         if (!response.ok) {
           throw new Error('Request failed with status ' + response.status);
         }
-        const profile_info = await response.headers.map;
+        const profile_info = await response.json();
         setUser(profile_info);
         console.log(user)
       } catch (error) {
