@@ -3,6 +3,7 @@
 .idea*
 .idea/Finding-Neno.iml
 .idea/misc.xml
+.idea/vcs.xml
 package-lock.json
 package.json
 **/.DS_Store
