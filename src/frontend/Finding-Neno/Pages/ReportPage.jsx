@@ -22,7 +22,6 @@ export default function ReportPage({ navigation: { navigate}}) {
 
     const isFocused = useIsFocused();
     
-    console.log("Report: " + owner);
     const image = "https://wallpaperaccess.com/full/317501.jpg";
     const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
 

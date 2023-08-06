@@ -30,7 +30,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	const {IP, PORT} = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
-	const [formData, setFormData] = useState({ description: '' });
+	const [formData, setFormData] = useState({ description: '', authorId: USER_ID });
 	const [dropdownOptions, setDropdownOptions] = useState([]);
 	const [errors, setErrors] = useState({});
 	const [isCreated, setIsCreated] = useState(false);
@@ -76,7 +76,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		let isValid = validateDetails(formData);
 
 		if (isValid) {
-			setFormData({ ...formData, authorId: USER_ID })
 			const url = `${IP}:${PORT}/insert_missing_report`;
 
 			fetch(url, {
@@ -106,13 +105,10 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			foundErrors = { ...foundErrors, missingPetId: 'Please select a pet' }
 		}
 
-		console.log(selectedDatetime)
 		if (!formData.lastSeenDateTime) {
 			foundErrors = { ...foundErrors, lastSeenDateTime: 'Last seen date is required' }
-			console.log("error 1")
 			// } else if (!validDateTime(formData.lastSeenDateTime)) {
 		} else if (selectedDatetime >= new Date()) {
-			console.log("error 2")
 			foundErrors = { ...foundErrors, lastSeenDateTime: 'Last seen date and time cannot be in the future' }
 		}
 		// formData.lastSeenDateTime = formatDatetimeString(formData.lastSeenDateTime)
