@@ -71,6 +71,35 @@ def insert_user_to_database(conn, email, phone, name, password):
     conn.commit()
     cur.close()
 
+def retrieve_user(conn, user_id, token):
+    """
+    This function is used to retrieve a user for the profile page
+    """
+
+    cur = conn.cursor()
+
+    # Check if a user with this email exists in the database
+    # Construct a SELECT query to retrieve the user
+    query = """SELECT * FROM users WHERE id = %s AND access_token = %s"""
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id, token,))
+        result_set = cur.fetchall()
+        if len(result_set) == 0:  # If a user with the provided email could not be found
+            print("No user found with the provided id and access token.")
+            return False
+        else:  # If user is found
+            user = result_set[0]
+            return user[1], user[2], user[3]  # returns user[1] (email), and user[2] (phone) and user[3] (name)
+
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Commit the change and close the connection
+    conn.commit()
+    cur.close()
+
 
 def check_user_exists_in_database(conn, email, password):
     """
@@ -86,7 +115,7 @@ def check_user_exists_in_database(conn, email, password):
     # Construct a SELECT query to check if the user exists in the database
     query = """SELECT * FROM users WHERE email_address = %s"""
 
-    
+
 
     # Execute the query
     try:
