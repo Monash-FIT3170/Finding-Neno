@@ -5,28 +5,30 @@ import { Color } from "../components/atomic/Theme";
 import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import PetCard  from "../components/PetCard";
-import { IP, PORT } from "@env";
 
+import { useSelector, useDispatch } from "react-redux";
+import store from '../store/store';
+import { selectPet } from '../store/pet';
 
-export default function ProfilePage({ navigation: { navigate}, route}) {
+export default function ProfilePage({ navigation: { navigate}}) {
     const navigation = useNavigation();
-    const {headers} = route.params;
-    const ownerId = headers["userid"];
-    const accessToken = headers["accesstoken"]
+
+    const {IP, PORT} = useSelector((state) => state.api)
+    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
   
-    const isFocused = useIsFocused();
-
-
+    const isFocused = useIsFocused(); 
+    const dispatch = useDispatch();
+  
     const myPet = {
       name: '',
       image_url: '',
       animal: '',
       breed: '',
       description: '',
-      owner_id: null,
+      owner_id: USER_ID,
     };
-
-    var data;
+    dispatch(selectPet(myPet));
+    console.log(store.getState());
 
     const [pets, setPets] = useState([]);
     const [user, setUser] = useState([]);
@@ -40,11 +42,11 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
   
     const fetchOwnerPets = async () => {
       try {
-        const url = `${IP}:${PORT}/get_owner_pets/${ownerId}`;
+        const url = `${IP}:${PORT}/get_owner_pets/${USER_ID}`;
         const response = await fetch(url, {
           headers: { 
             method: "GET",
-            'Authorization': `Bearer ${accessToken}`}
+            'Authorization': `Bearer ${ACCESS_TOKEN}`}
         });
 
         if (!response.ok) {
@@ -216,7 +218,9 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
       <Box h="4"></Box>
 
       <Button
-        onPress={() => navigate('New Pet Page', {pet: myPet, ownerId: ownerId, accessToken: accessToken})} 
+        onPress={() => {
+          navigate('New Pet Page')}
+        } 
         width={windowWidth - 100}
         height="40px"
       >

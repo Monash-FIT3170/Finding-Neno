@@ -6,8 +6,9 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import { validEmail, validPhoneNumber } from "./validation";
 import { useState } from "react";
-import { IP, PORT } from "@env";
 
+import { useSelector, useDispatch } from "react-redux";
+import store from "../store/store";
 
 const SignupPage = () => {
 	const [formData, setFormData] = useState({});
@@ -17,6 +18,8 @@ const SignupPage = () => {
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [buttonText, setButtonText] = useState("Sign up")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+	const {IP, PORT} = useSelector((state) => state.api)
 
 	const navigation = useNavigation();
 
