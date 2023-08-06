@@ -7,13 +7,19 @@ import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
 
+import { useSelector, useDispatch } from "react-redux";
+import store from "../store/store";
+import { login } from "../store/user";
 
-const LoginPage = ({route}) => {
+
+const LoginPage = () => {
 	const [formData, setFormData] = useState({});
 	const [errors, setErrors] = useState({});
 	const [show, setShow] = useState(false);
 	const [buttonText, setButtonText] = useState("Sign in");
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+
+	const dispatch = useDispatch();
 
 	const navigation = useNavigation();
 	const apiInfo = route.params;
@@ -35,15 +41,14 @@ const LoginPage = ({route}) => {
 			})
 			.then((res) => {
 				if (res.status == 200|| res.status == 201) {
-					const accessToken = res.headers.map.accesstoken;
-					const userId = res.headers.map.userid;
+					payload = {
+						USER_ID: res.headers.map.userid,
+						ACCESS_TOKEN: res.headers.map.accesstoken,
+					}
+					dispatch(login(payload));
+					console.log(store.getState());
 
-					const headers = {
-						userid: userId,
-						accesstoken: accessToken
-					};
-
-					navigation.navigate('Tab Navigator', {headers: headers});
+					navigation.navigate('Tab Navigator');
 				} else {
 					setErrors({
 						email: 'Email or password is invalid',

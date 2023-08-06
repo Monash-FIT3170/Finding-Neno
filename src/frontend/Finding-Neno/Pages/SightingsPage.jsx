@@ -1,16 +1,17 @@
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Text } from 'react-native';
-import { IP, PORT } from "@env";
 
+import { useSelector, useDispatch } from "react-redux";
+import store from "../store/store";
 
-export default function SightingsPage({route}) {
+export default function SightingsPage() {
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
+
+	const {IP, PORT} = useSelector((state) => state.api)
+    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
     
-    const {headers} = route.params;
-    const ownerId = headers["userid"];
-    const accessToken = headers["accesstoken"]
 
     console.log("Sighting: " + user);
   
