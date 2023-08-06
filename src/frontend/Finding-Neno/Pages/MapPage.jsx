@@ -1,17 +1,13 @@
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Text } from 'react-native';
-import { IP, PORT } from "@env";
+import store from "../store/store";
 
-export default function MapPage({route}) {
+export default function MapPage() {
+	const {IP, PORT} = useSelector((state) => state.api)
+    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
-    
-    const {headers} = route.params;
-    const ownerId = headers["userid"];
-    const accessToken = headers["accesstoken"]
-
-    console.log("Map: " + user);
 
     return (<Text>Map page</Text>)
 }

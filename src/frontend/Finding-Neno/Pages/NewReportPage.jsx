@@ -7,8 +7,11 @@ import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Alert
 
 import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { IP, PORT } from "@env";
 import { validDateTime, validateCoordinates } from "./validation"
+
+import { useSelector, useDispatch } from "react-redux";
+import store from "../store/store";
+
 
 const AlertComponent = ({ onClose }) => (
 	<Alert w="100%" status="success">
@@ -24,12 +27,11 @@ const AlertComponent = ({ onClose }) => (
 	</Alert>
 );
 
-const NewReportPage = ({ navigation: { navigate }, route }) => {
+const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
-	const { headers } = route.params;
 
-	const ownerId = headers["userid"];
-	const accessToken = headers["accesstoken"];
+	const {IP, PORT} = useSelector((state) => state.api)
+	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
 	const [formData, setFormData] = useState({ description: '' });
 	const [dropdownOptions, setDropdownOptions] = useState([]);
@@ -46,11 +48,11 @@ const NewReportPage = ({ navigation: { navigate }, route }) => {
 		// ownerId = 2
 		const fetchOwnerPets = async () => {
 			try {
-				const url = `${IP}:${PORT}/get_owner_pets/${ownerId}`;
+				const url = `${IP}:${PORT}/get_owner_pets/${USER_ID}`;
 				const response = await fetch(url, {
 					headers: {
 						method: "GET",
-						'Authorization': `Bearer ${accessToken}`
+						'Authorization': `Bearer ${ACCESS_TOKEN}`
 					}
 				});
 
@@ -77,7 +79,7 @@ const NewReportPage = ({ navigation: { navigate }, route }) => {
 		let isValid = validateDetails(formData);
 
 		if (isValid) {
-			setFormData({ ...formData, authorId: ownerId })
+			setFormData({ ...formData, authorId: USER_ID })
 			const url = `${IP}:${PORT}/insert_missing_report`;
 
 			fetch(url, {

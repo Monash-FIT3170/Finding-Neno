@@ -5,10 +5,17 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
-import { IP, PORT } from "@env";
+
+import { useSelector, useDispatch } from "react-redux";
+import store from "../store/store";
+
 
 
 const PasswordResetPage = () => {
+
+	const IP = useSelector((state) => state.IP);
+	const PORT = useSelector((state) => state.PORT);
+	
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});
 	const [show, setShow] = useState(false);

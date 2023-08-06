@@ -1,4 +1,5 @@
-from flask import request
+import flask
+from flask import request, jsonify
 from pathlib import Path
 import sys
 import datetime
@@ -8,7 +9,7 @@ file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
 sys.path.append(str(package_root_directory))
 
-from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_from_database, change_password_in_database, check_user_exists_in_database, update_missing_report_in_database, archive_missing_report_in_database, insert_new_sighting_to_database
+from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_from_database, change_password_in_database, check_user_exists_in_database, update_missing_report_in_database, archive_missing_report_in_database, retrieve_user, insert_new_sighting_to_database
 
 def insert_user(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
@@ -123,6 +124,20 @@ def login(conn) -> Tuple[str, int]:
     if user_exists:
         user_id, access_token = user_exists  # Unpack the tuple
         return "Success", 200, user_id, access_token  # Return user_id and access_token
+    else:
+        return "Fail", 401
+
+
+def retrieve_profile(conn, user_id) -> Tuple[str, int, str, str, str]:
+
+    auth_header = flask.request.headers.get('Authorization')
+    token = auth_header.split()[1]
+
+    user_info = retrieve_user(conn, user_id, token)
+
+    if user_info is not False:
+        email, phone, name = user_info
+        return "Success", 200, name, email, phone  # Return profile information
     else:
         return "Fail", 401
 
