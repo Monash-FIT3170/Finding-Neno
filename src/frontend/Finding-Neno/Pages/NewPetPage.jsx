@@ -246,11 +246,11 @@ export default function NewPetPage({ navigation: { navigate}}) {
                 <View style={{flex: 1, marginLeft: '5%', padding: '2%'}}>
                   <Text style={{ fontSize: 30, paddingBottom: 10 }}>{petName}</Text>
                   <View style={{flexDirection: 'row', alignItems: 'center', paddingBottom: 10}}>
-                    <View style={{flexDirection: 'column', alignItems: 'left'}}>
+                    <View style={{flexDirection: 'column', alignItems: 'center'}}>
                       <Text style={{ fontSize: 12, color: "#F2F2F7" }}>Species:</Text>
                       <Text style={{ fontSize: 20, textTransform: 'capitalize' }}>{petType}</Text>
                     </View>
-                    <View style={{flexDirection: 'column', alignItems: 'left', marginLeft: '15%'}}>
+                    <View style={{flexDirection: 'column', alignItems: 'center', marginLeft: '15%'}}>
                       <Text style={{ fontSize: 12, color: "#F2F2F7" }}>Breed:</Text>
                       <Text style={{ fontSize: 20 }}>{petBreed}</Text>
                     </View>
