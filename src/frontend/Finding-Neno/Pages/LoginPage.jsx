@@ -12,7 +12,7 @@ const LoginPage = ({route}) => {
 	const [formData, setFormData] = useState({});
 	const [errors, setErrors] = useState({});
 	const [show, setShow] = useState(false);
-	const [buttonText, setButtonText] = useState("Sign in")
+	const [buttonText, setButtonText] = useState("Sign in");
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
 	const navigation = useNavigation();
@@ -20,11 +20,11 @@ const LoginPage = ({route}) => {
 	const IP = apiInfo.IP;
 	const PORT = apiInfo.PORT;
 
-	
+	 
 	const onLoginPress = () => {
 		setIsButtonDisabled(true); 
 		setButtonText("Signing in...");  
-
+ 
 		let isValid = validateDetails(formData);
 		if (isValid) {
 			const url = `${IP}:${PORT}/login`;

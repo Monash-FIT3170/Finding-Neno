@@ -153,14 +153,15 @@ const NewReportPage = ({ navigation: { navigate }, route }) => {
 	}
 
 	const formatDatetime = (datetime) => {
-		const hours = datetime.getHours().toString().padStart(2,'0');
-		const minutes = datetime.getHours().toString().padStart(2,'0');
-		const day = datetime.getDate().toString().padStart(2,'0');
-		const month = (datetime.getMonth() + 1).toString().padStart(2,'0');
+		const hours = datetime.getHours().toString().padStart(2, '0');
+		const minutes = datetime.getHours().toString().padStart(2, '0');
+		const day = datetime.getDate().toString().padStart(2, '0');
+		const month = (datetime.getMonth() + 1).toString().padStart(2, '0');
 		const year = datetime.getFullYear().toString();
 
 		return `${hours}:${minutes} ${day}/${month}/${year}`
 	}
+	
 
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
@@ -190,8 +191,9 @@ const NewReportPage = ({ navigation: { navigate }, route }) => {
 
 										<FormControl isInvalid={'lastSeenDateTime' in errors}>
 											<FormControl.Label>Last Seen</FormControl.Label>
-											<Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2,'0')}:${selectedDatetime.getMinutes().toString().padStart(2,'0')} ${selectedDatetime.toDateString()}`}</Button>
-											<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
+											<Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
+											<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
+												onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 											{'lastSeenDateTime' in errors && <FormControl.ErrorMessage>{errors.lastSeenDateTime}</FormControl.ErrorMessage>}
 
 										</FormControl>
