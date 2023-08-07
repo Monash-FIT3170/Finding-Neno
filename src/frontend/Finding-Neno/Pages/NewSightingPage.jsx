@@ -1,6 +1,7 @@
 import { useNavigation } from '@react-navigation/native';
 import { Box, Center, View, Heading, VStack, useToast, Image, FormControl, Input, Button, ScrollView, Alert, Text, KeyboardAvoidingView } from "native-base";
 import { Picker } from '@react-native-picker/picker';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
@@ -30,7 +31,7 @@ const NewSightingPage = ({navigation: {navigate}}) => {
 	const [buttonText, setButtonText] = useState("Add sighting")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-	const [selectedDatetime, setSelectedDate] = useState(new Date());
+	const [selectedDatetime, setSelectedDatetime] = useState(new Date());
 	const [showPicker, setShowPicker] = useState(false);
     const [selectedAnimal, setSelectedAnimal] = useState("dog");
     const [image, setImage] = useState(null);
@@ -85,7 +86,7 @@ const NewSightingPage = ({navigation: {navigate}}) => {
 			foundErrors = { ...foundErrors, dateTime: 'Last seen date and time is required' }
 			
 		} else if (selectedDatetime >= new Date()) {
-			foundErrors = { ...foundErrors, dateTime: 'Last seen date cannot be in the future' }
+			foundErrors = { ...foundErrors, dateTime: 'Last seen date and time cannot be in the future' }
 		}
 
 		if (!formData.lastLocation || formData.lastLocation == "") {
@@ -136,6 +137,33 @@ const NewSightingPage = ({navigation: {navigate}}) => {
 		setIsButtonDisabled(false);
     }
 
+    // Date picker
+    var maximumDate;
+	const openPicker = () => {
+		maximumDate = new Date();
+		setShowPicker(true);
+	}
+
+	const handleDatetimeConfirm = (datetime) => {
+		setSelectedDatetime(datetime);
+		setFormData({ ...formData, dateTime: formatDatetime(datetime) });
+		closePicker();
+	}
+
+	const closePicker = () => {
+		setShowPicker(false);
+	}
+
+	const formatDatetime = (datetime) => {
+		const hours = datetime.getHours().toString().padStart(2, '0');
+		const minutes = datetime.getMinutes().toString().padStart(2, '0');
+		const day = datetime.getDate().toString().padStart(2, '0');
+		const month = (datetime.getMonth() + 1).toString().padStart(2, '0');
+		const year = datetime.getFullYear().toString();
+
+		return `${hours}:${minutes} ${day}/${month}/${year}`
+	}
+
     return (
         <ScrollView>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
@@ -179,10 +207,10 @@ const NewSightingPage = ({navigation: {navigate}}) => {
                                 </FormControl>
 
                                 <FormControl isInvalid={'dateTime' in errors}>
-                                    {/* TODO: Date picker here?? */}
-                                    <FormControl.Label>Time of Sighting</FormControl.Label>
-                                    <Input onChangeText={value => setFormData({ ...formData, dateTime: value })} placeholder="HH:MM dd/mm/yy" />
-                                    {'dateTime' in errors && <FormControl.ErrorMessage>{errors.dateTime}</FormControl.ErrorMessage>}
+            
+                                    <Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
+                                        <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
+                                        onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
                                 </FormControl>
 
                                 <FormControl isInvalid={'lastLocation' in errors}>
