@@ -74,7 +74,6 @@ function TabNavigator() {
   <Tab.Screen
     name="Map"
     component={MapPage}
-    initialParams={{ headers }}
     options={{
       tabBarIcon: ({ color, size }) => (
         <Ionicons name="location" color={color} size={size} />
@@ -84,7 +83,6 @@ function TabNavigator() {
   <Tab.Screen
     name="Sightings"
     component={SightingsStackNavigator}
-    initialParams={{ headers }}
     options={{
       tabBarIcon: ({ color, size }) => (
         <Ionicons name="search" color={color} size={size} />
@@ -116,12 +114,11 @@ function TabNavigator() {
   );
 }
 
-function SightingsStackNavigator({route}) {
-  const { headers } = route.params;
+function SightingsStackNavigator() {
   return (
     <Stack.Navigator initialRouteName="SightingsPage">
-      <Stack.Screen name="Sightings Page" component={SightingsPage} initialParams={{headers}}/>
-      <Stack.Screen name="New Sighting Page" component={NewSightingPage} initialParams={{headers}}/>
+      <Stack.Screen name="Sightings Page" component={SightingsPage} />
+      <Stack.Screen name="New Sighting Page" component={NewSightingPage} />
     </Stack.Navigator>
   )
 }

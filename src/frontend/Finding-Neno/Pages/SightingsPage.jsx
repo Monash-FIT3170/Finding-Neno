@@ -1,10 +1,11 @@
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
-import { Text } from 'react-native';
+import { Text, Dimensions } from 'react-native';
+import { Box, Center, View, Heading, VStack, useToast, Image, FormControl, Input, Button, ScrollView, Alert, KeyboardAvoidingView } from "native-base";
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 
-export default function SightingsPage() {
+export default function SightingsPage({navigation: {navigate}}) {
 
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 

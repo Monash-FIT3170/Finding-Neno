@@ -7,17 +7,19 @@ import { Color } from "../components/atomic/Theme";
 import { IP, PORT } from "@env";
 import { validDateTime, validateCoordinates } from "./validation"
 
-const NewSightingPage = ({navigation: {navigate}, route }) => {
+import { useSelector, useDispatch } from "react-redux";
+import store from "../store/store";
+
+const NewSightingPage = ({navigation: {navigate}}) => {
+    const {IP, PORT} = useSelector((state) => state.api)
+	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
     const navigation = useNavigation();
-    const { headers } = route.params;
-    const authorId = headers["userid"];
-	const accessToken = headers["accesstoken"];
 
     // default form values
     const [formData, setFormData] = useState({ 
         missing_report_id: null,
-        authorId: authorId, 
+        authorId: USER_ID,
         animal: 'dog',
         breed: null,
         image_url: null,
@@ -49,6 +51,7 @@ const NewSightingPage = ({navigation: {navigate}, route }) => {
           });
           if (!result.canceled) {
             setImage(result.assets[0].uri.toString());
+            setFormData({ ...formData, image_url: result.assets[0].uri.toString() });
           }
         }
       };
@@ -69,6 +72,7 @@ const NewSightingPage = ({navigation: {navigate}, route }) => {
           });
           if (!result.canceled) {
             setImage(result.assets[0].uri.toString());
+            setFormData({ ...formData, image_url: result.assets[0].uri.toString() });
           }
         }
     };
@@ -107,7 +111,7 @@ const NewSightingPage = ({navigation: {navigate}, route }) => {
         let isValid = validateDetails(formData);
         
         if (isValid) {
-            setFormData({ ...formData, missing_report_id: null, authorId: authorId, animal: selectedAnimal, image_url: image});
+            setFormData({ ...formData, missing_report_id: null, animal: selectedAnimal });
 
             const url = `${IP}:${PORT}/insert_new_sighting`;
 
