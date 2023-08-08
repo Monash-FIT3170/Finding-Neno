@@ -5,7 +5,8 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 import flask
 
-from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, update_missing_report, archive_missing_report, retrieve_profile
+from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, update_missing_report, archive_missing_report, retrieve_profile, insert_new_sighting
+
 from pets_api import get_owner_pets_operation, get_pet_operation, insert_pet_operation, update_pet_operation, \
     delete_pet_operation
 
@@ -134,6 +135,10 @@ def put_update_missing_report():
 @app.route("/archive_missing_report", methods=["PUT"])
 def put_archive_missing_report():
     return archive_missing_report(get_connection())
+
+@app.route("/insert_new_sighting", methods=["POST"])
+def post_insert_new_sighting():
+    return insert_new_sighting(get_connection())
     
 
 if __name__ == "__main__": 

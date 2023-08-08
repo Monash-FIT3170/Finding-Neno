@@ -18,6 +18,7 @@ import SignupPage from "./Pages/SignupPage";
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import PasswordResetPage from "./Pages/PasswordResetPage";
 import SightingsPage from "./Pages/SightingsPage";
+import NewSightingPage from "./Pages/NewSightingPage";
 import NewReportPage from "./Pages/NewReportPage";
 import { Ionicons } from '@expo/vector-icons'; // Import the desired icon library
 
@@ -71,6 +72,25 @@ function TabNavigator() {
     }}
   />
   <Tab.Screen
+    name="Map"
+    component={MapPage}
+    options={{
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="location" color={color} size={size} />
+      ),
+    }}
+  />
+  <Tab.Screen
+    name="Sightings"
+    component={SightingsStackNavigator}
+    options={{
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="search" color={color} size={size} />
+      ),
+      headerShown: false
+    }}
+  />
+  <Tab.Screen
     name="Report"
     component={ReportStackNavigator}
     options={{
@@ -92,6 +112,15 @@ function TabNavigator() {
   />
 </Tab.Navigator>
   );
+}
+
+function SightingsStackNavigator() {
+  return (
+    <Stack.Navigator initialRouteName="SightingsPage">
+      <Stack.Screen name="Sightings Page" component={SightingsPage} />
+      <Stack.Screen name="New Sighting Page" component={NewSightingPage} />
+    </Stack.Navigator>
+  )
 }
 
 function ReportStackNavigator() {
