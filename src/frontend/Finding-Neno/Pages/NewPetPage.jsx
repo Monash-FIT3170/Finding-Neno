@@ -33,6 +33,33 @@ export default function NewPetPage({ navigation: { navigate}}) {
     const [petDescription, setPetDescription] = useState(pet ? pet.description : '');
     const [modalVisible, setModalVisible] = useState(false);
 
+    const uploadImage = (base64Img, setPetImage) => {
+      // Uploads an image to Imgur and sets the petImage state to the uploaded image URL
+      const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
+
+      fetch("https://api.imgur.com/3/image", {
+        method: "POST",
+        headers: {
+          "Authorization": "Client-ID 736cd8c6daf1a6e",
+        },
+        body: base64Img,
+      })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success === true) {
+            console.log(`Image successfully uploaded: ${res.data.link}}`);
+            setPetImage(res.data.link);
+          } else {
+            console.log("Image failed to upload - setting default image");
+            setPetImage(DEFAULT_IMAGE);
+          }
+        })
+        .catch(err => {
+          console.log(`Image failed to upload: ${err}`);
+          setPetImage(DEFAULT_IMAGE);
+        });
+    }
+
     const handleChoosePhoto = async () => {
         /**
          * This function is used to choose a photo from the user's photo library.
@@ -46,9 +73,17 @@ export default function NewPetPage({ navigation: { navigate}}) {
             allowsEditing: true,
             aspect: [4, 3],
             quality: 1,
+            base64: true,
           });
           if (!result.canceled) {
-            setPetImage(result.assets[0].uri);
+            if (result.assets[0].uri.startsWith("http")) {
+              // Image is a URL, so leave it as is
+              setPetImage(result.assets[0].uri);
+            } else {
+              // Image is a local file path, so upload to Imgur
+              let base64Img = result.assets[0].base64;
+              uploadImage(base64Img, setPetImage);
+            }
           }
         }
     };
@@ -71,7 +106,9 @@ export default function NewPetPage({ navigation: { navigate}}) {
             quality: 1,
           });
           if (!result.canceled) {
-            setPetImage(result.assets[0].uri);
+            // Upload to Imgur
+            let base64Img = result.assets[0].base64;
+            uploadImage(base64Img, setPetImage);
           }
         }
       };
