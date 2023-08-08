@@ -17,15 +17,6 @@ const NewSightingPage = ({navigation: {navigate}}) => {
 
     const navigation = useNavigation();
 
-    // default form values
-    const [formData, setFormData] = useState({ 
-        missing_report_id: null,
-        authorId: USER_ID,
-        animal: 'dog',
-        breed: null,
-        image_url: null,
-        description: ''
-    });
 	const [errors, setErrors] = useState({});
 	const [isCreated, setIsCreated] = useState(false);
 	const [buttonText, setButtonText] = useState("Add sighting")
@@ -164,6 +155,17 @@ const NewSightingPage = ({navigation: {navigate}}) => {
 		return `${hours}:${minutes} ${day}/${month}/${year}`
 	}
 
+    // default form values
+    const [formData, setFormData] = useState({ 
+        missing_report_id: null,
+        authorId: USER_ID,
+        animal: 'dog',
+        breed: null,
+        image_url: null,
+        description: '',
+        dateTime: formatDatetime(selectedDatetime),
+    });
+
     return (
         <ScrollView>
         <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
@@ -207,10 +209,11 @@ const NewSightingPage = ({navigation: {navigate}}) => {
                                 </FormControl>
 
                                 <FormControl isInvalid={'dateTime' in errors}>
-            
+                                <FormControl.Label>Date and Time of Sighting</FormControl.Label>
                                     <Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
                                         <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
                                         onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
+                                        {'dateTime' in errors && <FormControl.ErrorMessage>{errors.dateTime}</FormControl.ErrorMessage>}
                                 </FormControl>
 
                                 <FormControl isInvalid={'lastLocation' in errors}>
