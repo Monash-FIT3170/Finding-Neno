@@ -18,7 +18,6 @@ const NewSightingPage = ({navigation: {navigate}}) => {
     const navigation = useNavigation();
 
 	const [errors, setErrors] = useState({});
-	const [isCreated, setIsCreated] = useState(false);
 	const [buttonText, setButtonText] = useState("Add sighting")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
@@ -96,7 +95,7 @@ const NewSightingPage = ({navigation: {navigate}}) => {
 		return Object.keys(foundErrors).length === 0;
 	}
 
-    const onPress = () => {
+    const onPress = async () => {
         setIsButtonDisabled(true);
         setButtonText("Adding sighting...");
 
@@ -107,7 +106,7 @@ const NewSightingPage = ({navigation: {navigate}}) => {
 
             const url = `${IP}:${PORT}/insert_new_sighting`;
 
-            fetch(url, {
+            await fetch(url, {
                 method: "POST",
                 headers: {"Content-Type": "application/json",
                           "Authorization": `Bearer ${ACCESS_TOKEN}`
@@ -116,7 +115,6 @@ const NewSightingPage = ({navigation: {navigate}}) => {
             })
             .then((res) => {
                 if (res.status == 201) {
-                    setIsCreated(true);
                     toast.show({
                         description: "Your sighting has been added!",
                         placement: "top"
@@ -166,6 +164,7 @@ const NewSightingPage = ({navigation: {navigate}}) => {
         image_url: null,
         description: '',
         dateTime: formatDatetime(selectedDatetime),
+        dateTimeOfCreation: formatDatetime(new Date())
     });
 
     return (
@@ -210,12 +209,11 @@ const NewSightingPage = ({navigation: {navigate}}) => {
                                     />
                                 </FormControl>
 
-                                <FormControl isInvalid={'dateTime' in errors}>
+                                <FormControl>
                                 <FormControl.Label>Date and Time of Sighting</FormControl.Label>
                                     <Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
                                         <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
                                         onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
-                                        {'dateTime' in errors && <FormControl.ErrorMessage>{errors.dateTime}</FormControl.ErrorMessage>}
                                 </FormControl>
 
                                 <FormControl isInvalid={'lastLocation' in errors}>

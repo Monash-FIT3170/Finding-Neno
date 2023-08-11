@@ -38,17 +38,21 @@ def insert_new_sighting(conn) -> Tuple[str, int]:
     hour, minute, day, month, year = separate_datetime(date_time_input)
     date_time = datetime.datetime(year, month, day, hour, minute)
 
+    date_time_of_creation_input = json_data["dateTimeOfCreation"]
+    hour, minute, day, month, year = separate_datetime(date_time_of_creation_input)
+    date_time_of_creation = datetime.datetime(year, month, day, hour, minute)
+
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
     image_url = json_data["image_url"]
     description = json_data["description"]
 
-    res = insert_new_sighting_to_database(conn, missing_report_id, author_id, animal, breed, date_time, location_longitude, location_latitude, image_url, description, user_id, access_token)
+    res = insert_new_sighting_to_database(conn, missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, location_latitude, image_url, description, user_id, access_token)
 
     if not res:
         return "User does not have access", 401
     else:
-        return "", 201
+        return "Success", 201
 
 def insert_missing_report(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
@@ -63,17 +67,21 @@ def insert_missing_report(conn) -> Tuple[str, int]:
     hour, minute, day, month, year = separate_datetime(last_seen_input)
     last_seen = datetime.datetime(year, month, day, hour, minute)
 
+    date_time_of_creation_input = json_data["dateTimeOfCreation"]
+    hour, minute, day, month, year = separate_datetime(date_time_of_creation_input)
+    date_time_of_creation = datetime.datetime(year, month, day, hour, minute)
+
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
 
     description = json_data["description"]
     
-    res = insert_missing_report_to_database(conn, pet_id, author_id, last_seen, location_longitude, location_latitude, description, access_token)
+    res = insert_missing_report_to_database(conn, pet_id, author_id, date_time_of_creation, last_seen, location_longitude, location_latitude, description, access_token)
 
     if not res:
         return "User does not have access", 401
     else:
-        return "", 201
+        return "Success", 201
 
 def update_missing_report(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
