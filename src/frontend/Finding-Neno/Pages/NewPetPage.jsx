@@ -96,6 +96,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
 		setButtonText("Add Pet")
 		setIsButtonDisabled(false);
+  }
 
     const validateDetails = (formData) => {
       // Validates details. If details are valid, send formData object to onAddPetPress.
@@ -239,7 +240,6 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
     );
   
   };
-  }
 
 
 export default NewPetPage;
