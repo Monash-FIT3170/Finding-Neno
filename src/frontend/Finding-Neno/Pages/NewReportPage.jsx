@@ -30,17 +30,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	const {IP, PORT} = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
-	const formatDatetime = (datetime) => {
-		const hours = datetime.getHours().toString().padStart(2, '0');
-		const minutes = datetime.getMinutes().toString().padStart(2, '0');
-		const day = datetime.getDate().toString().padStart(2, '0');
-		const month = (datetime.getMonth() + 1).toString().padStart(2, '0');
-		const year = datetime.getFullYear().toString();
-
-		return `${hours}:${minutes} ${day}/${month}/${year}`
-	}
-
-	const [formData, setFormData] = useState({ description: '', authorId: USER_ID, dateTimeOfCreation: formatDatetime(new Date())});
 	const [dropdownOptions, setDropdownOptions] = useState([]);
 	const [errors, setErrors] = useState({});
 	const [isCreated, setIsCreated] = useState(false);
@@ -79,7 +68,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		fetchOwnerPets();
 	}, []);
 
-	const onCreateReportPress = () => {
+	const onCreateReportPress = async () => {
 		setIsButtonDisabled(true);
 		setButtonText("Creating report...");
 
@@ -88,7 +77,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		if (isValid) {
 			const url = `${IP}:${PORT}/insert_missing_report`;
 
-			fetch(url, {
+			await fetch(url, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(formData),
@@ -114,14 +103,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		if (!formData.missingPetId || formData.missingPetId == "") {
 			foundErrors = { ...foundErrors, missingPetId: 'Please select a pet' }
 		}
-
-		if (!formData.lastSeenDateTime) {
-			foundErrors = { ...foundErrors, lastSeenDateTime: 'Last seen date is required' }
-			// } else if (!validDateTime(formData.lastSeenDateTime)) {
-		} else if (selectedDatetime >= new Date()) {
-			foundErrors = { ...foundErrors, lastSeenDateTime: 'Last seen date and time cannot be in the future' }
-		}
-		// formData.lastSeenDateTime = formatDatetimeString(formData.lastSeenDateTime)
 
 		if (!formData.lastLocation || formData.lastLocation == "") {
 			foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
@@ -159,6 +140,24 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		setShowPicker(false);
 	}
 
+	const formatDatetime = (datetime) => {
+		const hours = datetime.getHours().toString().padStart(2, '0');
+		const minutes = datetime.getMinutes().toString().padStart(2, '0');
+		const day = datetime.getDate().toString().padStart(2, '0');
+		const month = (datetime.getMonth() + 1).toString().padStart(2, '0');
+		const year = datetime.getFullYear().toString();
+
+		return `${hours}:${minutes} ${day}/${month}/${year}`
+	}
+
+    // default form values
+    const [formData, setFormData] = useState({ 
+        authorId: USER_ID,
+        description: '',
+        lastSeenDateTime: formatDatetime(selectedDatetime),
+        dateTimeOfCreation: formatDatetime(new Date())
+    });
+
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
 			<Box flex={1} alignItems="center" justifyContent="center">
@@ -185,13 +184,11 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 											{'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPetId}</FormControl.ErrorMessage>}
 										</FormControl>
 
-										<FormControl isInvalid={'lastSeenDateTime' in errors}>
+										<FormControl>
 											<FormControl.Label>Last Seen</FormControl.Label>
 											<Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
 											<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
 												onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
-											{'lastSeenDateTime' in errors && <FormControl.ErrorMessage>{errors.lastSeenDateTime}</FormControl.ErrorMessage>}
-
 										</FormControl>
 
 										<FormControl isInvalid={'lastLocation' in errors}>
