@@ -71,6 +71,15 @@ function TabNavigator() {
     }}
   />
   <Tab.Screen
+    name="Map"
+    component={MapPage}
+    options={{
+      tabBarIcon: ({ color, size }) => (
+        <Ionicons name="location" color={color} size={size} />
+      ),
+    }}
+  />
+  <Tab.Screen
     name="Report"
     component={ReportStackNavigator}
     options={{
