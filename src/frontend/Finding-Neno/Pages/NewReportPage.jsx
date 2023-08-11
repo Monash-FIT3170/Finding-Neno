@@ -80,7 +80,10 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 			fetch(url, {
 				method: "POST",
-				headers: { "Content-Type": "application/json" },
+				headers: {
+				"Content-Type": "application/json",
+				'Authorization': `Bearer ${ACCESS_TOKEN}`,
+				},
 				body: JSON.stringify(formData),
 			})
 				.then((res) => {

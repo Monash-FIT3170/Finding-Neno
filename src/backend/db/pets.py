@@ -58,7 +58,9 @@ def get_all_pets(
 
 def get_pet(
         connection: psycopg2.extensions.connection,
-        pet_id: int
+        pet_id: int,
+        owner_id: str,
+        access_token : str,
 ):
     """
     Returns a pet by the given id

@@ -103,13 +103,15 @@ const NewSightingPage = ({navigation: {navigate}}) => {
         let isValid = validateDetails(formData);
         
         if (isValid) {
-            setFormData({ ...formData, missing_report_id: null, animal: selectedAnimal });
+            setFormData({ ...formData, missing_report_id: null, animal: selectedAnimal, id:USER_ID  });
 
             const url = `${IP}:${PORT}/insert_new_sighting`;
 
             fetch(url, {
                 method: "POST",
-                headers: {"Content-Type": "application/json"},
+                headers: {"Content-Type": "application/json",
+                          "Authorization": `Bearer ${ACCESS_TOKEN}`
+                },
                 body: JSON.stringify(formData),
             })
             .then((res) => {

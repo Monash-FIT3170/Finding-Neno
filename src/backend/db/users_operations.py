@@ -3,6 +3,8 @@ import string
 import hashlib
 import psycopg2
 
+from authentication import verify_access_token
+
 
 def get_salt(password):
     # Convert the password to bytes
@@ -43,7 +45,7 @@ def generate_access_token():
     return token
 
 
-def insert_user_to_database(conn, email, phone, name, password):
+def insert_user_to_database(conn, email, phone, name, password, user_id, access_token):
     """
     This function is used to add a new user to the database
     """
@@ -71,7 +73,7 @@ def insert_user_to_database(conn, email, phone, name, password):
     conn.commit()
     cur.close()
 
-def retrieve_user(conn, user_id, token):
+def retrieve_user(conn, user_id, access_token):
     """
     This function is used to retrieve a user for the profile page
     """
@@ -84,9 +86,15 @@ def retrieve_user(conn, user_id, token):
 
     # Execute the query
     try:
-        cur.execute(query, (user_id, token,))
+        cur.execute(query, (user_id, access_token,))
         result_set = cur.fetchall()
-        if len(result_set) == 0:  # If a user with the provided email could not be found
+
+        # Verify access token
+        if not verify_access_token(conn, user_id, access_token):
+            return False
+
+        # If a user with the provided email could not be found
+        if len(result_set) == 0:
             print("No user found with the provided id and access token.")
             return False
         else:  # If user is found
@@ -141,7 +149,7 @@ def check_user_exists_in_database(conn, email, password):
     conn.commit()
     cur.close()
 
-def insert_new_sighting_to_database(connection: psycopg2.extensions.connection, author_id: str, missing_report_id, animal, breed, date_time, location_longitude, location_latitude, image_url, description):
+def insert_new_sighting_to_database(connection: psycopg2.extensions.connection, author_id: str, missing_report_id, animal, breed, date_time, location_longitude, location_latitude, image_url, description, user_id, access_token):
     """
     This function is used to add a new sighting to the database
     """
@@ -154,6 +162,11 @@ def insert_new_sighting_to_database(connection: psycopg2.extensions.connection, 
 
     # Execute the query
     try:
+
+        # Verify access token
+        if not verify_access_token(connection, user_id, access_token):
+            return False
+
         cur.execute(query, (author_id, missing_report_id, animal, breed, date_time, location_longitude, location_latitude, image_url, description))
         print(f"Query executed successfully: {query}")
     except Exception as e:
@@ -163,7 +176,7 @@ def insert_new_sighting_to_database(connection: psycopg2.extensions.connection, 
     connection.commit()
     cur.close()
 
-def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id: str, pet_id, last_seen, location_longitude, location_latitude, description):
+def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id: str, pet_id, last_seen, location_longitude, location_latitude, description, access_token):
     """
     This function is used to add a new missing report to the database
     """
@@ -178,6 +191,11 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
 
     # Execute the query
     try:
+
+        # Verify access token
+        if not verify_access_token(connection, author_id, access_token):
+            return False
+
         cur.execute(query, (author_id, pet_id, last_seen, location_longitude, location_latitude, description, isActive))
         print(f"Query executed successfully: {query}")
     except Exception as e:
@@ -188,7 +206,7 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     cur.close()
 
 def update_missing_report_in_database(connection: psycopg2.extensions.connection, report_id,  pet_id, author_id,
-                                      last_seen, location_longitude, location_latitude, description, isActive):
+                                      last_seen, location_longitude, location_latitude, description, isActive, access_token):
     """
     This function is used to update a missing report in the database
     """
@@ -201,6 +219,11 @@ def update_missing_report_in_database(connection: psycopg2.extensions.connection
 
     # Execute the query
     try:
+
+        # Verify access token
+        if not verify_access_token(connection, author_id, access_token):
+            return False
+
         cur.execute(query, (pet_id, author_id, last_seen, location_longitude, location_latitude, description, isActive, report_id))
         print(f"Query executed successfully: {query}")
     except Exception as e:
@@ -211,7 +234,7 @@ def update_missing_report_in_database(connection: psycopg2.extensions.connection
     cur.close()
 
 
-def archive_missing_report_in_database(connection: psycopg2.extensions.connection, reportId, isActive):
+def archive_missing_report_in_database(connection: psycopg2.extensions.connection, reportId, isActive, user_id, access_token):
     """
     This function is used to archive a missing report
     """
@@ -223,6 +246,11 @@ def archive_missing_report_in_database(connection: psycopg2.extensions.connectio
 
     # Execute the query
     try:
+
+        # Verify access token
+        if not verify_access_token(connection, user_id, access_token):
+            return False
+
         cur.execute(query, (isActive, reportId))
         print(f"Query executed successfully: {query}")
     except Exception as e:
@@ -233,7 +261,7 @@ def archive_missing_report_in_database(connection: psycopg2.extensions.connectio
     cur.close()
 
 
-def retrieve_missing_reports_from_database(connection: psycopg2.extensions.connection, owner_id):
+def retrieve_missing_reports_from_database(connection: psycopg2.extensions.connection, owner_id, access_token):
     """
     This function retrieves the missing reports of the logged in user.
     """
@@ -270,6 +298,10 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
 
         print(f"Missing reports successfully retrieved")
 
+        # Verify access token
+        if not verify_access_token(connection, owner_id, access_token):
+            return False
+
         return missing_reports
     except Exception as e:
         print(f"Error with retrieving missing reports: {e}")
@@ -278,7 +310,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
     return None
 
 
-def change_password_in_database(connection: psycopg2.extensions.connection, email: int, new_password: str):
+def change_password_in_database(connection: psycopg2.extensions.connection, email: int, new_password: str, user_id, access_token):
     """
     This function updates the password of the row in the database which matches the email provided.
     """
@@ -293,6 +325,11 @@ def change_password_in_database(connection: psycopg2.extensions.connection, emai
 
     # Execute query
     try:
+
+        # Verify access token
+        if not verify_access_token(connection, user_id, access_token):
+            return False
+
         cur.execute(query, (hashed_password, salt, email))
 
         # Commit the change
