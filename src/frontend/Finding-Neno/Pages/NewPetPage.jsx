@@ -96,6 +96,28 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
 		setButtonText("Add Pet")
 		setIsButtonDisabled(false);
+
+    const validateDetails = (formData) => {
+      // Validates details. If details are valid, send formData object to onAddPetPress.
+      foundErrors = {};
+  
+      if (!formData.petName || formData.petName == "") {
+        foundErrors = { ...foundErrors, petName: 'Pet name is required' }
+      }  
+  
+      if (!formData.petBreed || formData.petBreed == "") {
+        foundErrors = { ...foundErrors, petBreed: 'Pet breed is required' }
+      }
+  
+      if (formData.petDescription.length > 500) {
+        foundErrors = { ...foundErrors, petDescription: 'Must not exceed 500 characters' }
+      }
+  
+      setErrors(foundErrors);
+  
+      // true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
+      return Object.keys(foundErrors).length === 0;
+    }
   }
 
   const handlePreview = () => {
