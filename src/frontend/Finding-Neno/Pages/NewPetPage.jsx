@@ -167,7 +167,82 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
     setIsCreated(false);
   };
 
-}
+  return (
+    <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+      <Box flex={1} alignItems="center" justifyContent="center">
+        <Center w="100%">
+          <Box safeArea p="2" py="8" w="90%" maxW="290">
+
+            {isCreated ? (<AlertComponent onClose={closeAlert} />) :
+              (
+                <VStack>
+                  <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Add a Pet</Heading>
+
+                  <VStack space={3} mt="5">
+
+                    <FormControl isInvalid={'petName' in errors}>
+                      <FormControl.Label>Pet Name</FormControl.Label>
+                      <Input onChangeText={value => setFormData({ ...formData, petName: value })} />
+                      {'petName' in errors && <FormControl.ErrorMessage>{errors.petName}</FormControl.ErrorMessage>}
+                    </FormControl>
+
+                    <FormControl isInvalid={'petImage' in errors}>
+                      <FormControl.Label>Pet Image</FormControl.Label>
+                      <Input onChangeText={value => setFormData({ ...formData, petImage: value })} />
+
+                      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                          {petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} />}
+                      </View>
+
+                      <Button title="Choose Existing Photo" onPress={handleChoosePhoto} />
+                      <Button title="Take Photo" onPress={handleTakePhoto} />
+
+                      {'petImage' in errors && <FormControl.ErrorMessage>{errors.petImage}</FormControl.ErrorMessage>}
+                    </FormControl>
+
+                    <FormControl isInvalid={'petType' in errors}>
+                      <FormControl.Label>Choose Pet Type</FormControl.Label>
+                      <Select placeholder="Select a pet type"
+                        selectedValue={formData.petType}
+                        onValueChange={(value) => setFormData({ ...formData, petType: value })}>
+                        <Select.Item label="Select a pet" value="" disabled hidden />
+                        {petTypeOptions.map((option, index) => (
+                          <Select.Item key={index} label={option.label} value={option.value} />
+                        ))}
+                      </Select>
+                      {'petType' in errors && <FormControl.ErrorMessage>{errors.petType}</FormControl.ErrorMessage>}
+                    </FormControl>
+
+                    <FormControl isInvalid={'petBreed' in errors}>
+                      <FormControl.Label>Pet breed</FormControl.Label>
+                      <Input onChangeText={value => setFormData({ ...formData, petBreed: value })} placeholder="Enter pet breed" />
+                      {'petBreed' in errors && <FormControl.ErrorMessage>{errors.petBreed}</FormControl.ErrorMessage>}
+                    </FormControl>
+
+                    <FormControl isInvalid={'petDescription' in errors}>
+                      <FormControl.Label>Pet Description</FormControl.Label>
+                      <Input onChangeText={value => setFormData({ ...formData, petDescription: value })} />
+                      {'petDescription' in errors && <FormControl.ErrorMessage>{errors.petDescription}</FormControl.ErrorMessage>}
+                    </FormControl>
+
+                    <Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onAddPetPress}>
+                      {buttonText}
+                    </Button>
+
+                  </VStack>
+
+                </VStack>
+              )}
+          </Box>
+        </Center>
+      </Box>
+    </KeyboardAvoidingView>
+  );
+
+};
+
+
+export default NewPetPage;
 
 
 // export default function NewPetPage({ navigation: { navigate}, route}) {
