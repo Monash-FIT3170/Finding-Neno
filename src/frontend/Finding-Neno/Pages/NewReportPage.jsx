@@ -1,14 +1,14 @@
 import { useNavigation } from '@react-navigation/native';
 import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
-// import DateTimePickerModal from 'react-native-modal-datetime-picker';
-// import DateTimePicker from '@react-native-community/datetimepicker';
-// import DatePicker from 'react-native-datepicker'
-
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { IP, PORT } from "@env";
 import { validDateTime, validateCoordinates } from "./validation"
+
+import { useSelector, useDispatch } from "react-redux";
+import store from "../store/store";
+
 
 const AlertComponent = ({ onClose }) => (
 	<Alert w="100%" status="success">
@@ -24,21 +24,20 @@ const AlertComponent = ({ onClose }) => (
 	</Alert>
 );
 
-const NewReportPage = ({ navigation: { navigate }, route }) => {
+const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
-	const { headers } = route.params;
 
-	const ownerId = headers["userid"];
-	const accessToken = headers["accesstoken"];
+	const {IP, PORT} = useSelector((state) => state.api)
+	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
-	const [formData, setFormData] = useState({ description: '' });
+	const [formData, setFormData] = useState({ description: '', authorId: USER_ID });
 	const [dropdownOptions, setDropdownOptions] = useState([]);
 	const [errors, setErrors] = useState({});
 	const [isCreated, setIsCreated] = useState(false);
 	const [buttonText, setButtonText] = useState("Create report")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-	const [selectedDatetime, setSelectedDate] = useState(new Date());
+	const [selectedDatetime, setSelectedDatetime] = useState(new Date());
 	const [showPicker, setShowPicker] = useState(false);
 
 	useEffect(() => {
@@ -46,11 +45,11 @@ const NewReportPage = ({ navigation: { navigate }, route }) => {
 		// ownerId = 2
 		const fetchOwnerPets = async () => {
 			try {
-				const url = `${IP}:${PORT}/get_owner_pets/${ownerId}`;
+				const url = `${IP}:${PORT}/get_owner_pets/${USER_ID}`;
 				const response = await fetch(url, {
 					headers: {
 						method: "GET",
-						'Authorization': `Bearer ${accessToken}`
+						'Authorization': `Bearer ${ACCESS_TOKEN}`
 					}
 				});
 
@@ -77,7 +76,6 @@ const NewReportPage = ({ navigation: { navigate }, route }) => {
 		let isValid = validateDetails(formData);
 
 		if (isValid) {
-			setFormData({ ...formData, authorId: ownerId })
 			const url = `${IP}:${PORT}/insert_missing_report`;
 
 			fetch(url, {
@@ -107,12 +105,11 @@ const NewReportPage = ({ navigation: { navigate }, route }) => {
 			foundErrors = { ...foundErrors, missingPetId: 'Please select a pet' }
 		}
 
-		console.log(selectedDatetime >= new Date())
 		if (!formData.lastSeenDateTime) {
 			foundErrors = { ...foundErrors, lastSeenDateTime: 'Last seen date is required' }
 			// } else if (!validDateTime(formData.lastSeenDateTime)) {
 		} else if (selectedDatetime >= new Date()) {
-			foundErrors = { ...foundErrors, lastSeenDateTime: 'Last seen date cannot be in the future' }
+			foundErrors = { ...foundErrors, lastSeenDateTime: 'Last seen date and time cannot be in the future' }
 		}
 		// formData.lastSeenDateTime = formatDatetimeString(formData.lastSeenDateTime)
 
@@ -135,6 +132,33 @@ const NewReportPage = ({ navigation: { navigate }, route }) => {
 	const closeAlert = () => {
 		setIsCreated(false);
 	};
+
+	var maximumDate;
+	const openPicker = () => {
+		maximumDate = new Date();
+		setShowPicker(true);
+	}
+
+	const handleDatetimeConfirm = (datetime) => {
+		setSelectedDatetime(datetime);
+		setFormData({ ...formData, lastSeenDateTime: formatDatetime(datetime) });
+		closePicker();
+	}
+
+	const closePicker = () => {
+		setShowPicker(false);
+	}
+
+	const formatDatetime = (datetime) => {
+		const hours = datetime.getHours().toString().padStart(2, '0');
+		const minutes = datetime.getMinutes().toString().padStart(2, '0');
+		const day = datetime.getDate().toString().padStart(2, '0');
+		const month = (datetime.getMonth() + 1).toString().padStart(2, '0');
+		const year = datetime.getFullYear().toString();
+
+		return `${hours}:${minutes} ${day}/${month}/${year}`
+	}
+	
 
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
@@ -164,8 +188,11 @@ const NewReportPage = ({ navigation: { navigate }, route }) => {
 
 										<FormControl isInvalid={'lastSeenDateTime' in errors}>
 											<FormControl.Label>Last Seen</FormControl.Label>
-											<Input onChangeText={value => setFormData({ ...formData, lastSeenDateTime: value })} placeholder="HH:MM dd/mm/yy" />
+											<Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
+											<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
+												onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 											{'lastSeenDateTime' in errors && <FormControl.ErrorMessage>{errors.lastSeenDateTime}</FormControl.ErrorMessage>}
+
 										</FormControl>
 
 										<FormControl isInvalid={'lastLocation' in errors}>

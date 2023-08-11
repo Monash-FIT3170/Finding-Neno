@@ -5,44 +5,48 @@ import { Color } from "../components/atomic/Theme";
 import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import PetCard  from "../components/PetCard";
-import { IP, PORT } from "@env";
 
+import { useSelector, useDispatch } from "react-redux";
+import store from '../store/store';
+import { selectPet } from '../store/pet';
 
-export default function ProfilePage({ navigation: { navigate}, route}) {
+export default function ProfilePage({ navigation: { navigate}}) {
     const navigation = useNavigation();
-    const {headers} = route.params;
-    const ownerId = headers["userid"];
-    const accessToken = headers["accesstoken"]
-  
-    const isFocused = useIsFocused();
-    
 
+    const {IP, PORT} = useSelector((state) => state.api)
+    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+  
+    const isFocused = useIsFocused(); 
+    const dispatch = useDispatch();
+  
     const myPet = {
       name: '',
       image_url: '',
       animal: '',
       breed: '',
       description: '',
-      owner_id: null,
+      owner_id: USER_ID,
     };
-
-    var data;
+    dispatch(selectPet(myPet));
+    console.log(store.getState());
 
     const [pets, setPets] = useState([]);
+    const [user, setUser] = useState([]);
 
     useEffect(() => {
       if (isFocused) {
         fetchOwnerPets();
+        fetchProfileInfo();
       }
     }, [isFocused]);
   
     const fetchOwnerPets = async () => {
       try {
-        const url = `${IP}:${PORT}/get_owner_pets/${ownerId}`;
+        const url = `${IP}:${PORT}/get_owner_pets/${USER_ID}`;
         const response = await fetch(url, {
           headers: { 
             method: "GET",
-            'Authorization': `Bearer ${accessToken}`}
+            'Authorization': `Bearer ${ACCESS_TOKEN}`}
         });
 
         if (!response.ok) {
@@ -59,15 +63,37 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
       }
     }
 
+    // Retrieve Profile Information
+    const fetchProfileInfo = async () => {
+      try {
+        const url = `${IP}:${PORT}/retrieve_profile/${ownerId}`;
+        const response = await fetch(url, {
+          headers: {
+            method: "GET",
+            'Authorization': `Bearer ${accessToken}`}
+        });
+
+        if (!response.ok) {
+          throw new Error('Request failed with status ' + response.status);
+        }
+        const profile_info = await response.json();
+        setUser(profile_info);
+        console.log(user)
+      } catch (error) {
+        console.log("error in profile page")
+        console.log(error);
+      }
+    }
+
 
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
 
 
     // TODO: Replace with actual data
-    const name = "TODO";
-    const email = "TODO";
-    const phone = "TODO";
+    const name = user.name;
+    const email = user.email;
+    const phone = user.phone;
 
     //const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
 
@@ -192,7 +218,9 @@ export default function ProfilePage({ navigation: { navigate}, route}) {
       <Box h="4"></Box>
 
       <Button
-        onPress={() => navigate('New Pet Page', {pet: myPet, ownerId: ownerId, accessToken: accessToken})} 
+        onPress={() => {
+          navigate('New Pet Page')}
+        } 
         width={windowWidth - 100}
         height="40px"
       >
