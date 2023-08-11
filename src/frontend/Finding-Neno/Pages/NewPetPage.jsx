@@ -118,6 +118,45 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
       // true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
       return Object.keys(foundErrors).length === 0;
     }
+
+    const handleChoosePhoto = async () => {
+      /**
+       * This function is used to choose a photo from the user's photo library.
+       * It will call the ImagePicker API to open the photo library and allow the user to choose a photo.
+       * It will then set the petImage state to the chosen photo.
+       */
+      const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+      if (status === 'granted') {
+        let result = await ImagePicker.launchImageLibraryAsync({
+          mediaTypes: ImagePicker.MediaTypeOptions.Images,
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
+        if (!result.canceled) {
+          setPetImage(result.assets[0].uri);
+        }
+      }
+    };  
+
+    const handleTakePhoto = async () => {
+      /**
+       * This function is used to take a photo from the user's camera.
+       * It will call the ImagePicker API to open the camera and allow the user to take a photo.
+       * It will then set the petImage state to the taken photo.
+       */
+      const { status } = await ImagePicker.requestCameraPermissionsAsync();
+      if (status === 'granted') {
+        let result = await ImagePicker.launchCameraAsync({
+          allowsEditing: true,
+          aspect: [4, 3],
+          quality: 1,
+        });
+        if (!result.canceled) {
+          setPetImage(result.assets[0].uri);
+        }
+      }
+    };
   }
 
   const handlePreview = () => {
