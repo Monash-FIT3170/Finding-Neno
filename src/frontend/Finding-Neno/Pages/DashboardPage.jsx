@@ -186,7 +186,7 @@ const DashboardPage = () => {
         <ScrollView style={{backgroundColor: 'white'}}>
 
           {/* REPORT SIGHTING MODAL */}
-          <Modal isOpen={modalVisible} onClose={setModalVisible} >
+          <Modal avoidKeyboard isOpen={modalVisible} onClose={setModalVisible} >
         <Modal.Content >
           <Modal.CloseButton />
           <Modal.Header>Sighting details</Modal.Header>
