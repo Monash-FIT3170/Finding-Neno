@@ -26,56 +26,100 @@ export default function NewPetPage({ navigation: { navigate } }) {
 	//if the pet name is empty then it is a new pet, otherwise it is an existing pet
 	const isExistingPet = pet.name != '';
 
-	const [petName, setPetName] = useState(pet ? pet.name : '');
-	const [petImage, setPetImage] = useState(pet ? pet.image_url : null);
-	const [petType, setPetType] = useState(pet ? pet.animal : 'dog');
-	const [petBreed, setPetBreed] = useState(pet ? pet.breed : '');
-	const [petDescription, setPetDescription] = useState(pet ? pet.description : '');
-	const [modalVisible, setModalVisible] = useState(false);
+    const [petName, setPetName] = useState(pet ? pet.name : '');
+    const [petImage, setPetImage] = useState(pet ? pet.image_url : null);
+    const [petType, setPetType] = useState(pet ? pet.animal : '');
+    const [petBreed, setPetBreed] = useState(pet ? pet.breed : '');
+    const [petDescription, setPetDescription] = useState(pet ? pet.description : '');
+    const [modalVisible, setModalVisible] = useState(false);
 
-	const handleChoosePhoto = async () => {
-		/**
-		 * This function is used to choose a photo from the user's photo library.
-		 * It will call the ImagePicker API to open the photo library and allow the user to choose a photo.
-		 * It will then set the petImage state to the chosen photo.
-		 */
-		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-		if (status === 'granted') {
-			let result = await ImagePicker.launchImageLibraryAsync({
-				mediaTypes: ImagePicker.MediaTypeOptions.Images,
-				allowsEditing: true,
-				aspect: [4, 3],
-				quality: 1,
-			});
-			if (!result.canceled) {
-				setPetImage(result.assets[0].uri);
-			}
-		}
-	};
+    const uploadImage = (base64Img, setPetImage) => {
+      // Uploads an image to Imgur and sets the petImage state to the uploaded image URL
+      const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
+      const LOADING_IMAGE = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWRwMHI0cmlnOGU3Mm4xbzZwcTJwY2Nrb2hlZ3YwNmtleHo4Zm15MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L05HgB2h6qICDs5Sms/giphy.gif";
+
+      // Set loading image while the chosen image is being uploaded
+      setPetImage(LOADING_IMAGE);
+
+      const formData = new FormData();
+      formData.append("image", base64Img);
+
+      fetch("https://api.imgur.com/3/image", {
+        method: "POST",
+        headers: {
+          "Authorization": "Client-ID 736cd8c6daf1a6e",
+        },
+        body: formData,
+      })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success === true) {
+            console.log(`Image successfully uploaded: ${res.data.link}}`);
+            setPetImage(res.data.link);
+          } else {
+            console.log("Image failed to upload - setting default image");
+            setPetImage(DEFAULT_IMAGE);
+          }
+        })
+        .catch(err => {
+          console.log("Image failed to upload:", err);
+          setPetImage(DEFAULT_IMAGE);
+        });
+    }
+
+    const handleChoosePhoto = async () => {
+        /**
+         * This function is used to choose a photo from the user's photo library.
+         * It will call the ImagePicker API to open the photo library and allow the user to choose a photo.
+         * It will then set the petImage state to the chosen photo.
+         */
+        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
+        if (status === 'granted') {
+          let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+            base64: true,
+          });
+          if (!result.canceled) {
+            if (result.assets[0].uri.startsWith("http")) {
+              // Image is a URL, so leave it as is
+              setPetImage(result.assets[0].uri);
+            } else {
+              // Image is a local file path, so upload to Imgur
+              let base64Img = result.assets[0].base64;
+              uploadImage(base64Img, setPetImage);
+            }
+          }
+        }
+    };
 
 	const handlePreview = () => {
 		setIsPreviewExpanded(!isPreviewExpanded);
 	};
 
-	const handleTakePhoto = async () => {
-		/**
-		 * This function is used to take a photo from the user's camera.
-		 * It will call the ImagePicker API to open the camera and allow the user to take a photo.
-		 * It will then set the petImage state to the taken photo.
-		 */
-		const { status } = await ImagePicker.requestCameraPermissionsAsync();
-		if (status === 'granted') {
-			let result = await ImagePicker.launchCameraAsync({
-				allowsEditing: true,
-				aspect: [4, 3],
-				quality: 1,
-			});
-			if (!result.canceled) {
-				setPetImage(result.assets[0].uri);
-			}
-		}
-	};
-
+    const handleTakePhoto = async () => {
+        /**
+         * This function is used to take a photo from the user's camera.
+         * It will call the ImagePicker API to open the camera and allow the user to take a photo.
+         * It will then set the petImage state to the taken photo.
+         */
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status === 'granted') {
+          let result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+          });
+          if (!result.canceled) {
+            // Upload to Imgur
+            let base64Img = result.assets[0].base64;
+            uploadImage(base64Img, setPetImage);
+          }
+        }
+      };
+      
 
 	const handleSubmit = () => {
 		/**
