@@ -3,7 +3,7 @@ import string
 import hashlib
 import psycopg2
 
-from authentication import verify_access_token
+from db.authentication import verify_access_token
 
 
 def get_salt(password):

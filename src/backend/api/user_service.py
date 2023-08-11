@@ -4,13 +4,12 @@ from pathlib import Path
 import sys
 import datetime
 from typing import Tuple
-from src.backend.db.users_operations import *
-from db.users_operations import *
 
 file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
 sys.path.append(str(package_root_directory))
 
+from db.users_operations import *
 
 
 def insert_user(conn) -> Tuple[str, int]:
