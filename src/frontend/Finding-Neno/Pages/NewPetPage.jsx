@@ -36,13 +36,20 @@ export default function NewPetPage({ navigation: { navigate}}) {
     const uploadImage = (base64Img, setPetImage) => {
       // Uploads an image to Imgur and sets the petImage state to the uploaded image URL
       const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
+      const LOADING_IMAGE = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWRwMHI0cmlnOGU3Mm4xbzZwcTJwY2Nrb2hlZ3YwNmtleHo4Zm15MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L05HgB2h6qICDs5Sms/giphy.gif";
+
+      // Set loading image while the chosen image is being uploaded
+      setPetImage(LOADING_IMAGE);
+
+      const formData = new FormData();
+      formData.append("image", base64Img);
 
       fetch("https://api.imgur.com/3/image", {
         method: "POST",
         headers: {
           "Authorization": "Client-ID 736cd8c6daf1a6e",
         },
-        body: base64Img,
+        body: formData,
       })
         .then(res => res.json())
         .then(res => {
@@ -55,7 +62,7 @@ export default function NewPetPage({ navigation: { navigate}}) {
           }
         })
         .catch(err => {
-          console.log(`Image failed to upload: ${err}`);
+          console.log("Image failed to upload:", err);
           setPetImage(DEFAULT_IMAGE);
         });
     }
