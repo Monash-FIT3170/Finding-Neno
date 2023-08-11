@@ -18,7 +18,6 @@ const NewSightingPage = ({navigation: {navigate}}) => {
     const navigation = useNavigation();
 
 	const [errors, setErrors] = useState({});
-	const [isCreated, setIsCreated] = useState(false);
 	const [buttonText, setButtonText] = useState("Add sighting")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
@@ -114,7 +113,6 @@ const NewSightingPage = ({navigation: {navigate}}) => {
             })
             .then((res) => {
                 if (res.status == 201) {
-                    setIsCreated(true);
                     toast.show({
                         description: "Your sighting has been added!",
                         placement: "top"
@@ -164,6 +162,7 @@ const NewSightingPage = ({navigation: {navigate}}) => {
         image_url: null,
         description: '',
         dateTime: formatDatetime(selectedDatetime),
+        dateTimeOfCreation: formatDatetime(new Date())
     });
 
     return (
