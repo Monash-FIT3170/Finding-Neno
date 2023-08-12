@@ -120,6 +120,17 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
       return Object.keys(foundErrors).length === 0;
     }
 
+    const [selectedImageOption, setSelectedImageOption] = useState('');
+
+    const handleImageOptionChange = (value) => {
+      setSelectedImageOption(value);
+      if (value === 'choose') {
+        handleChoosePhoto();
+      } else if (value === 'take') {
+        handleTakePhoto();
+      }
+    };
+
     const handleChoosePhoto = async () => {
       /**
        * This function is used to choose a photo from the user's photo library.
@@ -188,15 +199,21 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
   
                       <FormControl isInvalid={'petImage' in errors}>
                         <FormControl.Label>Pet Image</FormControl.Label>
-                        <Input onChangeText={value => setFormData({ ...formData, petImage: value })} />
-  
+                        {/* <Input onChangeText={value => setFormData({ ...formData, petImage: value })} /> */}
+                        
                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                            {petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} />}
+                          {petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} />}
                         </View>
-  
-                        <Button title="Choose Existing Photo" onPress={handleChoosePhoto} />
-                        <Button title="Take Photo" onPress={handleTakePhoto} />
-  
+                        
+                        <Select
+                          placeholder="Select an option"
+                          selectedValue={selectedImageOption}
+                          onValueChange={handleImageOptionChange}
+                        >
+                          <Select.Item label="Choose Existing Photo" value="choose" />
+                          <Select.Item label="Take Photo" value="take" />
+                        </Select>
+                        
                         {'petImage' in errors && <FormControl.ErrorMessage>{errors.petImage}</FormControl.ErrorMessage>}
                       </FormControl>
   
