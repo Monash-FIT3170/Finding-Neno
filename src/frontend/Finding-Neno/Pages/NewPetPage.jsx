@@ -1,10 +1,9 @@
 import React, { useState } from 'react';
 import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
-import { View, TextInput,TouchableOpacity, Modal, Image, ScrollView } from 'react-native';
+import { View, Image, ScrollView } from 'react-native';
 import { Color } from "../components/atomic/Theme";
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-import { Picker } from '@react-native-picker/picker';
 import { IP, PORT } from "@env";
 
 
@@ -30,7 +29,6 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
   const pet = route.params["pet"]
 
   const [formData, setFormData] = useState({ description: '' });
-	const [dropdownOptions, setDropdownOptions] = useState([]);
 	const [errors, setErrors] = useState({});
 	const [isCreated, setIsCreated] = useState(false);
 	const [buttonText, setButtonText] = useState("Add Pet")
