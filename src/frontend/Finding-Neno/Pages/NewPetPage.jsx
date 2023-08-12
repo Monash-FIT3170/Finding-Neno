@@ -132,6 +132,10 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
       if (!formData.petName || formData.petName == "") {
         foundErrors = { ...foundErrors, petName: 'Pet name is required' }
       }  
+
+      if (!formData.petType || formData.petType == "") {
+        foundErrors = { ...foundErrors, petType: 'Please select a pet' }
+      }
   
       if (!formData.petBreed || formData.petBreed == "") {
         foundErrors = { ...foundErrors, petBreed: 'Pet breed is required' }
