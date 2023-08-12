@@ -41,7 +41,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 //   const owner_id = route.params["ownerId"]
 //   const pet = route.params["pet"]
 
-  const [formData, setFormData] = useState({ description: '' });
+  const [formData, setFormData] = useState({ petDescription: '' });
 	const [errors, setErrors] = useState({});
 	const [isCreated, setIsCreated] = useState(false);
 	const [buttonText, setButtonText] = useState("Add Pet")
