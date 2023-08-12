@@ -25,7 +25,7 @@ const DashboardPage = () => {
   const [reports, setReports] = useState([]);
   const [modalVisible, setModalVisible] = useState(false);
   const [sightingDateTime, setSightingDateTime] = useState(new Date());
-  const [sightingData, setSightingData] = useState({authorId: USER_ID, lastLocation: '', description: ''});
+  const [sightingData, setSightingData] = useState({authorId: USER_ID});
   const [reportSightingBtnDisabled, setReportSightingBtnDisabled] = useState(false);
   const [sightingFormErrors, setSightingFormErrors] = useState({});
   const [sightingImage, setSightingImage] = useState(null);
@@ -41,27 +41,28 @@ const DashboardPage = () => {
 		return `${hours}:${minutes} ${day}/${month}/${year}`
 	}
 
-  const handlePress = (report) => {
-    setModalVisible(!modalVisible);
+  const resetForm = (report) => {
+    // clears the form to default values
     setSightingData({ ...sightingData, 
       missing_report_id: report[0], 
       animal: report[7], 
       breed: report[8],
       image_url: null, 
-      dateTime: formatDatetime(sightingDateTime),
+      dateTime: formatDatetime(new Date()),
       dateTimeOfCreation: formatDatetime(new Date()),
-    })
-  };
+      lastLocation: '',
+      description: ''
+    });
+    setSightingImage(null);
+    setSightingDateTime(new Date());
+    setSightingFormErrors({});
+    setReportSightingBtnDisabled(false)
+  }
 
-  const handleConfirm = () => {
-    setModalVisible(false);
-    toast.show({
-      description: "Owner has been alerted of your sighting!",
-      placement: "top"
-    })
+  const handleOpenSightingModal = (report) => {
+    setModalVisible(!modalVisible);
+    resetForm(report);
   };
-
-    console.log(reports);
 
     useEffect(() => {
       if (isFocused) {
@@ -156,11 +157,11 @@ const DashboardPage = () => {
       }
     };
 
-    const handleAddSighting = async () => {
-      setReportSightingBtnDisabled(true);
+    const handleSubmitSighting = async () => {
       let isValid = validateDetails(sightingData);
 
       if (isValid) {
+        setReportSightingBtnDisabled(true);
         const url = `${IP}:${PORT}/insert_new_sighting`;
 
         await fetch(url, {
@@ -213,13 +214,13 @@ const DashboardPage = () => {
 
               <FormControl isInvalid={'lastLocation' in sightingFormErrors}>
                   <FormControl.Label>Location of Sighting</FormControl.Label>
-                  <Input onChangeText={value => setSightingData({ ...sightingData, lastLocation: value })} placeholder="long (-180 to 180), lat (-90 to 90)" />
+                  <Input value={sightingData.lastLocation} onChangeText={value => setSightingData({ ...sightingData, lastLocation: value })} placeholder="long (-180 to 180), lat (-90 to 90)" />
                   {'lastLocation' in sightingFormErrors && <FormControl.ErrorMessage>{sightingFormErrors.lastLocation}</FormControl.ErrorMessage>}
               </FormControl>
 
               <FormControl isInvalid={'description' in sightingFormErrors}>
                   <FormControl.Label>Description (Additional Info)</FormControl.Label>
-                  <Input onChangeText={value => setSightingData({ ...sightingData, description: value })} />
+                  <Input value={sightingData.description} onChangeText={value => setSightingData({ ...sightingData, description: value })} />
                   {'description' in sightingFormErrors && <FormControl.ErrorMessage>{sightingFormErrors.description}</FormControl.ErrorMessage>}
               </FormControl>
 
@@ -234,7 +235,7 @@ const DashboardPage = () => {
               </Button>
               <Button bgColor={Color.NENO_BLUE} 
                 disabled={reportSightingBtnDisabled} opacity={!reportSightingBtnDisabled ? 1 : 0.6}
-                onPress={() => handleAddSighting()}
+                onPress={() => handleSubmitSighting()}
               >
                 Report sighting 
               </Button>
@@ -331,7 +332,7 @@ const DashboardPage = () => {
                      
                  </HStack>
                  <VStack>
-                 <Button mt="2" bgColor={Color.NENO_BLUE} onPress={() => handlePress(report)}>
+                 <Button mt="2" bgColor={Color.NENO_BLUE} onPress={() => handleOpenSightingModal(report)}>
                     Report a sighting
                   </Button>
                  </VStack>
