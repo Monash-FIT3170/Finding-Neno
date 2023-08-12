@@ -5,26 +5,23 @@ import {Dimensions} from 'react-native';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
-import { IP, PORT } from "@env";
-
-
 
 import Report from "../components/Report";
 
-export default function ReportPage({ navigation: { navigate}, route}) {
+import { useSelector, useDispatch } from "react-redux";
+import store from "../store/store";
+
+
+export default function ReportPage({ navigation: { navigate}}) {
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
-    
-    const {headers} = route.params;
-    const ownerId = headers["userid"];
-    const accessToken = headers["accesstoken"]
 
-
+    const {IP, PORT} = useSelector((state) => state.api)
+    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
     const isFocused = useIsFocused();
     
-    console.log("Report: " + owner);
     const image = "https://wallpaperaccess.com/full/317501.jpg";
     const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
 
@@ -39,7 +36,7 @@ export default function ReportPage({ navigation: { navigate}, route}) {
   
     const fetchAllReports = async () => {
       try {
-        const response = await fetch(`${IP}:${PORT}/get_missing_reports?owner_id=${ownerId}`);
+        const response = await fetch(`${IP}:${PORT}/get_missing_reports?owner_id=${USER_ID}`);
         const data = await response.json();
         setReports(data[0]);
       } catch (error) {
