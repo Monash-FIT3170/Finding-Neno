@@ -39,7 +39,7 @@ def get_all_pets(
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
-        return False
+        return []
 
     cur.close()
 
