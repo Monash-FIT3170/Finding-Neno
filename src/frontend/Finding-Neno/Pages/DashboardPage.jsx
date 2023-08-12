@@ -28,8 +28,10 @@ const DashboardPage = () => {
   const [sightingData, setSightingData] = useState({authorId: USER_ID});
   const [reportSightingBtnDisabled, setReportSightingBtnDisabled] = useState(false);
   const [sightingFormErrors, setSightingFormErrors] = useState({});
-  const [sightingImage, setSightingImage] = useState(null);
   const [showPicker, setShowPicker] = useState(false);
+  const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
+  const LOADING_IMAGE = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWRwMHI0cmlnOGU3Mm4xbzZwcTJwY2Nrb2hlZ3YwNmtleHo4Zm15MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L05HgB2h6qICDs5Sms/giphy.gif";
+  const [sightingImage, setSightingImage] = useState(DEFAULT_IMAGE);
 
   const formatDatetime = (datetime) => {
 		const hours = datetime.getHours().toString().padStart(2, '0');
@@ -47,7 +49,7 @@ const DashboardPage = () => {
       missing_report_id: report[0], 
       animal: report[7], 
       breed: report[8],
-      image_url: null, 
+      image_url: DEFAULT_IMAGE, 
       dateTime: formatDatetime(new Date()),
       dateTimeOfCreation: formatDatetime(new Date()),
       lastLocation: '',
@@ -69,14 +71,9 @@ const DashboardPage = () => {
         fetchAllReports();
       }
     }, [isFocused]);
-    
+
     // TODO: replace this image with the actual image from DB ? 
     const image = "https://wallpaperaccess.com/full/317501.jpg";
-    //
-    //   const mocks = [{ownerName: 'Sashenka', petName:'Piggy', species: 'Dog', breed: 'Shiba', isActive: true, lastLocation: 'Clayton, Victoria', lastDateTime: '12th May, 12:45pm', petImage: "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"},
-    //               ]
-
-    const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
 
     // validation
     const validateDetails = (formData) => {
@@ -97,7 +94,37 @@ const DashboardPage = () => {
       return Object.keys(foundErrors).length === 0;
     }
 
-    // photo upload
+    const uploadImage = (base64Img, setSightingImage) => {
+
+      // Set loading image while the chosen image is being uploaded
+      setSightingImage(LOADING_IMAGE);
+
+      const formData = new FormData();
+      formData.append("image", base64Img);
+
+      fetch("https://api.imgur.com/3/image", {
+        method: "POST",
+        headers: {
+          "Authorization": "Client-ID 736cd8c6daf1a6e",
+        },
+        body: formData,
+      })
+        .then(res => res.json())
+        .then(res => {
+          if (res.success === true) {
+            console.log(`Image successfully uploaded: ${res.data.link}}`);
+            setSightingImage(res.data.link);
+          } else {
+            console.log("Image failed to upload - setting default image");
+            setSightingImage(DEFAULT_IMAGE);
+          }
+        })
+        .catch(err => {
+          console.log("Image failed to upload:", err);
+          setSightingImage(DEFAULT_IMAGE);
+        });
+    }
+
     const handleChoosePhoto = async () => {
       const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
       if (status === 'granted') {
@@ -108,8 +135,14 @@ const DashboardPage = () => {
           quality: 1,
         });
         if (!result.canceled) {
-          setSightingImage(result.assets[0].uri.toString());
-          setSightingData({ ...sightingData, image_url: result.assets[0].uri.toString() });
+          if (result.assets[0].uri.startsWith("http")) {
+            // Image is a URL, so leave it as is
+            setSightingImage(result.assets[0].uri);
+          } else {
+            // Image is a local file path, so upload to Imgur
+            let base64Img = result.assets[0].base64;
+            uploadImage(base64Img, setSightingImage);
+          }
         }
       }
   };
@@ -123,8 +156,9 @@ const DashboardPage = () => {
         quality: 1,
       });
       if (!result.canceled) {
-        setSightingImage(result.assets[0].uri.toString());
-        setSightingData({ ...sightingData, image_url: result.assets[0].uri.toString() });
+        // Upload to Imgur
+        let base64Img = result.assets[0].base64;
+        uploadImage(base64Img, setSightingImage);
       }
     }
   };
@@ -162,6 +196,7 @@ const DashboardPage = () => {
 
       if (isValid) {
         setReportSightingBtnDisabled(true);
+        setSightingData({ ...sightingData, image_url: sightingImage });
         const url = `${IP}:${PORT}/insert_new_sighting`;
 
         await fetch(url, {
@@ -260,7 +295,7 @@ const DashboardPage = () => {
                      <Box width={2}></Box>
                      <VStack>
                      <Heading size = "sm">
-                       {report[10]}
+                       {report[11]}
                      </Heading>
                      </VStack>
                      <Box width={70}></Box>
@@ -270,7 +305,7 @@ const DashboardPage = () => {
                  <Image 
                          alignSelf="center" width={windowWidth} height={125} borderRadius={5}
                          source={{
-                           uri: petImage
+                           uri: report[9]
                          }} 
                          alt="Pet Image" 
                      /> 
