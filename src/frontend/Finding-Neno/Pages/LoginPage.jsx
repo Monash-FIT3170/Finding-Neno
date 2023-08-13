@@ -10,6 +10,7 @@ import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 import { login } from "../store/user";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 
 const LoginPage = () => {
@@ -44,6 +45,9 @@ const LoginPage = () => {
 					}
 					dispatch(login(payload));
 					console.log(store.getState());
+
+					AsyncStorage.setItem("USER_ID", res.headers.map.userid)
+					AsyncStorage.setItem("ACCESS_TOKEN", res.headers.map.accesstoken)
 
 					navigation.navigate('Tab Navigator');
 				} else {
