@@ -34,7 +34,6 @@ async function loadStorage() {
   const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
 
   if (!userId || !accessToken) {
-    console.log("in")
     return false;
   }
   const payload = {
