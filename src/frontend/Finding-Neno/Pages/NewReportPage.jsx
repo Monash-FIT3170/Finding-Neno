@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
+import { Box, Center, Heading, VStack, useToast, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 import React, { useEffect, useState } from 'react';
@@ -9,35 +9,20 @@ import { validDateTime, validateCoordinates } from "./validation"
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 
-
-const AlertComponent = ({ onClose }) => (
-	<Alert w="100%" status="success">
-		<VStack space={1} flexShrink={1} w="100%" alignItems="center">
-			<Alert.Icon size="md" />
-			<Text fontSize="md" fontWeight="medium" _dark={{ color: "coolGray.800" }}>
-				Your report has been created!
-			</Text>
-			<Button mt="2" bgColor={Color.NENO_BLUE} onPress={onClose}>
-				Close
-			</Button>
-		</VStack>
-	</Alert>
-);
-
 const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
 
-	const {IP, PORT} = useSelector((state) => state.api)
+	const { IP, PORT } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
 	const [dropdownOptions, setDropdownOptions] = useState([]);
 	const [errors, setErrors] = useState({});
-	const [isCreated, setIsCreated] = useState(false);
 	const [buttonText, setButtonText] = useState("Create report")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
 	const [selectedDatetime, setSelectedDatetime] = useState(new Date());
 	const [showPicker, setShowPicker] = useState(false);
+    const toast = useToast();
 
 	useEffect(() => {
 		// Simulating asynchronous data fetching
@@ -85,8 +70,11 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 				.then((res) => {
 					if (res.status == 201) {
 						// Show success
-						// Clear fields?
-						setIsCreated(true);
+						toast.show({
+							description: "Your report has been added!",
+							placement: "top"
+						})
+						navigate('Report Page');
 					}
 				})
 				.catch((error) => alert(error));
@@ -120,10 +108,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		return Object.keys(foundErrors).length === 0;
 	}
 
-	const closeAlert = () => {
-		setIsCreated(false);
-	};
-
 	var maximumDate;
 	const openPicker = () => {
 		maximumDate = new Date();
@@ -150,66 +134,62 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		return `${hours}:${minutes} ${day}/${month}/${year}`
 	}
 
-    // default form values
-    const [formData, setFormData] = useState({ 
-        authorId: USER_ID,
-        description: '',
-        lastSeenDateTime: formatDatetime(selectedDatetime),
-        dateTimeOfCreation: formatDatetime(new Date())
-    });
+	// default form values
+	const [formData, setFormData] = useState({
+		authorId: USER_ID,
+		description: '',
+		lastSeenDateTime: formatDatetime(selectedDatetime),
+		dateTimeOfCreation: formatDatetime(new Date())
+	});
 
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
 			<Box flex={1} alignItems="center" justifyContent="center">
 				<Center w="100%">
 					<Box safeArea p="2" py="8" w="90%" maxW="290">
+						<VStack>
+							<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Create a Report</Heading>
 
-						{isCreated ? (<AlertComponent onClose={closeAlert} />) :
-							(
-								<VStack>
-									<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Create a Report</Heading>
+							<VStack space={3} mt="5">
 
-									<VStack space={3} mt="5">
+								<FormControl isInvalid={'missingPetId' in errors}>
+									<FormControl.Label>Choose Pet</FormControl.Label>
+									<Select placeholder="Select a pet"
+										selectedValue={formData.missingPetId}
+										onValueChange={(value) => setFormData({ ...formData, missingPetId: value })}>
+										<Select.Item label="Select a pet" value="" disabled hidden />
+										{dropdownOptions.map((option, index) => (
+											<Select.Item key={index} label={option[0]} value={option[1]} />
+										))}
+									</Select>
+									{'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPetId}</FormControl.ErrorMessage>}
+								</FormControl>
 
-										<FormControl isInvalid={'missingPetId' in errors}>
-											<FormControl.Label>Choose Pet</FormControl.Label>
-											<Select placeholder="Select a pet"
-												selectedValue={formData.missingPetId}
-												onValueChange={(value) => setFormData({ ...formData, missingPetId: value })}>
-												<Select.Item label="Select a pet" value="" disabled hidden />
-												{dropdownOptions.map((option, index) => (
-													<Select.Item key={index} label={option[0]} value={option[1]} />
-												))}
-											</Select>
-											{'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPetId}</FormControl.ErrorMessage>}
-										</FormControl>
+								<FormControl>
+									<FormControl.Label>Last Seen</FormControl.Label>
+									<Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
+									<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
+										onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
+								</FormControl>
 
-										<FormControl>
-											<FormControl.Label>Last Seen</FormControl.Label>
-											<Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
-											<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
-												onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
-										</FormControl>
+								<FormControl isInvalid={'lastLocation' in errors}>
+									<FormControl.Label>Last Known Location</FormControl.Label>
+									<Input onChangeText={value => setFormData({ ...formData, lastLocation: value })} placeholder="long (-180 to 180), lat (-90 to 90)" />
+									{'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
+								</FormControl>
 
-										<FormControl isInvalid={'lastLocation' in errors}>
-											<FormControl.Label>Last Known Location</FormControl.Label>
-											<Input onChangeText={value => setFormData({ ...formData, lastLocation: value })} placeholder="long (-180 to 180), lat (-90 to 90)" />
-											{'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
-										</FormControl>
+								<FormControl isInvalid={'description' in errors}>
+									<FormControl.Label>Additional Info</FormControl.Label>
+									<Input onChangeText={value => setFormData({ ...formData, description: value })} />
+									{'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
+								</FormControl>
 
-										<FormControl isInvalid={'description' in errors}>
-											<FormControl.Label>Additional Info</FormControl.Label>
-											<Input onChangeText={value => setFormData({ ...formData, description: value })} />
-											{'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
-										</FormControl>
+								<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onCreateReportPress}>
+									{buttonText}
+								</Button>
 
-										<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onCreateReportPress}>
-											{buttonText}
-										</Button>
-
-									</VStack>
-								</VStack>
-							)}
+							</VStack>
+						</VStack>
 					</Box>
 				</Center>
 			</Box>
