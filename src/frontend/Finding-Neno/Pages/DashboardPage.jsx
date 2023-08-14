@@ -114,6 +114,7 @@ const DashboardPage = () => {
           if (res.success === true) {
             console.log(`Image successfully uploaded: ${res.data.link}}`);
             setSightingImage(res.data.link);
+            setSightingData({ ...sightingData, image_url: res.data.link })
           } else {
             console.log("Image failed to upload - setting default image");
             setSightingImage(DEFAULT_IMAGE);
@@ -139,6 +140,7 @@ const DashboardPage = () => {
           if (result.assets[0].uri.startsWith("http")) {
             // Image is a URL, so leave it as is
             setSightingImage(result.assets[0].uri);
+            setSightingData({ ...sightingData, image_url: result.assets[0].uri })
           } else {
             // Image is a local file path, so upload to Imgur
             let base64Img = result.assets[0].base64;
@@ -198,7 +200,6 @@ const DashboardPage = () => {
 
       if (isValid) {
         setReportSightingBtnDisabled(true);
-        setSightingData({ ...sightingData, image_url: sightingImage });
         const url = `${IP}:${PORT}/insert_new_sighting`;
 
         await fetch(url, {
