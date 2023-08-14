@@ -36,10 +36,6 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 	const { IP, PORT } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 	const pet = useSelector((state) => state.pet);
-  
-//   const access_token = route.params["accessToken"];
-//   const owner_id = route.params["ownerId"]
-//   const pet = route.params["pet"]
 
   const [formData, setFormData] = useState({ petDescription: '' });
 	const [errors, setErrors] = useState({});
@@ -50,8 +46,11 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
   //if the pet name is empty then it is a new pet, otherwise it is an existing pet
 	const isExistingPet = pet.name != '';
 
+  const [petName, setPetName] = useState(pet ? pet.name : null);
   const [petImage, setPetImage] = useState(pet ? pet.image_url : null);
   const [petType, setPetType] = useState(pet ? pet.animal : '');
+  const [petBreed, setPetBreed] = useState(pet ? pet.breed : '');
+  const [petDescription, setPetDescription] = useState(pet ? pet.description : '');
 
   const petTypeOptions = [
     { label: "Dog", value: "dog" },
@@ -83,15 +82,15 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		setIsButtonDisabled(true);
 		setButtonText("Adding Pet...");
     
-//     // create the pet object
-// 		const pet = {
-// 			name: petName,
-// 			animal: petType,
-// 			breed: petBreed,
-// 			description: petDescription,
-// 			image_url: petImage.toString(),
-// 			owner_id: USER_ID
-// 		};
+    // create the pet object
+		const pet = {
+			name: petName,
+			animal: petType,
+			breed: petBreed,
+			description: petDescription,
+			image_url: petImage.toString(),
+			owner_id: USER_ID
+		};
 
 		let isValid = validateDetails(formData);
 
