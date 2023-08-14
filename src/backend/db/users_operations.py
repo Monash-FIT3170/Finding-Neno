@@ -261,7 +261,7 @@ def archive_missing_report_in_database(connection: psycopg2.extensions.connectio
     cur.close()
 
 
-def retrieve_missing_reports_from_database(connection: psycopg2.extensions.connection, owner_id, access_token):
+def retrieve_missing_reports_from_database(connection: psycopg2.extensions.connection, owner_id):
     """
     This function retrieves the missing reports of the logged in user.
     """
@@ -297,10 +297,6 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
         missing_reports = cur.fetchall()
 
         print(f"Missing reports successfully retrieved")
-
-        # Verify access token
-        if not verify_access_token(connection, owner_id, access_token):
-            return False
 
         return missing_reports
     except Exception as e:

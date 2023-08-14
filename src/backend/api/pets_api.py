@@ -17,8 +17,9 @@ def get_owner_pets_operation(conn, owner_id):
     db_output = get_all_pets(connection=conn, owner_id=owner_id, access_token=access_token)
 
     print(db_output)
-    if not db_output:
-        return False
+
+    if db_output is False:
+        return "Authentication failed", 401
     else:
         return jsonify(db_output)
 

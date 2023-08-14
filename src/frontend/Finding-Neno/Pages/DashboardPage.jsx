@@ -48,7 +48,6 @@ const DashboardPage = () => {
                 'Authorization': `Bearer ${ACCESS_TOKEN}`,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(pet),
         });
         const data = await response.json();
         setReports(data[0]);

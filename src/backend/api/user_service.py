@@ -139,9 +139,9 @@ def retrieve_missing_reports(conn, owner_id) -> Tuple[str, int]:
     """
     This function calls the function that connects to the db to retrieve missing reports of an owner.
     """
-    access_token = request.headers.get('Authorization').split('Bearer ')[1]
 
-    missing_reports = retrieve_missing_reports_from_database(conn, owner_id, access_token)
+    missing_reports = retrieve_missing_reports_from_database(conn, owner_id);
+
 
     if len(missing_reports) > 0:
         if not missing_reports:
@@ -149,8 +149,7 @@ def retrieve_missing_reports(conn, owner_id) -> Tuple[str, int]:
         return missing_reports, 200
     elif len(missing_reports) == 0:
         return [], 204
-    else:
-        return "Fail", 400
+
 
 def login(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)

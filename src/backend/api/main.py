@@ -117,7 +117,7 @@ def delete_pet_api(pet_id):
 def post_insert_missing_report():
     return insert_missing_report(get_connection())
 
-@app.route("/get_missing_reports", methods=["GET"]) # Requires Access_token and user ID for authorization
+@app.route("/get_missing_reports", methods=["GET"])
 def get_missing_reports():
     """
     Returns an array of missing reports, sorted by latest to oldest, of the following format.
