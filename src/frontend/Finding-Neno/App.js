@@ -4,9 +4,11 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 
+import { Text } from 'react-native';
+
 import { Provider, connect, useSelector, useDispatch } from "react-redux";
 import store from "./store/store";
-import { login } from "./store/user";
+import { login, logout } from "./store/user";
 
 
 import DashboardPage from "./Pages/DashboardPage";
@@ -29,71 +31,80 @@ import { useState, useEffect } from "react";
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
-async function loadStorage() {
-  const userId = await AsyncStorage.getItem("USER_ID");
-  const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
-
-  if (!userId || !accessToken) {
-    return false;
-  }
-  const payload = {
-    USER_ID: userId,
-    ACCESS_TOKEN: accessToken,
-  }
-  store.dispatch(login(payload));
-
-  return true;
-}
-
-// set FORCE_RELOGIN = true for debugging if you want to relogin everytime app is launched
-const FORCE_RELOGIN = false;
-
 export default function App() {
-  console.log(store.getState());
-  const IP = store.getState().IP;
-  const PORT = store.getState().PORT;
-
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  useEffect(() => {
-    loadStorage().then((loggedIn) => {
-      if (FORCE_RELOGIN) {
-        AsyncStorage.setItem("USER_ID", "")
-        AsyncStorage.setItem("ACCESS_TOKEN", "")
-      } else {
-        setIsLoggedIn(loggedIn);
-      }
-    });
-  }, [])
-
   return (
     <NativeBaseProvider>
       <Provider store={store}>
         <NavigationContainer>
-          {/* To skip login/signup pages, replace initalRouteName="Login" to initalRouteName="Tab Navigator" */}
-          <Stack.Navigator initialRouteName={isLoggedIn ? "Tab Navigator" : "Login"}>
-            <Stack.Screen name="Login" component={LoginPage}
-              initialParams={{ IP, PORT }}
-              options={{
-                headerShown: false
-              }} />
-            <Stack.Screen name="Signup" component={SignupPage}
-              initialParams={{ IP, PORT }} />
-            <Stack.Screen name="ForgotPassword" component={ForgotPasswordPage}
-              initialParams={{ IP, PORT }} />
-            <Stack.Screen name="PasswordReset" component={PasswordResetPage}
-              initialParams={{ IP, PORT }} />
-            <Stack.Screen
-              name="Tab Navigator"
-              component={TabNavigator}
-              initialParams={{ IP, PORT }}
-              options={{ headerShown: false }}
-            />
-          </Stack.Navigator>
+          <MainNavigator />
         </NavigationContainer>
       </Provider>
     </NativeBaseProvider>
   );
 }
+
+async function loadStorage() {
+  const userId = await AsyncStorage.getItem("USER_ID");
+  const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
+
+  if (userId && accessToken) {
+    const payload = {
+      USER_ID: userId,
+      ACCESS_TOKEN: accessToken,
+    }
+    store.dispatch(login(payload));
+  } else {
+    store.dispatch(logout());
+  }
+}
+
+// set FORCE_RELOGIN = true for debugging if you want to relogin every time app is launched
+const FORCE_RELOGIN = false;
+
+function MainNavigator() {
+  console.log(store.getState());
+  const IP = store.getState().IP;
+  const PORT = store.getState().PORT;
+
+
+  useEffect(() => {
+    if (FORCE_RELOGIN) {
+      store.dispatch(logout())
+    } else {
+      loadStorage();
+    }
+  }, [])
+
+  const isLoggedIn = useSelector(() => store.getState().user.LOGGED_IN)
+
+  if (isLoggedIn === undefined) {
+    // Don't display anything while storage is loading
+    return null;
+  }
+
+  return (<Stack.Navigator>
+    {isLoggedIn ? (<Stack.Screen
+      name="Tab Navigator"
+      component={TabNavigator}
+      initialParams={{ IP, PORT }}
+      options={{ headerShown: false }}
+    />) : (<><Stack.Screen name="Login" component={LoginPage}
+      initialParams={{ IP, PORT }}
+      options={{
+        headerShown: false
+      }} />
+      <Stack.Screen name="Signup" component={SignupPage}
+        initialParams={{ IP, PORT }} />
+      <Stack.Screen name="ForgotPassword" component={ForgotPasswordPage}
+        initialParams={{ IP, PORT }} />
+      <Stack.Screen name="PasswordReset" component={PasswordResetPage}
+        initialParams={{ IP, PORT }} />
+    </>)
+
+    }
+  </Stack.Navigator>)
+}
+
 function TabNavigator() {
   return (
     <Tab.Navigator initialRouteName="Dashboard">
