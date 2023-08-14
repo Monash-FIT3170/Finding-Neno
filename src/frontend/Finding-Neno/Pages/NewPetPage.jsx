@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
-import { View, Image, ScrollView } from 'react-native';
+import { View, Image, ScrollView, FlatList } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
@@ -263,7 +263,9 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
   
     return (
       <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-        <ScrollView>
+        <FlatList
+          data={[{ key: 'form' }]} // Use a single item array as data source
+          renderItem={() => (
           <Box flex={1} alignItems="center" justifyContent="center">
             <Center w="100%">
               <Box safeArea p="2" py="8" w="90%" maxW="290">
@@ -334,7 +336,8 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
               </Box>
             </Center>
           </Box>
-        </ScrollView>
+        )}
+        />
       </KeyboardAvoidingView>
     );
   
