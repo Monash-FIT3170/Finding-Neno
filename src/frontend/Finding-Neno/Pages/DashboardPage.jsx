@@ -45,7 +45,6 @@ const DashboardPage = () => {
         const response = await fetch(url, {
             method: "GET",
             headers: {
-                'Authorization': `Bearer ${ACCESS_TOKEN}`,
                 'Content-Type': 'application/json',
             },
         });
