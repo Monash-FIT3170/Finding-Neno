@@ -94,7 +94,7 @@ def get_owner_pets(owner_id):
     print("conected to api")
     return get_owner_pets_operation(get_connection(), owner_id)
 
-@app.route("/get_pet/<pet_id>", methods=["GET"]) # Requires Access_token and user ID for authorization
+@app.route("/get_pet/<pet_id>", methods=["GET"])
 def get_pet_api(pet_id):
     return get_pet_operation(get_connection(), pet_id)
 

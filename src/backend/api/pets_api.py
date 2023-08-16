@@ -26,11 +26,7 @@ def get_owner_pets_operation(conn, owner_id):
 
 def get_pet_operation(conn, pet_id):
 
-    data = request.get_json(force=True)
-    user_id = data["id"]
-    access_token = request.headers.get('Authorization').split('Bearer ')[1]
-
-    db_output = get_pet(connection=conn, pet_id=pet_id, user_id=user_id, access_token=access_token)
+    db_output = get_pet(connection=conn, pet_id=pet_id)
     return jsonify(db_output)
 
 
