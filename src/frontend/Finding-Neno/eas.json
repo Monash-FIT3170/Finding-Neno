@@ -9,7 +9,11 @@
     },
     "production": {
       "channel": "production",
-      "distribution": "internal"
+      "distribution": "internal",
+      "env": {
+        "IP": "https://finding-neno-backend-e7784ead43b6.herokuapp.com",
+        "PORT": "5000"
+      }
     }
   },
   "submit": {
