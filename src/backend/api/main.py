@@ -4,10 +4,16 @@ import sys, os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 import flask
+from pathlib import Path
 
-from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, update_missing_report, archive_missing_report, retrieve_profile, insert_new_sighting
+# Add the parent directory to the path so that backend deployment works
+file = Path(__file__).resolve()
+package_root_directory = file.parents[1]
+sys.path.append(str(package_root_directory))
 
-from pets_api import get_owner_pets_operation, get_pet_operation, insert_pet_operation, update_pet_operation, \
+from api.user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, update_missing_report, archive_missing_report, retrieve_profile, insert_new_sighting
+
+from api.pets_api import get_owner_pets_operation, get_pet_operation, insert_pet_operation, update_pet_operation, \
     delete_pet_operation
 
 database_pool = None
