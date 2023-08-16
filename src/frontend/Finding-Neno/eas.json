@@ -5,7 +5,12 @@
   "build": {
     "preview": {
       "channel": "preview",
-      "distribution": "internal"
+      "distribution": "internal",
+      "developmentClient": true,
+      "env": {
+        "IP": "https://finding-neno-backend-e7784ead43b6.herokuapp.com",
+        "PORT": "5000"
+      }
     },
     "production": {
       "channel": "production",
