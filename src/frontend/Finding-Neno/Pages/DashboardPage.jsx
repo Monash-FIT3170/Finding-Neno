@@ -41,7 +41,13 @@ const DashboardPage = () => {
   
     const fetchAllReports = async () => {
       try {
-        const response = await fetch(`${IP}:${PORT}/get_missing_reports`);
+        const url = `${IP}:${PORT}/get_missing_reports`;
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
         const data = await response.json();
         setReports(data[0]);
       } catch (error) {
