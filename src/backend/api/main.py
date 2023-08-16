@@ -3,9 +3,11 @@ import psycopg2.pool
 import sys, os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
+import flask
 
-from api.user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, update_missing_report, archive_missing_report
-from api.pets_api import get_owner_pets_operation, get_pet_operation, insert_pet_operation, update_pet_operation, \
+from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, update_missing_report, archive_missing_report, retrieve_profile, insert_new_sighting
+
+from pets_api import get_owner_pets_operation, get_pet_operation, insert_pet_operation, update_pet_operation, \
     delete_pet_operation
 
 database_pool = None
@@ -32,16 +34,25 @@ def get_connection():
     """
     Returns the connection to the database.
     """
-    global database_pool
-    if database_pool is None:
-        database_pool = create_database_pool()
-    return database_pool.getconn()
+    if database_pool is not None:
+        return database_pool.getconn()
+    else:
+        return None
     
 
 @app.route("/")
 def root():
     return "Finding Neno Server is Up!"
 
+@app.route("/manual_start_connection")
+def manual_start_database_pool():
+    create_database_pool()
+    return "Database pool has been manually created successfully"
+
+@app.route("/close_connection")
+def close_connection():
+    database_pool.closeall()
+    return "Connection closed successfully"
 
 @app.route("/insert_user", methods=["POST"])
 def post_insert_user():
@@ -49,7 +60,27 @@ def post_insert_user():
 
 @app.route("/login", methods=["POST"])
 def post_login():
-    return login(get_connection())
+    print("logging in")
+    data = login(get_connection())
+    print(data)
+    headers = {
+        'userId': data[2],
+        'accessToken': data[3],
+    }
+
+
+    return data[0], data[1], headers
+
+@app.route("/retrieve_profile/<user_id>", methods=["GET"])
+def retrieve_profile_information(user_id):
+    print("retrieving current user profile, ")
+    data = retrieve_profile(get_connection(), user_id)
+    info = {
+        'name': data[2],
+        'email': data[3],
+        'phone': data[4]
+    }
+    return jsonify(info), data[1]
 
 @app.route("/change_password", methods=["PATCH"])
 def post_change_password():
@@ -58,6 +89,7 @@ def post_change_password():
 # pet operations
 @app.route("/get_owner_pets/<owner_id>", methods=["GET"])
 def get_owner_pets(owner_id):
+    print("conected to api")
     return get_owner_pets_operation(get_connection(), owner_id)
 
 @app.route("/get_pet/<pet_id>", methods=["GET"])
@@ -66,7 +98,9 @@ def get_pet_api(pet_id):
 
 @app.route("/insert_pet", methods=["POST"])
 def insert_pet():
-    return insert_pet_operation(get_connection())
+    owner_id = request.args.get("owner_id")
+    print(owner_id)
+    return insert_pet_operation(get_connection(), owner_id)
 
 @app.route("/update_pet", methods=["PUT"])
 def update_pet_api():
@@ -102,6 +136,11 @@ def put_update_missing_report():
 @app.route("/archive_missing_report", methods=["PUT"])
 def put_archive_missing_report():
     return archive_missing_report(get_connection())
+
+@app.route("/insert_new_sighting", methods=["POST"])
+def post_insert_new_sighting():
+    return insert_new_sighting(get_connection())
+    
 
 if __name__ == "__main__": 
     if len(sys.argv) >= 2:

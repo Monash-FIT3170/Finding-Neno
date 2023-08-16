@@ -1,155 +1,220 @@
+import { useNavigation } from '@react-navigation/native';
 import { Box, Center, Heading, VStack, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { IP, PORT } from "@env";
 import { validDateTime, validateCoordinates } from "./validation"
 
-const NewReportPage = () => {
-  const [formData, setFormData] = useState({ description: '' });
-  const [dropdownOptions, setDropdownOptions] = useState([]);
-  const [errors, setErrors] = useState({});
-  const [isCreated, setIsCreated] = useState(false);
+import { useSelector, useDispatch } from "react-redux";
+import store from "../store/store";
 
-  useEffect(() => {
-    // Simulating asynchronous data fetching
-    setTimeout(() => {
-      const fetchedOptions = ['Pet 1', 'Pet 2', 'Add new Pet'];
-      setDropdownOptions(fetchedOptions);
-    }, 2000);
-  }, []);
 
-  const onCreateReportPress = async (formData) => {
-    const url = `${IP}:${PORT}/insert_missing_report`;
- 
-    fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(formData),
-    })
-      .then((res) => {
-        if (res.status == 201) {
-            // Show success
-            // Clear fields?
-            setIsCreated(true)
-        }
-      })
-      .catch((error) => alert(error));
-  };
+const AlertComponent = ({ onClose }) => (
+	<Alert w="100%" status="success">
+		<VStack space={1} flexShrink={1} w="100%" alignItems="center">
+			<Alert.Icon size="md" />
+			<Text fontSize="md" fontWeight="medium" _dark={{ color: "coolGray.800" }}>
+				Your report has been created!
+			</Text>
+			<Button mt="2" bgColor={Color.NENO_BLUE} onPress={onClose}>
+				Close
+			</Button>
+		</VStack>
+	</Alert>
+);
 
-  const validateDetails = () => {
-    // Validates details. If details are valid, send formData object to onCreateReportPress.
-    foundErrors = {};
+const NewReportPage = ({ navigation: { navigate } }) => {
+	const navigation = useNavigation();
 
-    if (!formData.missingPetId) {
-      foundErrors = {...foundErrors, missingPetId: 'Please select a pet'}
-    }
+	const {IP, PORT} = useSelector((state) => state.api)
+	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
-    if (!formData.lastSeenDateTime || formData.lastSeenDateTime == "") {
-      foundErrors = {...foundErrors, lastSeenDateTime: 'Last seen date is required'}
-    } else if (!validDateTime(formData.lastSeenDateTime)) {
-      foundErrors = {...foundErrors, lastSeenDateTime: 'Date is invalid'}
-    }
+	const [dropdownOptions, setDropdownOptions] = useState([]);
+	const [errors, setErrors] = useState({});
+	const [isCreated, setIsCreated] = useState(false);
+	const [buttonText, setButtonText] = useState("Create report")
+	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-    if (!formData.lastLocation || formData.lastLocation == "") {
-      foundErrors = {...foundErrors, lastLocation: 'Last known location is required'}
-    } else if (!validateCoordinates(formData.lastLocation)) {
-      foundErrors = {...foundErrors, lastLocation: 'Location coordinates is invalid'}
-    }
+	const [selectedDatetime, setSelectedDatetime] = useState(new Date());
+	const [showPicker, setShowPicker] = useState(false);
 
-    if (formData.description.length > 500) {
-        foundErrors = {...foundErrors, description: 'Must not exceed 500 characters'}
-      }
+	useEffect(() => {
+		// Simulating asynchronous data fetching
+		// ownerId = 2
+		const fetchOwnerPets = async () => {
+			try {
+				const url = `${IP}:${PORT}/get_owner_pets/${USER_ID}`;
+				const response = await fetch(url, {
+					headers: {
+						method: "GET",
+						'Authorization': `Bearer ${ACCESS_TOKEN}`
+					}
+				});
 
-    setErrors(foundErrors);
+				if (!response.ok) {
+					throw new Error('Request failed with status ' + response.status);
+				}
+				const data = await response.json();
 
-    if (Object.keys(foundErrors).length === 0) {
-      // no errors!
-      onCreateReportPress(formData)
-    }
-  }
+				const petTuples = data.map((pet) => [pet["name"], pet["id"]]);
 
-  return (
-      <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-        <Box flex={1} alignItems="center" justifyContent="center">
-          <Center w="100%">
-            <Box safeArea p="2" py="8" w="90%" maxW="290">
-              
-            {
-              isCreated ? (
-                // TODO: Make this into a component called MyAlert, with headerText, bodyText, link, onLinkPress as props 
-                // this will make this file a little less messy 
-              <Alert w="100%" status="success">
-                <VStack space={1} flexShrink={1} w="100%" alignItems="center">
-                  <Alert.Icon size="md" />
-                  <Text fontSize="md" fontWeight="medium" _dark={{
-                  color: "coolGray.800"
-                }}>
-                    Your report has been created!
-                  </Text>
-                </VStack>
-              </Alert>
+				setDropdownOptions(petTuples)
+			} catch (error) {
+				console.error(error);
+			}
+		}
 
-              ) : (
-                
-              <VStack>
-              <Heading
-                  size="lg"
-                  fontWeight="600"
-                  color="coolGray.800"
-                  _dark={{
-                  color: "warmGray.50",
-                  }}
-              >
-                  Create a Report
-              </Heading>
+		fetchOwnerPets();
+	}, []);
 
-              <VStack space={3} mt="5">
+	const onCreateReportPress = async () => {
+		setIsButtonDisabled(true);
+		setButtonText("Creating report...");
 
-                <FormControl isInvalid={'missingPetId' in errors}>
-                  <FormControl.Label>Choose Pet</FormControl.Label>
-                  <Select
-                    selectedValue={formData.missingPetId}
-                    onValueChange={(value) => setFormData({...formData, missingPetId: value})}
-                  >
-                    {dropdownOptions.map((option, index) => (
-                        // <Select.Item key={index} label={option} value={pet_id} />
-                      <Select.Item key={index} label={option} value={index+1} />
-                    ))}
-                  </Select>
-                  {'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPet}</FormControl.ErrorMessage>}
-                </FormControl>
+		let isValid = validateDetails(formData);
 
-                <FormControl isInvalid={'lastSeenDateTime' in errors}>
-                  <FormControl.Label>Last Seen</FormControl.Label>
-                  <Input onChangeText={value => setFormData({...formData, lastSeenDateTime: value})} placeholder="HH:MM dd/mm/yy" />
-                  {'lastSeenDateTime' in errors && <FormControl.ErrorMessage>{errors.lastSeenDateTime}</FormControl.ErrorMessage>}
-                </FormControl>
+		if (isValid) {
+			const url = `${IP}:${PORT}/insert_missing_report`;
 
-                <FormControl isInvalid={'lastLocation' in errors}>
-                  <FormControl.Label>Last Known Location</FormControl.Label>
-                  <Input onChangeText={value => setFormData({...formData, lastLocation: value})} placeholder="long (-180 to 180), lat (-90 to 90)"/>
-                  {'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
-                </FormControl>
+			await fetch(url, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(formData),
+			})
+				.then((res) => {
+					if (res.status == 201) {
+						// Show success
+						// Clear fields?
+						setIsCreated(true);
+					}
+				})
+				.catch((error) => alert(error));
+		};
 
-                <FormControl isInvalid={'description' in errors}>
-                  <FormControl.Label>Additional Info</FormControl.Label>
-                  <Input onChangeText={value => setFormData({...formData, description: value})} />
-                  {'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
-                </FormControl>
+		setButtonText("Create report")
+		setIsButtonDisabled(false);
+	}
 
-                <Button mt="2" bgColor={Color.NENO_BLUE} onPress={validateDetails}>
-                    Create Report
-                </Button>
+	const validateDetails = (formData) => {
+		// Validates details. If details are valid, send formData object to onCreateReportPress.
+		foundErrors = {};
 
-              </VStack>
-              </VStack>
-              )}
-            </Box>
-          </Center>
-        </Box>
-      </KeyboardAvoidingView>
-  );
+		if (!formData.missingPetId || formData.missingPetId == "") {
+			foundErrors = { ...foundErrors, missingPetId: 'Please select a pet' }
+		}
+
+		if (!formData.lastLocation || formData.lastLocation == "") {
+			foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
+		} else if (!validateCoordinates(formData.lastLocation)) {
+			foundErrors = { ...foundErrors, lastLocation: 'Location coordinates is invalid e.g. 24.212, -54.122' }
+		}
+
+		if (formData.description.length > 500) {
+			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
+		}
+
+		setErrors(foundErrors);
+
+		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
+		return Object.keys(foundErrors).length === 0;
+	}
+
+	const closeAlert = () => {
+		setIsCreated(false);
+	};
+
+	var maximumDate;
+	const openPicker = () => {
+		maximumDate = new Date();
+		setShowPicker(true);
+	}
+
+	const handleDatetimeConfirm = (datetime) => {
+		setSelectedDatetime(datetime);
+		setFormData({ ...formData, lastSeenDateTime: formatDatetime(datetime) });
+		closePicker();
+	}
+
+	const closePicker = () => {
+		setShowPicker(false);
+	}
+
+	const formatDatetime = (datetime) => {
+		const hours = datetime.getHours().toString().padStart(2, '0');
+		const minutes = datetime.getMinutes().toString().padStart(2, '0');
+		const day = datetime.getDate().toString().padStart(2, '0');
+		const month = (datetime.getMonth() + 1).toString().padStart(2, '0');
+		const year = datetime.getFullYear().toString();
+
+		return `${hours}:${minutes} ${day}/${month}/${year}`
+	}
+
+    // default form values
+    const [formData, setFormData] = useState({ 
+        authorId: USER_ID,
+        description: '',
+        lastSeenDateTime: formatDatetime(selectedDatetime),
+        dateTimeOfCreation: formatDatetime(new Date())
+    });
+
+	return (
+		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+			<Box flex={1} alignItems="center" justifyContent="center">
+				<Center w="100%">
+					<Box safeArea p="2" py="8" w="90%" maxW="290">
+
+						{isCreated ? (<AlertComponent onClose={closeAlert} />) :
+							(
+								<VStack>
+									<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Create a Report</Heading>
+
+									<VStack space={3} mt="5">
+
+										<FormControl isInvalid={'missingPetId' in errors}>
+											<FormControl.Label>Choose Pet</FormControl.Label>
+											<Select placeholder="Select a pet"
+												selectedValue={formData.missingPetId}
+												onValueChange={(value) => setFormData({ ...formData, missingPetId: value })}>
+												<Select.Item label="Select a pet" value="" disabled hidden />
+												{dropdownOptions.map((option, index) => (
+													<Select.Item key={index} label={option[0]} value={option[1]} />
+												))}
+											</Select>
+											{'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPetId}</FormControl.ErrorMessage>}
+										</FormControl>
+
+										<FormControl>
+											<FormControl.Label>Last Seen</FormControl.Label>
+											<Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
+											<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
+												onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
+										</FormControl>
+
+										<FormControl isInvalid={'lastLocation' in errors}>
+											<FormControl.Label>Last Known Location</FormControl.Label>
+											<Input onChangeText={value => setFormData({ ...formData, lastLocation: value })} placeholder="long (-180 to 180), lat (-90 to 90)" />
+											{'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
+										</FormControl>
+
+										<FormControl isInvalid={'description' in errors}>
+											<FormControl.Label>Additional Info</FormControl.Label>
+											<Input onChangeText={value => setFormData({ ...formData, description: value })} />
+											{'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
+										</FormControl>
+
+										<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onCreateReportPress}>
+											{buttonText}
+										</Button>
+
+									</VStack>
+								</VStack>
+							)}
+					</Box>
+				</Center>
+			</Box>
+		</KeyboardAvoidingView>
+	);
 };
 
 export default NewReportPage;

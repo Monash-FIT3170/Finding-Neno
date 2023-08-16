@@ -5,23 +5,61 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
-import { IP, PORT } from "@env";
+
+import { useSelector, useDispatch } from "react-redux";
+import store from "../store/store";
+
+
 
 const PasswordResetPage = () => {
+
+	const IP = useSelector((state) => state.IP);
+	const PORT = useSelector((state) => state.PORT);
+	
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});
 	const [show, setShow] = useState(false);
 	const [showConfirm, setShowConfirm] = useState(false);
+	const [buttonText, setButtonText] = useState("Set password")
+	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     const navigation = useNavigation();
 
 	var resetCodeAttempts = 3;
+    
+	// TODO
+	// Password should be hashed before calling API?
+
 
     const onPasswordResetPress = (formData) => {
+		setIsButtonDisabled(true);
+		setButtonText("Setting password...");
+
+		let isValid = validateDetails(formData);
+		if (isValid) {
+			const url = `${IP}:${PORT}/reset_password`
+			fetch(url, {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify(formData),
+			})
+			.then((res) => {
+				// something
+			})
+			.catch((error) => {
+				alert(error);
+			})
+		}
+
+
+		setButtonText("Set Password");
+		setIsButtonDisabled(false);
+
+
     	alert("password reset data: " + JSON.stringify(formData));
     };
 
-    const validateDetails = () => {
+    const validateDetails = (formData) => {
       // Validates details. If details are valid, send formData object to onPasswordResetPress.
     	foundErrors = {};
   
@@ -50,10 +88,7 @@ const PasswordResetPage = () => {
 	
 		setErrors(foundErrors);
 	
-		if (Object.keys(foundErrors).length === 0) {
-			// no errors!
-			onPasswordResetPress(formData)
-		}
+		return Object.keys(foundErrors).length === 0;
     }
 
     return (
@@ -98,8 +133,8 @@ const PasswordResetPage = () => {
 								{'confirmPassword' in errors && <FormControl.ErrorMessage>{errors.confirmPassword}</FormControl.ErrorMessage>}
 							</FormControl>
 
-							<Button mt="2" bgColor={Color.NENO_BLUE} onPress={validateDetails}>
-								Reset Password
+							<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onPasswordResetPress}>
+								{buttonText}
 							</Button>
 
 						</VStack>

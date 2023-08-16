@@ -47,6 +47,7 @@ def insert_user_to_database(conn, email, phone, name, password):
     """
     This function is used to add a new user to the database
     """
+    print('HEHREHRHEHREHRHER')
 
     cur = conn.cursor()
 
@@ -70,6 +71,35 @@ def insert_user_to_database(conn, email, phone, name, password):
     conn.commit()
     cur.close()
 
+def retrieve_user(conn, user_id, token):
+    """
+    This function is used to retrieve a user for the profile page
+    """
+
+    cur = conn.cursor()
+
+    # Check if a user with this email exists in the database
+    # Construct a SELECT query to retrieve the user
+    query = """SELECT * FROM users WHERE id = %s AND access_token = %s"""
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id, token,))
+        result_set = cur.fetchall()
+        if len(result_set) == 0:  # If a user with the provided email could not be found
+            print("No user found with the provided id and access token.")
+            return False
+        else:  # If user is found
+            user = result_set[0]
+            return user[1], user[2], user[3]  # returns user[1] (email), and user[2] (phone) and user[3] (name)
+
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Commit the change and close the connection
+    conn.commit()
+    cur.close()
+
 
 def check_user_exists_in_database(conn, email, password):
     """
@@ -85,6 +115,8 @@ def check_user_exists_in_database(conn, email, password):
     # Construct a SELECT query to check if the user exists in the database
     query = """SELECT * FROM users WHERE email_address = %s"""
 
+
+
     # Execute the query
     try:
         cur.execute(query, (email,))
@@ -94,6 +126,8 @@ def check_user_exists_in_database(conn, email, password):
             return False
         else: # If user is found
             user = result_set[0]
+            print(user[4])
+            
             if user[4] == hashed_pass:  # Check if password and salt matches
                 print("User found with the provided email address and matching password.")
                 return user[0], user[5]# returns user[0] (user_id), and user[5] (access_token)
@@ -107,8 +141,29 @@ def check_user_exists_in_database(conn, email, password):
     conn.commit()
     cur.close()
 
+def insert_new_sighting_to_database(connection: psycopg2.extensions.connection, author_id: str, date_time_of_creation, missing_report_id, animal, breed, date_time, location_longitude, location_latitude, image_url, description):
+    """
+    This function is used to add a new sighting to the database
+    """
 
-def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id: str, pet_id, last_seen, location_longitude, location_latitude, description):
+    cur = connection.cursor()
+
+    # Construct and INSERT query to insert this user into the DB
+    query = """INSERT INTO sightings (missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, 
+    location_latitude, image_url, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+
+    # Execute the query
+    try:
+        cur.execute(query, (author_id, date_time_of_creation, missing_report_id, animal, breed, date_time, location_longitude, location_latitude, image_url, description))
+        print(f"Query executed successfully: {query}")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Commit the change and close the connection
+    connection.commit()
+    cur.close()
+
+def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id: str, date_time_of_creation, pet_id, last_seen, location_longitude, location_latitude, description):
     """
     This function is used to add a new missing report to the database
     """
@@ -118,12 +173,12 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     isActive = True
 
     # Construct and INSERT query to insert this user into the DB
-    query = """INSERT INTO missing_reports (pet_id, author_id, date_time, location_longitude, 
-    location_latitude, description, isActive) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
+    query = """INSERT INTO missing_reports (pet_id, author_id, date_time_of_creation, date_time, location_longitude, 
+    location_latitude, description, isActive) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
 
     # Execute the query
     try:
-        cur.execute(query, (author_id, pet_id, last_seen, location_longitude, location_latitude, description, isActive))
+        cur.execute(query, (author_id, date_time_of_creation, pet_id, last_seen, location_longitude, location_latitude, description, isActive))
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
