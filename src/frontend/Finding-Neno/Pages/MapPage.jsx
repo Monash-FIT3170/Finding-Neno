@@ -15,9 +15,26 @@ export default function MapPage() {
     const navigation = useNavigation();
     // const windowWidth = Dimensions.get('window').width; 
     // const windowHeight = Dimensions.get('window').height;
-	const geocoder = new google.maps.Geocoder()
 
+	// Image URL for custom marker icon
 	const imageURL = '';
+
+	const [reports, setReports] = useState([]);
+
+
+	const fetchAllReports = async () => {
+		try {
+			const response = await fetch(`${IP}:${PORT}/get_missing_reports`);
+			const data = await response.json();
+			setReports(data[0]);
+			console.log(reports)
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+
+	// Default position is Melbourne
 	const [mapRegion, setMapRegion] = useState({
 		latitude: -37.8136,
 		longitude: 144.9631,
@@ -25,6 +42,7 @@ export default function MapPage() {
 		longitudeDelta: 0.0421,
 	})
 
+	// Retrieves coordinates of current centre of map 
 	const handleRegionChange = (region) => {
 		console.log(region);
 	}
