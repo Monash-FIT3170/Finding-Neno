@@ -9,7 +9,7 @@ file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
 sys.path.append(str(package_root_directory))
 
-from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_from_database, change_password_in_database, check_user_exists_in_database, update_missing_report_in_database, archive_missing_report_in_database, retrieve_user
+from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_from_database, retrieve_missing_reports_in_area_from_database, change_password_in_database, check_user_exists_in_database, update_missing_report_in_database, archive_missing_report_in_database, retrieve_user
 
 def insert_user(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
@@ -86,6 +86,20 @@ def retrieve_missing_reports(conn, owner_id) -> Tuple[str, int]:
     This function calls the function that connects to the db to retrieve missing reports of an owner.
     """
     missing_reports = retrieve_missing_reports_from_database(conn, owner_id)
+
+    if len(missing_reports) > 0:
+        return missing_reports, 200
+    elif len(missing_reports) == 0:
+        return [], 204
+    else:
+        return "Fail", 400
+    
+def retrieve_missing_reports_in_area(conn, longitude, longitude_delta, latitude, latitude_delta) -> Tuple[str, int]:
+    """
+    This function calls the function that connects to the db to retrieve missing reports in an area of width longitude_delta, height
+    latitude_delta and centre latitude longitude.
+    """
+    missing_reports = retrieve_missing_reports_in_area_from_database(conn, longitude, longitude_delta, latitude, latitude_delta)
 
     if len(missing_reports) > 0:
         return missing_reports, 200

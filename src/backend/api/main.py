@@ -5,7 +5,7 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 import flask
 
-from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, update_missing_report, archive_missing_report, retrieve_profile
+from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, retrieve_missing_reports_in_area, update_missing_report, archive_missing_report, retrieve_profile
 from pets_api import get_owner_pets_operation, get_pet_operation, insert_pet_operation, update_pet_operation, \
     delete_pet_operation
 
@@ -126,6 +126,25 @@ def get_missing_reports():
     """
     owner_id = request.args.get("owner_id")
     return jsonify(retrieve_missing_reports(get_connection(), owner_id))
+
+@app.route("/get_missing_reports_in_area", methods=["GET"])
+def get_missing_reports_in_area():
+    """
+    Returns an array of missing reports within the provided coordinates and the delta ranges, sorted by latest to oldest, of the following format.
+
+    [
+        missing_report_id, date_time (last seen), description (additional info), location_longitude, location_latitude,
+        pet_id, pet_name, pet_animal, pet_breed, 
+        owner_id, owner_name, owner_email, owner_phone_number
+    ]
+    """
+    longitude = request.args.get("long")
+    longitude_delta = request.args.get("long_delta")
+    latitude = request.args.get("lat")
+    latitude_delta = request.args.get("lat_delta")
+    return jsonify(retrieve_missing_reports_in_area(get_connection(), longitude, longitude_delta, latitude, latitude_delta))
+
+
 
 @app.route("/update_missing_report", methods=["PUT"])
 def put_update_missing_report():
