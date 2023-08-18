@@ -9,6 +9,7 @@ import { Button, Text } from 'react-native';
 import store from "../store/store";
 
 import au from "../assets/au.json"
+import { VStack } from 'native-base';
 
 export default function MapPage() {
 	const { IP, PORT } = useSelector((state) => state.api)
@@ -64,24 +65,32 @@ export default function MapPage() {
 	const handleRegionChange = (region) => {
 		setMapRegion(region);
 	}
-
+	
 	return (
 		<View style={styles.container}>
-			<MapView provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={mapRegion}
+			<MapView ref={(ref) => this.mapView = ref} provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={mapRegion} showCompass={true} showsIndoors={false}
+				loadingEnabled={true}
 				mapType={Platform.OS == "android" ? "none" : "standard"} onRegionChange={(region) => handleRegionChange(region)} >
 
 				{/*ACTIVE REPORT MARKERS*/}
 				{reports && reports.map((report, index) => (
-
-					<Marker coordinate={{longitude: report[3], latitude: report[4]}}></Marker>
+					<Marker key={index} title={report[6]} coordinate={{longitude: report[3], latitude: report[4]}} onPress={() => this.mapView.animateToRegion({longitude: report[3], latitude: report[4], longitudeDelta: 0.0015})}></Marker>
 				))
 				}
 				{/* <Marker coordinate={mapRegion} title='Marker'></Marker> */}
 
 			</MapView>
 
-			<Button title="Search this area" onPress={onPressSearch}></Button>
-			<Text>{`${reports.length} reports in area`}</Text>
+
+
+
+			{/* <VStack style={{position:'absolute', bottom:0, right:0, alignItems:'center', margin: 10, padding: 10, borderRadius: }} backgroundColor="grey"> */}
+			<View style={{position: 'absolute', top: 30}} alignItems='center'>
+				<Text> {reports.length} reports in area</Text>
+				<Button style={styles.button} title="Search this area" onPress={onPressSearch}></Button>
+			</View>
+			{/* </VStack> */}
+			
 		</View>
 	);
 }
@@ -89,10 +98,17 @@ export default function MapPage() {
 const styles = StyleSheet.create({
 	container: {
 		flex: 1,
+		justifyContent: 'flex-end',
+		alignItems: 'center'
 	},
 	map: {
-		width: '100%',
-		height: '90%',
-		alignSelf: 'stretch',
+		...StyleSheet.absoluteFillObject,
+	},
+	text: {
+		fontSize: 20
+	},
+	button: {
+		borderRadius: 20,
+		backgroundColor: 'blue',
 	}
 });
