@@ -124,7 +124,7 @@ def get_missing_reports():
 
     [
         missing_report_id, date_time (last seen), description (additional info), location_longitude, location_latitude,
-        pet_id, pet_name, pet_animal, pet_breed, 
+        pet_id, pet_name, pet_animal, pet_breed, image_url,
         owner_id, owner_name, owner_email, owner_phone_number
     ]
     """
