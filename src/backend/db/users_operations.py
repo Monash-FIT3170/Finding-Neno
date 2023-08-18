@@ -251,7 +251,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
 
     else:
         query = """SELECT mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
-                    p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url
+                    p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url,
                     u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
                     FROM missing_reports AS mr
                     JOIN pets AS p ON mr.pet_id = p.id
@@ -268,7 +268,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
         # Retrieve rows as an array
         missing_reports = cur.fetchall()
 
-        print(f"Missing reports successfully retrieved")
+        print(f"Missing reports successfully retrieved: {missing_reports}")
 
         return missing_reports
     except Exception as e:
