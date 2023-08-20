@@ -44,8 +44,7 @@ const LoginPage = () => {
 					}
 					dispatch(login(payload));
 					console.log(store.getState());
-
-					navigation.navigate('Tab Navigator');
+					
 				} else {
 					setErrors({
 						email: 'Email or password is invalid',

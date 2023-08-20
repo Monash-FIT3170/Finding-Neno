@@ -190,30 +190,72 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		}
 	};
 
-	const handleTakePhoto = async () => {
-		/**
-		 * This function is used to take a photo from the user's camera.
-		 * It will call the ImagePicker API to open the camera and allow the user to take a photo.
-		 * It will then set the petImage state to the taken photo.
-		 */
-		const { status } = await ImagePicker.requestCameraPermissionsAsync();
-		if (status === 'granted') {
-			let result = await ImagePicker.launchCameraAsync({
-				allowsEditing: true,
-				aspect: [4, 3],
-				quality: 1,
-				base64: true,
-			});
-			if (!result.canceled) {
-				// Upload to Imgur
-				let base64Img = result.assets[0].base64;
-				uploadImage(base64Img, setPetImage);
-			}
-		}
-	};
+    const handleTakePhoto = async () => {
+        /**
+         * This function is used to take a photo from the user's camera.
+         * It will call the ImagePicker API to open the camera and allow the user to take a photo.
+         * It will then set the petImage state to the taken photo.
+         */
+        const { status } = await ImagePicker.requestCameraPermissionsAsync();
+        if (status === 'granted') {
+          let result = await ImagePicker.launchCameraAsync({
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+			base64: true,
+          });
+          if (!result.canceled) {
+            // Upload to Imgur
+            let base64Img = result.assets[0].base64;
+            uploadImage(base64Img, setPetImage);
+          }
+        }
+      };
+      
 
-	const handlePreview = () => {
-		setIsPreviewExpanded(!isPreviewExpanded);
+	const handleSubmit = () => {
+		/**
+		 * This function is used to submit the pet information to the backend.
+		 * It will call the POST method '/insert_pet' to create a new pet.
+		 * Or, it will call the PUT method '/update_pet' to update an existing pet.
+		 */
+		let url;
+		let method;
+		// check if this is a new pet or an existing pet
+		if (isExistingPet) {
+			url = `${IP.toString()}:${PORT.toString()}/update_pet`;
+			method = 'PUT';
+		} else {
+			url = `${IP.toString()}:${PORT.toString()}/insert_pet?owner_id=${USER_ID}`;
+			method = 'POST';
+		}
+		// create the pet object
+		const pet = {
+			name: petName,
+			animal: petType,
+			breed: petBreed,
+			description: petDescription,
+			image_url: petImage.toString(),
+			owner_id: USER_ID
+		};
+		// call the backend API
+		fetch(url, {
+			method: method,
+			headers: {
+				'Authorization': `Bearer ${ACCESS_TOKEN}`,
+				'Content-Type': 'application/json',
+			},
+			body: JSON.stringify(pet),
+		})
+			.then((res) => {
+				if (res.status == 201) {
+					alert("Inserted pet successfully");
+				}
+				else {
+					alert("Error");
+				}
+			})
+			.catch((error) => alert(error));
 	};
 
 	const isFormValid = () => {
