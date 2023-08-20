@@ -9,7 +9,7 @@ import { useSelector, useDispatch } from "react-redux";
 import store from '../store/store';
 
 
-export default function NewPetPage({ navigation: { navigate}}) {
+export default function NewPetPage() {
     /**
      * This page is used to create a new pet or edit an existing pet.
      * It takes in the pet object as a parameter, if the pet object is empty, it will create a new pet.
@@ -17,7 +17,7 @@ export default function NewPetPage({ navigation: { navigate}}) {
      * 
      */
 
-    const navigation = useNavigation();
+
     const {IP, PORT} = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
     const pet = useSelector((state) => state.pet);

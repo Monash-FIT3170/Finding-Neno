@@ -7,6 +7,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 import store from '../store/store';
 import { useSelector, useDispatch } from "react-redux";
+import Report from '../components/Report';
 
 const DashboardPage = () => {
 	const {IP, PORT} = useSelector((state) => state.api)
@@ -62,7 +63,7 @@ const DashboardPage = () => {
     const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
 
     return (
-        <ScrollView style={{backgroundColor: 'white'}}>
+        <ScrollView style={{backgroundColor: '#EDEDED'}}>
 
           {/* REPORT SIGHTING MODAL */}
           <Modal isOpen={modalVisible} onClose={setModalVisible} >
@@ -94,103 +95,7 @@ const DashboardPage = () => {
 
             {/* {reports.map(({missing_report_id, owner_name, pet_name, pet_animal, pet_breed, location_latitude, location_longitude, date_time, description}) => ( */}
               {reports && reports.map((report, index) => (
-               <View key={index} alignContent="center" paddingBottom={30}>
-               <Box bg="#F5F5F5" borderRadius={15} padding={5} >
-                 <HStack alignItems="center">
-                     <Image 
-                         alignSelf="center" size={36} borderRadius={18} 
-                         source={{
-                           uri: image
-                         }} 
-                         alt="User Image" 
-                     /> 
-                     <Box width={2}></Box>
-                     <VStack>
-                     <Heading size = "sm">
-                       {report[10]}
-                     </Heading>
-                     {/* <Text style={{ color: 'black' }} fontSize="xs">{isHidden ? userPhoneHidden : userPhone}</Text> */}
-                     </VStack>
-                     <Box width={70}></Box>
-                     {/* <Button onPress={toggleVisibility}>
-                     <Text>Show/Hide</Text>
-                     </Button> */}
-                 </HStack>
-           
-                 <Box height={5}></Box>
-                 <Image 
-                         alignSelf="center" width={windowWidth} height={125} borderRadius={5}
-                         source={{
-                           uri: petImage
-                         }} 
-                         alt="Pet Image" 
-                     /> 
-                 <Box height={2}></Box>
-                 <HStack>
-                   <Heading size = "md">
-                   {report[6]}
-                   </Heading>
-                 </HStack>
-                 <HStack justifyContent="flex-start" space={10}>
-                   <VStack>
-                     <Heading size = "sm" color="#B8B8B8">
-                       Pet Type
-                     </Heading>
-                     <Text fontSize="sm">
-                     {report[7]}
-                     </Text>
-                   </VStack>
-           
-                   <VStack>
-                     <Heading size = "sm" color="#B8B8B8">
-                       Breed
-                     </Heading>
-                     <Text fontSize="sm">
-                     {report[7]}
-                     </Text>
-                   </VStack>
-                 </HStack>
-                 
-                 <VStack>
-                     <Heading size = "sm" color="#B8B8B8">
-                       Description
-                     </Heading>
-                     <Text fontSize="sm">
-                     {report[2]}
-                     </Text>
-                 </VStack>
-           
-                 <HStack justifyContent="space-between">
-                 <Heading size = "sm">
-                       Last Seen Time
-                     </Heading>
-                     <Text fontSize="sm">
-                     {report[1]}
-                     </Text>
-                 </HStack>
-                 
-                 <HStack justifyContent="space-between">
-                 <Heading size = "sm">
-                       Last Known Location
-                     </Heading>
-                     <Text fontSize="sm">
-                       Longitude: 
-                     {report[3]}
-                     , 
-                     Latitude:
-                     {report[4]}
-                     </Text>
-                     
-                 </HStack>
-                 <VStack>
-                 <Button mt="2" bgColor={Color.NENO_BLUE} onPress={() => handlePress()}>
-                    Report a sighting
-                  </Button>
-                 </VStack>
-                 
-                 
-               </Box>
-               </View>
+                <Report report={report} />
             ))}
         </ScrollView>
     );
