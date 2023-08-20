@@ -4,7 +4,6 @@ import { View, Image, FlatList } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-// import { IP, PORT } from "@env";
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
@@ -128,17 +127,6 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
 		return Object.keys(foundErrors).length === 0;
 	}
-
-	const [selectedImageOption, setSelectedImageOption] = useState('');
-
-	const handleImageOptionChange = (value) => {
-		setSelectedImageOption(value);
-		if (value === 'choose') {
-			handleChoosePhoto();
-		} else if (value === 'take') {
-			handleTakePhoto();
-		}
-	};
 
 	const uploadImage = (base64Img, setPetImage) => {
 		// Uploads an image to Imgur and sets the petImage state to the uploaded image URL
