@@ -11,6 +11,30 @@ import store from "../store/store";
 import au from "../assets/au.json"
 import { VStack } from 'native-base';
 
+// after you make the API calls 
+
+/*
+MongoClient.connect(url, { useUnifiedTopology: true }, (err, client) => {
+    if (err) throw err;
+    console.log('Connected to database');
+    db = client.db(dbName);
+});
+
+app.get('/get_locations', async (req, res) => {
+    try {
+        const locations = await db.collection('locations').find({}).toArray();
+        res.json(locations);
+    } catch (error) {
+        res.status(500).send({ error: 'Failed to fetch locations' });
+    }
+});
+
+app.listen(PORT, () => {
+    console.log(`Server is running on http://localhost:${PORT}`);
+});
+
+*/
+
 export default function MapPage() {
 	const { IP, PORT } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
