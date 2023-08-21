@@ -40,10 +40,10 @@ def get_connection():
     """
     Returns the connection to the database.
     """
-    if database_pool is not None:
-        return database_pool.getconn()
-    else:
-        return None
+    global database_pool
+    if database_pool is None:
+        database_pool = create_database_pool()
+    return database_pool.getconn()
     
 
 @app.route("/")
