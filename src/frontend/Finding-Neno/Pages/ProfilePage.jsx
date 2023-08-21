@@ -5,10 +5,11 @@ import { Color } from "../components/atomic/Theme";
 import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import PetCard from "../components/PetCard";
+import { Checkbox } from 'native-base';
 
 import { useSelector, useDispatch } from "react-redux";
 import store from '../store/store';
-import { selectPet } from '../store/pet';
+import pet, { selectPet } from '../store/pet';
 
 export default function ProfilePage({ navigation: { navigate } }) {
 	const navigation = useNavigation();
@@ -32,6 +33,8 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
 	const [pets, setPets] = useState([]);
 	const [user, setUser] = useState([]);
+	const [editMode, setEditMode] = useState(false);
+	const [selectedPets, setSelectedPets] = useState([]);
 
 	useEffect(() => {
 		if (isFocused) {
@@ -87,6 +90,14 @@ export default function ProfilePage({ navigation: { navigate } }) {
 		}
 	}
 
+	const deleteSelectedPets = () => {
+		// Implement logic to delete selected pets here
+		// ...
+
+		// After deletion, clear the selectedPets array
+		setSelectedPets([]);
+	}
+
 
 	const windowWidth = Dimensions.get('window').width;
 	const windowHeight = Dimensions.get('window').height;
@@ -100,21 +111,52 @@ export default function ProfilePage({ navigation: { navigate } }) {
 	//const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
 
 	const petCards = () => {
-		console.log(pets);
 		if (pets.length > 0) {
-			return pets.map((pet, index) => (
-				<PetCard
-					key={index}
-					color={Color.NENO_BLUE}
-					height={150}
-					pet={pet}
-				/>
-
-			));
+		  return (
+			<VStack>
+			  {pets.map((pet, index) => (
+				<Box
+				  key={index}
+				  width={editMode ? '72%' : '80%'}
+				  paddingHorizontal={editMode ? 3 : 0}
+				  marginBottom={editMode ? 4 : 0}
+				>
+				  <HStack width="100%">
+					{editMode && (
+						<VStack alignItems="center" justifyContent="center" width={3} marginEnd={10}>
+							<Checkbox
+								isChecked={selectedPets.includes(pet.id)}
+								onChange={(isChecked) => {
+								if (isChecked) {
+									setSelectedPets([...selectedPets, pet.id]);
+								} else {
+									setSelectedPets(selectedPets.filter(id => id !== pet.id));
+								}
+								}}
+								aria-label={`Select ${pet.name}`}
+								marginEnd={20}
+							>
+							</Checkbox>
+						</VStack>
+					)}
+					<VStack width="100%">
+					  {/* Pet Card Content */}
+					  <PetCard
+						color={Color.NENO_BLUE}
+						height={150}
+						pet={pet}
+					  />
+					</VStack>
+				  </HStack>
+				</Box>
+			  ))}
+			</VStack>
+		  );
 		} else {
-			return <></>
+		  return <></>;
 		}
-	}
+	};
+	  
 
 	return (
 		<ScrollView>
@@ -204,32 +246,47 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
 				<VStack>
 					<HStack mt="6" justifyContent="space-between" alignItems="center">
-						<Heading fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200", }} pr={windowWidth / 3.5}>
-							PETS
+						<Heading fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200" }} pr={windowWidth / 3.5}>
+						PETS
 						</Heading>
-						<Button pl={windowWidth / 3} variant="link">
+
+						{editMode ? (
+						<Button
+							pl={windowWidth / 3}
+							variant="link"
+							onPress={() => {
+							if (selectedPets.length > 0) {
+								deleteSelectedPets();
+							}
+							setEditMode(false);
+							}}
+						>
+							Done
+						</Button>
+						) : (
+						<Button
+							pl={windowWidth / 3}
+							variant="link"
+							onPress={() => setEditMode(true)}
+						>
 							Edit
 						</Button>
+						)}
 					</HStack>
-
 
 					<Button
 						onPress={() => {
-							navigate('New Pet Page')
-						}
-						}
+						navigate('New Pet Page');
+						}}
 						width={windowWidth - 80}
 						height="40px"
 					>
 						Add New Pet
 					</Button>
 					<Box h="4"></Box>
+					</VStack>
+
 					{petCards()}
-
-
-
-				</VStack>
-
 
 			</Box>
 		</ScrollView>
