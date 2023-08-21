@@ -20,7 +20,7 @@ const Report = ({report}) => {
     const reportDesc = report[2];
     const location = report[3];
     
-    const petName = report[6];
+    const petName = report[6][0].toUpperCase() +report[6].substring(1);
     const petSpecies = report[7];
     const petBreed = report[8];
     const petImage = report[9];
@@ -87,91 +87,3 @@ const Report = ({report}) => {
 
 export default Report;
 
-
-/*
-      <HStack alignItems="center">
-          <Image 
-              alignSelf="center" size={36} borderRadius={18} 
-              source={{
-                uri: userImage
-              }} 
-              alt="User Image" 
-          /> 
-          <Box width={2}></Box>
-          <VStack>
-          <Heading size = "sm">
-            {userName}
-          </Heading>
-          <Text style={{ color: 'black' }} fontSize="xs">{isHidden ? userPhoneHidden : userPhone}</Text>
-          </VStack>
-          <Box width={70}></Box>
-          <Button onPress={toggleVisibility}>
-          <Text>Show/Hide</Text>
-          </Button>
-      </HStack>
-
-      <Box height={5}></Box>
-
-            <Image 
-              alignSelf="center" width={windowWidth - 80} height={125}
-              source={{
-                uri: userImage
-              }} 
-              alt="Pet Image" 
-          /> 
-      <Box height={2}></Box>
-
-            <HStack>
-        <Heading size = "md">
-            {petName}
-        </Heading>
-      </HStack>
-      <HStack justifyContent="flex-start" space={10}>
-        <VStack>
-          <Heading size = "sm" color="#B8B8B8">
-            Pet Type
-          </Heading>
-          <Text fontSize="sm">
-              {petSpecies}
-          </Text>
-        </VStack>
-
-        <VStack>
-          <Heading size = "sm" color="#B8B8B8">
-            Breed
-          </Heading>
-          <Text fontSize="sm">
-              {petBreed}
-          </Text>
-        </VStack>
-      </HStack>
-      
-      <VStack>
-          <Heading size = "sm" color="#B8B8B8">
-            Description
-          </Heading>
-          <Text fontSize="sm">
-              {petDesc}
-          </Text>
-      </VStack>
-
-      <HStack justifyContent="space-between">
-      <Heading size = "sm">
-            Last Seen
-          </Heading>
-          <Text fontSize="sm">
-              {petLastSeen}
-          </Text>
-      </HStack>
-      
-      <HStack justifyContent="space-between">
-      <Heading size = "sm">
-            Last Known Location
-          </Heading>
-          <Text fontSize="sm">
-              {petLastKnownLocaton}
-          </Text>
-      </HStack>
-      
-
-*/

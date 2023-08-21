@@ -1,9 +1,10 @@
 import {useNavigation} from '@react-navigation/native';
-import { Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView} from "native-base";
+import { Menu, Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView} from "native-base";
 import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
+
 
 import store from '../store/store';
 import { useSelector, useDispatch } from "react-redux";
@@ -63,6 +64,22 @@ const DashboardPage = () => {
     const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
 
     return (
+      <View>
+    <View>
+      <View justifyContent="center" alignItems="flex-start" bg={'blue.300'} padding={4}>
+        <Menu shadow={2} w="360"  trigger={(triggerProps) => (
+          <Pressable accessibilityLabel="More options menu" {...triggerProps}>
+            <View style={{ alignItems: 'flex-start' }}>
+              <Heading> ➕  New Post </Heading>
+            </View>
+          </Pressable>
+        )}>
+          <Menu.Item onPress={() => navigation.navigate('Report', { screen: 'New Report Page' })}>Report</Menu.Item>
+          <Menu.Item>Sighting</Menu.Item>
+        </Menu>
+      </View>
+    </View>
+
         <ScrollView style={{backgroundColor: '#EDEDED'}}>
 
           {/* REPORT SIGHTING MODAL */}
@@ -91,13 +108,15 @@ const DashboardPage = () => {
           </Modal.Footer>
         </Modal.Content>
       </Modal>
-
+      
 
             {/* {reports.map(({missing_report_id, owner_name, pet_name, pet_animal, pet_breed, location_latitude, location_longitude, date_time, description}) => ( */}
               {reports && reports.map((report, index) => (
-                <Report report={report} />
+                <Report report={report} key={index}/>
+                
             ))}
         </ScrollView>
+        </View>
     );
 }
 
