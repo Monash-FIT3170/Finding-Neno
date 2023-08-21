@@ -3,7 +3,7 @@ import psycopg2.pool
 import sys, os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify
-import flask
+from flask_cors import CORS
 from pathlib import Path
 
 # Add the parent directory to the path so that backend deployment works
@@ -19,6 +19,7 @@ from api.pets_api import get_owner_pets_operation, get_pet_operation, insert_pet
 database_pool = None
 
 app = Flask(__name__)
+CORS(app)
 
 
 def create_database_pool():
