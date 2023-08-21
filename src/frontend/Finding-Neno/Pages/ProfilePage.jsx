@@ -66,11 +66,11 @@ export default function ProfilePage({ navigation: { navigate}}) {
     // Retrieve Profile Information
     const fetchProfileInfo = async () => {
       try {
-        const url = `${IP}:${PORT}/retrieve_profile/${ownerId}`;
+        const url = `${IP}:${PORT}/retrieve_profile/${USER_ID}`;
         const response = await fetch(url, {
           headers: {
             method: "GET",
-            'Authorization': `Bearer ${accessToken}`}
+            'Authorization': `Bearer ${ACCESS_TOKEN}`}
         });
 
         if (!response.ok) {

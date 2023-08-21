@@ -4,7 +4,7 @@ const initialState = {
     // IP: process.env.EXPO_PUBLIC_IP,
     // PORT: process.env.EXPO_PUBLIC_PORT,
     IP: "https://finding-neno-backend-e7784ead43b6.herokuapp.com",
-    PORT: "5000",
+    PORT: "",
 }
 
 export const apiSlice = createSlice({
