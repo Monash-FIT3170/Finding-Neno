@@ -38,6 +38,8 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 	const [petBreed, setPetBreed] = useState(pet ? pet.breed : '');
 	const [petDescription, setPetDescription] = useState(pet ? pet.description : '');
 
+	const LOADING_IMAGE = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWRwMHI0cmlnOGU3Mm4xbzZwcTJwY2Nrb2hlZ3YwNmtleHo4Zm15MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L05HgB2h6qICDs5Sms/giphy.gif";
+
 	const onAddPetPress = () => {
 		setIsButtonDisabled(true);
 		setButtonText("Adding Pet...");
@@ -122,6 +124,11 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 			foundErrors = { ...foundErrors, petDescription: 'Must not exceed 500 characters' }
 		}
 
+		// check that image is not the LOADING_IMAGE and not empty
+		if (petImage == LOADING_IMAGE || !petImage) {
+			foundErrors = { ...foundErrors, petImage: 'Please make sure a photo has been loaded' }
+		}
+
 		setErrors(foundErrors);
 
 		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
@@ -131,7 +138,6 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 	const uploadImage = (base64Img, setPetImage) => {
 		// Uploads an image to Imgur and sets the petImage state to the uploaded image URL
 		const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
-		const LOADING_IMAGE = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWRwMHI0cmlnOGU3Mm4xbzZwcTJwY2Nrb2hlZ3YwNmtleHo4Zm15MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L05HgB2h6qICDs5Sms/giphy.gif";
 
 		// Set loading image while the chosen image is being uploaded
 		setPetImage(LOADING_IMAGE);
