@@ -8,7 +8,6 @@ import { useSelector } from "react-redux";
 import { Button, Text } from 'react-native';
 import store from "../store/store";
 
-import au from "../assets/au.json"
 import { VStack } from 'native-base';
 
 // after you make the API calls 
