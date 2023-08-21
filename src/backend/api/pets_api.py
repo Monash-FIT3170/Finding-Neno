@@ -12,25 +12,27 @@ from db.pets import *
 
 
 def get_owner_pets_operation(conn, owner_id):
-    auth_header = flask.request.headers.get('Authorization')
-    token = auth_header.split()[1]
-    
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
 
-    db_output = get_all_pets(connection=conn, owner_id=owner_id, access_token=token)
+    db_output = get_all_pets(connection=conn, owner_id=owner_id, access_token=access_token)
 
     print(db_output)
-    return jsonify(db_output)
+
+    if db_output is False:
+        return "Authentication failed", 401
+    else:
+        return jsonify(db_output)
 
 
 def get_pet_operation(conn, pet_id):
+
     db_output = get_pet(connection=conn, pet_id=pet_id)
     return jsonify(db_output)
 
 
 def insert_pet_operation(conn, owner_id):
     data = request.get_json()
-    auth_header = flask.request.headers.get('Authorization')
-    token = auth_header.split()[1]
+    token = request.headers.get('Authorization').split('Bearer ')[1]
 
     print(data)
 
@@ -51,8 +53,7 @@ def insert_pet_operation(conn, owner_id):
 
 def update_pet_operation(conn):
     data = request.get_json()
-    auth_header = flask.request.headers.get('Authorization')
-    token = auth_header.split()[1]
+    token = request.headers.get('Authorization').split('Bearer ')[1]
 
     success = edit_pet(
         connection=conn,
@@ -71,8 +72,7 @@ def update_pet_operation(conn):
 
 
 def delete_pet_operation(conn, pet_id):
-    auth_header = flask.request.headers.get('Authorization')
-    token = auth_header.split()[1]
+    token = request.headers.get('Authorization').split('Bearer ')[1]
 
     success = delete_pet(
         connection=conn,

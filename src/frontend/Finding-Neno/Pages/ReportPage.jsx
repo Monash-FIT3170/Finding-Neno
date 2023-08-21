@@ -22,7 +22,6 @@ export default function ReportPage({ navigation: { navigate}}) {
 
     const isFocused = useIsFocused();
     
-    console.log("Report: " + owner);
     const image = "https://wallpaperaccess.com/full/317501.jpg";
     const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
 
@@ -37,7 +36,13 @@ export default function ReportPage({ navigation: { navigate}}) {
   
     const fetchAllReports = async () => {
       try {
-        const response = await fetch(`${IP}:${PORT}/get_missing_reports?owner_id=${USER_ID}`);
+        const url = `${IP}:${PORT}/get_missing_reports?owner_id=${USER_ID}`;
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        });
         const data = await response.json();
         setReports(data[0]);
       } catch (error) {

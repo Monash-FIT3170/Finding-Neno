@@ -1,209 +1,237 @@
 import { useNavigation } from '@react-navigation/native';
-import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link} from "native-base";
-import {Dimensions} from 'react-native';
+import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link } from "native-base";
+import { Dimensions } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
-import PetCard  from "../components/PetCard";
+import PetCard from "../components/PetCard";
 
 import { useSelector, useDispatch } from "react-redux";
 import store from '../store/store';
 import { selectPet } from '../store/pet';
 
-export default function ProfilePage({ navigation: { navigate}}) {
-    const navigation = useNavigation();
+export default function ProfilePage({ navigation: { navigate } }) {
+	const navigation = useNavigation();
 
-    const {IP, PORT} = useSelector((state) => state.api)
-    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
-  
-    const isFocused = useIsFocused();
-    
-    const dispatch = useDispatch();
-    const myPet = {
-      name: '',
-      image_url: '',
-      animal: '',
-      breed: '',
-      description: '',
-      owner_id: USER_ID,
-    };
-    dispatch(selectPet(myPet));
-    console.log(store.getState());
+	const { IP, PORT } = useSelector((state) => state.api)
+	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
-    const [pets, setPets] = useState([]);
+	const isFocused = useIsFocused();
+	const dispatch = useDispatch();
 
-    useEffect(() => {
-      if (isFocused) {
-        fetchOwnerPets();
-      }
-    }, [isFocused]);
-  
-    const fetchOwnerPets = async () => {
-      try {
-        const url = `${IP}:${PORT}/get_owner_pets/${USER_ID}`;
-        const response = await fetch(url, {
-          headers: { 
-            method: "GET",
-            'Authorization': `Bearer ${ACCESS_TOKEN}`}
-        });
+	const myPet = {
+		name: '',
+		image_url: '',
+		animal: '',
+		breed: '',
+		description: '',
+		owner_id: USER_ID,
+	};
+	dispatch(selectPet(myPet));
+	console.log(store.getState());
 
-        if (!response.ok) {
-          throw new Error('Request failed with status ' + response.status);
-        }
-        const pets = await response.json();
-        setPets(pets);
-        //const petTuples = data.map( (pet) => [pet["name"], pet["id"]]);
+	const [pets, setPets] = useState([]);
+	const [user, setUser] = useState([]);
 
-        //setDropdownOptions(petTuples)
-      } catch (error) {
-        console.log("error in profile page")
-        console.log(error);
-      }
-    }
+	useEffect(() => {
+		if (isFocused) {
+			fetchOwnerPets();
+			fetchProfileInfo();
+		}
+	}, [isFocused]);
 
+	const fetchOwnerPets = async () => {
+		try {
+			const url = `${IP}:${PORT}/get_owner_pets/${USER_ID}`;
+			const response = await fetch(url, {
+				headers: {
+					method: "GET",
+					'Authorization': `Bearer ${ACCESS_TOKEN}`
+				}
+			});
 
-    const windowWidth = Dimensions.get('window').width; 
-    const windowHeight = Dimensions.get('window').height;
+			if (!response.ok) {
+				throw new Error('Request failed with status ' + response.status);
+			}
+			const pets = await response.json();
+			setPets(pets);
+			//const petTuples = data.map( (pet) => [pet["name"], pet["id"]]);
 
+			//setDropdownOptions(petTuples)
+		} catch (error) {
+			console.log("error in profile page")
+			console.log(error);
+		}
+	}
 
-    // TODO: Replace with actual data
-    const name = "TODO";
-    const email = "TODO";
-    const phone = "TODO";
+	// Retrieve Profile Information
+	const fetchProfileInfo = async () => {
+		try {
+			const url = `${IP}:${PORT}/retrieve_profile/${USER_ID}`;
+			const response = await fetch(url, {
+				headers: {
+					method: "GET",
+					'Authorization': `Bearer ${ACCESS_TOKEN}`
+				}
+			});
 
-    //const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
-
-    const petCards = () => {
-      console.log(pets);
-      if (pets.length > 0) {
-        return pets.map((pet, index) => (
-          <PetCard
-            key={index}
-            color={Color.NENO_BLUE}
-            height={150}
-            pet={pet}
-          />
-          
-        ));
-      } else {
-        return <></>
-      }
-    }
-
-    return (
-      <ScrollView>
-      <Box alignItems="center" justifyContent="center">        
-        <Box 
-          alignSelf="center"
-          _text={{
-            alignSelf:"center",
-            justifyContent:"center",
-            fontSize: "lg",
-            fontWeight: "medium",
-            color: "warmGray.50",
-            letterSpacing: "lg"
-          }} 
-          bg={Color.NENO_BLUE}
-          width={windowWidth}
-          height={windowHeight/8}
-        >
-        <Box height={3}/>
-        <HStack>
-          <Box width={8}/>
-          <Box
-            bg="#FFFFFF"
-            height={76}
-            width={76}
-            borderRadius={38}
-            alignSelf="center"
-            alignItems="center"
-            justifyContent="center"
-          >
-            <Image 
-              alignSelf="center" size={70} borderRadius={35} 
-              source={{
-                uri: "https://wallpaperaccess.com/full/317501.jpg"
-              }} 
-              alt="Alternate Text" 
-            />
-          </Box>
-          <Box width={9}/>
-          <Heading alignSelf="center" size="lg" fontWeight="600" color="warmGray.200" _dark={{color: "coolGray.600",}} >
-            {name}
-          </Heading>
-        </HStack>
-      </Box>
+			if (!response.ok) {
+				throw new Error('Request failed with status ' + response.status);
+			}
+			const profile_info = await response.json();
+			setUser(profile_info);
+			console.log(user)
+		} catch (error) {
+			console.log("error in profile page")
+			console.log(error);
+		}
+	}
 
 
-      <VStack>
-        <HStack mt="6" justifyContent="space-between">
-          <Heading fontSize="sm" color="coolGray.600" _dark={{color: "warmGray.200",}} pr={windowWidth/3.5}>
-            USER DETAILS
-          </Heading>
-          <Text pl={windowWidth/3.5}>
-          </Text>
-        </HStack>
+	const windowWidth = Dimensions.get('window').width;
+	const windowHeight = Dimensions.get('window').height;
 
-        <Box h="2"></Box>
-          
-        <Box bg = "gray.200" px="2" py="1" borderRadius="md"> 
-        <HStack mt="2" justifyContent="space-between">
-          <Heading fontSize="sm" color="coolGray.600" _dark={{color: "warmGray.200",}}>
-            Email
-          </Heading>
-          <Text fontSize="sm" color="coolGray.600" _dark={{color: "warmGray.200",}}>
-            {email}
-          </Text>
-        </HStack>
-        </Box> 
-        
-        <Box h="2"></Box>
 
-        <Box bg = "gray.200" px="2" py="1" borderRadius="md">   
-        <HStack mt="2" justifyContent="space-between">
-          <Heading fontSize="sm" color="coolGray.600" _dark={{color: "warmGray.200",}}>
-            Phone
-          </Heading>
-          <Text fontSize="sm" color="coolGray.600" _dark={{color: "warmGray.200",}}>
-            {phone}
-          </Text>
-        </HStack>
-        </Box> 
-        
-      </VStack>
-        
-      <Box height={1}/>
+	// TODO: Replace with actual data
+	const name = user.name;
+	const email = user.email;
+	const phone = user.phone;
 
-      <VStack>
-        <HStack mt="6" justifyContent="space-between" alignItems="center">
-          <Heading fontSize="sm" color="coolGray.600" _dark={{color: "warmGray.200",}} pr={windowWidth/3.5}>
-            PETS     
-          </Heading>
-          <Button pl={windowWidth/3} variant="link">
-            Edit
-          </Button>
-        </HStack>
-        
-        
-        {petCards()}
-        
-        
+	//const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
 
-      </VStack>
-      
-      <Box h="4"></Box>
+	const petCards = () => {
+		console.log(pets);
+		if (pets.length > 0) {
+			return pets.map((pet, index) => (
+				<PetCard
+					key={index}
+					color={Color.NENO_BLUE}
+					height={150}
+					pet={pet}
+				/>
 
-      <Button
-        onPress={() => {
-          navigate('New Pet Page')}
-        } 
-        width={windowWidth - 100}
-        height="40px"
-      >
-        Add New Pet
-      </Button> 
-           
-    </Box>
-    </ScrollView>                        
-    )
+			));
+		} else {
+			return <></>
+		}
+	}
+
+	return (
+		<ScrollView>
+			<Box alignItems="center" justifyContent="center">
+				<Box
+					alignSelf="center"
+					_text={{
+						alignSelf: "center",
+						justifyContent: "center",
+						fontSize: "lg",
+						fontWeight: "medium",
+						color: "warmGray.50",
+						letterSpacing: "lg"
+					}}
+					bg={Color.NENO_BLUE}
+					width={windowWidth}
+					height={windowHeight / 8}
+				>
+					<Box height={3} />
+					<HStack>
+						<Box width={8} />
+						<Box
+							bg="#FFFFFF"
+							height={76}
+							width={76}
+							borderRadius={38}
+							alignSelf="center"
+							alignItems="center"
+							justifyContent="center"
+						>
+							<Image
+								alignSelf="center" size={70} borderRadius={35}
+								source={{
+									uri: "https://wallpaperaccess.com/full/317501.jpg"
+								}}
+								alt="Alternate Text"
+							/>
+						</Box>
+						<Box width={9} />
+						<Heading alignSelf="center" size="lg" fontWeight="600" color="warmGray.200" _dark={{ color: "coolGray.600", }} >
+							{name}
+						</Heading>
+					</HStack>
+				</Box>
+
+
+				<VStack>
+					<HStack mt="6" justifyContent="space-between">
+						<Heading fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200", }} pr={windowWidth / 3.5}>
+							USER DETAILS
+						</Heading>
+						<Text pl={windowWidth / 3.5}>
+						</Text>
+					</HStack>
+
+					<Box h="2"></Box>
+
+					<Box bg="gray.200" px="2" py="1" borderRadius="md">
+						<HStack mt="2" justifyContent="space-between">
+							<Heading fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200", }}>
+								Email
+							</Heading>
+							<Text fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200", }}>
+								{email}
+							</Text>
+						</HStack>
+					</Box>
+
+					<Box h="2"></Box>
+
+					<Box bg="gray.200" px="2" py="1" borderRadius="md">
+						<HStack mt="2" justifyContent="space-between">
+							<Heading fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200", }}>
+								Phone
+							</Heading>
+							<Text fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200", }}>
+								{phone}
+							</Text>
+						</HStack>
+					</Box>
+
+				</VStack>
+
+				<Box height={1} />
+
+
+
+				<VStack>
+					<HStack mt="6" justifyContent="space-between" alignItems="center">
+						<Heading fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200", }} pr={windowWidth / 3.5}>
+							PETS
+						</Heading>
+						<Button pl={windowWidth / 3} variant="link">
+							Edit
+						</Button>
+					</HStack>
+
+
+					<Button
+						onPress={() => {
+							navigate('New Pet Page')
+						}
+						}
+						width={windowWidth - 80}
+						height="40px"
+					>
+						Add New Pet
+					</Button>
+					<Box h="4"></Box>
+					{petCards()}
+
+
+
+				</VStack>
+
+
+			</Box>
+		</ScrollView>
+	)
 }

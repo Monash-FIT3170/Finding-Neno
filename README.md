@@ -82,9 +82,13 @@ Run the following command from the root directory:
 ## Notes and Common Issues
 * Network error:
   * Stop the server
-  * Reset cache by running the command
+  * Reset cache by running this command from the src/frontend/Finding-Neno directory
     ```
     npm cache clean --force
+    ```
+    or 
+    ```
+    npx react-native start --reset-cache
     ```
   * Ensure that your device is on the same IP/network as the server
   * Run the app again 
