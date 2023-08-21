@@ -137,11 +137,9 @@ def separate_datetime(datetime: str) -> Tuple[int, int, int, int, int]:
 
 def retrieve_missing_reports(conn, owner_id) -> Tuple[str, int]:
     """
-    This function calls the function that connects to the db to retrieve missing reports of an owner.
+    This function calls the function that connects to the db to retrieve all missing reports or missing reports of an owner if owner_id is provided.
     """
-
-    missing_reports = retrieve_missing_reports_from_database(conn, owner_id);
-
+    missing_reports = retrieve_missing_reports_from_database(conn, owner_id)
 
     if len(missing_reports) > 0:
         if not missing_reports:
@@ -150,6 +148,19 @@ def retrieve_missing_reports(conn, owner_id) -> Tuple[str, int]:
     elif len(missing_reports) == 0:
         return [], 204
 
+def retrieve_sightings(conn, missing_report_id) -> Tuple[str, int]:
+    """
+    This function calls the function that connects to the db to retrieve all sightings or sightings for a missing 
+    report if its missing_report_id is provided.
+    """
+    sightings = retrieve_sightings_from_database(conn, missing_report_id)
+
+    if len(sightings) > 0:
+        return sightings, 200
+    elif len(sightings) == 0:
+        return [], 204
+    else:
+        return "Fail", 400
 
 def login(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)

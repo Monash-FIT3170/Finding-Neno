@@ -5,10 +5,8 @@ from dotenv import load_dotenv
 from flask import Flask, request, jsonify
 import flask
 
-from user_service import insert_user, change_password, login, insert_missing_report, retrieve_missing_reports, update_missing_report, archive_missing_report, retrieve_profile, insert_new_sighting
-
-from pets_api import get_owner_pets_operation, get_pet_operation, insert_pet_operation, update_pet_operation, \
-    delete_pet_operation
+from user_service import *
+from pets_api import *
 
 database_pool = None
 
@@ -131,7 +129,21 @@ def get_missing_reports():
     owner_id = request.args.get("owner_id")
     return jsonify(retrieve_missing_reports(get_connection(), owner_id))
 
-@app.route("/update_missing_report", methods=["PUT"]) # Requires Access_token and user ID for authorization
+@app.route("/get_sightings", methods=["GET"])
+def get_sightings():
+    """
+    Returns an array of sightings, sorted by latest to oldest, of the following format.
+
+    [
+        sighting_id, missing_report_id, author_id (author of sighting), date_time (date time sighting was made), 
+        location_longitude, location_latitude, image_url, description, author's name, author's email, author's phone number
+    ]
+    """
+    missing_report_id = request.args.get("missing_report_id")
+    return jsonify(retrieve_sightings(get_connection(), missing_report_id))
+
+
+@app.route("/update_missing_report", methods=["PUT"])
 def put_update_missing_report():
     return update_missing_report(get_connection())
 

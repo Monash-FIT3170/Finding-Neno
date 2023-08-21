@@ -263,29 +263,45 @@ def archive_missing_report_in_database(connection: psycopg2.extensions.connectio
 
 def retrieve_missing_reports_from_database(connection: psycopg2.extensions.connection, owner_id):
     """
-    This function retrieves the missing reports of the logged in user.
+    This function retrieves all missing reports or missing reports of a user if owner_id is provided.
+    Missing report, pet, and owner information are all returned.
     """
 
     cur = connection.cursor()
 
     if owner_id == None:
-        query = """SELECT mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, 
-                    p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url,
-                    u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
-                    FROM missing_reports AS mr
-                    JOIN pets AS p ON mr.pet_id = p.id
-                    JOIN users AS u ON mr.author_id = u.id
-                    ORDER BY mr.date_time DESC;"""
+        query = """
+                    SELECT 
+                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, 
+                        p.id AS pet_id, p.name AS pet_name, p.animal, p.breed,
+                        u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+                    FROM 
+                        missing_reports AS mr
+                    JOIN 
+                        pets AS p ON mr.pet_id = p.id
+                    JOIN 
+                        users AS u ON mr.author_id = u.id
+                    ORDER BY 
+                        mr.date_time DESC;
+                """
 
     else:
-        query = """SELECT mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
-                    p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url,
-                    u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
-                    FROM missing_reports AS mr
-                    JOIN pets AS p ON mr.pet_id = p.id
-                    JOIN users AS u ON mr.author_id = u.id
-                    WHERE u.id = %s
-                    ORDER BY mr.date_time DESC;"""
+        query = """
+                    SELECT 
+                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
+                        p.id AS pet_id, p.name AS pet_name, p.animal, p.breed,
+                        u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+                    FROM 
+                        missing_reports AS mr
+                    JOIN 
+                        pets AS p ON mr.pet_id = p.id
+                    JOIN 
+                        users AS u ON mr.author_id = u.id
+                    WHERE 
+                        u.id = %s
+                    ORDER BY 
+                        mr.date_time DESC;
+                """
 
     try:
         if owner_id == None:
@@ -303,10 +319,68 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
         print(f"Error with retrieving missing reports: {e}")
 
     cur.close()
-    return None
+    return []
 
+def retrieve_sightings_from_database(connection: psycopg2.extensions.connection, missing_report_id: int):
+    """
+    This function returns all pet sightings or pet sightings for a missing report if missing_report_id is provided.
+    """
 
-def change_password_in_database(connection: psycopg2.extensions.connection, email: int, new_password: str, user_id, access_token):
+    # Open cursor to access the connection.
+    cur = connection.cursor()
+
+    if missing_report_id == None:
+        # Query returns all sightings in the database
+        query = """
+                    SELECT
+                        s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
+                        u.name, u.email_address, u.phone_number
+                    FROM
+                        sightings AS s
+                    JOIN
+                        missing_reports AS mr ON s.missing_report_id = mr.id
+                    JOIN
+                        users AS u ON s.author_id = u.id
+                    ORDER BY
+                        s.date_time DESC;
+                """
+    else:
+        # Query returns all sightings of a missing report
+        query = """
+                    SELECT
+                        s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
+                        u.name, u.email_address, u.phone_number
+                    FROM
+                        sightings AS s
+                    JOIN
+                        missing_reports AS mr ON s.missing_report_id = mr.id
+                    JOIN
+                        users AS u ON s.author_id = u.id
+                    WHERE 
+                        s.missing_report_id = %s
+                    ORDER BY
+                        s.date_time DESC;
+                """
+        
+    try:
+        if missing_report_id == None:
+            cur.execute(query)
+        else:
+            cur.execute(query, (missing_report_id, ))
+
+        # Retrieve rows as an array
+        sightings = cur.fetchall()
+
+        print(f"Sightings successfully retrieved")
+
+        return sightings
+    except Exception as e:
+        print(f"Error with retrieving sightings: {e}")
+
+    cur.close()
+    return []
+
+def change_password_in_database(connection: psycopg2.extensions.connection, email: int, new_password: str):
     """
     This function updates the password of the row in the database which matches the email provided.
     """
