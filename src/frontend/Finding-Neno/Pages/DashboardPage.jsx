@@ -208,6 +208,11 @@ const DashboardPage = () => {
 		}
 	};
 
+  // image_url is not being set properly without this useEffect - should probs find a more robust way to fix it later 
+  useEffect(() => {
+		setSightingData({...sightingData, image_url: sightingImage})
+	}, [sightingImage]);
+
 	const handleSubmitSighting = async () => {
 		let isValid = validateDetails(sightingData);
 
@@ -215,7 +220,6 @@ const DashboardPage = () => {
 			setReportSightingBtnDisabled(true);
 			const url = `${IP}:${PORT}/insert_sighting`;
 
-			console.log(sightingImage)
 			setSightingData({ ...sightingData, image_url: sightingImage })
 
 			await fetch(url, {
