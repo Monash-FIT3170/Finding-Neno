@@ -1,16 +1,15 @@
 import {useNavigation} from '@react-navigation/native';
-import { Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView} from "native-base";
+import { Menu, Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView} from "native-base";
 import {Dimensions} from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import * as ImagePicker from 'expo-image-picker';
-import { Picker } from '@react-native-picker/picker';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
+
 
 import store from '../store/store';
 import { validDateTime, validateCoordinates } from "./validation"
 import { useSelector, useDispatch } from "react-redux";
+import Report from '../components/Report';
 
 const DashboardPage = () => {
 	const {IP, PORT} = useSelector((state) => state.api)
@@ -229,7 +228,23 @@ const DashboardPage = () => {
     }
 
     return (
-        <ScrollView style={{backgroundColor: 'white'}}>
+      <View>
+    <View>
+      <View justifyContent="center" alignItems="flex-start" bg={'blue.300'} padding={4}>
+        <Menu shadow={2} w="360"  trigger={(triggerProps) => (
+          <Pressable accessibilityLabel="More options menu" {...triggerProps}>
+            <View style={{ alignItems: 'flex-start' }}>
+              <Heading> ➕  New Post </Heading>
+            </View>
+          </Pressable>
+        )}>
+          <Menu.Item onPress={() => navigation.navigate('Report', { screen: 'New Report Page' })}>Report</Menu.Item>
+          <Menu.Item>Sighting</Menu.Item>
+        </Menu>
+      </View>
+    </View>
+
+        <ScrollView style={{backgroundColor: '#EDEDED'}}>
 
           {/* REPORT SIGHTING MODAL */}
           <Modal avoidKeyboard isOpen={modalVisible} onClose={setModalVisible} >
@@ -288,105 +303,15 @@ const DashboardPage = () => {
           </Modal.Footer>
         </Modal.Content>
       </Modal>
-
+      
 
           {/* REPORTS */}
               {reports && reports.map((report, index) => (
-               <View key={index} alignContent="center" paddingBottom={30}>
-               <Box bg="#F5F5F5" borderRadius={15} padding={5} >
-                 <HStack alignItems="center">
-                     <Image 
-                         alignSelf="center" size={36} borderRadius={18} 
-                         source={{
-                           uri: image
-                         }} 
-                         alt="User Image" 
-                     /> 
-                     <Box width={2}></Box>
-                     <VStack>
-                     <Heading size = "sm">
-                       {report[11]}
-                     </Heading>
-                     </VStack>
-                     <Box width={70}></Box>
-                 </HStack>
-           
-                 <Box height={5}></Box>
-                 <Image 
-                         alignSelf="center" width={windowWidth} height={125} borderRadius={5}
-                         source={{
-                           uri: report[9]
-                         }} 
-                         alt="Pet Image" 
-                     /> 
-                 <Box height={2}></Box>
-                 <HStack>
-                   <Heading size = "md">
-                   {report[6]}
-                   </Heading>
-                 </HStack>
-                 <HStack justifyContent="flex-start" space={10}>
-                   <VStack>
-                     <Heading size = "sm" color="#B8B8B8">
-                       Pet Type
-                     </Heading>
-                     <Text fontSize="sm">
-                     {report[7]}
-                     </Text>
-                   </VStack>
-           
-                   <VStack>
-                     <Heading size = "sm" color="#B8B8B8">
-                       Breed
-                     </Heading>
-                     <Text fontSize="sm">
-                     {report[8]}
-                     </Text>
-                   </VStack>
-                 </HStack>
-                 
-                 <VStack>
-                     <Heading size = "sm" color="#B8B8B8">
-                       Description
-                     </Heading>
-                     <Text fontSize="sm">
-                     {report[2]}
-                     </Text>
-                 </VStack>
-           
-                 <HStack justifyContent="space-between">
-                 <Heading size = "sm">
-                       Last Seen Time
-                     </Heading>
-                     <Text fontSize="sm">
-                     {report[1]}
-                     </Text>
-                 </HStack>
-                 
-                 <HStack justifyContent="space-between">
-                 <Heading size = "sm">
-                       Last Known Location
-                     </Heading>
-                     <Text fontSize="sm">
-                       Longitude: 
-                     {report[3]}
-                     , 
-                     Latitude:
-                     {report[4]}
-                     </Text>
-                     
-                 </HStack>
-                 <VStack>
-                 <Button mt="2" bgColor={Color.NENO_BLUE} onPress={() => handleOpenSightingModal(report)}>
-                    Report a sighting
-                  </Button>
-                 </VStack>
-                 
-                 
-               </Box>
-               </View>
+                <Report report={report} key={index}/>
+                
             ))}
         </ScrollView>
+        </View>
     );
 }
 
