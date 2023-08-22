@@ -103,7 +103,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         if (isValid) {
             setFormData({ ...formData, missing_report_id: null, animal: selectedAnimal, id:USER_ID  });
 
-            const url = `${IP}:${PORT}/insert_new_sighting`;
+            const url = `${IP}:${PORT}/insert_sighting`;
 
             await fetch(url, {
                 method: "POST",
