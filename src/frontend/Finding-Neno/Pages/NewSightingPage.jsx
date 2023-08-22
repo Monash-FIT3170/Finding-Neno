@@ -107,8 +107,10 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
             await fetch(url, {
                 method: "POST",
-                headers: {"Content-Type": "application/json",
-                          "Authorization": `Bearer ${ACCESS_TOKEN}`
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${ACCESS_TOKEN}`,
+                    'User-ID': USER_ID
                 },
                 body: JSON.stringify(formData),
             })

@@ -29,11 +29,13 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		// ownerId = 2
 		const fetchOwnerPets = async () => {
 			try {
-				const url = `${IP}:${PORT}/get_owner_pets/${USER_ID}`;
+				const url = `${IP}:${PORT}/get_owner_pets?owner_id=${USER_ID}`;
 				const response = await fetch(url, {
+					method: "GET",
 					headers: {
-						method: "GET",
-						'Authorization': `Bearer ${ACCESS_TOKEN}`
+						"Content-Type": "application/json",
+						'Authorization': `Bearer ${ACCESS_TOKEN}`,
+						'User-ID': USER_ID
 					}
 				});
 
@@ -65,8 +67,9 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			await fetch(url, {
 				method: "POST",
 				headers: {
-				"Content-Type": "application/json",
-				'Authorization': `Bearer ${ACCESS_TOKEN}`,
+					"Content-Type": "application/json",
+					'Authorization': `Bearer ${ACCESS_TOKEN}`,
+					'User-ID': USER_ID
 				},
 				body: JSON.stringify(formData),
 			})

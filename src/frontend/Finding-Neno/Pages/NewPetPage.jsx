@@ -50,7 +50,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		let method;
 		// check if this is a new pet or an existing pet
 		if (isExistingPet) {
-			url = `${IP}:${PORT}/update_pet`;
+			url = `${IP}:${PORT}/update_pet/pet_id=`;
 			method = 'PUT';
 		} else {
 			url = `${IP}:${PORT}/insert_pet?owner_id=${USER_ID}`;
@@ -77,6 +77,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 				headers: {
 					'Authorization': `Bearer ${ACCESS_TOKEN}`,
 					'Content-Type': 'application/json',
+					'User-ID': USER_ID
 				},
 				body: JSON.stringify(pet),
 			})
@@ -223,7 +224,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		let method;
 		// check if this is a new pet or an existing pet
 		if (isExistingPet) {
-			url = `${IP.toString()}:${PORT.toString()}/update_pet`;
+			url = `${IP.toString()}:${PORT.toString()}/update_pet?owner_id=${USER_ID}`;
 			method = 'PUT';
 		} else {
 			url = `${IP.toString()}:${PORT.toString()}/insert_pet?owner_id=${USER_ID}`;
@@ -235,15 +236,15 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 			animal: petType,
 			breed: petBreed,
 			description: petDescription,
-			image_url: petImage.toString(),
-			owner_id: USER_ID
+			image_url: petImage.toString()
 		};
 		// call the backend API
 		fetch(url, {
 			method: method,
 			headers: {
-				'Authorization': `Bearer ${ACCESS_TOKEN}`,
 				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${ACCESS_TOKEN}`,
+				'User-ID': USER_ID
 			},
 			body: JSON.stringify(pet),
 		})
