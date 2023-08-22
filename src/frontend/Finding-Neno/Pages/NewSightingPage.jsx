@@ -5,13 +5,12 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { IP, PORT } from "@env";
 import { validDateTime, validateCoordinates } from "./validation"
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 
-import { petTypeOptions } from "./shared";
+import { formatDatetime, petTypeOptions } from "./shared";
 
 const NewSightingPage = ({ navigation: { navigate } }) => {
     const { IP, PORT } = useSelector((state) => state.api)
@@ -29,6 +28,20 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
     const [image, setImage] = useState(null);
     const toast = useToast();
 
+    // default form values
+    const [formData, setFormData] = useState({
+        authorId: USER_ID,
+        missingReportId: null,
+        breed: '',
+        imageUrl: '',
+        dateTime: formatDatetime(selectedDatetime),
+        dateTimeOfCreation: formatDatetime(new Date()),
+        description: ''
+    });
+    const [sightingImage, setSightingImage] = useState(null);
+
+
+
     const handleTakePhoto = async () => {
         /**
          * This function is used to take a photo from the user's camera.
@@ -41,10 +54,12 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                 allowsEditing: true,
                 aspect: [4, 3],
                 quality: 1,
+                base64: true,
             });
             if (!result.canceled) {
-                setImage(result.assets[0].uri.toString());
-                setFormData({ ...formData, image_url: result.assets[0].uri.toString() });
+                // Upload to Imgur
+                let base64Img = result.assets[0].base64;
+                uploadImage(base64Img, setSightingImage);
             }
         }
     };
@@ -62,11 +77,18 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                 allowsEditing: true,
                 aspect: [4, 3],
                 quality: 1,
+				base64: true,
             });
-            if (!result.canceled) {
-                setImage(result.assets[0].uri.toString());
-                setFormData({ ...formData, image_url: result.assets[0].uri.toString() });
-            }
+			if (!result.canceled) {
+				if (result.assets[0].uri.startsWith("http")) {
+					// Image is a URL, so leave it as is
+					setSightingImage(result.assets[0].uri);
+				} else {
+					// Image is a local file path, so upload to Imgur
+					let base64Img = result.assets[0].base64;
+					uploadImage(base64Img, setSightingImage);
+				}
+			}
         }
     };
 
@@ -94,6 +116,46 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         return Object.keys(foundErrors).length === 0;
     }
 
+	const uploadImage = async (base64Img, setSightingImage) => {
+        setIsButtonDisabled(true);
+        console.log("button disabled")
+		// Uploads an image to Imgur and sets the petImage state to the uploaded image URL
+		const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
+		const LOADING_IMAGE = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWRwMHI0cmlnOGU3Mm4xbzZwcTJwY2Nrb2hlZ3YwNmtleHo4Zm15MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L05HgB2h6qICDs5Sms/giphy.gif";
+
+		// Set loading image while the chosen image is being uploaded
+		setSightingImage(LOADING_IMAGE);
+
+		const formData = new FormData();
+		formData.append("image", base64Img);
+
+		await fetch("https://api.imgur.com/3/image", {
+			method: "POST",
+			headers: {
+				"Authorization": "Client-ID 736cd8c6daf1a6e",
+			},
+			body: formData,
+		})
+			.then(res => res.json())
+			.then(res => {
+				if (res.success === true) {
+					console.log(`Image successfully uploaded: ${res.data.link}}`);
+					setSightingImage(res.data.link);
+                    console.log("image set")
+                    setIsButtonDisabled(false);
+				} else {
+					console.log("Image failed to upload - setting default image");
+					setSightingImage(DEFAULT_IMAGE);
+				}
+			})
+			.catch(err => {
+				console.log("Image failed to upload:", err);
+				setSightingImage(DEFAULT_IMAGE);
+			});
+
+        setIsButtonDisabled(false);
+	}
+
     const onPress = async () => {
         setIsButtonDisabled(true);
         setButtonText("Adding sighting...");
@@ -101,14 +163,16 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         let isValid = validateDetails(formData);
 
         if (isValid) {
-            setFormData({ ...formData, missing_report_id: null, animal: selectedAnimal, id:USER_ID  });
+            setFormData({ ...formData, imageUrl: sightingImage.toString(), animal: selectedAnimal });
 
             const url = `${IP}:${PORT}/insert_new_sighting`;
-
+            console.log("inserting")
             await fetch(url, {
                 method: "POST",
-                headers: {"Content-Type": "application/json",
-                          "Authorization": `Bearer ${ACCESS_TOKEN}`
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": `Bearer ${ACCESS_TOKEN}`,
+                    "User-ID": USER_ID
                 },
                 body: JSON.stringify(formData),
             })
@@ -144,28 +208,6 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         setShowPicker(false);
     }
 
-    const formatDatetime = (datetime) => {
-        const hours = datetime.getHours().toString().padStart(2, '0');
-        const minutes = datetime.getMinutes().toString().padStart(2, '0');
-        const day = datetime.getDate().toString().padStart(2, '0');
-        const month = (datetime.getMonth() + 1).toString().padStart(2, '0');
-        const year = datetime.getFullYear().toString();
-
-        return `${hours}:${minutes} ${day}/${month}/${year}`
-    }
-
-    // default form values
-    const [formData, setFormData] = useState({
-        missing_report_id: null,
-        authorId: USER_ID,
-        animal: 'dog',
-        breed: null,
-        image_url: null,
-        description: '',
-        dateTime: formatDatetime(selectedDatetime),
-        dateTimeOfCreation: formatDatetime(new Date())
-    });
-
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
             <FlatList
@@ -180,7 +222,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                                     <VStack space={3} mt="5">
                                         <FormControl.Label>Photo</FormControl.Label>
                                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                            {image && <Image source={{ uri: image }} style={{ width: 200, height: 200 }} alt='pet sighting image' />}
+                                            {sightingImage && <Image source={{ uri: sightingImage }} style={{ width: 200, height: 200 }} alt='pet sighting image' />}
                                         </View>
                                         <Button variant="ghost" onPress={handleChoosePhoto}>
                                             Choose From Library

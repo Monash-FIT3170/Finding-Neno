@@ -26,10 +26,10 @@ def insert_new_sighting(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("inserting pet sighting: ", json_data)
 
-    user_id = json_data["id"]
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
-    missing_report_id = json_data["missing_report_id"]
+    missing_report_id = json_data["missingReportId"]
     author_id = json_data["authorId"]
     animal = json_data["animal"]
     breed = json_data["breed"]
@@ -43,12 +43,12 @@ def insert_new_sighting(conn) -> Tuple[str, int]:
 
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
-    image_url = json_data["image_url"]
+    imageUrl = json_data["imageUrl"]
     description = json_data["description"]
 
-    res = insert_new_sighting_to_database(conn, missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, location_latitude, image_url, description, user_id, access_token)
+    res = insert_new_sighting_to_database(conn, missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, location_latitude, imageUrl, description, user_id, access_token)
 
-    if not res:
+    if res is False:
         return "User does not have access", 401
     else:
         return "Success", 201

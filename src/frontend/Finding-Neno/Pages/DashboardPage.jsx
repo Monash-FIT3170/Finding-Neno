@@ -12,6 +12,8 @@ import store from '../store/store';
 import { validDateTime, validateCoordinates } from "./validation"
 import { useSelector, useDispatch } from "react-redux";
 
+import { formatDatetime } from './shared';
+
 const DashboardPage = () => {
 	const {IP, PORT} = useSelector((state) => state.api)
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
@@ -33,20 +35,10 @@ const DashboardPage = () => {
   const LOADING_IMAGE = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWRwMHI0cmlnOGU3Mm4xbzZwcTJwY2Nrb2hlZ3YwNmtleHo4Zm15MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L05HgB2h6qICDs5Sms/giphy.gif";
   const [sightingImage, setSightingImage] = useState(DEFAULT_IMAGE);
 
-  const formatDatetime = (datetime) => {
-		const hours = datetime.getHours().toString().padStart(2, '0');
-		const minutes = datetime.getMinutes().toString().padStart(2, '0');
-		const day = datetime.getDate().toString().padStart(2, '0');
-		const month = (datetime.getMonth() + 1).toString().padStart(2, '0');
-		const year = datetime.getFullYear().toString();
-
-		return `${hours}:${minutes} ${day}/${month}/${year}`
-	}
-
   const resetForm = (report) => {
     // clears the form to default values
     setSightingData({ ...sightingData, 
-      missing_report_id: report[0], 
+      missingReportId: report[0], 
       animal: report[7], 
       breed: report[8],
       image_url: DEFAULT_IMAGE, 

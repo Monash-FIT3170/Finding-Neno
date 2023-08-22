@@ -9,6 +9,8 @@ import { validDateTime, validateCoordinates } from "./validation"
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 
+import { formatDatetime } from "./shared"
+
 const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
 
@@ -125,16 +127,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 	const closePicker = () => {
 		setShowPicker(false);
-	}
-
-	const formatDatetime = (datetime) => {
-		const hours = datetime.getHours().toString().padStart(2, '0');
-		const minutes = datetime.getMinutes().toString().padStart(2, '0');
-		const day = datetime.getDate().toString().padStart(2, '0');
-		const month = (datetime.getMonth() + 1).toString().padStart(2, '0');
-		const year = datetime.getFullYear().toString();
-
-		return `${hours}:${minutes} ${day}/${month}/${year}`
 	}
 
 	// default form values

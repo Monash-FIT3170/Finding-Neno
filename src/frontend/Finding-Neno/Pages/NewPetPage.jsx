@@ -8,7 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 
-import { petTypeOptions } from "./shared";
+import "./shared";
 
 const NewPetPage = ({ navigation: { navigate }, route }) => {
 	/**
