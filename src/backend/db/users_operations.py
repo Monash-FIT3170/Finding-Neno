@@ -160,6 +160,7 @@ def insert_new_sighting_to_database(connection: psycopg2.extensions.connection, 
     query = """INSERT INTO sightings (missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, 
     location_latitude, image_url, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
+    final_state = False
     # Execute the query
     try:
 
@@ -169,12 +170,14 @@ def insert_new_sighting_to_database(connection: psycopg2.extensions.connection, 
 
         cur.execute(query, (author_id, date_time_of_creation, missing_report_id, animal, breed, date_time, location_longitude, location_latitude, image_url, description))
         print(f"Query executed successfully: {query}")
+        final_state = True # set to True only if it executes successfully 
     except Exception as e:
         print(f"Error while executing query: {e}")
 
     # Commit the change and close the connection
     connection.commit()
     cur.close()
+    return final_state
 
 def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id: str, date_time_of_creation, pet_id, last_seen, location_longitude, location_latitude, description, access_token):
     """
@@ -273,7 +276,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
         query = """
                     SELECT 
                         mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, 
-                        p.id AS pet_id, p.name AS pet_name, p.animal, p.breed,
+                        p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url,
                         u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
                     FROM 
                         missing_reports AS mr
