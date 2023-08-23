@@ -43,7 +43,7 @@ export default function App() {
 	);
 }
 
-async function loadStorage() {
+async function loadStorage(IP, PORT) {
 	const userId = await AsyncStorage.getItem("USER_ID");
 	const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
 
@@ -52,7 +52,20 @@ async function loadStorage() {
 			USER_ID: userId,
 			ACCESS_TOKEN: accessToken,
 		}
-		store.dispatch(login(payload));
+
+    const url = `${IP}:${PORT}/verify_token`;
+    const verifyTokenRes = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${accessToken}`,
+        'User-ID': userId
+      },
+    });
+    if (verifyTokenRes.status == 200) {
+      store.dispatch(login(payload));
+    } else {
+      store.dispatch(logout());
+    }
 	} else {
 		store.dispatch(logout());
 	}
@@ -63,17 +76,16 @@ const FORCE_RELOGIN = false;
 
 function MainNavigator() {
 	console.log(store.getState());
-	const IP = store.getState().IP;
-	const PORT = store.getState().PORT;
+	let { IP, PORT } = useSelector((state) => state.api);
 
 
 	useEffect(() => {
 		if (FORCE_RELOGIN) {
 			store.dispatch(logout())
 		} else {
-			loadStorage();
+			loadStorage(IP, PORT);
 		}
-	}, [])
+	}, [IP, PORT])
 
 	const isLoggedIn = useSelector(() => store.getState().user.LOGGED_IN)
 

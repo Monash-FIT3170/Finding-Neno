@@ -55,6 +55,10 @@ def close_connection():
 def post_insert_user():
     return insert_user(get_connection())
 
+@app.route("/verify_token", methods=["GET"])
+def get_verify_token():
+    return check_access_token(get_connection())
+
 @app.route("/login", methods=["POST"])
 def post_login():
     print("logging in")
