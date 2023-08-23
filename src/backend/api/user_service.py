@@ -9,7 +9,20 @@ file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
 sys.path.append(str(package_root_directory))
 
+from db.authentication import verify_access_token
 from db.users_operations import *
+
+
+def check_access_token(connection) -> bool:
+    # json_data = request.get_json(force=True)
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+    print("Validating token:", access_token, "for User-ID:", user_id)
+    if verify_access_token(connection, user_id, access_token):
+        return "Success", 200
+    else:
+        return "User does not have access", 401
+
 
 
 def insert_user(connection) -> Tuple[str, int]:
