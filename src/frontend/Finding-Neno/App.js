@@ -43,7 +43,7 @@ export default function App() {
 	);
 }
 
-async function loadStorage(IP, PORT) {
+async function tryLocalCredentialLogin(IP, PORT) {
 	const userId = await AsyncStorage.getItem("USER_ID");
 	const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
 
@@ -83,7 +83,7 @@ function MainNavigator() {
 		if (FORCE_RELOGIN) {
 			store.dispatch(logout())
 		} else {
-			loadStorage(IP, PORT);
+			tryLocalCredentialLogin(IP, PORT);
 		}
 	}, [IP, PORT])
 
