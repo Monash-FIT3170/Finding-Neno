@@ -12,20 +12,21 @@ sys.path.append(str(package_root_directory))
 from db.users_operations import *
 
 
-def insert_user(conn) -> Tuple[str, int]:
+def insert_user(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("inserting user: ", json_data)
     email = json_data["email"].lower()
     phoneNumber = json_data["phoneNumber"]
     password = json_data["password"]
     name = json_data["name"]
-    insert_user_to_database(conn, email, phoneNumber, name, password)
-    return "", 201
+    insert_user_to_database(connection, email, phoneNumber, name, password)
+    return "Success", 201
 
-def insert_new_sighting(conn) -> Tuple[str, int]:
+def insert_sighting(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("inserting pet sighting: ", json_data)
 
+    user_id = json_data["authorId"]
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
 
@@ -46,14 +47,15 @@ def insert_new_sighting(conn) -> Tuple[str, int]:
     imageUrl = json_data["imageUrl"]
     description = json_data["description"]
 
-    res = insert_new_sighting_to_database(conn, missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, location_latitude, imageUrl, description, user_id, access_token)
 
-    if res is False:
+    result = insert_sighting_to_database(connection, missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, location_latitude, imageUrl, description, user_id, access_token)
+
+    if result is False:
         return "User does not have access", 401
     else:
         return "Success", 201
 
-def insert_missing_report(conn) -> Tuple[str, int]:
+def insert_missing_report(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("inserting report: ", json_data)
     author_id = json_data["authorId"]
@@ -61,6 +63,7 @@ def insert_missing_report(conn) -> Tuple[str, int]:
     pet_id = json_data["missingPetId"]
 
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
     last_seen_input = json_data["lastSeenDateTime"]
     hour, minute, day, month, year = separate_datetime(last_seen_input)
@@ -75,14 +78,14 @@ def insert_missing_report(conn) -> Tuple[str, int]:
 
     description = json_data["description"]
     
-    res = insert_missing_report_to_database(conn, pet_id, author_id, date_time_of_creation, last_seen, location_longitude, location_latitude, description, access_token)
+    result = insert_missing_report_to_database(connection, pet_id, author_id, date_time_of_creation, last_seen, location_longitude, location_latitude, description, user_id, access_token)
 
-    if not res:
+    if result is False:
         return "User does not have access", 401
     else:
         return "Success", 201
 
-def update_missing_report(conn) -> Tuple[str, int]:
+def update_missing_report(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
 
     report_id = json_data["reportId"]
@@ -90,6 +93,7 @@ def update_missing_report(conn) -> Tuple[str, int]:
     author_id = json_data["ownerId"]
 
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
     last_seen_input = json_data["lastSeen"]
     hour, minute, day, month, year = separate_datetime(last_seen_input)
@@ -101,24 +105,24 @@ def update_missing_report(conn) -> Tuple[str, int]:
     description = json_data["description"]
     is_active = json_data["isActive"]
 
-    res = update_missing_report_in_database(conn, report_id, pet_id, author_id, last_seen, location_longitude,
+    result = update_missing_report_in_database(connection, report_id, pet_id, author_id, last_seen, location_longitude,
                                       location_latitude, description, is_active, access_token)
-    if not res:
+    if result is False:
         return "User does not have access", 401
     else:
         return "Success", 201
 
-def archive_missing_report(conn) -> Tuple[str, int]:
+def archive_missing_report(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     report_id = json_data["reportId"]
     is_active = json_data["isActive"]
 
-    user_id = json_data["userId"]
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
-    res = archive_missing_report_in_database(conn, report_id, is_active, user_id, access_token)
+    result = archive_missing_report_in_database(connection, report_id, is_active, user_id, access_token)
 
-    if not res:
+    if result is False:
         return "User does not have access", 401
     else:
         return "Success", 201
@@ -135,40 +139,49 @@ def separate_datetime(datetime: str) -> Tuple[int, int, int, int, int]:
 
     return int(hour), int(minute), int(day), int(month), int(year)
 
-def retrieve_missing_reports(conn, owner_id) -> Tuple[str, int]:
+def retrieve_missing_reports(connection, author_id) -> Tuple[str, int]:
     """
-    This function calls the function that connects to the db to retrieve all missing reports or missing reports of an owner if owner_id is provided.
+    This function calls the function that connectionects to the db to retrieve all missing reports or missing reports of an user if author_id is provided.
     """
-    missing_reports = retrieve_missing_reports_from_database(conn, owner_id)
 
-    if len(missing_reports) > 0:
-        if not missing_reports:
-            return "User does not have access", 401
-        return missing_reports, 200
-    elif len(missing_reports) == 0:
-        return [], 204
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+    print(access_token)
+    print(user_id)
+    missing_reports = retrieve_missing_reports_from_database(connection, author_id, user_id, access_token)
 
-def retrieve_sightings(conn, missing_report_id) -> Tuple[str, int]:
+    if missing_reports is False:
+        return "User does not have access", 401
+    else:
+        if len(missing_reports) > 0:
+            return missing_reports, 200
+        elif len(missing_reports) == 0:
+            return [], 204
+
+def retrieve_sightings(connection, missing_report_id) -> Tuple[str, int]:
     """
-    This function calls the function that connects to the db to retrieve all sightings or sightings for a missing 
+    This function calls the function that connectionects to the db to retrieve all sightings or sightings for a missing 
     report if its missing_report_id is provided.
     """
-    sightings = retrieve_sightings_from_database(conn, missing_report_id)
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+    sightings = retrieve_sightings_from_database(connection, missing_report_id, user_id, access_token)
 
-    if len(sightings) > 0:
-        return sightings, 200
-    elif len(sightings) == 0:
-        return [], 204
+    if sightings is False:
+        return "User does not have access", 401
     else:
-        return "Fail", 400
+        if len(sightings) > 0:
+            return sightings, 200
+        elif len(sightings) == 0:
+            return [], 204
 
-def login(conn) -> Tuple[str, int]:
+def login(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("user login attempt: ", json_data)
     email = json_data["email"].lower()
     password = json_data["password"]
     print(password)
-    user_exists = check_user_exists_in_database(conn, email, password)
+    user_exists = check_user_exists_in_database(connection, email, password)
     if user_exists:
         user_id, access_token = user_exists  # Unpack the tuple
         return "Success", 200, user_id, access_token  # Return user_id and access_token
@@ -176,31 +189,32 @@ def login(conn) -> Tuple[str, int]:
         return "Fail", 401
 
 
-def retrieve_profile(conn, user_id) -> Tuple[str, int, str, str, str]:
+def retrieve_profile(connection, profile_user_id) -> Tuple[str, int, str, str, str]:
 
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
-    user_info = retrieve_user(conn, user_id, access_token)
+    user_id = request.headers["User-ID"]
+    user_info = retrieve_user(connection, profile_user_id, user_id, access_token)
 
+    print(user_info)
     if user_info is not False:
-        email, phone, name = user_info
-        return "Success", 200, name, email, phone  # Return profile information
+        return user_info, 200 # Return profile information
     else:
         return "The user does not have access", 401
 
 
-def change_password(connection) -> Tuple[str, int]:
+def change_password(connection, account_user_id: int) -> Tuple[str, int]:
     """
-    This function receives the user inputs and calls the change_password_in_database function to change password.
+    This function receives the user inputs and calls the change_password_in_database function to change password of the user with ID account_user_id
     """
     json_data = request.get_json(force=True)
-    user_id = json_data["id"]
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
     email = json_data["email"].lower()
     new_password = json_data["password"]
-    res = change_password_in_database(connection = connection, email = email, new_password = new_password, user_id = user_id, access_token = access_token)
+    result = change_password_in_database(connection, email, new_password, account_user_id, user_id, access_token)
 
-    if not res:
+    if result is False:
         return "User does not have access", 401
     else:
         return "", 200

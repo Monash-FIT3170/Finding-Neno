@@ -8,7 +8,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 
-import "./shared";
+import { formatDatetime, petTypeOptions } from "./shared";
 
 const NewPetPage = ({ navigation: { navigate }, route }) => {
 	/**
@@ -50,7 +50,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		let method;
 		// check if this is a new pet or an existing pet
 		if (isExistingPet) {
-			url = `${IP}:${PORT}/update_pet`;
+			url = `${IP}:${PORT}/update_pet/pet_id=`;
 			method = 'PUT';
 		} else {
 			url = `${IP}:${PORT}/insert_pet?owner_id=${USER_ID}`;
@@ -77,6 +77,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 				headers: {
 					'Authorization': `Bearer ${ACCESS_TOKEN}`,
 					'Content-Type': 'application/json',
+					'User-ID': USER_ID
 				},
 				body: JSON.stringify(pet),
 			})
@@ -211,61 +212,8 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
           }
         }
       };
-      
 
-	const handleSubmit = () => {
-		/**
-		 * This function is used to submit the pet information to the backend.
-		 * It will call the POST method '/insert_pet' to create a new pet.
-		 * Or, it will call the PUT method '/update_pet' to update an existing pet.
-		 */
-		let url;
-		let method;
-		// check if this is a new pet or an existing pet
-		if (isExistingPet) {
-			url = `${IP.toString()}:${PORT.toString()}/update_pet`;
-			method = 'PUT';
-		} else {
-			url = `${IP.toString()}:${PORT.toString()}/insert_pet?owner_id=${USER_ID}`;
-			method = 'POST';
-		}
-		// create the pet object
-		const pet = {
-			name: petName,
-			animal: petType,
-			breed: petBreed,
-			description: petDescription,
-			image_url: petImage.toString(),
-			owner_id: USER_ID
-		};
-		// call the backend API
-		fetch(url, {
-			method: method,
-			headers: {
-				'Authorization': `Bearer ${ACCESS_TOKEN}`,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(pet),
-		})
-			.then((res) => {
-				if (res.status == 201) {
-					alert("Inserted pet successfully");
-				}
-				else {
-					alert("Error");
-				}
-			})
-			.catch((error) => alert(error));
-	};
-
-	const isFormValid = () => {
-		/**
-		 * This function is used to check if the form is valid.
-		 * It will check if the pet name, pet image, pet type, and pet description are not empty.
-		 */
-		return petName && petImage && petType && petDescription;
-	}
-
+	  
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
 			<FlatList

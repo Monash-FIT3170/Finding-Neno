@@ -24,7 +24,6 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
     const [selectedDatetime, setSelectedDatetime] = useState(new Date());
     const [showPicker, setShowPicker] = useState(false);
-    const [selectedAnimal, setSelectedAnimal] = useState("dog");
     const [image, setImage] = useState(null);
     const toast = useToast();
 
@@ -165,14 +164,14 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         if (isValid) {
             setFormData({ ...formData, imageUrl: sightingImage.toString(), animal: selectedAnimal });
 
-            const url = `${IP}:${PORT}/insert_new_sighting`;
-            console.log("inserting")
+            const url = `${IP}:${PORT}/insert_sighting`;
+
             await fetch(url, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
                     "Authorization": `Bearer ${ACCESS_TOKEN}`,
-                    "User-ID": USER_ID
+                    'User-ID': USER_ID
                 },
                 body: JSON.stringify(formData),
             })
