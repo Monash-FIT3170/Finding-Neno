@@ -4,11 +4,12 @@ import { View, Image, FlatList } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
+import { ActivityIndicator } from 'react-native';
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 
-import { petTypeOptions } from "./shared";
+import { formatDatetime, petTypeOptions } from "./shared";
 
 const NewPetPage = ({ navigation: { navigate }, route }) => {
 	/**
@@ -28,6 +29,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 	const [buttonText, setButtonText] = useState("Add Pet")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const toast = useToast();
+    const [isUploading, setIsUploading] = useState(false);
 
 	//if the pet name is empty then it is a new pet, otherwise it is an existing pet
 	const isExistingPet = pet.name != '';
@@ -93,14 +95,17 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 						navigate('Profile Page')
 					}
 					else {
+						setButtonText("Add Pet")
+						setIsButtonDisabled(false);
 						alert("Error");
 					}
 				})
-				.catch((error) => alert(error));
+				.catch((error) => {
+					setIsButtonDisabled(false);
+					alert("Error");
+					alert(error);
+				});
 		};
-
-		setButtonText("Add Pet")
-		setIsButtonDisabled(false);
 	}
 
 	const validateDetails = (formData) => {
@@ -129,18 +134,16 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		return Object.keys(foundErrors).length === 0;
 	}
 
-	const uploadImage = (base64Img, setPetImage) => {
+	const uploadImage = async (base64Img, setPetImage) => {
+        setIsButtonDisabled(true);
+        setIsUploading(true);
 		// Uploads an image to Imgur and sets the petImage state to the uploaded image URL
 		const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
-		const LOADING_IMAGE = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWRwMHI0cmlnOGU3Mm4xbzZwcTJwY2Nrb2hlZ3YwNmtleHo4Zm15MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L05HgB2h6qICDs5Sms/giphy.gif";
-
-		// Set loading image while the chosen image is being uploaded
-		setPetImage(LOADING_IMAGE);
 
 		const formData = new FormData();
 		formData.append("image", base64Img);
 
-		fetch("https://api.imgur.com/3/image", {
+		await fetch("https://api.imgur.com/3/image", {
 			method: "POST",
 			headers: {
 				"Authorization": "Client-ID 736cd8c6daf1a6e",
@@ -153,14 +156,26 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 					console.log(`Image successfully uploaded: ${res.data.link}}`);
 					setPetImage(res.data.link);
 				} else {
-					console.log("Image failed to upload - setting default image");
-					setPetImage(DEFAULT_IMAGE);
+                    toast.show({
+                        description: "Image failed to upload. Please try again.",
+                        placement: "top"
+                    })
+                    console.log("Image failed to upload")
+					// console.log("Image failed to upload - setting default image");
+					// setPetImage(DEFAULT_IMAGE);
 				}
 			})
 			.catch(err => {
+                toast.show({
+                    description: "Image failed to upload. Please try again.",
+                    placement: "top"
+                })
 				console.log("Image failed to upload:", err);
-				setPetImage(DEFAULT_IMAGE);
+				// setPetImage(DEFAULT_IMAGE);
 			});
+
+		setIsUploading(false);
+		setIsButtonDisabled(false);
 	}
 
 	const handleChoosePhoto = async () => {
@@ -237,7 +252,10 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 										<FormControl isInvalid={'petImage' in errors}>
                                         	<FormControl.Label>Photo</FormControl.Label>
 											<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-												{petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} />}
+												{
+													isUploading ? <ActivityIndicator /> :
+													petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} alt='pet image' />
+												}
 											</View>
 											<Button variant="ghost" onPress={handleChoosePhoto}>
 												Choose From Library
@@ -246,7 +264,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 												Take Photo
 											</Button>
 
-
+										
 											{'petImage' in errors && <FormControl.ErrorMessage>{errors.petImage}</FormControl.ErrorMessage>}
 										</FormControl>
 

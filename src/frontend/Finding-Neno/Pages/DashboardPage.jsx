@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView } from "native-base";
-import { Dimensions } from 'react-native';
+import { ActivityIndicator, Dimensions } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
@@ -12,6 +12,8 @@ import store from '../store/store';
 import { validDateTime, validateCoordinates } from "./validation"
 import { useSelector, useDispatch } from "react-redux";
 
+import { formatDatetime } from './shared';
+
 const DashboardPage = () => {
 	const { IP, PORT } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
@@ -21,36 +23,26 @@ const DashboardPage = () => {
 	const toast = useToast();
 	const isFocused = useIsFocused();
 
-	// TODO: change report structure to be an array of dictionaries? Refer to mock data that is commented out for desired structure
-	const [reports, setReports] = useState([]);
-	const [modalVisible, setModalVisible] = useState(false);
-	const [sightingDateTime, setSightingDateTime] = useState(new Date());
-	const [sightingData, setSightingData] = useState({ authorId: USER_ID });
-	const [reportSightingBtnDisabled, setReportSightingBtnDisabled] = useState(false);
-	const [sightingFormErrors, setSightingFormErrors] = useState({});
-	const [showPicker, setShowPicker] = useState(false);
-	const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
-	const LOADING_IMAGE = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWRwMHI0cmlnOGU3Mm4xbzZwcTJwY2Nrb2hlZ3YwNmtleHo4Zm15MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L05HgB2h6qICDs5Sms/giphy.gif";
-	const [sightingImage, setSightingImage] = useState(DEFAULT_IMAGE);
-
-	const formatDatetime = (datetime) => {
-		const hours = datetime.getHours().toString().padStart(2, '0');
-		const minutes = datetime.getMinutes().toString().padStart(2, '0');
-		const day = datetime.getDate().toString().padStart(2, '0');
-		const month = (datetime.getMonth() + 1).toString().padStart(2, '0');
-		const year = datetime.getFullYear().toString();
-
-		return `${hours}:${minutes} ${day}/${month}/${year}`
-	}
+  // TODO: change report structure to be an array of dictionaries? Refer to mock data that is commented out for desired structure
+  const [reports, setReports] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [sightingDateTime, setSightingDateTime] = useState(new Date());
+  const [sightingData, setSightingData] = useState({authorId: USER_ID});
+  const [reportSightingBtnDisabled, setReportSightingBtnDisabled] = useState(false);
+  const [sightingFormErrors, setSightingFormErrors] = useState({});
+  const [showPicker, setShowPicker] = useState(false);
+  const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
+  const [sightingImage, setSightingImage] = useState(DEFAULT_IMAGE);
+  const [isUploading, setIsUploading] = useState(false);
 
 	const resetForm = (report) => {
 		// clears the form to default values
 		setSightingData({
 			...sightingData,
-			missing_report_id: report[0],
+			missingReportId: report[0],
 			animal: report[7],
 			breed: report[8],
-			image_url: DEFAULT_IMAGE,
+			imageUrl: DEFAULT_IMAGE,
 			dateTime: formatDatetime(new Date()),
 			dateTimeOfCreation: formatDatetime(new Date()),
 			lastLocation: '',
@@ -97,7 +89,8 @@ const DashboardPage = () => {
 
 	const uploadImage = async (base64Img, setSightingImage) => {
 		// Set loading image while the chosen image is being uploaded
-		setSightingImage(LOADING_IMAGE);
+		setIsUploading(true);
+		setReportSightingBtnDisabled(true);
 
 		const formData = new FormData();
 		formData.append("image", base64Img);
@@ -123,6 +116,9 @@ const DashboardPage = () => {
 				console.log("Image failed to upload:", err);
 				setSightingImage(DEFAULT_IMAGE);
 			});
+
+		setIsUploading(false);
+		setReportSightingBtnDisabled(false);
 	}
 
 	const handleChoosePhoto = async () => {
@@ -209,7 +205,7 @@ const DashboardPage = () => {
 	};
 
   // image_url is not being set properly without this useEffect - should probs find a more robust way to fix it later 
-  useEffect(() => {
+  	useEffect(() => {
 		setSightingData({...sightingData, image_url: sightingImage})
 	}, [sightingImage]);
 
@@ -257,7 +253,10 @@ const DashboardPage = () => {
 					<Modal.Body>
 						<FormControl.Label>Photo</FormControl.Label>
 						<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-							{sightingImage && <Image source={{ uri: sightingImage }} style={{ width: 100, height: 100 }} alt='pet sighting image' />}
+							{
+								isUploading ? <ActivityIndicator /> :
+								sightingImage && <Image source={{ uri: sightingImage }} style={{ width: 100, height: 100 }} alt='pet sighting image' />
+							}
 						</View>
 
 						<Button variant="ghost" onPress={handleChoosePhoto}>
