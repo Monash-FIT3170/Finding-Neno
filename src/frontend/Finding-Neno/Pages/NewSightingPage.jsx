@@ -6,6 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
 import { validDateTime, validateCoordinates } from "./validation"
+import { ActivityIndicator } from 'react-native';
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
@@ -29,17 +30,13 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
     // default form values
     const [formData, setFormData] = useState({
-        authorId: USER_ID,
-        missingReportId: null,
         breed: '',
         imageUrl: '',
         dateTime: formatDatetime(selectedDatetime),
-        dateTimeOfCreation: formatDatetime(new Date()),
         description: ''
     });
     const [sightingImage, setSightingImage] = useState(null);
-
-
+    const [isUploading, setIsUploading] = useState(false);
 
     const handleTakePhoto = async () => {
         /**
@@ -117,13 +114,12 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
 	const uploadImage = async (base64Img, setSightingImage) => {
         setIsButtonDisabled(true);
-        console.log("button disabled")
+        setIsUploading(true);
 		// Uploads an image to Imgur and sets the petImage state to the uploaded image URL
-		const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
-		const LOADING_IMAGE = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWRwMHI0cmlnOGU3Mm4xbzZwcTJwY2Nrb2hlZ3YwNmtleHo4Zm15MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L05HgB2h6qICDs5Sms/giphy.gif";
+		// const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
 
 		// Set loading image while the chosen image is being uploaded
-		setSightingImage(LOADING_IMAGE);
+		// setSightingImage(LOADING_IMAGE);
 
 		const formData = new FormData();
 		formData.append("image", base64Img);
@@ -139,19 +135,28 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 			.then(res => {
 				if (res.success === true) {
 					console.log(`Image successfully uploaded: ${res.data.link}}`);
-					setSightingImage(res.data.link);
-                    console.log("image set")
-                    setIsButtonDisabled(false);
+					setSightingImage(res.data.link.toString());
 				} else {
-					console.log("Image failed to upload - setting default image");
-					setSightingImage(DEFAULT_IMAGE);
+                    toast.show({
+                        description: "Image failed to upload. Please try again.",
+                        placement: "top"
+                    })
+                    console.log("Image failed to upload")
+					// console.log("Image failed to upload - setting default image");
+					// setSightingImage(DEFAULT_IMAGE);
 				}
 			})
 			.catch(err => {
+                toast.show({
+                    description: "Image failed to upload. Please try again.",
+                    placement: "top"
+                })
 				console.log("Image failed to upload:", err);
-				setSightingImage(DEFAULT_IMAGE);
+				// setSightingImage(DEFAULT_IMAGE);
 			});
 
+
+        setIsUploading(false);
         setIsButtonDisabled(false);
 	}
 
@@ -162,7 +167,17 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         let isValid = validateDetails(formData);
 
         if (isValid) {
-            setFormData({ ...formData, imageUrl: sightingImage.toString(), animal: selectedAnimal });
+            const sighting = {
+                authorId: USER_ID,
+                missingReportId: null,
+                animal: formData.animal,
+                breed: formData.breed,
+                imageUrl: sightingImage.toString(),
+                dateTime: formData.dateTime,
+                dateTimeOfCreation: formatDatetime(new Date()),
+                description: formData.description,
+                lastLocation: formData.lastLocation
+            }
 
             const url = `${IP}:${PORT}/insert_sighting`;
 
@@ -173,7 +188,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                     "Authorization": `Bearer ${ACCESS_TOKEN}`,
                     'User-ID': USER_ID
                 },
-                body: JSON.stringify(formData),
+                body: JSON.stringify(sighting),
             })
                 .then((res) => {
                     if (res.status == 201) {
@@ -183,11 +198,17 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                         })
                         navigate('Sightings Page')
                     }
+                    else {
+                        setButtonText("Add sighting");
+                        setIsButtonDisabled(false);
+                    }
                 })
-                .catch((error) => alert(error));
+                .catch((error) => {
+                    setButtonText("Add sighting");
+                    setIsButtonDisabled(false);
+                    alert(error);
+                });
         };
-        setButtonText("Add sighting");
-        setIsButtonDisabled(false);
     }
 
     // Date picker
@@ -221,7 +242,10 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                                     <VStack space={3} mt="5">
                                         <FormControl.Label>Photo</FormControl.Label>
                                         <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                            {sightingImage && <Image source={{ uri: sightingImage }} style={{ width: 200, height: 200 }} alt='pet sighting image' />}
+                                            {
+                                                isUploading ? <ActivityIndicator /> :
+                                                sightingImage && <Image source={{ uri: sightingImage }} style={{ width: 200, height: 200 }} alt='pet sighting image' />
+                                            }
                                         </View>
                                         <Button variant="ghost" onPress={handleChoosePhoto}>
                                             Choose From Library

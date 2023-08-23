@@ -24,7 +24,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 	const [selectedDatetime, setSelectedDatetime] = useState(new Date());
 	const [showPicker, setShowPicker] = useState(false);
-    const toast = useToast();
+	const toast = useToast();
 
 	useEffect(() => {
 		// Simulating asynchronous data fetching
@@ -84,12 +84,17 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 						})
 						navigate('Report Page');
 					}
+					else {
+						setButtonText("Create report")
+						setIsButtonDisabled(false);
+					}
 				})
-				.catch((error) => alert(error));
+				.catch((error) => {
+					setButtonText("Create report")
+					setIsButtonDisabled(false);
+					alert(error)
+				});
 		};
-
-		setButtonText("Create report")
-		setIsButtonDisabled(false);
 	}
 
 	const validateDetails = (formData) => {
