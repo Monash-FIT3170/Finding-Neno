@@ -3,7 +3,7 @@ import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Switch,Image, StyleSheet, View } from 'react-native';
-
+import { TouchableOpacity } from 'react-native';
 import { useSelector } from "react-redux";
 import { Button, Text } from 'react-native';
 import store from "../store/store";
@@ -117,8 +117,10 @@ export default function MapPage() {
 
 			{/* <VStack style={{position:'absolute', bottom:0, right:0, alignItems:'center', margin: 10, padding: 10, borderRadius: }} backgroundColor="grey"> */}
 			<View style={{position: 'absolute', top: 30}} alignItems='center'>
-				<Text> {reports.length} reports in area</Text>
-				<Button style={styles.button} title="Search this area" onPress={onPressSearch}></Button>
+			<Text style={styles.boldText}> {reports.length} reports in area</Text>
+				<TouchableOpacity style={styles.button} onPress={onPressSearch}>
+                    <Text style={styles.buttonText}>Search this area</Text>
+                </TouchableOpacity>
 			</View>
 			{/* </VStack> */}
 			
@@ -138,10 +140,24 @@ const styles = StyleSheet.create({
 	text: {
 		fontSize: 20
 	},
+
+	boldText: {
+        fontWeight: 'bold',
+		fontSize: 20
+    },
+
 	button: {
-		borderRadius: 20,
-		backgroundColor: 'green',
-	},
+        borderRadius: 20,
+        backgroundColor: 'blue',
+        paddingVertical: 10,
+        paddingHorizontal: 20,
+        alignItems: 'center',
+        justifyContent: 'center'
+    },
+    buttonText: {
+        fontWeight: 'bold',
+        color: 'white'
+    },
 	switchContainer: {
         flexDirection: 'column',
         alignItems: 'center',
