@@ -28,7 +28,6 @@ export default function ProfilePage({ navigation: { navigate } }) {
 		owner_id: USER_ID,
 	};
 	dispatch(selectPet(myPet));
-	console.log(store.getState());
 
 	const [pets, setPets] = useState([]);
 	const [user, setUser] = useState([]);
@@ -42,11 +41,13 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
 	const fetchOwnerPets = async () => {
 		try {
-			const url = `${IP}:${PORT}/get_owner_pets/${USER_ID}`;
+			const url = `${IP}:${PORT}/get_owner_pets?owner_id=${USER_ID}`;
 			const response = await fetch(url, {
+				method: "GET",
 				headers: {
-					method: "GET",
-					'Authorization': `Bearer ${ACCESS_TOKEN}`
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${ACCESS_TOKEN}`,
+					'User-ID': USER_ID
 				}
 			});
 
@@ -67,20 +68,25 @@ export default function ProfilePage({ navigation: { navigate } }) {
 	// Retrieve Profile Information
 	const fetchProfileInfo = async () => {
 		try {
-			const url = `${IP}:${PORT}/retrieve_profile/${USER_ID}`;
+			const url = `${IP}:${PORT}/retrieve_profile?user_id=${USER_ID}`;
 			const response = await fetch(url, {
+				method: "GET",
 				headers: {
-					method: "GET",
-					'Authorization': `Bearer ${ACCESS_TOKEN}`
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${ACCESS_TOKEN}`,
+					'User-ID': USER_ID
 				}
 			});
 
+			const result = await response.json();
 			if (!response.ok) {
 				throw new Error('Request failed with status ' + response.status);
 			}
-			const profile_info = await response.json();
-			setUser(profile_info);
-			console.log(user)
+			const profile_info = result[0];
+			const name = profile_info[0];
+			const email_address = profile_info[1];
+			const phone_number = profile_info[2];
+			setUser({name: name, email: email_address, phone: phone_number});
 		} catch (error) {
 			console.log("error in profile page")
 			console.log(error);
@@ -100,7 +106,6 @@ export default function ProfilePage({ navigation: { navigate } }) {
 	//const myPet = {name: 'Fluffy', image_url: 'file:///var/mobile/Containers/Data/Application/0665E6EF-36E6-4CFB-B1A3-CEE4BEE897F3/Library/Caches/ExponentExperienceData/%2540anonymous%252FFinding-Neno-cdca0d8b-37fc-4634-a173-5d0d16008b8f/ImagePicker/C1B3D22E-AB20-4864-A113-3989CCDCC0A8.jpg', animal: 'bird', breed: 'Per', description: 'A fluffy cat', owner_id: 1};
 
 	const petCards = () => {
-		console.log(pets);
 		if (pets.length > 0) {
 			return pets.map((pet, index) => (
 				<PetCard

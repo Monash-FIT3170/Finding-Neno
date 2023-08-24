@@ -4,6 +4,7 @@ import { View, Image, FlatList } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
+import { ActivityIndicator } from 'react-native';
 
 import { useSelector, useDispatch } from "react-redux";
 <<<<<<< HEAD
@@ -56,7 +57,7 @@ export default function NewPetPage() {
 =======
 import store from "../store/store";
 
-import { petTypeOptions } from "./shared";
+import { formatDatetime, petTypeOptions } from "./shared";
 
 const NewPetPage = ({ navigation: { navigate }, route }) => {
 	/**
@@ -76,6 +77,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 	const [buttonText, setButtonText] = useState("Add Pet")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
     const toast = useToast();
+    const [isUploading, setIsUploading] = useState(false);
 
 	//if the pet name is empty then it is a new pet, otherwise it is an existing pet
 	const isExistingPet = pet.name != '';
@@ -98,7 +100,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		let method;
 		// check if this is a new pet or an existing pet
 		if (isExistingPet) {
-			url = `${IP}:${PORT}/update_pet`;
+			url = `${IP}:${PORT}/update_pet/pet_id=`;
 			method = 'PUT';
 		} else {
 			url = `${IP}:${PORT}/insert_pet?owner_id=${USER_ID}`;
@@ -125,6 +127,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 				headers: {
 					'Authorization': `Bearer ${ACCESS_TOKEN}`,
 					'Content-Type': 'application/json',
+					'User-ID': USER_ID
 				},
 				body: JSON.stringify(pet),
 			})
@@ -140,14 +143,17 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 						navigate('Profile Page')
 					}
 					else {
+						setButtonText("Add Pet")
+						setIsButtonDisabled(false);
 						alert("Error");
 					}
 				})
-				.catch((error) => alert(error));
+				.catch((error) => {
+					setIsButtonDisabled(false);
+					alert("Error");
+					alert(error);
+				});
 		};
-
-		setButtonText("Add Pet")
-		setIsButtonDisabled(false);
 	}
 
 	const validateDetails = (formData) => {
@@ -177,18 +183,16 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		return Object.keys(foundErrors).length === 0;
 	}
 
-	const uploadImage = (base64Img, setPetImage) => {
+	const uploadImage = async (base64Img, setPetImage) => {
+        setIsButtonDisabled(true);
+        setIsUploading(true);
 		// Uploads an image to Imgur and sets the petImage state to the uploaded image URL
 		const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
-		const LOADING_IMAGE = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWRwMHI0cmlnOGU3Mm4xbzZwcTJwY2Nrb2hlZ3YwNmtleHo4Zm15MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L05HgB2h6qICDs5Sms/giphy.gif";
-
-		// Set loading image while the chosen image is being uploaded
-		setPetImage(LOADING_IMAGE);
 
 		const formData = new FormData();
 		formData.append("image", base64Img);
 
-		fetch("https://api.imgur.com/3/image", {
+		await fetch("https://api.imgur.com/3/image", {
 			method: "POST",
 			headers: {
 				"Authorization": "Client-ID 736cd8c6daf1a6e",
@@ -201,14 +205,26 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 					console.log(`Image successfully uploaded: ${res.data.link}}`);
 					setPetImage(res.data.link);
 				} else {
-					console.log("Image failed to upload - setting default image");
-					setPetImage(DEFAULT_IMAGE);
+                    toast.show({
+                        description: "Image failed to upload. Please try again.",
+                        placement: "top"
+                    })
+                    console.log("Image failed to upload")
+					// console.log("Image failed to upload - setting default image");
+					// setPetImage(DEFAULT_IMAGE);
 				}
 			})
 			.catch(err => {
+                toast.show({
+                    description: "Image failed to upload. Please try again.",
+                    placement: "top"
+                })
 				console.log("Image failed to upload:", err);
-				setPetImage(DEFAULT_IMAGE);
+				// setPetImage(DEFAULT_IMAGE);
 			});
+
+		setIsUploading(false);
+		setIsButtonDisabled(false);
 	}
 
 	const handleChoosePhoto = async () => {
@@ -260,61 +276,8 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
           }
         }
       };
-      
 
-	const handleSubmit = () => {
-		/**
-		 * This function is used to submit the pet information to the backend.
-		 * It will call the POST method '/insert_pet' to create a new pet.
-		 * Or, it will call the PUT method '/update_pet' to update an existing pet.
-		 */
-		let url;
-		let method;
-		// check if this is a new pet or an existing pet
-		if (isExistingPet) {
-			url = `${IP.toString()}:${PORT.toString()}/update_pet`;
-			method = 'PUT';
-		} else {
-			url = `${IP.toString()}:${PORT.toString()}/insert_pet?owner_id=${USER_ID}`;
-			method = 'POST';
-		}
-		// create the pet object
-		const pet = {
-			name: petName,
-			animal: petType,
-			breed: petBreed,
-			description: petDescription,
-			image_url: petImage.toString(),
-			owner_id: USER_ID
-		};
-		// call the backend API
-		fetch(url, {
-			method: method,
-			headers: {
-				'Authorization': `Bearer ${ACCESS_TOKEN}`,
-				'Content-Type': 'application/json',
-			},
-			body: JSON.stringify(pet),
-		})
-			.then((res) => {
-				if (res.status == 201) {
-					alert("Inserted pet successfully");
-				}
-				else {
-					alert("Error");
-				}
-			})
-			.catch((error) => alert(error));
-	};
-
-	const isFormValid = () => {
-		/**
-		 * This function is used to check if the form is valid.
-		 * It will check if the pet name, pet image, pet type, and pet description are not empty.
-		 */
-		return petName && petImage && petType && petDescription;
-	}
-
+	  
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
 			<FlatList
@@ -338,7 +301,10 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 										<FormControl isInvalid={'petImage' in errors}>
                                         	<FormControl.Label>Photo</FormControl.Label>
 											<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-												{petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} />}
+												{
+													isUploading ? <ActivityIndicator /> :
+													petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} alt='pet image' />
+												}
 											</View>
 											<Button variant="ghost" onPress={handleChoosePhoto}>
 												Choose From Library
@@ -347,7 +313,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 												Take Photo
 											</Button>
 
-
+										
 											{'petImage' in errors && <FormControl.ErrorMessage>{errors.petImage}</FormControl.ErrorMessage>}
 										</FormControl>
 

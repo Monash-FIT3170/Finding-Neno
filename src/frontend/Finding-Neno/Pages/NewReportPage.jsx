@@ -9,6 +9,8 @@ import { validDateTime, validateCoordinates } from "./validation"
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 
+import { formatDatetime } from "./shared"
+
 const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
 
@@ -22,18 +24,20 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 	const [selectedDatetime, setSelectedDatetime] = useState(new Date());
 	const [showPicker, setShowPicker] = useState(false);
-    const toast = useToast();
+	const toast = useToast();
 
 	useEffect(() => {
 		// Simulating asynchronous data fetching
 		// ownerId = 2
 		const fetchOwnerPets = async () => {
 			try {
-				const url = `${IP}:${PORT}/get_owner_pets/${USER_ID}`;
+				const url = `${IP}:${PORT}/get_owner_pets?owner_id=${USER_ID}`;
 				const response = await fetch(url, {
+					method: "GET",
 					headers: {
-						method: "GET",
-						'Authorization': `Bearer ${ACCESS_TOKEN}`
+						"Content-Type": "application/json",
+						'Authorization': `Bearer ${ACCESS_TOKEN}`,
+						'User-ID': USER_ID
 					}
 				});
 
@@ -65,8 +69,9 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			await fetch(url, {
 				method: "POST",
 				headers: {
-				"Content-Type": "application/json",
-				'Authorization': `Bearer ${ACCESS_TOKEN}`,
+					"Content-Type": "application/json",
+					'Authorization': `Bearer ${ACCESS_TOKEN}`,
+					'User-ID': USER_ID
 				},
 				body: JSON.stringify(formData),
 			})
@@ -79,12 +84,17 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 						})
 						navigate('Report Page');
 					}
+					else {
+						setButtonText("Create report")
+						setIsButtonDisabled(false);
+					}
 				})
-				.catch((error) => alert(error));
+				.catch((error) => {
+					setButtonText("Create report")
+					setIsButtonDisabled(false);
+					alert(error)
+				});
 		};
-
-		setButtonText("Create report")
-		setIsButtonDisabled(false);
 	}
 
 	const validateDetails = (formData) => {
@@ -125,16 +135,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 	const closePicker = () => {
 		setShowPicker(false);
-	}
-
-	const formatDatetime = (datetime) => {
-		const hours = datetime.getHours().toString().padStart(2, '0');
-		const minutes = datetime.getMinutes().toString().padStart(2, '0');
-		const day = datetime.getDate().toString().padStart(2, '0');
-		const month = (datetime.getMonth() + 1).toString().padStart(2, '0');
-		const year = datetime.getFullYear().toString();
-
-		return `${hours}:${minutes} ${day}/${month}/${year}`
 	}
 
 	// default form values
