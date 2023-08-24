@@ -182,8 +182,8 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			mapViewRef.current.animateToRegion({
 			  latitude: parseFloat(firstResult.lat),
 			  longitude: parseFloat(firstResult.lon),
-			  latitudeDelta: 0.03,
-			  longitudeDelta: 0.02,
+			  latitudeDelta: 0.09,
+			  longitudeDelta: 0.09,
 			});
 			console.log(firstResult);
 		  } else {
@@ -200,66 +200,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			<Box flex={1} alignItems="center" justifyContent="center">
 				<Center w="100%">
 					<Box safeArea p="2" py="8" w="90%" maxW="290">
-<<<<<<< HEAD
-
-						{isCreated ? (<AlertComponent onClose={closeAlert} />) :
-							(
-								<VStack>
-									<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Create a Report</Heading>
-
-									<VStack space={3} mt="5">
-
-										<FormControl isInvalid={'missingPetId' in errors}>
-											<FormControl.Label>Choose Pet</FormControl.Label>
-											<Select placeholder="Select a pet"
-												selectedValue={formData.missingPetId}
-												onValueChange={(value) => setFormData({ ...formData, missingPetId: value })}>
-												<Select.Item label="Select a pet" value="" disabled hidden />
-												{dropdownOptions.map((option, index) => (
-													<Select.Item key={index} label={option[0]} value={option[1]} />
-												))}
-											</Select>
-											{'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPetId}</FormControl.ErrorMessage>}
-										</FormControl>
-
-										<FormControl>
-											<FormControl.Label>Last Seen</FormControl.Label>
-											<Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
-											<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
-												onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
-										</FormControl>
-
-										<FormControl isInvalid={'lastLocation' in errors}>
-											<FormControl.Label>Last Known Location</FormControl.Label>
-											<Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
-											{'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
-										</FormControl>
-
-										<Button title="Search" onPress={handleSearch} />
-
-
-										<Box padding={3} height={150}>
-										<MapView ref={mapViewRef} provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={mapRegion} showCompass={true} showsIndoors={false}
-										loadingEnabled={true}
-										mapType={Platform.OS == "android" ? "none" : "standard"} onRegionChange={(region) => handleRegionChange(region)} >
-
-										</MapView>
-										</Box>
-
-										<FormControl isInvalid={'description' in errors}>
-											<FormControl.Label>Additional Info</FormControl.Label>
-											<Input onChangeText={value => setFormData({ ...formData, description: value })} />
-											{'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
-										</FormControl>
-
-										<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onCreateReportPress}>
-											{buttonText}
-										</Button>
-
-									</VStack>
-								</VStack>
-							)}
-=======
 						<VStack>
 							<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Create a Report</Heading>
 
@@ -285,11 +225,24 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 										onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 								</FormControl>
 
-								<FormControl isInvalid={'lastLocation' in errors}>
+								<FormControl isInvalid={coordinates === null}>
 									<FormControl.Label>Last Known Location</FormControl.Label>
-									<Input onChangeText={value => setFormData({ ...formData, lastLocation: value })} placeholder="long (-180 to 180), lat (-90 to 90)" />
-									{'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
-								</FormControl>
+									<Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
+									{coordinates === null && <FormControl.ErrorMessage>No coordinates found.</FormControl.ErrorMessage>}
+								</FormControl> 
+
+								<Button title="Search" onPress={handleSearch} />
+
+								<Box height={150}>
+								<MapView
+									ref={mapViewRef}
+									provider={PROVIDER_GOOGLE}
+									style={styles.map}
+									initialRegion={mapRegion}
+								>
+									{coordinates !== null && <Marker coordinate={coordinates} />}
+								</MapView>
+								</Box>
 
 								<FormControl isInvalid={'description' in errors}>
 									<FormControl.Label>Additional Info</FormControl.Label>
@@ -303,7 +256,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 							</VStack>
 						</VStack>
->>>>>>> ui-fix-inconsitencies
 					</Box>
 				</Center>
 			</Box>
