@@ -1,6 +1,8 @@
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Text } from 'react-native';
 import store from "../store/store";
+import { useSelector, useDispatch } from "react-redux";
+import { Dimensions } from 'react-native';
 
 export default function MapPage() {
 	const {IP, PORT} = useSelector((state) => state.api)

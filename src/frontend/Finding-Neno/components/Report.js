@@ -64,19 +64,18 @@ const Report = ({report}) => {
       </Box>
 
       {/* <Box width={windowWidth - 40} height={40} paddingLeft={5} paddingTop={1}  alignItems = "end"> */}
-      <HStack width={windowWidth}  justifyContent = "space-between">
-      <Box width={windowWidth} height={40} paddingLeft={5} paddingTop={1}>
-        <Button width={250} borderBottomLeftRadius={20} borderTopRightRadius={0}  borderBottomRightRadius={0}>
+      <HStack width={350} height={10} justifyContent = "space-between"  paddingLeft={5}>
+
+        <Button width={225} borderBottomLeftRadius={20} borderTopRightRadius={0}  borderBottomRightRadius={0}>
           Report a Sighting
         </Button>
-        </Box>
-        
-        <Box width={windowWidth} height={40} paddingLeft={5} paddingTop={1}>
-        <Button borderTopLeftRadius={0}  borderBottomLeftRadius={0} borderBottomRightRadius={20}>
+
+      
+        <Button width={100} borderBottomLeftRadius={0} borderTopLeftRadius={0}  borderBottomRightRadius={20}>
           Share
         </Button>
-      
-      </Box>
+
+
       </HStack>
       
 
