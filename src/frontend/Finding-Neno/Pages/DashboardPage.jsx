@@ -4,6 +4,7 @@ import { ActivityIndicator, Dimensions } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
+import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 
 import store from '../store/store';

@@ -7,54 +7,6 @@ import * as ImagePicker from 'expo-image-picker';
 import { ActivityIndicator } from 'react-native';
 
 import { useSelector, useDispatch } from "react-redux";
-<<<<<<< HEAD
-import store from '../store/store';
-
-
-export default function NewPetPage() {
-    /**
-     * This page is used to create a new pet or edit an existing pet.
-     * It takes in the pet object as a parameter, if the pet object is empty, it will create a new pet.
-     * Otherwise, it will edit the existing pet, and call the PUT method '/update_pet' to update the pet.
-     * 
-     */
-
-
-    const {IP, PORT} = useSelector((state) => state.api)
-    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
-    const pet = useSelector((state) => state.pet);
-   
-    
-    //if the pet name is empty then it is a new pet, otherwise it is an existing pet
-    const isExistingPet = pet.name != '';
-
-    const [petName, setPetName] = useState(pet ? pet.name : '');
-    const [petImage, setPetImage] = useState(pet ? pet.image_url : null);
-    const [petType, setPetType] = useState(pet ? pet.animal : '');
-    const [petBreed, setPetBreed] = useState(pet ? pet.breed : '');
-    const [petDescription, setPetDescription] = useState(pet ? pet.description : '');
-    const [modalVisible, setModalVisible] = useState(false);
-
-    const handleChoosePhoto = async () => {
-        /**
-         * This function is used to choose a photo from the user's photo library.
-         * It will call the ImagePicker API to open the photo library and allow the user to choose a photo.
-         * It will then set the petImage state to the chosen photo.
-         */
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status === 'granted') {
-          let result = await ImagePicker.launchImageLibraryAsync({
-            mediaTypes: ImagePicker.MediaTypeOptions.Images,
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-          });
-          if (!result.canceled) {
-            setPetImage(result.assets[0].uri);
-          }
-        }
-    };
-=======
 import store from "../store/store";
 
 import { formatDatetime, petTypeOptions } from "./shared";
@@ -175,7 +127,6 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		if (formData.petDescription.length > 500) {
 			foundErrors = { ...foundErrors, petDescription: 'Must not exceed 500 characters' }
 		}
->>>>>>> demo
 
 		setErrors(foundErrors);
 
