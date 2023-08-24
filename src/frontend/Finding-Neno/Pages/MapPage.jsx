@@ -2,7 +2,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { Image, StyleSheet, View } from 'react-native';
+import { Switch,Image, StyleSheet, View } from 'react-native';
 
 import { useSelector } from "react-redux";
 import { Button, Text } from 'react-native';
@@ -21,7 +21,8 @@ export default function MapPage() {
 	// const windowWidth = Dimensions.get('window').width; 
 	// const windowHeight = Dimensions.get('window').height;
 
-	// Image URL for custom marker icon
+	// Image URL for custom marker iconrts
+	const[isReports, setIsReports] = useState(true);
 	const imageURL = '';
 
 	const [reports, setReports] = useState([]);
@@ -32,6 +33,18 @@ export default function MapPage() {
 			fetchAllReports();
 		}
 	}, [isFocused]);
+
+	/*
+	    useEffect(() => {
+        if (isFocused) {
+            fetchData();
+        }
+    }, [isFocused, isReports]);
+	
+	
+	
+	
+	*/ 
 
 
 	// Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
@@ -45,6 +58,14 @@ export default function MapPage() {
 	const onPressSearch = () => {
 		fetchAllReports();
 	}
+
+	/*    const fetchData = async () => {
+        if (isReports) {
+            fetchAllReports();
+        } else {
+            logic to fetch sightings
+        }
+    } */
 
 	// Fetches all reports in map view from DB.
 	const fetchAllReports = async () => {
@@ -83,7 +104,16 @@ export default function MapPage() {
 			</MapView>
 
 
-
+			{/* Switch and label */}
+            <View style={styles.switchContainer}>
+			<Text style={styles.switchLabel}>{isReports ? 'Reports' : 'Sightings'}</Text>
+                <Switch
+                    trackColor={{ false: "#767577", true: "#81b0ff" }}
+                    thumbColor={isReports ? "#f5dd4b" : "#f4f3f4"}
+                    onValueChange={() => setIsReports(prev => !prev)}
+                    value={isReports}
+                />
+            </View>
 
 			{/* <VStack style={{position:'absolute', bottom:0, right:0, alignItems:'center', margin: 10, padding: 10, borderRadius: }} backgroundColor="grey"> */}
 			<View style={{position: 'absolute', top: 30}} alignItems='center'>
@@ -111,5 +141,19 @@ const styles = StyleSheet.create({
 	button: {
 		borderRadius: 20,
 		backgroundColor: 'green',
-	}
+	},
+	switchContainer: {
+        flexDirection: 'column',
+        alignItems: 'center',
+        position: 'absolute',
+        top: 600,  // you can adjust this value
+        left: 145  // and this one too, to place it properly
+    },
+	switchLabel: {
+        fontSize: 24, 
+        fontWeight: 'bold',
+        marginRight: 10
+    }
+
+	
 });
