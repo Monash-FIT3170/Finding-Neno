@@ -119,7 +119,8 @@ const DashboardPage = () => {
     </View>
 
     {/* TABS */}
-        <ToggleButton.Row onValueChange={value => setTabValue(value)} 
+        <ToggleButton.Row onValueChange={value => {
+          value != null ? setTabValue(value) : ''}} 
                         value={tabValue}
                         style={{justifyContent: 'space-between', width: Dimensions.get('window').width}}>
         <ToggleButton icon={()=> <Text>Reports</Text>} 
