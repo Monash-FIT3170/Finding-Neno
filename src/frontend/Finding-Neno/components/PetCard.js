@@ -1,5 +1,5 @@
-import React from 'react';
-import { View } from 'react-native'
+import React, { useState } from 'react'; // Import useState
+import { View, Modal } from 'react-native'
 import { Image, Text, Box, Button } from 'native-base';
 
 const PetCard = ({color, height, pet}) => {
@@ -8,6 +8,27 @@ const PetCard = ({color, height, pet}) => {
   };
 
   
+
+  const [isModalVisible, setIsModalVisible] = useState(false); // Initialize modal state
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible); // Toggle modal visibility
+  };
+
+  // Define the modal content
+// Define the modal content
+const modalContent = (
+  <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+    <Text>Have you reunited with your pet?</Text>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+      <Button onPress={toggleModal}>Yes</Button>
+      <Button onPress={toggleModal}>No</Button>
+    </View>
+  </View>
+);
+
+
+
   // need to fix image appearing on the application correctly
   console.log(pet)
 
@@ -18,30 +39,36 @@ const PetCard = ({color, height, pet}) => {
   const petDescription = pet.description[0].toUpperCase() + pet.description.substring(1);
   const missing = pet.is_missing;
 
+  const handleMissingButtonPress = () => {
+    toggleModal(); // Toggle the modal when "Missing" button is pressed
+  };
+  
+
   const borderRadius = () => {
-    if(missing) {
+    if (missing) {
       return 0;
     } else {
       return 20;
     }
-  }
-
+  };
 
   const displayMissingButton = () => {
-    if(missing) {
-    return (
-      <Button title="Missing"  bg="#FA8072" style={{borderRadius: 0, borderBottomRightRadius: 20 }}>
-        Found Me!
-      </Button>
-    );
-    } else {
+    if (missing) {
       return (
-        <View></View>
+        <Button
+          title="Missing"
+          bg="#454545"
+          style={{ borderRadius: 0, borderBottomRightRadius: 20 }}
+          onPress={handleMissingButtonPress} // Attach the onPress handler
+        >
+          Found Me!
+        </Button>
       );
+    } else {
+      return <View></View>;
     }
-  }
+  };
 
-  
   return (
     <View>
     <View style={{
@@ -74,6 +101,13 @@ const PetCard = ({color, height, pet}) => {
     </View>
     {displayMissingButton()}
     <Box h="8"></Box>
+
+      {/* Custom modal overlay */}
+      {isModalVisible && (
+        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
+          {modalContent}
+        </View>
+      )}
     </View>
   );
 };
