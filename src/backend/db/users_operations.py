@@ -414,7 +414,7 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
 
         query = """SELECT 
                         s.id AS sightings_id, s.date_time, s.location_longitude, s.location_latitude,
-                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
+                        mr.id AS missing_report_id, mr.date_time, mr.description,
                         u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
                     FROM 
                         sightings AS s
@@ -434,7 +434,7 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
 
         query = """SELECT 
                         s.id AS sightings_id, s.date_time, s.location_longitude, s.location_latitude,
-                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
+                        mr.id AS missing_report_id, mr.date_time, mr.description,
                         u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
                     FROM 
                         sightings AS s

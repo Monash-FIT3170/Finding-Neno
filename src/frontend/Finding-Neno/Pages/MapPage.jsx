@@ -28,13 +28,13 @@ export default function MapPage() {
 	const [reports, setReports] = useState([]);
 
 	// Reloads data when map page is opened
-	useEffect(() => {
-		if (isFocused) {
-			fetchAllReports();
-		}
-	}, [isFocused]);
+	// useEffect(() => {
+	// 	if (isFocused) {
+	// 		fetchAllReports();
+	// 	}
+	// }, [isFocused]);
 
-	/*
+
 	    useEffect(() => {
         if (isFocused) {
             fetchData();
@@ -44,7 +44,6 @@ export default function MapPage() {
 	
 	
 	
-	*/ 
 
 
 	// Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
@@ -56,16 +55,27 @@ export default function MapPage() {
 	})
 
 	const onPressSearch = () => {
-		fetchAllReports();
+		fetchData();
 	}
 
-	/*    const fetchData = async () => {
+	    const fetchData = async () => {
         if (isReports) {
             fetchAllReports();
         } else {
-            logic to fetch sightings
+            try {
+			const longitude = mapRegion["longitude"];
+			const longitude_delta = mapRegion["longitudeDelta"];
+			const latitude = mapRegion["latitude"];
+			const latitude_delta = mapRegion["latitudeDelta"];
+
+			const response = await fetch(`${IP.toString()}:${PORT.toString()}/get_sightings_in_area?long=${longitude}&long_delta=${longitude_delta}&lat=${latitude}&lat_delta=${latitude_delta}`);
+			const data = await response.json();
+			setReports(data[0]);
+		} catch (error) {
+			console.error(error);
+		}
         }
-    } */
+    } 
 
 	// Fetches all reports in map view from DB.
 	const fetchAllReports = async () => {
