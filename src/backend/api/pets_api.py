@@ -71,26 +71,19 @@ def update_pet_operation(conn):
         return "", 201
     return ""
 
-def toggle_pet_missing_status(connection: psycopg2.extensions.connection, pet_id: int) -> bool:
-    try:
-        cur = connection.cursor()
+def toggle_missing_status_operation(conn):
+    data = request.get_json()
+    token = request.headers.get('Authorization').split('Bearer ')[1]
 
-        # Retrieve the current isMissing value
-        cur.execute("SELECT isMissing FROM pets WHERE id = %s;", (pet_id,))
-        current_status = cur.fetchone()[0]
-
-        # Toggle the value and update the database
-        new_status = not current_status
-        cur.execute("UPDATE pets SET isMissing = %s WHERE id = %s;", (new_status, pet_id))
-
-        connection.commit()
-        cur.close()
-        return True
-    
-    except Exception as e:
-        print(f"Error toggling status: {e}")
-        connection.rollback()
-        return False
+    success = update_pet_missing_status(
+        connection=conn,
+        pet_id=data["pet_id"],
+        new_status=data["isMissing"],
+        #access_token=token
+    )
+    if success:
+        return "", 200
+    return "", 400
 
 
 def delete_pet_operation(conn, pet_id):

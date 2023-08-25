@@ -16,7 +16,7 @@ const PetCard = ({color, height, pet}) => {
   const petType = pet.animal[0].toUpperCase() + pet.animal.substring(1);
   const petBreed = pet.breed[0].toUpperCase() + pet.breed.substring(1);
   const petDescription = pet.description[0].toUpperCase() + pet.description.substring(1);
-  const missing = pet.is_missing;
+  const [missing, setMissing] = useState(pet.is_missing);
   //const [refresh, setRefresh] = useState(false);
   
   const handleMissingButtonPress = () => {
@@ -29,25 +29,24 @@ const PetCard = ({color, height, pet}) => {
     setIsModalVisible(!isModalVisible); // Toggle modal visibility
   };
 
-  const toggleMissingStatus = async (toggleModal) => {
+  const toggleMissingStatus = async () => {
     try {
         petId = pet.id;
-        const response = await fetch(`${IP}:${PORT}/toggle_missing_status`, {
-            method: 'POST',
+        const response = await fetch(`${IP}:${PORT}/update_missing_status`, {
+            method: 'PUT',
             headers: {
                 Authorization: `Bearer ${ACCESS_TOKEN}`,
                 'User-ID': USER_ID,
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ pet_id: petId }),
+            body: JSON.stringify({ pet_id: petId, isMissing: false }),
         });
 
         if (response.ok) {
+            await fetchMissingReport();
             // Perform any necessary updates on the frontend
             toggleModal();
-            //console.log("Before toggle: " + refresh);
-            //setRefresh(!refresh);
-            //console.log("After toggle: " + refresh);
+            setMissing(!missing);
           } else {
             console.log('Error while toggling status:', response.statusText);
         }
@@ -56,12 +55,66 @@ const PetCard = ({color, height, pet}) => {
     }
 };
 
+const fetchMissingReport = async () => {
+  try {
+    petId = pet.id;
+    const response = await fetch(`${IP}:${PORT}/get_reports_by_pet?pet_id=${pet.id}`, {
+      method: 'GET',
+      headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          'User-ID': USER_ID,
+          'Content-Type': 'application/json',
+      },
+    });
+
+    if (response.ok) {
+      const data = await response.json();
+      report = data[0][0];
+
+      console.log('Response data:', report);
+
+      await updateMissingReport(report);
+    } else {
+      console.log('Error while toggling status:', response.statusText);
+  }
+
+  } catch (error) {
+      console.error('An error occurred:', error);
+  }
+};
+
+const updateMissingReport = async (report) => {
+  report_id = report[0];
+  try {
+    const response = await fetch(`${IP}:${PORT}/update_missing_report`, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${ACCESS_TOKEN}`,
+        'User-ID': USER_ID,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        reportId: report_id,
+        ownerId: USER_ID,
+        isActive: false,
+      }),
+    });
+
+    if (response.ok) {
+      console.log('Report updated successfully');
+    } else {
+      console.log('Error while updating report:', response.statusText);
+    }
+  } catch (error) {
+    console.error('An error occurred:', error);
+  }
+};
 // Define the modal content
 const modalContent = (
   <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
     <Text>Have you reunited with your pet?</Text>
     <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-      <Button onPress={toggleMissingStatus(toggleModal)}>Yes</Button>
+      <Button onPress={toggleMissingStatus}>Yes</Button>
       <Button onPress={toggleModal}>No</Button>
     </View>
   </View>

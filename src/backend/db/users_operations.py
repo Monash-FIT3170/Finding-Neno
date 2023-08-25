@@ -224,8 +224,7 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     cur.close()
     return result
 
-def update_missing_report_in_database(connection: psycopg2.extensions.connection, report_id: int,  pet_id: int, author_id: int,
-                                      last_seen, location_longitude, location_latitude, description, isActive, access_token):
+def update_missing_report_in_database(connection: psycopg2.extensions.connection, report_id: int, author_id: int, isActive, access_token):
     """
     This function is used to update a missing report in the database.
 
@@ -244,8 +243,7 @@ def update_missing_report_in_database(connection: psycopg2.extensions.connection
                 UPDATE 
                     missing_reports 
                 SET 
-                    pet_id = %s, author_id = %s, date_time = %s, location_longitude = %s, 
-                    location_latitude = %s, description = %s, isActive = %s 
+                    isActive = %s 
                 WHERE 
                     id = %s;
                 """

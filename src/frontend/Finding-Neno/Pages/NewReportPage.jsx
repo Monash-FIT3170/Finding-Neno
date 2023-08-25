@@ -61,7 +61,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		setIsButtonDisabled(true);
 		setButtonText("Creating report...");
 
-		let isValid = validateDetails(formData);
+		let isValid = await validateDetails(formData);
 
 		if (isValid) {
 			const url = `${IP}:${PORT}/insert_missing_report`;
@@ -97,6 +97,39 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		};
 	}
 
+	const validateDetails = async (formData) => {
+		// Validates details. If details are valid, send formData object to onCreateReportPress.
+		foundErrors = {};
+
+		if (!formData.missingPetId || formData.missingPetId == "") {
+			foundErrors = { ...foundErrors, missingPetId: 'Please select a pet' }
+		}
+
+		if (!formData.lastLocation || formData.lastLocation == "") {
+			foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
+		} else if (!validateCoordinates(formData.lastLocation)) {
+			foundErrors = { ...foundErrors, lastLocation: 'Location coordinates is invalid e.g. 24.212, -54.122' }
+		}
+
+		if (formData.description.length > 500) {
+			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
+		}
+
+		const exists = await missingReportExists(formData.missingPetId);
+		console.log("does the pet report exists " + exists)
+
+		if(exists){
+			console.log("pet report exists")
+			foundErrors = { ...foundErrors, missingPetId: 'Pet Report already exists' }
+		}
+
+		setErrors(foundErrors);
+
+		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
+		console.log(Object.keys(foundErrors).length === 0)
+		return Object.keys(foundErrors).length === 0;
+	}
+
 	const missingReportExists = async (pet_id) => {
 		try {
 			const petId = pet_id; // Replace with the actual pet ID you want to retrieve reports for
@@ -130,40 +163,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			return false; // Handle error case
 		}
 	};
-	
-
-	const validateDetails = async (formData) => {
-		// Validates details. If details are valid, send formData object to onCreateReportPress.
-		foundErrors = {};
-
-		if (!formData.missingPetId || formData.missingPetId == "") {
-			foundErrors = { ...foundErrors, missingPetId: 'Please select a pet' }
-		}
-
-		if (!formData.lastLocation || formData.lastLocation == "") {
-			foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
-		} else if (!validateCoordinates(formData.lastLocation)) {
-			foundErrors = { ...foundErrors, lastLocation: 'Location coordinates is invalid e.g. 24.212, -54.122' }
-		}
-
-		if (formData.description.length > 500) {
-			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
-		}
-
-		const exists = await missingReportExists(formData.missingPetId);
-		console.log("does the pet report exists " + exists)
-
-		if(exists){
-			console.log("pet report exists")
-			foundErrors = { ...foundErrors, missingPetId: 'Pet Report already exists' }
-			console.log(Object.keys(foundErrors).length)
-		}
-
-		setErrors(foundErrors);
-
-		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
-		return Object.keys(foundErrors).length === 0;
-	}
 
 	var maximumDate;
 	const openPicker = () => {

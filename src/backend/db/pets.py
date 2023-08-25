@@ -196,6 +196,22 @@ def edit_pet(
 
     return True
 
+def update_pet_missing_status(connection: psycopg2.extensions.connection, pet_id: int, new_status: bool) -> bool:
+    try:
+        cur = connection.cursor()
+
+        # Update the missing status in the database
+        cur.execute("UPDATE pets SET isMissing = %s WHERE id = %s;", (new_status, pet_id))
+
+        connection.commit()
+        cur.close()
+        return True
+    
+    except Exception as e:
+        print(f"Error updating status: {e}")
+        connection.rollback()
+        return False
+
 def delete_pet(
     connection: psycopg2.extensions.connection, 
     id: int,
