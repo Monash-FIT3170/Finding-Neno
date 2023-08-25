@@ -50,7 +50,8 @@ def get_all_pets(
         "breed": pet[3], 
         "description": pet[4], 
         "image_url": pet[5], 
-        "owner_id": pet[6]
+        "is_missing": pet[6],
+        "owner_id": pet[7],
     } for pet in pets]
 
     return pets
