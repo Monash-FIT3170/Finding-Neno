@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link } from "native-base";
+import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link, Modal } from "native-base";
 import { Dimensions } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useIsFocused } from '@react-navigation/native';
@@ -9,12 +9,15 @@ import PetCard from "../components/PetCard";
 import { useSelector, useDispatch } from "react-redux";
 import store from '../store/store';
 import { selectPet } from '../store/pet';
+import LogoutButton from './LogoutButton';
+import { logout } from '../store/user';
 
 export default function ProfilePage({ navigation: { navigate } }) {
 	const navigation = useNavigation();
 
 	const { IP, PORT } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+
 
 	const isFocused = useIsFocused();
 	const dispatch = useDispatch();
@@ -27,10 +30,15 @@ export default function ProfilePage({ navigation: { navigate } }) {
 		description: '',
 		owner_id: USER_ID,
 	};
-	dispatch(selectPet(myPet));
+	useEffect(() => {
+		dispatch(selectPet(myPet));
+	}, []);
+
+
 
 	const [pets, setPets] = useState([]);
 	const [user, setUser] = useState([]);
+	const [logoutModalVisible, setLogoutModalVisible] = useState(false);
 
 	useEffect(() => {
 		if (isFocused) {
@@ -86,7 +94,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 			const name = profile_info[0];
 			const email_address = profile_info[1];
 			const phone_number = profile_info[2];
-			setUser({name: name, email: email_address, phone: phone_number});
+			setUser({ name: name, email: email_address, phone: phone_number });
 		} catch (error) {
 			console.log("error in profile page")
 			console.log(error);
@@ -201,6 +209,14 @@ export default function ProfilePage({ navigation: { navigate } }) {
 						</HStack>
 					</Box>
 
+					<Box h="2"></Box>
+
+					<Button onPress={() => setLogoutModalVisible(true)} backgroundColor={"#FA8072"}>
+						Logout
+					</Button>
+
+					<LogoutModal logoutModalVisible={logoutModalVisible} setLogoutModalVisible={setLogoutModalVisible} />
+
 				</VStack>
 
 				<Box height={1} />
@@ -235,8 +251,30 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
 				</VStack>
 
-
 			</Box>
+
+
 		</ScrollView>
 	)
+}
+
+function LogoutModal({ logoutModalVisible, setLogoutModalVisible }) {
+	return <Modal isOpen={logoutModalVisible} onClose={() => setLogoutModalVisible(false)} size={"md"}>
+		<Modal.Content >
+			<Modal.CloseButton />
+			<Modal.Header>Log Out?</Modal.Header>
+			<Modal.Body>
+				<Text>Are you sure you want to log out?</Text>
+			</Modal.Body>
+
+			<Modal.Footer>
+				<Button.Group space={2}>
+					<Button variant="ghost" colorScheme="blueGray" onPress={() => setLogoutModalVisible(false)} >
+						Cancel
+					</Button>
+					<LogoutButton onPress={() => setLogoutModalVisible(false)} />
+				</Button.Group>
+			</Modal.Footer>
+		</Modal.Content>
+	</Modal>
 }

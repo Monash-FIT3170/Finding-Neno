@@ -1,29 +1,17 @@
 import React from 'react';
 import { Button } from 'native-base';
-import { useNavigation } from '@react-navigation/native';
 import store from "../store/store";
+import { logout } from '../store/user';
 
-const LogoutButton = () => {
-  const IP = store.getState().IP;
-  const PORT = store.getState().PORT;
-  const navigation = useNavigation();
-
+const LogoutButton = ({ onPress }) => {
   const handleLogout = () => {
-    // Clear any user authentication data here.
-    // For example, remove any stored access or refresh tokens from storage,
-    // or clear stored account information.
-    // This will log the user out of the application.
-    // Since there is no API to call, we just navigate them back to the login screen for now.
-
-    // Navigate the user back to the Login screen.
-    navigation.reset({
-      index: 0,
-      routes: [{ name: 'LoginPage' }],
-    });
-  };  
+    onPress();
+    // This updates state in App.js so no navigation is needed
+    store.dispatch(logout());
+  };
 
   return (
-    <Button onPress={handleLogout}>
+    <Button onPress={handleLogout} backgroundColor={"#FA8072"}>
       Logout
     </Button>
   );
