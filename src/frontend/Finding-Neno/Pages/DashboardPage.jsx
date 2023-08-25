@@ -35,6 +35,7 @@ const DashboardPage = () => {
 	useEffect(() => {
 		if (isFocused) {
 			fetchAllReports();
+      fetchAllSightings();
 		}
 	}, [isFocused]);
 
