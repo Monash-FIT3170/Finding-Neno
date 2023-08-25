@@ -82,7 +82,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 							description: "Your report has been added!",
 							placement: "top"
 						})
-						navigate('Report Page');
+						navigate('Dashboard Page')
 					}
 					else {
 						setButtonText("Create report")

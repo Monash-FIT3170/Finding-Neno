@@ -39,12 +39,16 @@ const Report = ({report, userId}) => {
       {petName}
       </Heading>
       <Text paddingLeft={5}>
-        last seen {lastSeen}
+        Last seen {lastSeen}
       </Text>
 
       <Heading size = "sm" paddingLeft={5} paddingTop={2}>
         need to add location here
       </Heading>
+
+      <Text paddingLeft={5}>
+        {reportDesc}
+      </Text>
 
       <HStack>
         <VStack>

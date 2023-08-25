@@ -113,7 +113,7 @@ const DashboardPage = () => {
           </Pressable>
         )}>
           <Menu.Item onPress={() => navigation.navigate('Report', { screen: 'New Report Page' })}>Report</Menu.Item>
-          <Menu.Item>Sighting</Menu.Item>
+          <Menu.Item onPress={() => navigation.navigate('Dashboard', { screen: 'New Sighting Page' })}>Sighting</Menu.Item>
         </Menu>
       </View>
     </View>
@@ -130,6 +130,8 @@ const DashboardPage = () => {
                       style={{width: '50%'}}/>
         </ToggleButton.Row>
 
+        {/* TODO: fix this - it is not scrolling all the way */}
+
         <ScrollView style={{backgroundColor: '#EDEDED'}}>
           
           {/* display depending on tabs */}
@@ -145,7 +147,6 @@ const DashboardPage = () => {
               {allSightings && allSightings.map((sighting, index) => (
                   <Sighting userId={USER_ID} sighting={sighting} key={index}/>
               ))}
-          
             </>
           }
 
