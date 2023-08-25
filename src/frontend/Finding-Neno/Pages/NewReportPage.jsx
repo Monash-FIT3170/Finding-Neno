@@ -1,14 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
 import { Box, Center, Heading, VStack, useToast, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-
 import React, { useEffect, useState } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { validDateTime, validateCoordinates } from "./validation"
-
-import { useSelector, useDispatch } from "react-redux";
-import store from "../store/store";
-
+import { validateCoordinates } from "./validation"
+import { useIsFocused, StackActions } from '@react-navigation/native';
+import { useSelector } from "react-redux";
 import { formatDatetime } from "./shared"
 
 const NewReportPage = ({ navigation: { navigate } }) => {
@@ -16,6 +13,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 	const { IP, PORT } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+	const isFocused = useIsFocused();
 
 	const [dropdownOptions, setDropdownOptions] = useState([]);
 	const [errors, setErrors] = useState({});
@@ -27,9 +25,12 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	const toast = useToast();
 
 	useEffect(() => {
-		// Simulating asynchronous data fetching
-		// ownerId = 2
-		const fetchOwnerPets = async () => {
+		if(isFocused) {
+			fetchOwnerPets();
+		}
+	}, [isFocused]);
+
+	const fetchOwnerPets = async () => {
 			try {
 				const url = `${IP}:${PORT}/get_owner_pets?owner_id=${USER_ID}`;
 				const response = await fetch(url, {
@@ -53,9 +54,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 				console.error(error);
 			}
 		}
-
-		fetchOwnerPets();
-	}, []);
 
 	const onCreateReportPress = async () => {
 		setIsButtonDisabled(true);
@@ -82,7 +80,14 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 							description: "Your report has been added!",
 							placement: "top"
 						})
-						navigate('Report Page');
+						
+						// navigation.navigate("DashboardPage");
+
+						// Pop to previous screen
+						navigation.dispatch(StackActions.pop(1));
+
+						// Pop to top of stack
+						// navigation.dispatch(StackActions.popToTop());
 					}
 					else {
 						setButtonText("Create report")
