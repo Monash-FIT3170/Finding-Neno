@@ -97,41 +97,40 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		};
 	}
 
-    const missingReportExists = async (pet_id) => {
-        try {
-            const petId = pet_id; // Replace with the actual pet ID you want to retrieve reports for
-            const response = await fetch(`${IP}:${PORT}/get_reports_by_pet?pet_id=${petId}`, {
-                method: 'GET',
-                headers: {
-                    Authorization: `Bearer ${ACCESS_TOKEN}`,
-                    'User-ID': USER_ID,
-                    'Content-Type': 'application/json',
-                },
-            });
-
-            if (response.ok) {
-                const data = await response.json();
-                console.log('Reports for pet:', data);
-                // You can update your state or perform any other actions with the data
-				if (Array.isArray(data) && data.length > 0) {
-					console.log('Pet Report does exist');
-					// You can update your state or perform actions with the non-empty data
-					return true;
-				} else {
+	const missingReportExists = async (pet_id) => {
+		try {
+			const petId = pet_id; // Replace with the actual pet ID you want to retrieve reports for
+			const response = await fetch(`${IP}:${PORT}/get_reports_by_pet?pet_id=${petId}`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${ACCESS_TOKEN}`,
+					'User-ID': USER_ID,
+					'Content-Type': 'application/json',
+				},
+			});
+	
+			if (response.ok) {
+				const data = await response.json();
+				console.log('Reports for pet:', data);
+	
+				if (data.length === 0) {
 					console.log('Pet Report doesnt exist');
-					// You can update your state or perform actions when data is empty
 					return false;
+				} else {
+					console.log('Pet Report does exist');
+					return true;
 				}
+			} else {
+				console.log('Error while fetching reports:', response.statusText);
+			}
+		} catch (error) {
+			console.error('An error occurred:', error);
+			return false; // Handle error case
+		}
+	};
+	
 
-            } else {
-                console.log('Error while fetching reports:', response.statusText);
-            }
-        } catch (error) {
-            console.error('An error occurred:', error);
-        }
-    };
-
-	const validateDetails = (formData) => {
+	const validateDetails = async (formData) => {
 		// Validates details. If details are valid, send formData object to onCreateReportPress.
 		foundErrors = {};
 
@@ -148,6 +147,10 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		if (formData.description.length > 500) {
 			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
 		}
+
+		const exists = await missingReportExists(formData.missingPetId);
+
+		console.log(exists)
 
 		if(missingReportExists(formData.missingPetId)){
 			foundErrors = { ...foundErrors, missingPetId: 'Pet Report already exists' }

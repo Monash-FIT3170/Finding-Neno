@@ -12,24 +12,24 @@ export default function MapPage() {
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
 
-    const handleTestButtonPress = async () => {
+    const toggleMissingStatus = async () => {
         try {
-            const petId = 1; // Replace with the actual pet ID you want to retrieve reports for
-            const response = await fetch(`${IP}:${PORT}/get_reports_by_pet?pet_id=${petId}`, {
-                method: 'GET',
+            petId = 5;
+            const response = await fetch(`${IP}:${PORT}/toggle_missing_status`, {
+                method: 'POST',
                 headers: {
                     Authorization: `Bearer ${ACCESS_TOKEN}`,
                     'User-ID': USER_ID,
                     'Content-Type': 'application/json',
                 },
+                body: JSON.stringify({ pet_id: petId }),
             });
-
+    
             if (response.ok) {
-                const data = await response.json();
-                console.log('Reports for pet:', data);
-                // You can update your state or perform any other actions with the data
+                console.log('Status toggled successfully');
+                // Perform any necessary updates on the frontend
             } else {
-                console.log('Error while fetching reports:', response.statusText);
+                console.log('Error while toggling status:', response.statusText);
             }
         } catch (error) {
             console.error('An error occurred:', error);
@@ -38,7 +38,7 @@ export default function MapPage() {
 
     return (
     <View>
-    <Button onPress={handleTestButtonPress}>
+    <Button onPress={toggleMissingStatus}>
         TEST BUTTON
 
     </Button>

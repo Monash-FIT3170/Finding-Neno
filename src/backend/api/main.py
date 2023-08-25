@@ -106,6 +106,23 @@ def insert_pet():
 def update_pet_api():
     return update_pet_operation(get_connection())
 
+@app.route("/toggle_missing_status", methods=["POST"])
+def toggle_missing_status():
+    try:
+        pet_id = request.json.get("pet_id")
+        
+        # Toggle the isMissing value in the database
+        success = toggle_pet_missing_status(get_connection(), pet_id)
+        
+        if success:
+            return "Status toggled successfully", 200
+        else:
+            return "Failed to toggle status", 400
+    
+    except Exception as e:
+        return str(e), 500
+
+
 @app.route("/delete_pet", methods=["DELETE"]) # Requires Access_token and user ID for authorization
 def delete_pet_api():
     pet_id = request.args.get("pet_id")

@@ -1,3 +1,4 @@
+from pets_api import toggle_pet_missing_status
 import flask
 from flask import request, jsonify
 from pathlib import Path
@@ -96,6 +97,7 @@ def insert_missing_report(connection) -> Tuple[str, int]:
     if result is False:
         return "User does not have access", 401
     else:
+        toggle_pet_missing_status(connection, pet_id)
         return "Success", 201
 
 def update_missing_report(connection) -> Tuple[str, int]:
@@ -185,10 +187,8 @@ def retrieve_reports_by_pet(connection, pet_id) -> Tuple[str, int]:
     if reports is False:
         return "User does not have access", 401
     else:
-        if len(reports) > 0:
-            return reports, 200
-        else:
-            return [], 204
+        return reports, 200
+
 
 def retrieve_sightings(connection, missing_report_id) -> Tuple[str, int]:
     """
