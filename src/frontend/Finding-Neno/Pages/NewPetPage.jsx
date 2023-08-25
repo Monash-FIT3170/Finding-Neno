@@ -70,8 +70,11 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 				breed: formData.petBreed,
 				description: formData.petDescription,
 				image_url: petImage.toString(),
+				is_missing: false,
 				owner_id: USER_ID
 			};
+			
+			console.log(pet)
 
 			// call the backend API
 			fetch(url, {
