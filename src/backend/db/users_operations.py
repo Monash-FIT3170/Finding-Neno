@@ -321,24 +321,42 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
 
     cur = connection.cursor()
 
-    if owner_id == None:
-        query = """SELECT mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, 
-                    p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
-                    u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
-                    FROM missing_reports AS mr
-                    JOIN pets AS p ON mr.pet_id = p.id
-                    JOIN users AS u ON mr.author_id = u.id
-                    ORDER BY mr.date_time DESC;"""
+    if author_id == None:
+        query = """
+                    SELECT 
+                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, 
+                        p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
+                        u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+                    FROM 
+                        missing_reports AS mr
+                    JOIN 
+                        pets AS p ON mr.pet_id = p.id
+                    JOIN 
+                        users AS u ON mr.author_id = u.id
+                    ORDER BY 
+                        mr.date_time DESC;
+                """
 
     else:
-        query = """SELECT mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
-                    p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
-                    u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
-                    FROM missing_reports AS mr
-                    JOIN pets AS p ON mr.pet_id = p.id
-                    JOIN users AS u ON mr.author_id = u.id
-                    WHERE u.id = %s
-                    ORDER BY mr.date_time DESC;"""
+        query = """
+                    SELECT 
+                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
+                        p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
+                        u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+                    FROM 
+                        missing_reports AS mr
+                    JOIN 
+                        pets AS p ON mr.pet_id = p.id
+                    JOIN 
+                        users AS u ON mr.author_id = u.id
+                    WHERE 
+                        u.id = %s
+                    ORDER BY 
+                        mr.date_time DESC;
+                """
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
 
     try:
         if author_id == None:

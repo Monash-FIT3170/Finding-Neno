@@ -420,6 +420,7 @@ const DashboardPage = () => {
 				</View>
 			))}
 		</ScrollView>
+    </View>
 	);
 }
 
