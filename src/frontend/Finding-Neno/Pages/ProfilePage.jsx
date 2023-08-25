@@ -9,7 +9,7 @@ import PetCard from "../components/PetCard";
 import { useSelector, useDispatch } from "react-redux";
 import store from '../store/store';
 import { selectPet } from '../store/pet';
-import LogoutButton from './LogoutButton';
+import LogoutButton from '../components/LogoutButton';
 import { logout } from '../store/user';
 
 export default function ProfilePage({ navigation: { navigate } }) {
