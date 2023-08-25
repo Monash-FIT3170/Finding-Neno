@@ -182,8 +182,8 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			mapViewRef.current.animateToRegion({
 			  latitude: parseFloat(firstResult.lat),
 			  longitude: parseFloat(firstResult.lon),
-			  latitudeDelta: 0.09,
-			  longitudeDelta: 0.09,
+			  latitudeDelta: 0.03,
+			  longitudeDelta: 0.05,
 			});
 			console.log(firstResult);
 		  } else {
@@ -228,10 +228,10 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 								<FormControl isInvalid={coordinates === null}>
 									<FormControl.Label>Last Known Location</FormControl.Label>
 									<Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
-									{coordinates === null && <FormControl.ErrorMessage>No coordinates found.</FormControl.ErrorMessage>}
+									{coordinates === null && <FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
 								</FormControl> 
 
-								<Button title="Search" onPress={handleSearch} />
+								<Button title="Search" onPress={handleSearch}>Search</Button>
 
 								<Box height={150}>
 								<MapView
