@@ -112,8 +112,10 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			if (response.ok) {
 				const data = await response.json();
 				console.log('Reports for pet:', data);
+
+				outcome = data[0]
 	
-				if (data.length === 0) {
+				if (outcome === null) {
 					console.log('Pet Report doesnt exist');
 					return false;
 				} else {
@@ -148,15 +150,16 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
 		}
 
-		const exists = await missingReportExists(missingPetId);
+		const exists = await missingReportExists(formData.missingPetId);
+		console.log("does the pet report exists " + exists)
 
 		if(exists){
+			console.log("pet report exists")
 			foundErrors = { ...foundErrors, missingPetId: 'Pet Report already exists' }
+			console.log(Object.keys(foundErrors).length)
 		}
 
 		setErrors(foundErrors);
-
-
 
 		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
 		return Object.keys(foundErrors).length === 0;
