@@ -130,6 +130,16 @@ def get_missing_reports():
     author_id = request.args.get("author_id")
     return jsonify(retrieve_missing_reports(get_connection(), author_id))
 
+@app.route("/get_reports_by_pet", methods=["GET"])
+def get_reports_by_pet():
+    """
+    Returns an array of missing reports for a specific pet_id, sorted by latest to oldest.
+    """
+    pet_id = request.args.get("pet_id")
+    return jsonify(retrieve_reports_by_pet(get_connection(), pet_id))  # Updated function name
+
+
+
 @app.route("/get_sightings", methods=["GET"])
 def get_sightings():
     """

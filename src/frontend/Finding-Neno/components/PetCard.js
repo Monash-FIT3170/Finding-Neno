@@ -10,10 +10,10 @@ const PetCard = ({color, height, pet}) => {
   
   // need to fix image appearing on the application correctly
   const petImage = pet.image_url;
-  const petName = pet.name;
-  const petType = pet.animal;
-  const petBreed = pet.breed;
-  const petDescription = pet.description;
+  const petName = pet.name[0].toUpperCase() + pet.name.substring(1);
+  const petType = pet.animal[0].toUpperCase() + pet.animal.substring(1);
+  const petBreed = pet.breed[0].toUpperCase() + pet.breed.substring(1);
+  const petDescription = pet.description[0].toUpperCase() + pet.description.substring(1);
 
   
   return (
@@ -32,11 +32,11 @@ const PetCard = ({color, height, pet}) => {
         <View style={{flex: 1, marginLeft: '5%', padding: '2%'}}>
           <Text style={{ fontSize: 30, paddingBottom: 10, paddingTop: 10 }}>{petName}</Text>
           <View style={{flexDirection: 'row', alignItems: 'center', paddingBottom: 10}}>
-            <View style={{flexDirection: 'column', alignItems: 'center'}}>
+            <View style={{flexDirection: 'column'}}>
               <Text style={{ fontSize: 12, color: "#F2F2F7" }}>Species:</Text>
               <Text style={{ fontSize: 20, textTransform: 'capitalize' }}>{petType}</Text>
             </View>
-            <View style={{flexDirection: 'column', alignItems: 'center', marginLeft: '15%'}}>
+            <View style={{flexDirection: 'column', marginLeft: '15%'}}>
               <Text style={{ fontSize: 12, color: "#F2F2F7" }}>Breed:</Text>
               <Text style={{ fontSize: 20 }}>{petBreed}</Text>
             </View>
