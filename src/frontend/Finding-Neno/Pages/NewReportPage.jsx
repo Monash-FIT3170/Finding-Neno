@@ -148,11 +148,9 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
 		}
 
-		const exists = await missingReportExists(formData.missingPetId);
+		const exists = await missingReportExists(missingPetId);
 
-		console.log(exists)
-
-		if(missingReportExists(formData.missingPetId)){
+		if(exists){
 			foundErrors = { ...foundErrors, missingPetId: 'Pet Report already exists' }
 		}
 
