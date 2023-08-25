@@ -400,7 +400,7 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
                         u.name, u.email_address, u.phone_number
                     FROM
                         sightings AS s
-                    JOIN
+                    LEFT JOIN
                         missing_reports AS mr ON s.missing_report_id = mr.id
                     JOIN
                         users AS u ON s.author_id = u.id
