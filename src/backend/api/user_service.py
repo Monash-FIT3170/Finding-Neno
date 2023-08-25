@@ -9,7 +9,7 @@ file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
 sys.path.append(str(package_root_directory))
 
-from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_from_database, retrieve_missing_reports_in_area_from_database, change_password_in_database, check_user_exists_in_database, update_missing_report_in_database, archive_missing_report_in_database, retrieve_user
+from db.users_operations import insert_user_to_database, insert_missing_report_to_database, retrieve_missing_reports_from_database, retrieve_missing_reports_in_area_from_database, change_password_in_database, check_user_exists_in_database, update_missing_report_in_database, archive_missing_report_in_database, retrieve_user,retrieve_sightings_in_area_from_database
 
 def insert_user(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
@@ -107,6 +107,23 @@ def retrieve_missing_reports_in_area(conn, longitude, longitude_delta, latitude,
         return [], 204
     else:
         return "Fail", 400
+    
+
+def retrieve_sightings_in_area(conn, longitude, longitude_delta, latitude, latitude_delta) -> Tuple[str, int]:
+    """
+    This function calls the function that connects to the db to retrieve sightings in an area of width longitude_delta, height
+    latitude_delta and centre latitude longitude.
+    """
+    sightings = retrieve_sightings_in_area_from_database(conn, longitude, longitude_delta, latitude, latitude_delta)
+
+    if len(sightings) > 0:
+        return sightings, 200
+    elif len(sightings) == 0:
+        return [], 204
+    else:
+        return "Fail", 400
+    
+    
 
 def login(conn) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
