@@ -1,36 +1,15 @@
-import React, { useState } from 'react'; // Import useState
+import React, { useState, useEffect } from 'react'; // Import useState
 import { View, Modal } from 'react-native'
 import { Image, Text, Box, Button } from 'native-base';
+import store from "../store/store";
+import { useSelector, useDispatch } from "react-redux";
 
 const PetCard = ({color, height, pet}) => {
+  const {IP, PORT} = useSelector((state) => state.api)
+  const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
   const Color = {
     NENO_BLUE: 'blue' 
   };
-
-  
-
-  const [isModalVisible, setIsModalVisible] = useState(false); // Initialize modal state
-
-  const toggleModal = () => {
-    setIsModalVisible(!isModalVisible); // Toggle modal visibility
-  };
-
-  // Define the modal content
-// Define the modal content
-const modalContent = (
-  <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-    <Text>Have you reunited with your pet?</Text>
-    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-      <Button onPress={toggleModal}>Yes</Button>
-      <Button onPress={toggleModal}>No</Button>
-    </View>
-  </View>
-);
-
-
-
-  // need to fix image appearing on the application correctly
-  console.log(pet)
 
   const petImage = pet.image_url;
   const petName = pet.name[0].toUpperCase() + pet.name.substring(1);
@@ -38,11 +17,55 @@ const modalContent = (
   const petBreed = pet.breed[0].toUpperCase() + pet.breed.substring(1);
   const petDescription = pet.description[0].toUpperCase() + pet.description.substring(1);
   const missing = pet.is_missing;
-
+  //const [refresh, setRefresh] = useState(false);
+  
   const handleMissingButtonPress = () => {
     toggleModal(); // Toggle the modal when "Missing" button is pressed
   };
   
+  const [isModalVisible, setIsModalVisible] = useState(false); // Initialize modal state
+
+  const toggleModal = () => {
+    setIsModalVisible(!isModalVisible); // Toggle modal visibility
+  };
+
+  const toggleMissingStatus = async (toggleModal) => {
+    try {
+        petId = pet.id;
+        const response = await fetch(`${IP}:${PORT}/toggle_missing_status`, {
+            method: 'POST',
+            headers: {
+                Authorization: `Bearer ${ACCESS_TOKEN}`,
+                'User-ID': USER_ID,
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ pet_id: petId }),
+        });
+
+        if (response.ok) {
+            // Perform any necessary updates on the frontend
+            toggleModal();
+            //console.log("Before toggle: " + refresh);
+            //setRefresh(!refresh);
+            //console.log("After toggle: " + refresh);
+          } else {
+            console.log('Error while toggling status:', response.statusText);
+        }
+    } catch (error) {
+        console.error('An error occurred:', error);
+    }
+};
+
+// Define the modal content
+const modalContent = (
+  <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
+    <Text>Have you reunited with your pet?</Text>
+    <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
+      <Button onPress={toggleMissingStatus(toggleModal)}>Yes</Button>
+      <Button onPress={toggleModal}>No</Button>
+    </View>
+  </View>
+);
 
   const borderRadius = () => {
     if (missing) {

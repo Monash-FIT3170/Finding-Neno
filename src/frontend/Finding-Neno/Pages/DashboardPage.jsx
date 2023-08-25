@@ -89,6 +89,8 @@ const DashboardPage = () => {
               {reports && reports.map((report, index) => (
                 <Report userId={USER_ID} report={report} key={index}/>
             ))}
+
+		<Box h={250}></Box>
         </ScrollView>
         </View>
     );
