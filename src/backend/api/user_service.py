@@ -188,12 +188,12 @@ def retrieve_sightings(connection, missing_report_id) -> Tuple[str, int]:
         elif len(sightings) == 0:
             return [], 204
     
-def retrieve_missing_reports_in_area(conn, longitude, longitude_delta, latitude, latitude_delta) -> Tuple[str, int]:
+def retrieve_missing_reports_in_area(connection, longitude, longitude_delta, latitude, latitude_delta) -> Tuple[str, int]:
     """
     This function calls the function that connects to the db to retrieve missing reports in an area of width longitude_delta, height
     latitude_delta and centre latitude longitude.
     """
-    missing_reports = retrieve_missing_reports_in_area_from_database(conn, longitude, longitude_delta, latitude, latitude_delta)
+    missing_reports = retrieve_missing_reports_in_area_from_database(connection, longitude, longitude_delta, latitude, latitude_delta)
     
     if missing_reports is False:
         return "User does not have access", 401
@@ -204,12 +204,12 @@ def retrieve_missing_reports_in_area(conn, longitude, longitude_delta, latitude,
             return [], 204
     
 
-def retrieve_sightings_in_area(conn, longitude, longitude_delta, latitude, latitude_delta) -> Tuple[str, int]:
+def retrieve_sightings_in_area(connection, longitude, longitude_delta, latitude, latitude_delta) -> Tuple[str, int]:
     """
     This function calls the function that connects to the db to retrieve sightings in an area of width longitude_delta, height
     latitude_delta and centre latitude longitude.
     """
-    sightings = retrieve_sightings_in_area_from_database(conn, longitude, longitude_delta, latitude, latitude_delta)
+    sightings = retrieve_sightings_in_area_from_database(connection, longitude, longitude_delta, latitude, latitude_delta)
 
     if sightings is False:
         return "User does not have access", 401
@@ -221,7 +221,7 @@ def retrieve_sightings_in_area(conn, longitude, longitude_delta, latitude, latit
     
     
 
-def login(conn) -> Tuple[str, int]:
+def login(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("user login attempt: ", json_data)
     email = json_data["email"].lower()

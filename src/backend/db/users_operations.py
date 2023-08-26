@@ -565,12 +565,11 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
         longitude_max_section_one = 250
 
     if longitude_min_section_two == None and longitude_max_section_two == None:
-        print("ONE SECTION")
+        print("ONE SECTION SIGHTINGS")
         print(f"{longitude_min_section_one} - {longitude} - {longitude_max_section_one}  d = {longitude_delta}")
         print(f"{latitude_min} - {latitude} - {latitude_max}  d = {latitude_delta}")
-
         query = """SELECT 
-                        s.id AS sightings_id, s.date_time, s.location_longitude, s.location_latitude,
+                        s.id AS sightings_id, s.date_time, s.location_longitude, s.location_latitude, s.description, s.animal, s.breed, s.image_url,
                         mr.id AS missing_report_id, mr.date_time, mr.description,
                         u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
                     FROM 
@@ -585,13 +584,13 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
                     ORDER BY 
                         s.date_time DESC;"""
     else:
-        print("TWO SECTIONS")
+        print("TWO SECTIONS SIGHTINGS")
         print(f"{longitude_min_section_one} - {longitude} - {longitude_max_section_one}  d = {longitude_delta}")
         print(f"{longitude_min_section_two} - {longitude_max_section_two}  d = {longitude_delta}")
         print(f"{latitude_min} - {latitude} - {latitude_max}  d = {latitude_delta}")
 
         query = """SELECT 
-                        s.id AS sightings_id, s.date_time, s.location_longitude, s.location_latitude,
+                        s.id AS sightings_id, s.date_time, s.location_longitude, s.location_latitude, s.description, s.animal, s.breed, s.image_url,
                         mr.id AS missing_report_id, mr.date_time, mr.description,
                         u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
                     FROM 
@@ -621,6 +620,8 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
         sightings = cur.fetchall()
 
         print(f"Sightings in area successfully retrieved")
+
+        print(f"{len(sightings)} retrieved")
 
         result = sightings
     except Exception as e:
