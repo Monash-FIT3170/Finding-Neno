@@ -162,6 +162,10 @@ def get_sightings():
 def put_update_missing_report():
     return update_missing_report(get_connection())
 
+@app.route("/update_report_active_status", methods=["PUT"])  # Use PUT method for updating
+def update_report_status_api():
+    return update_report_status(get_connection())
+
 @app.route("/archive_missing_report", methods=["PUT"]) # Requires Access_token and user ID for authorization
 def put_archive_missing_report():
     return archive_missing_report(get_connection())

@@ -104,27 +104,41 @@ def update_missing_report(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
 
     report_id = json_data["reportId"]
-    #pet_id = json_data["missingPetId"]
+    pet_id = json_data["missingPetId"]
     author_id = json_data["ownerId"]
 
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
 
-    #last_seen_input = json_data["lastSeen"]
-    #hour, minute, day, month, year = separate_datetime(last_seen_input)
-    #last_seen = datetime.datetime(year, month, day, hour, minute)
+    last_seen_input = json_data["lastSeen"]
+    hour, minute, day, month, year = separate_datetime(last_seen_input)
+    last_seen = datetime.datetime(year, month, day, hour, minute)
 
-    #coordinates = json_data["lastLocation"]
-    #location_longitude, location_latitude = coordinates.split(",")
+    coordinates = json_data["lastLocation"]
+    location_longitude, location_latitude = coordinates.split(",")
 
-    #description = json_data["description"]
+    description = json_data["description"]
     is_active = json_data["isActive"]
 
-    result = update_missing_report_in_database(connection, report_id, is_active, access_token)
+    result = update_missing_report_in_database(connection, report_id, pet_id, author_id, last_seen, location_longitude,
+                                      location_latitude, description, is_active, access_token)
     if result is False:
         return "User does not have access", 401
     else:
         return "Success", 201
+    
+def update_report_status(conn):
+    data = request.get_json()
+    token = request.headers.get('Authorization').split('Bearer ')[1]
+
+    success = update_report_active_status(
+        connection=conn,
+        report_id=data["report_id"],
+        new_status=data["isActive"],
+    )
+    if success:
+        return "", 200
+    return "", 400
 
 def archive_missing_report(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)

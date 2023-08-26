@@ -224,7 +224,8 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     cur.close()
     return result
 
-def update_missing_report_in_database(connection: psycopg2.extensions.connection, report_id: int, author_id: int, isActive, access_token):
+def update_missing_report_in_database(connection: psycopg2.extensions.connection, report_id: int,  pet_id: int, author_id: int,
+                                      last_seen, location_longitude, location_latitude, description, isActive, access_token):
     """
     This function is used to update a missing report in the database.
 
@@ -243,7 +244,8 @@ def update_missing_report_in_database(connection: psycopg2.extensions.connection
                 UPDATE 
                     missing_reports 
                 SET 
-                    isActive = %s 
+                    pet_id = %s, author_id = %s, date_time = %s, location_longitude = %s, 
+                    location_latitude = %s, description = %s, isActive = %s 
                 WHERE 
                     id = %s;
                 """
@@ -266,6 +268,22 @@ def update_missing_report_in_database(connection: psycopg2.extensions.connection
     # Close the cursor
     cur.close()
     return result
+
+def update_report_active_status(connection: psycopg2.extensions.connection, report_id: int, new_status: bool) -> bool:
+    try:
+        cur = connection.cursor()
+
+        # Update the missing status in the database
+        cur.execute("UPDATE missing_reports SET isActive = %s WHERE id = %s;", (new_status, report_id))
+
+        connection.commit()
+        cur.close()
+        return True
+    
+    except Exception as e:
+        print(f"Error updating status: {e}")
+        connection.rollback()
+        return False
 
 
 def archive_missing_report_in_database(connection: psycopg2.extensions.connection, reportId, isActive, user_id, access_token):

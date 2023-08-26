@@ -86,7 +86,7 @@ const fetchMissingReport = async () => {
 const updateMissingReport = async (report) => {
   report_id = report[0];
   try {
-    const response = await fetch(`${IP}:${PORT}/update_missing_report`, {
+    const response = await fetch(`${IP}:${PORT}/update_report_active_status`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${ACCESS_TOKEN}`,
@@ -94,11 +94,12 @@ const updateMissingReport = async (report) => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        reportId: report_id,
-        ownerId: USER_ID,
+        report_id: report_id,
         isActive: false,
       }),
     });
+
+    console.log(response.status)
 
     if (response.ok) {
       console.log('Report updated successfully');
