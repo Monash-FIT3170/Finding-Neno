@@ -106,34 +106,38 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
 	const validateDetails = (formData) => {
 		// Validates details. If details are valid, send formData object to onAddPetPress.
-		foundErrors = {};
-
-		if (!formData.petName || formData.petName == "") {
-			foundErrors = { ...foundErrors, petName: 'Pet name is required' }
+		const foundErrors = {};
+	  
+		if (!formData.petName || formData.petName === "") {
+		  foundErrors.petName = "Pet name is required";
+		} else if (formData.petName.length > 25) {
+			foundErrors.petName = "Must not exceed 25 characters";
 		}
-
-		if (!formData.petType || formData.petType == "") {
-			foundErrors = { ...foundErrors, petType: 'Please select a pet type' }
+	  
+		if (!formData.petType || formData.petType === "") {
+		  foundErrors.petType = "Please select a pet type";
 		}
-
-		if (!formData.petBreed || formData.petBreed == "") {
-			foundErrors = { ...foundErrors, petBreed: 'Pet breed is required' }
+	  
+		if (!formData.petBreed || formData.petBreed === "") {
+		  foundErrors.petBreed = "Pet breed is required";
+		} else if (formData.petBreed.length > 25) {
+			foundErrors.petBreed = "Must not exceed 25 characters";
 		}
-
-		if (formData.petDescription.length > 500) {
-			foundErrors = { ...foundErrors, petDescription: 'Must not exceed 500 characters' }
+	  
+		if (formData.petDescription.length > 100) {
+		  foundErrors.petDescription = "Must not exceed 100 characters";
 		}
-
-		// check that image is not the LOADING_IMAGE and not empty
-		if (petImage == LOADING_IMAGE || !petImage) {
-			foundErrors = { ...foundErrors, petImage: 'Please make sure a photo has been loaded' }
+	  
+		// Check that image is not the LOADING_IMAGE and not empty
+		if (petImage === LOADING_IMAGE || !petImage) {
+		  foundErrors.petImage = "Please make sure a photo has been loaded";
 		}
-
+	  
 		setErrors(foundErrors);
-
-		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
+	  
+		// Return true if no errors (foundErrors is empty), false if errors found
 		return Object.keys(foundErrors).length === 0;
-	}
+	};
 
 	const uploadImage = (base64Img, setPetImage) => {
 		// Uploads an image to Imgur and sets the petImage state to the uploaded image URL
@@ -329,8 +333,13 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
 										<FormControl isInvalid={'petDescription' in errors}>
 											<FormControl.Label>Pet Description</FormControl.Label>
-											<Input onChangeText={value => setFormData({ ...formData, petDescription: value })} placeholder="Please describe more about your pet"/>
-											{'petDescription' in errors && <FormControl.ErrorMessage>{errors.petDescription}</FormControl.ErrorMessage>}
+											<Input
+												onChangeText={(value) => setFormData({ ...formData, petDescription: value })}
+												placeholder="Please describe more about your pet"
+											/>
+											{'petDescription' in errors && (
+												<FormControl.ErrorMessage>{errors.petDescription}</FormControl.ErrorMessage>
+											)}
 										</FormControl>
 
 										<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onAddPetPress}>
