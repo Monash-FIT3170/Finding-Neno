@@ -349,6 +349,8 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
                         pets AS p ON mr.pet_id = p.id
                     JOIN 
                         users AS u ON mr.author_id = u.id
+                    WHERE
+                        mr.isActive = true -- Condition to filter out only active missing reports
                     ORDER BY 
                         mr.date_time DESC;
                 """
