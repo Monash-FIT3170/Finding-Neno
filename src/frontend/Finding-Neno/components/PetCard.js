@@ -1,29 +1,33 @@
-import React from 'react';
+import React from "react";
 import { View } from 'react-native'
 import { Image, Text, Box } from 'native-base';
 
-const PetCard = ({color, height, pet}) => {
+const PetCard = ({color, pet}) => {
   const Color = {
     NENO_BLUE: 'blue' 
   };
 
-  
-  // need to fix image appearing on the application correctly
   const petImage = pet.image_url;
   const petName = pet.name;
   const petType = pet.animal;
   const petBreed = pet.breed;
-  const petDescription = pet.description;
-
+  const petDescription = pet.description.length > 50
+    ? pet.description.substring(0, 50) + '...'
+    : pet.description;
   
+  const descriptionHeight = pet.description.length > 50
+    ? petDescription.length * 0.5
+    : 0;
+
   return (
+    <Box
+      backgroundColor= {color}
+      borderTopLeftRadius= {20}
+      borderBottomRightRadius= {20}
+      height={150 + (descriptionHeight)}
+      marginBottom={4}
+    >
     <View>
-    <View style={{
-        backgroundColor: color,
-        borderTopLeftRadius: 20,
-        borderBottomRightRadius: 20,
-      }}
-      height={height}>
       <View style={{flexDirection: 'row', alignItems: 'center'}}>
         <View style={{width: '35%', height: '100%'}}>
           {petImage && <Image source={{ uri: petImage }} style={{ width: '100%', height: '100%', borderTopLeftRadius: 20 }} alt='pet' />}
@@ -48,7 +52,7 @@ const PetCard = ({color, height, pet}) => {
       </View>
     </View>
     <Box h="4"></Box>
-    </View>
+    </Box>
   );
 };
 
