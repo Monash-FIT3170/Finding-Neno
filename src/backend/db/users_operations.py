@@ -422,7 +422,11 @@ def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_i
         JOIN 
             users AS u ON mr.author_id = u.id
         WHERE 
+            mr.isActive = true -- Condition to filter out only active missing reports
+        AND
             p.id = %s;
+
+            
     """
 
     # Result is the object returned or True if no errors encountered, False if there is an error

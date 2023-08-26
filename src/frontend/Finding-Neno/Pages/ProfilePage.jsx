@@ -31,11 +31,14 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
 	const [pets, setPets] = useState([]);
 	const [user, setUser] = useState([]);
+	const [refreseh, setRefresh] = useState(false);
+	console.log(refreseh)
 
 	useEffect(() => {
 		if (isFocused) {
 			fetchOwnerPets();
 			fetchProfileInfo();
+			setRefresh(!refreseh);
 		}
 	}, [isFocused]);
 

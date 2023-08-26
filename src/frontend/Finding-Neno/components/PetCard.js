@@ -42,6 +42,8 @@ const PetCard = ({color, height, pet}) => {
             body: JSON.stringify({ pet_id: petId, isMissing: false }),
         });
 
+        console.log("Response status:", response.status)
+
         if (response.ok) {
             await fetchMissingReport();
             // Perform any necessary updates on the frontend
@@ -66,6 +68,8 @@ const fetchMissingReport = async () => {
           'Content-Type': 'application/json',
       },
     });
+
+    console.log("Response status:", response.status)
 
     if (response.ok) {
       const data = await response.json();

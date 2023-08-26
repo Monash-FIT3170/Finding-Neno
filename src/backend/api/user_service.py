@@ -97,7 +97,7 @@ def insert_missing_report(connection) -> Tuple[str, int]:
         return "User does not have access", 401
     else:
         from db.pets import update_pet_missing_status
-        update_pet_missing_status(connection, pet_id, False)
+        update_pet_missing_status(connection, pet_id, True)
         return "Success", 201
 
 def update_missing_report(connection) -> Tuple[str, int]:
