@@ -3,10 +3,13 @@ import { Box, Center, View, Heading, VStack, useToast, Image, FormControl, Input
 import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import * as ImagePicker from 'expo-image-picker';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
 import { validDateTime, validateCoordinates } from "./validation"
 import { ActivityIndicator } from 'react-native';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import axios from 'axios';
+import { StyleSheet } from 'react-native';
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
@@ -228,6 +231,53 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         setShowPicker(false);
     }
 
+    //map box for last known location
+	// Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
+		const [mapRegion, setMapRegion] = useState({
+			latitude: -37.8136,
+			longitude: 144.9631,
+			latitudeDelta: 0.6,
+			longitudeDelta: 0.6,
+		})
+
+    // Retrieves coordinates of current centre of map when map is moved around
+    const handleRegionChange = (region) => {
+        setMapRegion(region);
+    }	
+
+	const [address, setAddress] = useState('');
+	const [coordinates, setCoordinates] = useState(null);
+	const mapViewRef = useRef(null);
+
+	const handleSearch = async () => {
+		try {
+		  const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
+	
+		  const response = await axios.get(apiUrl);
+		  if (response.data.length > 0) {
+			const firstResult = response.data[0];
+			setCoordinates({
+			  latitude: parseFloat(firstResult.lat),
+			  longitude: parseFloat(firstResult.lon),
+			});
+			// You can animate to the new coordinates here if you want
+			mapViewRef.current.animateToRegion({
+			  latitude: parseFloat(firstResult.lat),
+			  longitude: parseFloat(firstResult.lon),
+			  latitudeDelta: 0.03,
+			  longitudeDelta: 0.05,
+			});
+			console.log(firstResult);
+		  } else {
+			setCoordinates(null);
+		  }
+		} catch (error) {
+		  console.error('Error fetching data:', error);
+		  setCoordinates(null);
+		}
+	  };
+
+
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
             <FlatList
@@ -282,11 +332,24 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                                                 onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
                                         </FormControl>
 
-                                        <FormControl isInvalid={'lastLocation' in errors}>
-                                            <FormControl.Label>Location of Sighting</FormControl.Label>
-                                            <Input onChangeText={value => setFormData({ ...formData, lastLocation: value })} placeholder="long (-180 to 180), lat (-90 to 90)" />
-                                            {'lastLocation' in errors && <FormControl.ErrorMessage>{errors.lastLocation}</FormControl.ErrorMessage>}
-                                        </FormControl>
+                                <FormControl isInvalid={coordinates === null}>
+									<FormControl.Label>Last Known Location</FormControl.Label>
+									<Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
+									{coordinates === null && <FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
+								</FormControl> 
+
+								<Button title="Search" onPress={handleSearch}>Search</Button>
+
+								<Box height={150}>
+								<MapView
+									ref={mapViewRef}
+									provider={PROVIDER_GOOGLE}
+									style={styles.map}
+									initialRegion={mapRegion}
+								>
+									{coordinates !== null && <Marker coordinate={coordinates} />}
+								</MapView>
+								</Box>
 
                                         <FormControl isInvalid={'description' in errors}>
                                             <FormControl.Label>Description (Additional Info)</FormControl.Label>
@@ -309,5 +372,25 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
     );
 
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+    },
+    map: {
+        ...StyleSheet.absoluteFillObject,
+    },
+    text: {
+        fontSize: 20
+    },
+    button: {
+        borderRadius: 20,
+        backgroundColor: 'blue',
+    }
+});
+
+
 
 export default NewSightingPage;
