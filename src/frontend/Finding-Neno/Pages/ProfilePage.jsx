@@ -51,6 +51,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
     if (isFocused) {
       fetchOwnerPets();
       fetchProfileInfo();
+	  setEditMode(false);
     }
   }, [isFocused]);
 
