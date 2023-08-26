@@ -3,9 +3,6 @@ import { Text } from 'react-native';
 import store from "../store/store";
 import { useSelector, useDispatch } from "react-redux";
 import { Dimensions } from 'react-native';
-import {Dimensions} from 'react-native';
-
-import { useSelector, useDispatch } from "react-redux";
 
 
 export default function MapPage() {
