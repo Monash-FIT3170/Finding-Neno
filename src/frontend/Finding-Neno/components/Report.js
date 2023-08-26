@@ -1,20 +1,14 @@
 import React, {useState} from 'react';
 import { View } from 'react-native'
 import {Dimensions} from 'react-native';
-
+import ReportSightingModal from '../components/ReportSightingModal';
+import * as ImagePicker from 'expo-image-picker';
 import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 
 
-const Report = ({report}) => {
+const Report = ({report, userId}) => {
     // Pet Data
-    //const petName = pet.name;
-    //const petSpecies = pet.species;
-    //const petBreed = pet.breed;
-    //const petDesc = pet.desc;
-    //const petLastSeen = pet.lastSeen;
-    //const petLastKnownLocaton = pet.lastKnownLocation;
     const windowWidth = Dimensions.get('window').width; 
-    console.log(report)
 
     const lastSeen = report[1];
     const reportDesc = report[2];
@@ -24,6 +18,19 @@ const Report = ({report}) => {
     const petSpecies = report[7];
     const petBreed = report[8];
     const petImage = report[9];
+
+    const [showModal, setShowModal] = useState(false);
+
+    const closeModal = () => {
+      setShowModal(false);
+    }
+
+    const handleOpenSightingModal = (report) => {
+      // console.log('hancling open sighting modal');
+      setShowModal(true);
+    };
+    // console.log("SHOW MODAL")
+    // console.log(showModal)
     
   return (
     <View justifyContent = "center" alignItems = "center" padding={4}>
@@ -32,12 +39,16 @@ const Report = ({report}) => {
       {petName}
       </Heading>
       <Text paddingLeft={5}>
-        last seen {lastSeen}
+        Last seen {lastSeen}
       </Text>
 
       <Heading size = "sm" paddingLeft={5} paddingTop={2}>
         need to add location here
       </Heading>
+
+      <Text paddingLeft={5}>
+        {reportDesc}
+      </Text>
 
       <HStack>
         <VStack>
@@ -61,24 +72,27 @@ const Report = ({report}) => {
 
       <Box width={windowWidth - 40} height={180} paddingLeft={5} paddingTop={5} paddingBottom={1}>
       <Image source={{ uri: petImage }} style={{ width: '100%', height: '100%', borderTopLeftRadius: 20, borderTopRightRadius: 20  }} alt='pet' />
-      </Box>
 
-      {/* <Box width={windowWidth - 40} height={40} paddingLeft={5} paddingTop={1}  alignItems = "end"> */}
-      <HStack width={windowWidth}  justifyContent = "space-between">
-      <Box width={windowWidth} height={40} paddingLeft={5} paddingTop={1}>
-        <Button width={250} borderBottomLeftRadius={20} borderTopRightRadius={0}  borderBottomRightRadius={0}>
+      <HStack width={'100%'} height={10} marginTop = {2} spacing = {0}>
+        <ReportSightingModal
+					report={report}
+					userId={userId}
+					closeModal={closeModal}
+          showModal={showModal}
+				/>
+        <Button width={'70%'} borderBottomLeftRadius={10} borderTopRightRadius={0}  borderBottomRightRadius={0} 
+          marginRight = {'2%'}
+                onPress={() => setShowModal(true)}>
           Report a Sighting
         </Button>
-        </Box>
-        
-        <Box width={windowWidth} height={40} paddingLeft={5} paddingTop={1}>
-        <Button borderTopLeftRadius={0}  borderBottomLeftRadius={0} borderBottomRightRadius={20}>
+
+      
+        <Button width={'28%'} borderBottomLeftRadius={0} borderTopLeftRadius={0}  borderBottomRightRadius={10}>
           Share
         </Button>
-      
-      </Box>
+    
       </HStack>
-      
+      </Box>
 
     </Box>
     </View>

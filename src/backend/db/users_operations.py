@@ -396,11 +396,11 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
         # Query returns all sightings in the database
         query = """
                     SELECT
-                        s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
+                        s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
                         u.name, u.email_address, u.phone_number
                     FROM
                         sightings AS s
-                    JOIN
+                    LEFT JOIN
                         missing_reports AS mr ON s.missing_report_id = mr.id
                     JOIN
                         users AS u ON s.author_id = u.id

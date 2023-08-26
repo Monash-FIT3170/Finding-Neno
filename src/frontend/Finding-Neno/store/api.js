@@ -6,7 +6,7 @@ const initialState = {
     PORT: PORT,
 }
 
-console.log("IP: ", IP);
+console.log("Port: ", IP);
 
 export const apiSlice = createSlice({
     name: "api",
