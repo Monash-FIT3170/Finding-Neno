@@ -6,6 +6,7 @@ import { useIsFocused } from '@react-navigation/native';
 import { useEffect, useState } from 'react';
 import PetCard from "../components/PetCard";
 import { Checkbox } from 'native-base';
+import { DeleteIcon } from "native-base";
 
 import { useSelector, useDispatch } from "react-redux";
 import store from '../store/store';
@@ -35,6 +36,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 	const [user, setUser] = useState([]);
 	const [editMode, setEditMode] = useState(false);
 	const [selectedPets, setSelectedPets] = useState([]);
+	const [selectedPetCount, setSelectedPetCount] = useState(0);
 
 	useEffect(() => {
 		if (isFocused) {
@@ -96,6 +98,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
 		// After deletion, clear the selectedPets array
 		setSelectedPets([]);
+		setSelectedPetCount(0);
 	}
 
 
@@ -120,34 +123,53 @@ export default function ProfilePage({ navigation: { navigate } }) {
 				  width={editMode ? '72%' : '80%'}
 				  paddingHorizontal={editMode ? 3 : 0}
 				  marginBottom={editMode ? 4 : 0}
+				  position="relative" // To enable absolute positioning of the edit icon
 				>
 				  <HStack width="100%">
 					{editMode && (
-						<VStack alignItems="center" justifyContent="center" width={3} marginEnd={10}>
-							<Checkbox
-								isChecked={selectedPets.includes(pet.id)}
-								onChange={(isChecked) => {
+					  <VStack
+						alignItems="center"
+						justifyContent="center"
+						width={3}
+						marginEnd={10}
+					  >
+						<Checkbox
+							isChecked={selectedPets.includes(pet.id)}
+							onChange={(isChecked) => {
 								if (isChecked) {
-									setSelectedPets([...selectedPets, pet.id]);
+								// If the checkbox is checked, add the pet to the selectedPets array
+								setSelectedPets((prevSelectedPets) => [...prevSelectedPets, pet.id]);
 								} else {
-									setSelectedPets(selectedPets.filter(id => id !== pet.id));
+								// If the checkbox is unchecked, remove the pet from the selectedPets array
+								setSelectedPets((prevSelectedPets) => prevSelectedPets.filter((id) => id !== pet.id));
 								}
-								}}
-								aria-label={`Select ${pet.name}`}
-								marginEnd={20}
-							>
-							</Checkbox>
-						</VStack>
+							}}
+							aria-label={`Select ${pet.name}`}
+							marginEnd={20}
+						></Checkbox>
+					  </VStack>
 					)}
 					<VStack width="100%">
 					  {/* Pet Card Content */}
-					  <PetCard
-						color={Color.NENO_BLUE}
-						height={150}
-						pet={pet}
-					  />
+					  <PetCard color={Color.NENO_BLUE} height={150} pet={pet} />
 					</VStack>
 				  </HStack>
+				  {editMode && (
+					<Button
+					  // Adjust the position and styling of the edit icon as needed
+					  position="absolute"
+					  bottom={5}
+					  right={2}
+					  size="sm"
+					  bg="transparent"
+					  onPress={() => {
+						// Handle the edit action here
+						// Navigate to the edit page or perform edit logic
+					  }}
+					>
+					  <Image size={19.5} alt="Edit" source={require('../assets/edit-icon.webp')} />
+					</Button>
+				  )}
 				</Box>
 			  ))}
 			</VStack>
@@ -155,7 +177,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 		} else {
 		  return <></>;
 		}
-	};
+	  };
 	  
 
 	return (
@@ -245,34 +267,44 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
 
 				<VStack>
-					<HStack mt="6" justifyContent="space-between" alignItems="center">
-						<Heading fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200" }} pr={windowWidth / 3.5}>
-						PETS
-						</Heading>
+						<HStack mt="6" justifyContent="space-between" alignItems="center">
+							<Heading fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200" }} pr={windowWidth / 3.5}>
+							PETS
+							</Heading>
 
-						{editMode ? (
-						<Button
-							pl={windowWidth / 3}
-							variant="link"
-							onPress={() => {
-							if (selectedPets.length > 0) {
-								deleteSelectedPets();
-							}
-							setEditMode(false);
-							}}
-						>
-							Done
-						</Button>
-						) : (
-						<Button
-							pl={windowWidth / 3}
-							variant="link"
-							onPress={() => setEditMode(true)}
-						>
-							Edit
-						</Button>
-						)}
-					</HStack>
+							{editMode ? (
+								<HStack alignItems="center">
+								<Button
+									size="sm"
+									marginTop={4}
+									onPress={deleteSelectedPets}
+									bg="transparent" // Make the button transparent
+								>
+									<DeleteIcon color="#FF0000" /> {/* Change the color of DeleteIcon */}
+								</Button>
+								<Text marginLeft={-2}>{selectedPetCount}</Text>
+								<Button
+									size="sm"
+									onPress={() => {
+									setEditMode(false);
+									setSelectedPetCount(0);
+									}}
+									variant="link"
+									paddingLeft={6}
+								>
+									Done
+								</Button>
+							</HStack>
+							) : (
+							<Button
+								pl={windowWidth / 3}
+								variant="link"
+								onPress={() => setEditMode(true)}
+							>
+								Edit
+							</Button>
+							)}
+						</HStack>
 
 					<Button
 						onPress={() => {
