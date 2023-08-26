@@ -193,20 +193,28 @@ export default function ProfilePage({ navigation: { navigate } }) {
                 )}
                 <VStack width="100%">
                   {/* Pet Card Content */}
-                  <PetCard color={Color.NENO_BLUE} height={150} pet={pet} />
+                  <PetCard
+                    color={Color.NENO_BLUE}
+                    pet={pet}
+                    onClick={() => {
+                      dispatch(selectPet(pet));
+                      navigate("Edit Pet Page");
+                    }}
+					editMode={editMode} 
+                  />
                 </VStack>
               </HStack>
               {editMode && (
                 <Button
-                  // Adjust the position and styling of the edit icon as needed
                   position="absolute"
                   bottom={5}
                   right={2}
                   size="sm"
                   bg="transparent"
                   onPress={() => {
-                    // Handle the edit action here
-                    // Navigate to the edit page or perform edit logic
+                    // navigate to edit pet page
+                    dispatch(selectPet(pet));
+                    navigate("Edit Pet Page");
                   }}
                 >
                   <Image
