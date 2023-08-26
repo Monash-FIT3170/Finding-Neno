@@ -7,6 +7,8 @@ import { TouchableOpacity } from 'react-native';
 import { useSelector } from "react-redux";
 import { Button, Text } from 'react-native';
 import store from "../store/store";
+import { useSelector, useDispatch } from "react-redux";
+import { Dimensions } from 'react-native';
 
 import { VStack } from 'native-base';
 

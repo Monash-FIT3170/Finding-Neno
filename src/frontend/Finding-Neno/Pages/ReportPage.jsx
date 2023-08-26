@@ -36,7 +36,15 @@ export default function ReportPage({ navigation: { navigate}}) {
   
     const fetchAllReports = async () => {
       try {
-        const response = await fetch(`${IP}:${PORT}/get_missing_reports?owner_id=${USER_ID}`);
+        const url = `${IP}:${PORT}/get_missing_reports?author_id=${USER_ID}`;
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                'User-ID': USER_ID
+            },
+        });
         const data = await response.json();
         setReports(data[0]);
       } catch (error) {

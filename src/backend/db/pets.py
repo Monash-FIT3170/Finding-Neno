@@ -39,7 +39,7 @@ def get_all_pets(
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
-        return False
+        return []
 
     cur.close()
 
@@ -58,7 +58,7 @@ def get_all_pets(
 
 def get_pet(
         connection: psycopg2.extensions.connection,
-        pet_id: int
+        pet_id: int,
 ):
     """
     Returns a pet by the given id

@@ -1,198 +1,159 @@
-import {useNavigation} from '@react-navigation/native';
-import { Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView} from "native-base";
-import {Dimensions} from 'react-native';
-import { Color } from "../components/atomic/Theme";
+import { useNavigation } from '@react-navigation/native';
+import { Menu, Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView } from "native-base";
+import { Dimensions } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
+import { ToggleButton } from 'react-native-paper';
 
-import store from '../store/store';
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import Report from '../components/Report';
+import Sighting from '../components/Sighting';
 
 const DashboardPage = () => {
-	const {IP, PORT} = useSelector((state) => state.api)
-  const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+	const { IP, PORT } = useSelector((state) => state.api)
+	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
-  const windowWidth = Dimensions.get('window').width; 
-  const navigation = useNavigation();
-  const toast = useToast();
-  const isFocused = useIsFocused();
+	const windowWidth = Dimensions.get('window').width;
+	const navigation = useNavigation();
+	const toast = useToast();
+	const isFocused = useIsFocused();
 
-  const [modalVisible, setModalVisible] = useState(false);
+  // TODO: change report structure to be an array of dictionaries? Refer to mock data that is commented out for desired structure
+  const [reports, setReports] = useState([]);
+//   const [modalVisible, setModalVisible] = useState(false);
+  const [sightingDateTime, setSightingDateTime] = useState(new Date());
+  const [sightingData, setSightingData] = useState({authorId: USER_ID});
+  const [reportSightingBtnDisabled, setReportSightingBtnDisabled] = useState(false);
+  const [sightingFormErrors, setSightingFormErrors] = useState({});
+  const [showPicker, setShowPicker] = useState(false);
+  // const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
+  const [sightingImage, setSightingImage] = useState(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [tabValue, setTabValue] = useState("reports");
+  const [allSightings, setAllSightings] = useState([]);
 
-  const handlePress = () => {
-    setModalVisible(!modalVisible);
+	useEffect(() => {
+		if (isFocused) {
+			fetchAllReports();
+      fetchAllSightings();
+		}
+	}, [isFocused]);
+
+	// TODO: replace this image with the actual image from DB ? 
+	const image = "https://wallpaperaccess.com/full/317501.jpg";
+
+	// API calls 
+	const fetchAllReports = async () => {
+		try {
+			const url = `${IP}:${PORT}/get_missing_reports`;
+			const response = await fetch(url, {
+				method: "GET",
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${ACCESS_TOKEN}`,
+					'User-ID': USER_ID,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error(`Request failed with status: ${response.status}`);
+			}
+
+			const data = await response.json();
+			setReports(data[0]);
+		} catch (error) {
+			console.error(error);
+		}
+	};
+
+  const fetchAllSightings = async () => {
+    try {
+			const url = `${IP}:${PORT}/get_sightings`;
+			const response = await fetch(url, {
+				method: "GET",
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${ACCESS_TOKEN}`,
+					'User-ID': USER_ID,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error(`Request failed with status: ${response.status}`);
+			}
+
+			const data = await response.json();
+      setAllSightings(data[0]);
+		} catch (error) {
+			console.error(error);
+		}
   };
 
-  const handleConfirm = () => {
-    setModalVisible(false);
-    toast.show({
-      description: "Owner has been alerted of your sighting!",
-      placement: "top"
-    })
-  };
-    // TODO: change report structure to be an array of dictionaries? Refer to mock data that is commented out for desired structure
-    const [reports, setReports] = useState([]);
+  // image_url is not being set properly without this useEffect - should probs find a more robust way to fix it later 
+  	useEffect(() => {
+		setSightingData({...sightingData, image_url: sightingImage})
+	}, [sightingImage]);
 
-    useEffect(() => {
-      if (isFocused) {
-        fetchAllReports();
-      }
-    }, [isFocused]);
-  
-    const fetchAllReports = async () => {
-      try {
-        const response = await fetch(`${IP}:${PORT}/get_missing_reports`);
-        const data = await response.json();
-        setReports(data[0]);
-      } catch (error) {
-        console.error(error);
-      }
-    };
-   // TODO: replace mock data with real data
-  const image = "https://wallpaperaccess.com/full/317501.jpg";
-//
-//   const mocks = [{ownerName: 'Sashenka', petName:'Piggy', species: 'Dog', breed: 'Shiba', isActive: true, lastLocation: 'Clayton, Victoria', lastDateTime: '12th May, 12:45pm', petImage: "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"},
-//                   {ownerName: 'Sash', petName:'Bunny', species: 'Rabbit', breed: 'RabbitBreed', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm', petImage: "https://cf.ltkcdn.net/small-mammals/small-mammal-names/images/orig/322037-1600x1066-white-rabbit.jpg"},
-//                   {ownerName: 'Ana', petName:'Noni', species: 'Cat', breed: 'House cat', isActive: true, lastLocation: 'Melbourne, Victoria', lastDateTime: '15th May, 1:45pm', petImage:"https://images.saymedia-content.com/.image/ar_1:1%2Cc_fill%2Ccs_srgb%2Cfl_progressive%2Cq_auto:eco%2Cw_1200/MTk2NzY3MjA5ODc0MjY5ODI2/top-10-cutest-cat-photos-of-all-time.jpg"},
-//                   {ownerName: 'Alina', petName:'Liza', species: 'Dog', breed: 'Yorkshire Terrier', isActive: true, lastLocation: 'Berwick, Victoria', lastDateTime: '11th May, 11:00pm', petImage: "https://www.shutterstock.com/image-photo/cute-dog-photography-yorkshire-terrier-260nw-1792147286.jpg"},
-//                   {ownerName: 'Jason', petName:'Yoyo', species: 'Bird', breed: 'Parrot', isActive: true, lastLocation: 'Glen Waverley, Victoria', lastDateTime: '11th May, 1:00pm', petImage: "https://www.thesprucepets.com/thmb/iMtikD4KQeIl73kPe134Hu2TOH4=/4933x0/filters:no_upscale():strip_icc()/blue-budgie-511936470-dff4c0952d4a45ec80f9ac7f406cc71f.jpg"}
-//               ]
-//   const description = "cute and fluffy"
-
-    const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
+  useEffect(() => {
+    if (tabValue == "reports") {
+      fetchAllReports();
+    } else {
+      fetchAllSightings();
+    }
+  }, [tabValue])
 
     return (
-        <ScrollView style={{backgroundColor: 'white'}}>
+      <View>
+    <View>
+      <View justifyContent="center" alignItems="flex-start" bg={'blue.300'} padding={4}>
+        <Menu shadow={2} w="360"  trigger={(triggerProps) => (
+          <Pressable accessibilityLabel="More options menu" {...triggerProps}>
+            <View style={{ alignItems: 'flex-start' }}>
+              <Heading> ➕ New Post </Heading>
+            </View>
+          </Pressable>
+        )}>
+          <Menu.Item onPress={() => navigation.navigate('Report', { screen: 'New Report Page' })}>Report</Menu.Item>
+          <Menu.Item onPress={() => navigation.navigate('Dashboard', { screen: 'New Sighting Page' })}>Sighting</Menu.Item>
+        </Menu>
+      </View>
+    </View>
 
-          {/* REPORT SIGHTING MODAL */}
-          <Modal isOpen={modalVisible} onClose={setModalVisible} >
-        <Modal.Content maxH="212">
-          <Modal.CloseButton />
-          <Modal.Header>Confirm sighting</Modal.Header>
-          <Modal.Body>
-            <ScrollView>
-              <Text>
-                Please confirm that you have made a sighting of this pet before we alert the owner.
-              </Text>
-            </ScrollView>
-          </Modal.Body>
-          <Modal.Footer>
-            <Button.Group space={2}>
-              <Button variant="ghost" colorScheme="blueGray" onPress={() => {
-              setModalVisible(false);
-            }}>
-                Cancel
-              </Button>
-              <Button bgColor={Color.NENO_BLUE} onPress={() => handleConfirm()}>
-                Confirm 
-              </Button>
-            </Button.Group>
-          </Modal.Footer>
-        </Modal.Content>
-      </Modal>
+    {/* TABS */}
+        <ToggleButton.Row onValueChange={value => {
+          value != null ? setTabValue(value) : ''}} 
+                        value={tabValue}
+                        style={{justifyContent: 'space-between', width: Dimensions.get('window').width}}>
+        <ToggleButton icon={()=> <Text>Reports</Text>} 
+                      value="reports" 
+                      style={{width: '50%'}}/>
+        <ToggleButton icon={()=> <Text>Sightings</Text>} 
+                      value="sightings" 
+                      style={{width: '50%'}}/>
+        </ToggleButton.Row>
 
+        {/* TODO: fix this - it is not scrolling all the way */}
 
-            {/* {reports.map(({missing_report_id, owner_name, pet_name, pet_animal, pet_breed, location_latitude, location_longitude, date_time, description}) => ( */}
+        <ScrollView style={{backgroundColor: '#EDEDED'}}>
+          
+          {/* display depending on tabs */}
+          { tabValue == "reports" 
+          ?
+            <>
               {reports && reports.map((report, index) => (
-               <View key={index} alignContent="center" paddingBottom={30}>
-               <Box bg="#F5F5F5" borderRadius={15} padding={5} >
-                 <HStack alignItems="center">
-                     <Image 
-                         alignSelf="center" size={36} borderRadius={18} 
-                         source={{
-                           uri: image
-                         }} 
-                         alt="User Image" 
-                     /> 
-                     <Box width={2}></Box>
-                     <VStack>
-                     <Heading size = "sm">
-                       {report[10]}
-                     </Heading>
-                     {/* <Text style={{ color: 'black' }} fontSize="xs">{isHidden ? userPhoneHidden : userPhone}</Text> */}
-                     </VStack>
-                     <Box width={70}></Box>
-                     {/* <Button onPress={toggleVisibility}>
-                     <Text>Show/Hide</Text>
-                     </Button> */}
-                 </HStack>
-           
-                 <Box height={5}></Box>
-                 <Image 
-                         alignSelf="center" width={windowWidth} height={125} borderRadius={5}
-                         source={{
-                           uri: petImage
-                         }} 
-                         alt="Pet Image" 
-                     /> 
-                 <Box height={2}></Box>
-                 <HStack>
-                   <Heading size = "md">
-                   {report[6]}
-                   </Heading>
-                 </HStack>
-                 <HStack justifyContent="flex-start" space={10}>
-                   <VStack>
-                     <Heading size = "sm" color="#B8B8B8">
-                       Pet Type
-                     </Heading>
-                     <Text fontSize="sm">
-                     {report[7]}
-                     </Text>
-                   </VStack>
-           
-                   <VStack>
-                     <Heading size = "sm" color="#B8B8B8">
-                       Breed
-                     </Heading>
-                     <Text fontSize="sm">
-                     {report[7]}
-                     </Text>
-                   </VStack>
-                 </HStack>
-                 
-                 <VStack>
-                     <Heading size = "sm" color="#B8B8B8">
-                       Description
-                     </Heading>
-                     <Text fontSize="sm">
-                     {report[2]}
-                     </Text>
-                 </VStack>
-           
-                 <HStack justifyContent="space-between">
-                 <Heading size = "sm">
-                       Last Seen Time
-                     </Heading>
-                     <Text fontSize="sm">
-                     {report[1]}
-                     </Text>
-                 </HStack>
-                 
-                 <HStack justifyContent="space-between">
-                 <Heading size = "sm">
-                       Last Known Location
-                     </Heading>
-                     <Text fontSize="sm">
-                       Longitude: 
-                     {report[3]}
-                     , 
-                     Latitude:
-                     {report[4]}
-                     </Text>
-                     
-                 </HStack>
-                 <VStack>
-                 <Button mt="2" bgColor={Color.NENO_BLUE} onPress={() => handlePress()}>
-                    Report a sighting
-                  </Button>
-                 </VStack>
-                 
-                 
-               </Box>
-               </View>
-            ))}
+                  <Report userId={USER_ID} report={report} key={index}/>
+              ))}
+            </> 
+          : 
+            <>
+              {allSightings && allSightings.map((sighting, index) => (
+                  <Sighting userId={USER_ID} sighting={sighting} key={index}/>
+              ))}
+            </>
+          }
+
         </ScrollView>
+        </View>
     );
 }
 
