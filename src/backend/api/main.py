@@ -108,7 +108,7 @@ def insert_pet():
 def update_pet_api():
     return update_pet_operation(get_connection())
 
-@app.route("/delete_pet/<pet_id>", methods=["DELETE"]) # Requires Access_token and user ID for authorization
+@app.route("/delete_pet/<pet_id>", methods=["GET", "DELETE"]) # Requires Access_token and user ID for authorization
 def delete_pet_api(pet_id):
     return delete_pet_operation(get_connection(), pet_id)
 

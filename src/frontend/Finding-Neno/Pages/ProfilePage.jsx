@@ -36,7 +36,6 @@ export default function ProfilePage({ navigation: { navigate } }) {
 	const [user, setUser] = useState([]);
 	const [editMode, setEditMode] = useState(false);
 	const [selectedPets, setSelectedPets] = useState([]);
-	const [selectedPetCount, setSelectedPetCount] = useState(0);
 
 	useEffect(() => {
 		if (isFocused) {
@@ -92,13 +91,44 @@ export default function ProfilePage({ navigation: { navigate } }) {
 		}
 	}
 
+	const deletePet = async (petId) => {
+		try {
+			const url = `${IP}:${PORT}/delete_pet/${petId}`;
+			const response = await fetch(url, {
+				method: "DELETE",
+				headers: {
+					'Authorization': `Bearer ${ACCESS_TOKEN}`,
+				}
+			});
+	
+			if (!response.ok) {
+				throw new Error('Request failed with status ' + response.status);
+			}
+	
+			if (response.status === 201) {
+				await fetchOwnerPets(); // refresh the pet list
+				console.log('Pet deleted successfully');
+			} else if (response.status === 204) {
+				console.log('Pet deleted successfully');
+			} else {
+				console.log('Unexpected response status:', response.status);
+			}
+		} catch (error) {
+			console.log("Error in profile page");
+			console.log(error);
+		}
+	}
+	
+
 	const deleteSelectedPets = () => {
-		// Implement logic to delete selected pets here
-		// ...
+		// for each pet in selectedPets, get petID and delete it
+		selectedPets.forEach((petId) => {
+			deletePet(petId);
+		});	
 
 		// After deletion, clear the selectedPets array
 		setSelectedPets([]);
-		setSelectedPetCount(0);
+		setEditMode(false);
 	}
 
 
@@ -282,12 +312,11 @@ export default function ProfilePage({ navigation: { navigate } }) {
 								>
 									<DeleteIcon color="#FF0000" /> {/* Change the color of DeleteIcon */}
 								</Button>
-								<Text marginLeft={-2}>{selectedPetCount}</Text>
+								<Text marginLeft={-2}>{selectedPets.length}</Text>
 								<Button
 									size="sm"
 									onPress={() => {
-									setEditMode(false);
-									setSelectedPetCount(0);
+									deleteSelectedPets();
 									}}
 									variant="link"
 									paddingLeft={6}

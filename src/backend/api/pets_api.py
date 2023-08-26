@@ -80,8 +80,9 @@ def delete_pet_operation(conn, pet_id):
         access_token=token
     )
     if success:
-        return "", 201
-    return ""
+        return jsonify({'message': 'Pet deleted successfully'}), 201
+    else:
+        return jsonify({'message': 'Failed to delete pet'}), 500
 
 
 
