@@ -330,7 +330,7 @@ def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensio
                     JOIN 
                         users AS u ON mr.author_id = u.id
                     WHERE (
-                        mr.location_longitude BETWEEN %s AND %s OR mr.location_longitude BETWEEN %s AND %s) AND mr.isactive IS TRUE
+                        mr.location_longitude BETWEEN %s AND %s OR mr.location_longitude BETWEEN %s AND %s) AND mr.isActive IS TRUE
                         AND mr.location_latitude BETWEEN %s AND %s
                     ORDER BY 
                         mr.date_time DESC;"""
@@ -418,12 +418,13 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
                         u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
                     FROM 
                         sightings AS s
-                    JOIN 
+                    LEFT JOIN 
                         missing_reports AS mr ON s.missing_report_id = mr.id
                     JOIN 
                         users AS u ON s.author_id = u.id
                     WHERE 
-                        s.location_longitude BETWEEN %s AND %s AND s.location_latitude BETWEEN %s AND %s AND s.isactive IS TRUE
+                        (s.location_longitude BETWEEN %s AND %s AND s.location_latitude BETWEEN %s AND %s)
+                        AND (mr.isActive IS TRUE OR s.missing_report_id IS NULL)
                     ORDER BY 
                         s.date_time DESC;"""
     else:
@@ -438,13 +439,14 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
                         u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
                     FROM 
                         sightings AS s
-                    JOIN 
+                    LEFT JOIN 
                         missing_reports AS mr ON s.missing_report_id = mr.id
                     JOIN 
                         users AS u ON s.author_id = u.id
-                    WHERE (
-                        s.location_longitude BETWEEN %s AND %s OR s.location_longitude BETWEEN %s AND %s) AND s.isactive IS TRUE
-                        AND s.location_latitude BETWEEN %s AND %s
+                    WHERE 
+                        (s.location_longitude BETWEEN %s AND %s OR s.location_longitude BETWEEN %s AND %s) AND s.location_latitude BETWEEN %s AND %s
+                        AND (mr.isActive IS TRUE OR s.missing_report_id IS NULL)
+                        
                     ORDER BY 
                         s.date_time DESC;"""
     
@@ -457,11 +459,11 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
         # Retrieve rows as an array
         sightings = cur.fetchall()
 
-        print(f"Missing reports in area successfully retrieved")
+        print(f"{len(sightings)} Sightings in area successfully retrieved")
 
         return sightings
     except Exception as e:
-        print(f"Error with retrieving missing reports in area: {e}")
+        print(f"Error with retrieving sightings in area: {e}")
 
     cur.close()
     return []

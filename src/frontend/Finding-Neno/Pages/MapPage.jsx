@@ -22,24 +22,27 @@ export default function MapPage() {
 	// const windowHeight = Dimensions.get('window').height;
 
 	// Image URL for custom marker iconrts
-	const[isReports, setIsReports] = useState(true);
 	const imageURL = '';
 
 	const [reports, setReports] = useState([]);
+	const [sightings, setSightings] = useState([]);
+
+	// Radio button to toggle between reports (true) and sightings (false)
+	const[isViewReports, setIsViewReports] = useState(true);
 
 	// Reloads data when map page is opened
 	// useEffect(() => {
 	// 	if (isFocused) {
-	// 		fetchAllReports();
+	// 		fetchReports();
 	// 	}
 	// }, [isFocused]);
 
 
-	    useEffect(() => {
+	useEffect(() => {
         if (isFocused) {
-            fetchData();
+			fetchData();
         }
-    }, [isFocused, isReports]);
+    }, [isFocused, isViewReports]);
 	
 	
 	
@@ -54,31 +57,21 @@ export default function MapPage() {
 		longitudeDelta: 0.03,
 	})
 
+	const fetchData = () => {
+		if (isViewReports) {
+			fetchReports();
+		}
+		else {
+			fetchSightings();
+		}
+	}
+
 	const onPressSearch = () => {
 		fetchData();
 	}
 
-	    const fetchData = async () => {
-        if (isReports) {
-            fetchAllReports();
-        } else {
-            try {
-			const longitude = mapRegion["longitude"];
-			const longitude_delta = mapRegion["longitudeDelta"];
-			const latitude = mapRegion["latitude"];
-			const latitude_delta = mapRegion["latitudeDelta"];
-
-			const response = await fetch(`${IP.toString()}:${PORT.toString()}/get_sightings_in_area?long=${longitude}&long_delta=${longitude_delta}&lat=${latitude}&lat_delta=${latitude_delta}`);
-			const data = await response.json();
-			setReports(data[0]);
-		} catch (error) {
-			console.error(error);
-		}
-        }
-    } 
-
 	// Fetches all reports in map view from DB.
-	const fetchAllReports = async () => {
+	const fetchReports = async () => {
 		try {
 			const longitude = mapRegion["longitude"];
 			const longitude_delta = mapRegion["longitudeDelta"];
@@ -93,6 +86,22 @@ export default function MapPage() {
 		}
 	}
 
+
+	const fetchSightings = async () => {
+		try {
+			const longitude = mapRegion["longitude"];
+			const longitude_delta = mapRegion["longitudeDelta"];
+			const latitude = mapRegion["latitude"];
+			const latitude_delta = mapRegion["latitudeDelta"];
+
+			const response = await fetch(`${IP.toString()}:${PORT.toString()}/get_sightings_in_area?long=${longitude}&long_delta=${longitude_delta}&lat=${latitude}&lat_delta=${latitude_delta}`);
+			const data = await response.json();
+			setSightings(data[0]);
+		} catch (error) {
+			console.error(error);
+		}
+	}
+
 	// Retrieves coordinates of current centre of map when map is moved around
 	const handleRegionChange = (region) => {
 		setMapRegion(region);
@@ -102,12 +111,21 @@ export default function MapPage() {
 		<View style={styles.container}>
 			<MapView ref={(ref) => this.mapView = ref} provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={mapRegion} showCompass={true} showsIndoors={false}
 				loadingEnabled={true}
-				mapType={Platform.OS == "android" ? "none" : "standard"} onRegionChange={(region) => handleRegionChange(region)} >
+				mapType={"standard"} onRegionChange={(region) => handleRegionChange(region)} >
 
-				{/*ACTIVE REPORT MARKERS*/}
-				{reports && reports.map((report, index) => (
-					<Marker key={index} title={report[6]} coordinate={{longitude: report[3], latitude: report[4]}} onPress={() => this.mapView.animateToRegion({longitude: report[3], latitude: report[4], longitudeDelta: 0.0015})}></Marker>
-				))
+				{/*MARKERS*/}
+				{
+					isViewReports ? 
+					// ACTIVE REPORTS
+					reports && reports.map((report, index) => (
+						<Marker key={index} title={report[6]} coordinate={{longitude: report[3], latitude: report[4]}} onPress={() => this.mapView.animateToRegion({longitude: report[3], latitude: report[4], longitudeDelta: 0.0015})}></Marker>
+					))
+					 :
+
+					 // ACTIVE SIGHTINGS
+					sightings && sightings.map((sighting, index) => (
+						<Marker key={index} title={sighting[6]} coordinate={{longitude: sighting[2], latitude: sighting[3]}} onPress={() => this.mapView.animateToRegion({longitude: sighting[2], latitude: sighting[3], longitudeDelta: 0.0015})}></Marker>
+					))
 				}
 				{/* <Marker coordinate={mapRegion} title='Marker'></Marker> */}
 
@@ -116,21 +134,28 @@ export default function MapPage() {
 
 			{/* Switch and label */}
             <View style={styles.switchContainer}>
-			<Text style={styles.switchLabel}>{isReports ? 'Reports' : 'Sightings'}</Text>
+			<Text style={styles.switchLabel}>{isViewReports ? 'Reports' : 'Sightings'}</Text>
                 <Switch
                     trackColor={{ false: "#767577", true: "#81b0ff" }}
-                    thumbColor={isReports ? "#f5dd4b" : "#f4f3f4"}
-                    onValueChange={() => setIsReports(prev => !prev)}
-                    value={isReports}
+                    thumbColor={isViewReports ? "#f5dd4b" : "#f4f3f4"}
+                    onValueChange={() => setIsViewReports(prev => !prev)}
+                    value={isViewReports}
                 />
             </View>
 
 			{/* <VStack style={{position:'absolute', bottom:0, right:0, alignItems:'center', margin: 10, padding: 10, borderRadius: }} backgroundColor="grey"> */}
 			<View style={{position: 'absolute', top: 30}} alignItems='center'>
-			<Text style={styles.boldText}> {reports.length} reports in area</Text>
-				<TouchableOpacity style={styles.button} onPress={onPressSearch}>
-                    <Text style={styles.buttonText}>Search this area</Text>
-                </TouchableOpacity>
+
+			{
+				isViewReports ? <Text style={styles.boldText}> {reports.length} reports in area</Text> : <Text style={styles.boldText}> {sightings.length} sightings in area</Text>
+			}
+			
+
+
+
+			<TouchableOpacity style={styles.button} onPress={onPressSearch}>
+				<Text style={styles.buttonText}>Search this area</Text>
+			</TouchableOpacity>
 			</View>
 			{/* </VStack> */}
 			
