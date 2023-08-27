@@ -59,7 +59,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		setIsButtonDisabled(true);
 		setButtonText("Creating report...");
 
-		let isValid = validateDetails(formData);
+		let isValid = await validateDetails(formData);
 
 		if (isValid) {
 			const url = `${IP}:${PORT}/insert_missing_report`;
@@ -102,7 +102,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		};
 	}
 
-	const validateDetails = (formData) => {
+	const validateDetails = async (formData) => {
 		// Validates details. If details are valid, send formData object to onCreateReportPress.
 		foundErrors = {};
 
@@ -120,11 +120,54 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
 		}
 
+		const exists = await missingReportExists(formData.missingPetId);
+		console.log("does the pet report exists " + exists)
+
+		if(exists){
+			console.log("pet report exists")
+			foundErrors = { ...foundErrors, missingPetId: 'Pet Report already exists' }
+		}
+
 		setErrors(foundErrors);
 
 		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
+		console.log(Object.keys(foundErrors).length === 0)
 		return Object.keys(foundErrors).length === 0;
 	}
+
+	const missingReportExists = async (pet_id) => {
+		try {
+			const petId = pet_id; // Replace with the actual pet ID you want to retrieve reports for
+			const response = await fetch(`${IP}:${PORT}/get_reports_by_pet?pet_id=${petId}`, {
+				method: 'GET',
+				headers: {
+					Authorization: `Bearer ${ACCESS_TOKEN}`,
+					'User-ID': USER_ID,
+					'Content-Type': 'application/json',
+				},
+			});
+	
+			if (response.ok) {
+				const data = await response.json();
+				console.log('Reports for pet:', data);
+
+				outcome = data[0]
+	
+				if (outcome === null) {
+					console.log('Pet Report doesnt exist');
+					return false;
+				} else {
+					console.log('Pet Report does exist');
+					return true;
+				}
+			} else {
+				console.log('Error while fetching reports:', response.statusText);
+			}
+		} catch (error) {
+			console.error('An error occurred:', error);
+			return false; // Handle error case
+		}
+	};
 
 	var maximumDate;
 	const openPicker = () => {
