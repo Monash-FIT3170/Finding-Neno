@@ -93,7 +93,7 @@ const Report = ({report, userId}) => {
           </> : ""
         }
       
-        <Button width={authorId == userId ? '100%' : '28%'} borderBottomLeftRadius={authorId == userId ? 10 : 0} borderTopLeftRadius={authorId == userId ? 10 : 0}  borderBottomRightRadius={10}>
+        <Button width={authorId == userId ? '100%' : '28%'} borderBottomLeftRadius={authorId == userId ? 10 : 0} borderTopLeftRadius={authorId == userId ? 5 : 0}  borderBottomRightRadius={10}>
           Share
         </Button>
     
