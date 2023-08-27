@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link} from "native-base";
+import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link, Modal} from "native-base";
 import { Dimensions } from "react-native";
 import { Color } from "../components/atomic/Theme";
 import { useIsFocused } from "@react-navigation/native";
