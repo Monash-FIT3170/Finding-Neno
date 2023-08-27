@@ -39,12 +39,16 @@ const Report = ({report, userId}) => {
       {petName}
       </Heading>
       <Text paddingLeft={5}>
-        last seen {lastSeen}
+        Last seen {lastSeen}
       </Text>
 
       <Heading size = "sm" paddingLeft={5} paddingTop={2}>
         need to add location here
       </Heading>
+
+      <Text paddingLeft={5}>
+        {reportDesc}
+      </Text>
 
       <HStack>
         <VStack>
@@ -76,14 +80,14 @@ const Report = ({report, userId}) => {
 					closeModal={closeModal}
           showModal={showModal}
 				/>
-        <Button width={'70%'} borderBottomLeftRadius={20} borderTopRightRadius={0}  borderBottomRightRadius={0} 
+        <Button width={'70%'} borderBottomLeftRadius={10} borderTopRightRadius={0}  borderBottomRightRadius={0} 
           marginRight = {'2%'}
                 onPress={() => setShowModal(true)}>
           Report a Sighting
         </Button>
 
       
-        <Button width={'28%'} borderBottomLeftRadius={0} borderTopLeftRadius={0}  borderBottomRightRadius={20}>
+        <Button width={'28%'} borderBottomLeftRadius={0} borderTopLeftRadius={0}  borderBottomRightRadius={10}>
           Share
         </Button>
     

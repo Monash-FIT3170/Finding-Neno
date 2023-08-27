@@ -172,7 +172,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                 missingReportId: null,
                 animal: formData.animal,
                 breed: formData.breed,
-                imageUrl: sightingImage.toString(),
+                imageUrl: sightingImage,
                 dateTime: formData.dateTime,
                 dateTimeOfCreation: formatDatetime(new Date()),
                 description: formData.description,
@@ -196,7 +196,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                             description: "Your sighting has been added!",
                             placement: "top"
                         })
-                        navigate('Sightings Page')
+                        navigate('Dashboard Page')
                     }
                     else {
                         setButtonText("Add sighting");

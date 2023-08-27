@@ -3,9 +3,11 @@ import { Menu, Box, Modal, Center, Image, useToast, ScrollView, View, Heading, V
 import { Dimensions } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
+import { ToggleButton } from 'react-native-paper';
 
 import { useSelector } from "react-redux";
 import Report from '../components/Report';
+import Sighting from '../components/Sighting';
 
 const DashboardPage = () => {
 	const { IP, PORT } = useSelector((state) => state.api)
@@ -24,13 +26,16 @@ const DashboardPage = () => {
   const [reportSightingBtnDisabled, setReportSightingBtnDisabled] = useState(false);
   const [sightingFormErrors, setSightingFormErrors] = useState({});
   const [showPicker, setShowPicker] = useState(false);
-  const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
-  const [sightingImage, setSightingImage] = useState(DEFAULT_IMAGE);
+  // const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
+  const [sightingImage, setSightingImage] = useState(null);
   const [isUploading, setIsUploading] = useState(false);
+  const [tabValue, setTabValue] = useState("reports");
+  const [allSightings, setAllSightings] = useState([]);
 
 	useEffect(() => {
 		if (isFocused) {
 			fetchAllReports();
+      fetchAllSightings();
 		}
 	}, [isFocused]);
 
@@ -61,10 +66,41 @@ const DashboardPage = () => {
 		}
 	};
 
+  const fetchAllSightings = async () => {
+    try {
+			const url = `${IP}:${PORT}/get_sightings`;
+			const response = await fetch(url, {
+				method: "GET",
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${ACCESS_TOKEN}`,
+					'User-ID': USER_ID,
+				},
+			});
+
+			if (!response.ok) {
+				throw new Error(`Request failed with status: ${response.status}`);
+			}
+
+			const data = await response.json();
+      setAllSightings(data[0]);
+		} catch (error) {
+			console.error(error);
+		}
+  };
+
   // image_url is not being set properly without this useEffect - should probs find a more robust way to fix it later 
   	useEffect(() => {
 		setSightingData({...sightingData, image_url: sightingImage})
 	}, [sightingImage]);
+
+  useEffect(() => {
+    if (tabValue == "reports") {
+      fetchAllReports();
+    } else {
+      fetchAllSightings();
+    }
+  }, [tabValue])
 
     return (
       <View>
@@ -73,24 +109,49 @@ const DashboardPage = () => {
         <Menu shadow={2} w="360"  trigger={(triggerProps) => (
           <Pressable accessibilityLabel="More options menu" {...triggerProps}>
             <View style={{ alignItems: 'flex-start' }}>
-              <Heading> ➕  New Post </Heading>
+              <Heading> ➕ New Post </Heading>
             </View>
           </Pressable>
         )}>
           <Menu.Item onPress={() => navigation.navigate('Report', { screen: 'New Report Page' })}>Report</Menu.Item>
-          <Menu.Item>Sighting</Menu.Item>
+          <Menu.Item onPress={() => navigation.navigate('Dashboard', { screen: 'New Sighting Page' })}>Sighting</Menu.Item>
         </Menu>
       </View>
     </View>
 
+    {/* TABS */}
+        <ToggleButton.Row onValueChange={value => {
+          value != null ? setTabValue(value) : ''}} 
+                        value={tabValue}
+                        style={{justifyContent: 'space-between', width: Dimensions.get('window').width}}>
+        <ToggleButton icon={()=> <Text>Reports</Text>} 
+                      value="reports" 
+                      style={{width: '50%'}}/>
+        <ToggleButton icon={()=> <Text>Sightings</Text>} 
+                      value="sightings" 
+                      style={{width: '50%'}}/>
+        </ToggleButton.Row>
+
+        {/* TODO: fix this - it is not scrolling all the way */}
+
         <ScrollView style={{backgroundColor: '#EDEDED'}}>
-
-          {/* REPORTS */}
+          
+          {/* display depending on tabs */}
+          { tabValue == "reports" 
+          ?
+            <>
               {reports && reports.map((report, index) => (
-                <Report userId={USER_ID} report={report} key={index}/>
-            ))}
+                  <Report userId={USER_ID} report={report} key={index}/>
+              ))}
+            </> 
+          : 
+            <>
+              {allSightings && allSightings.map((sighting, index) => (
+                  <Sighting userId={USER_ID} sighting={sighting} key={index}/>
+              ))}
+            </>
+          }
 
-		<Box h={250}></Box>
         </ScrollView>
         </View>
     );

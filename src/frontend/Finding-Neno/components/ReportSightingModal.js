@@ -112,12 +112,12 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 					setSightingImage(res.data.link);
 				} else {
 					console.log("Image failed to upload - setting default image");
-					setSightingImage(DEFAULT_IMAGE);
+					setSightingImage(null);
 				}
 			})
 			.catch(err => {
 				console.log("Image failed to upload:", err);
-				setSightingImage(DEFAULT_IMAGE);
+				setSightingImage(null);
 			});
 
 		setIsUploading(false);

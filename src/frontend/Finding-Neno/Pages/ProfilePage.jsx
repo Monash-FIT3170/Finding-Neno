@@ -11,6 +11,8 @@ import { DeleteIcon } from "native-base";
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 import pet, { selectPet } from "../store/pet";
+import LogoutButton from '../components/LogoutButton';
+import { logout } from '../store/user';
 
 export default function ProfilePage({ navigation: { navigate } }) {
   const navigation = useNavigation();
@@ -35,6 +37,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 	const [user, setUser] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [selectedPets, setSelectedPets] = useState([]);
+	const [logoutModalVisible, setLogoutModalVisible] = useState(false);
 
 	useEffect(() => {
 		if (isFocused) {
@@ -91,7 +94,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 			const name = profile_info[0];
 			const email_address = profile_info[1];
 			const phone_number = profile_info[2];
-			setUser({name: name, email: email_address, phone: phone_number});
+			setUser({ name: name, email: email_address, phone: phone_number });
 		} catch (error) {
 			console.log("error in profile page")
 			console.log(error);
@@ -333,6 +336,14 @@ export default function ProfilePage({ navigation: { navigate } }) {
               </Text>
             </HStack>
           </Box>
+					<Box h="2"></Box>
+
+					<Button onPress={() => setLogoutModalVisible(true)} backgroundColor={"#FA8072"}>
+						Logout
+					</Button>
+
+					<LogoutModal logoutModalVisible={logoutModalVisible} setLogoutModalVisible={setLogoutModalVisible} />
+
         </VStack>
 
         <Box height={1} />
@@ -394,8 +405,31 @@ export default function ProfilePage({ navigation: { navigate } }) {
           <Box h="4"></Box>
         </VStack>
 
-        {petCards()}
-      </Box>
+        {petCards()}      </Box>
+
+
     </ScrollView>
   );
+}
+
+
+function LogoutModal({ logoutModalVisible, setLogoutModalVisible }) {
+	return <Modal isOpen={logoutModalVisible} onClose={() => setLogoutModalVisible(false)} size={"md"}>
+		<Modal.Content >
+			<Modal.CloseButton />
+			<Modal.Header>Log Out?</Modal.Header>
+			<Modal.Body>
+				<Text>Are you sure you want to log out?</Text>
+			</Modal.Body>
+
+			<Modal.Footer>
+				<Button.Group space={2}>
+					<Button variant="ghost" colorScheme="blueGray" onPress={() => setLogoutModalVisible(false)} >
+						Cancel
+					</Button>
+					<LogoutButton onPress={() => setLogoutModalVisible(false)} />
+				</Button.Group>
+			</Modal.Footer>
+		</Modal.Content>
+	</Modal>
 }
