@@ -15,8 +15,8 @@ const Report = ({report, userId}) => {
     const location = report[3];
     
     const petName = report[6][0].toUpperCase() +report[6].substring(1);
-    const petSpecies = report[7];
-    const petBreed = report[8];
+    const petSpecies = report[7][0].toUpperCase() +report[7].substring(1);;
+    const petBreed = report[8][0].toUpperCase() +report[8].substring(1);;
     const petImage = report[9];
 
     const [showModal, setShowModal] = useState(false);

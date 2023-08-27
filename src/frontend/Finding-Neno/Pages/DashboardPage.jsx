@@ -154,6 +154,8 @@ const DashboardPage = () => {
             </>
           }
 
+          <Box h={180}></Box>
+
         </ScrollView>
         </View>
     );
