@@ -57,7 +57,7 @@ def insert_pet_operation(conn, owner_id):
 def update_pet_operation(conn):
     data = request.get_json()
     token = request.headers.get('Authorization').split('Bearer ')[1]
-    user_id = request.headers["User-ID"]
+    # user_id = request.headers["User-ID"]
 
     success = edit_pet(
         connection=conn,
