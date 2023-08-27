@@ -84,7 +84,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 						// navigation.navigate("DashboardPage");
 
 						// Pop to previous screen
-						navigation.dispatch(StackActions.pop(1));
+						navigation.goBack();
 
 						// Pop to top of stack
 						// navigation.dispatch(StackActions.popToTop());
