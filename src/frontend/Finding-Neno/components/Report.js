@@ -43,7 +43,7 @@ const Report = ({report, userId}) => {
       </Text>
 
       <Heading size = "sm" paddingLeft={5} paddingTop={2}>
-        need to add location here
+        Clayton, VIC
       </Heading>
 
       <Text paddingLeft={5}>
