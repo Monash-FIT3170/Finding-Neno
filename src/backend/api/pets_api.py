@@ -13,6 +13,7 @@ from db.pets import *
 
 def get_owner_pets_operation(conn, owner_id):
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
     db_output = get_all_pets(connection=conn, owner_id=owner_id, access_token=access_token)
 
@@ -33,6 +34,7 @@ def get_pet_operation(conn, pet_id):
 def insert_pet_operation(conn, owner_id):
     data = request.get_json()
     token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
     print(data)
 
@@ -55,6 +57,7 @@ def insert_pet_operation(conn, owner_id):
 def update_pet_operation(conn):
     data = request.get_json()
     token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
     success = edit_pet(
         connection=conn,
@@ -74,6 +77,7 @@ def update_pet_operation(conn):
 def toggle_missing_status_operation(conn):
     data = request.get_json()
     token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
     success = update_pet_missing_status(
         connection=conn,
@@ -88,11 +92,12 @@ def toggle_missing_status_operation(conn):
 
 def delete_pet_operation(conn, pet_id):
     token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
     success = delete_pet(
         connection=conn,
         id=pet_id,
-        access_token=token
+        access_token=token, user_id=user_id
     )
     if success:
         return jsonify({'message': 'Pet deleted successfully'}), 201

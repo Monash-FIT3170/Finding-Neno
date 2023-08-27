@@ -183,20 +183,24 @@ def edit_pet(
 
     query = """UPDATE pets SET name = %s, animal = %s, breed = %s, description = %s, image_url = %s, owner_id = %s WHERE id = %s;"""
 
+
+    result = False
     try:
         # Execute query
         cur.execute(query, (name, animal, breed, description, image_url, owner_id, id))
+        result = True
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
-        return False
 
     cur.close()
     connection.commit()
 
-    return True
+    return result
 
 def update_pet_missing_status(connection: psycopg2.extensions.connection, pet_id: int, new_status: bool) -> bool:
+
+    result = False
     try:
         cur = connection.cursor()
 
@@ -205,17 +209,18 @@ def update_pet_missing_status(connection: psycopg2.extensions.connection, pet_id
 
         connection.commit()
         cur.close()
-        return True
+        result = True
     
     except Exception as e:
         print(f"Error updating status: {e}")
         connection.rollback()
-        return False
+
+    return result
 
 def delete_pet(
     connection: psycopg2.extensions.connection, 
     id: int,
-    access_token: str,
+    access_token: str, user_id: int
 ):
     """
     Deletes an existing pet in the database
@@ -229,21 +234,21 @@ def delete_pet(
     """
 
     cur = connection.cursor()
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
 
-
+    result = False
     try:
         # Get the pet's owner's ID
         query = """SELECT owner_id FROM pets WHERE id = %s;"""
         cur.execute(query, (id,))
-        owner_id = cur.fetchone()[0]
         
-        # Verify access token
-        if not verify_access_token(connection, owner_id, access_token):
-            return False
         
         # Delete the pet
         query = """DELETE FROM pets WHERE id = %s;"""
         cur.execute(query, (id,))
+        result = True
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
@@ -252,4 +257,4 @@ def delete_pet(
     cur.close()
     connection.commit()
 
-    return True
+    return result

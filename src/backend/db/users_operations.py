@@ -194,7 +194,6 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
 
     # Verify access token
     if not verify_access_token(connection, user_id, access_token):
-        cur.close()
         return False
 
     cur = connection.cursor()
@@ -234,7 +233,6 @@ def update_missing_report_in_database(connection: psycopg2.extensions.connection
 
     # Verify access token
     if not verify_access_token(connection, author_id, access_token):
-        cur.close()
         return False
 
     cur = connection.cursor()
@@ -704,6 +702,27 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
     cur.close()
     return result
 
+def delete_missing_reports_of_pet(connection: psycopg2.extensions.connection, pet_id: int):
+    """
+    This function deletes all missing reports associated with pet.
+    """
+    cur = connection.cursor()
+
+    query = """DELETE missing_reports WHERE pet_id = %s;"""
+
+    result = False
+    try:
+        cur.execute(query, (pet_id, ))
+
+        # Commit the change
+        connection.commit()
+        print(f"Missing reports successfully deleted")
+
+        result = True
+    except Exception as e:
+        print(f"Error with changing password: {e}")
+
+    return result
 
 
 def change_password_in_database(connection: psycopg2.extensions.connection, email: int, new_password: str, user_id: int, access_token: str):

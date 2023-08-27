@@ -103,11 +103,12 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
   const deletePet = async (petId) => {
     try {
-      const url = `${IP}:${PORT}/delete_pet/${petId}`;
+      const url = `${IP}:${PORT}/delete_pet?pet_id=${petId}`;
       const response = await fetch(url, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${ACCESS_TOKEN}`,
+					'User-ID': USER_ID,
         },
       });
 

@@ -124,7 +124,7 @@ def update_pet_api():
 
 @app.route("/update_missing_status", methods=["PUT"])  # Use PUT method for updating
 def toggle_missing_status_api():
-    return toggle_missing_status_operation(get_connection())
+    return toggle_missing_status_operation(g.db())
 
 @app.route("/delete_pet", methods=["GET", "DELETE"]) # Requires Access_token and user ID for authorization
 def delete_pet_api():
@@ -156,7 +156,7 @@ def get_reports_by_pet():
     Returns an array of missing reports for a specific pet_id, sorted by latest to oldest.
     """
     pet_id = request.args.get("pet_id")
-    return jsonify(retrieve_reports_by_pet(get_connection(), pet_id))  # Updated function name
+    return jsonify(retrieve_reports_by_pet(g.db(), pet_id))  # Updated function name
 
 
 
@@ -218,7 +218,7 @@ def put_update_missing_report():
 
 @app.route("/update_report_active_status", methods=["PUT"])  # Use PUT method for updating
 def update_report_status_api():
-    return update_report_status(get_connection())
+    return update_report_status(g.db())
 
 @app.route("/archive_missing_report", methods=["PUT"]) # Requires Access_token and user ID for authorization
 def put_archive_missing_report():
