@@ -1,12 +1,13 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
+    id: null,
     name: '',
-    imageUrl: '',
+    image_url: '',
     animal: '',
     breed: '',
     description: '',
-    ownerId: null,
+    owner_id: null,
 }
 
 export const petSlice = createSlice({
@@ -14,12 +15,13 @@ export const petSlice = createSlice({
     initialState,
     reducers: {
         selectPet: (state, {payload}) => {
+            state.id = payload.id;
             state.name = payload.name;
-            state.imageUrl = payload.imageUrl;
+            state.image_url = payload.image_url;
             state.animal = payload.animal;
             state.breed = payload.breed;
             state.description = payload.description;
-            state.ownerId = payload.ownerId;
+            state.owner_id = payload.owner_id;
         }
     }
 });

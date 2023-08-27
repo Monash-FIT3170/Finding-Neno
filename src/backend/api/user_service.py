@@ -96,6 +96,8 @@ def insert_missing_report(connection) -> Tuple[str, int]:
     if result is False:
         return "User does not have access", 401
     else:
+        from db.pets import update_pet_missing_status
+        update_pet_missing_status(connection, pet_id, True)
         return "Success", 201
 
 def update_missing_report(connection) -> Tuple[str, int]:
@@ -124,6 +126,19 @@ def update_missing_report(connection) -> Tuple[str, int]:
         return "User does not have access", 401
     else:
         return "Success", 201
+    
+def update_report_status(conn):
+    data = request.get_json()
+    token = request.headers.get('Authorization').split('Bearer ')[1]
+
+    success = update_report_active_status(
+        connection=conn,
+        report_id=data["report_id"],
+        new_status=data["isActive"],
+    )
+    if success:
+        return "", 200
+    return "", 400
 
 def archive_missing_report(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
@@ -171,6 +186,23 @@ def retrieve_missing_reports(connection, author_id) -> Tuple[str, int]:
         elif len(missing_reports) == 0:
             return [], 204
 
+def retrieve_reports_by_pet(connection, pet_id) -> Tuple[str, int]:
+    """
+    This function calls the function to retrieve missing reports for a specific pet_id.
+    """
+
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+    print(access_token)
+    print(user_id)
+    reports = retrieve_reports_by_pet_id(connection, pet_id, user_id, access_token)
+
+    if reports is False:
+        return "User does not have access", 401
+    else:
+        return reports, 200
+
+
 def retrieve_sightings(connection, missing_report_id) -> Tuple[str, int]:
     """
     This function calls the function that connectionects to the db to retrieve all sightings or sightings for a missing 
@@ -187,6 +219,39 @@ def retrieve_sightings(connection, missing_report_id) -> Tuple[str, int]:
             return sightings, 200
         elif len(sightings) == 0:
             return [], 204
+    
+def retrieve_missing_reports_in_area(connection, longitude, longitude_delta, latitude, latitude_delta) -> Tuple[str, int]:
+    """
+    This function calls the function that connects to the db to retrieve missing reports in an area of width longitude_delta, height
+    latitude_delta and centre latitude longitude.
+    """
+    missing_reports = retrieve_missing_reports_in_area_from_database(connection, longitude, longitude_delta, latitude, latitude_delta)
+    
+    if missing_reports is False:
+        return "User does not have access", 401
+    else:
+        if len(missing_reports) > 0:
+            return missing_reports, 200
+        elif len(missing_reports) == 0:
+            return [], 204
+    
+
+def retrieve_sightings_in_area(connection, longitude, longitude_delta, latitude, latitude_delta) -> Tuple[str, int]:
+    """
+    This function calls the function that connects to the db to retrieve sightings in an area of width longitude_delta, height
+    latitude_delta and centre latitude longitude.
+    """
+    sightings = retrieve_sightings_in_area_from_database(connection, longitude, longitude_delta, latitude, latitude_delta)
+
+    if sightings is False:
+        return "User does not have access", 401
+    else:
+        if len(sightings) > 0:
+            return sightings, 200
+        elif len(sightings) == 0:
+            return [], 204
+    
+    
 
 def login(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
