@@ -65,6 +65,8 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		setIsButtonDisabled(true);
 		setButtonText("Creating report...");
 
+		console.log(formData)
+
 		let isValid = validateDetails(formData);
 
 		if (isValid) {
@@ -111,15 +113,14 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 		if (!formData.lastLocation || formData.lastLocation == "") {
 			foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
-		} else if (!validateCoordinates(formData.lastLocation)) {
-			foundErrors = { ...foundErrors, lastLocation: 'Location coordinates is invalid e.g. 24.212, -54.122' }
-		}
+		} 
 
 		if (formData.description.length > 500) {
 			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
 		}
 
 		setErrors(foundErrors);
+		console.log(foundErrors)
 
 		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
 		return Object.keys(foundErrors).length === 0;
@@ -178,6 +179,10 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			  latitude: parseFloat(firstResult.lat),
 			  longitude: parseFloat(firstResult.lon),
 			});
+			setFormData({
+                ...formData,
+                lastLocation: `${parseFloat(firstResult.lat)}, ${parseFloat(firstResult.lon)}`,
+            });
 			// You can animate to the new coordinates here if you want
 			mapViewRef.current.animateToRegion({
 			  latitude: parseFloat(firstResult.lat),
@@ -185,7 +190,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			  latitudeDelta: 0.03,
 			  longitudeDelta: 0.05,
 			});
-			console.log(firstResult);
 		  } else {
 			setCoordinates(null);
 		  }
@@ -225,7 +229,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 										onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 								</FormControl>
 
-								<FormControl isInvalid={coordinates === null}>
+								<FormControl>
 									<FormControl.Label>Last Known Location</FormControl.Label>
 									<Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
 									{coordinates === null && <FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}

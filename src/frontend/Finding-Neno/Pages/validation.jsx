@@ -12,6 +12,6 @@ export const validPhoneNumber = (inputPhoneNumber) => {
 }
   
 export const validateCoordinates = (inputCoordinates) => {
-    const coordinatesRegex = new RegExp(/^[-+]?(180(\.0+)?|((1[0-7]\d)|([1-9]?\d))(\.\d+)?),\s*[-+]?([1-8]?\d(\.\d+)?|90(\.0+)?)$/);
+    const coordinatesRegex = new RegExp(/^[-+]?(180(\.\d{1,7})?|((1[0-7]\d)|([1-9]?\d))(\.\d{1,7})?),\s*[-+]?([1-8]?\d(\.\d{1,7})?|90(\.\d{1,7})?)$/);
     return inputCoordinates.match(coordinatesRegex);
 }

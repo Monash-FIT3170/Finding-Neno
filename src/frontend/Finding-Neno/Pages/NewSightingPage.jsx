@@ -91,29 +91,29 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         }
     };
 
-    const validateDetails = (formData) => {
-        // Validates details. If details are valid, send formData object to onCreateReportPress.
-        foundErrors = {};
+	const validateDetails = (formData) => {
+		// Validates details. If details are valid, send formData object to onCreateReportPress.
+		foundErrors = {};
 
-        if (!formData.lastLocation || formData.lastLocation == "") {
-            foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
-        } else if (!validateCoordinates(formData.lastLocation)) {
-            foundErrors = { ...foundErrors, lastLocation: 'Location coordinates is invalid e.g. 24.212, -54.122' }
-        }
+		if (!formData.missingPetId || formData.missingPetId == "") {
+			foundErrors = { ...foundErrors, missingPetId: 'Please select a pet' }
+		}
 
-        if (!formData.animal || formData.animal == "") {
-            foundErrors = { ...foundErrors, animal: 'Please select a pet type' }
-        }
+		if (!formData.lastLocation || formData.lastLocation == "") {
+			foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
+		} 
 
-        if (formData.description.length > 500) {
-            foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
-        }
+		if (formData.description.length > 500) {
+			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
+		}
 
-        setErrors(foundErrors);
+		setErrors(foundErrors);
+		console.log(foundErrors)
 
-        // true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
-        return Object.keys(foundErrors).length === 0;
-    }
+		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
+		return Object.keys(foundErrors).length === 0;
+	}
+
 
 	const uploadImage = async (base64Img, setSightingImage) => {
         setIsButtonDisabled(true);
@@ -260,6 +260,10 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 			  latitude: parseFloat(firstResult.lat),
 			  longitude: parseFloat(firstResult.lon),
 			});
+            setFormData({
+                ...formData,
+                lastLocation: `${parseFloat(firstResult.lat)}, ${parseFloat(firstResult.lon)}`,
+            });
 			// You can animate to the new coordinates here if you want
 			mapViewRef.current.animateToRegion({
 			  latitude: parseFloat(firstResult.lat),
@@ -332,7 +336,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                                                 onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
                                         </FormControl>
 
-                                <FormControl isInvalid={coordinates === null}>
+                                <FormControl>
 									<FormControl.Label>Last Known Location</FormControl.Label>
 									<Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
 									{coordinates === null && <FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
