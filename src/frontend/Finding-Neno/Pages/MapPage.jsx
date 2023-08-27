@@ -66,21 +66,23 @@ export default function MapPage() {
 	const handleViewToggle = (value) => {
 		if (value) {
 			setIsViewReports(true);
+			fetchData(mapRegion, true);
 		}
 		else {
 			setIsViewReports(false);
+			fetchData(mapRegion, false);
 		}
 		fetchData(mapRegion);
 	}
 
-	const fetchData = (region) => {
+	const fetchData = (region,viewReports) => {
 		const longitude = region["longitude"];
 		const longitude_delta = region["longitudeDelta"];
 		const latitude = region["latitude"];
 		const latitude_delta = region["latitudeDelta"];
 
 
-		if (isViewReports) {
+		if (viewReports) {
 			console.log("fetching reports")
 			fetchReports(longitude, longitude_delta, latitude, latitude_delta);
 		}
@@ -95,7 +97,9 @@ export default function MapPage() {
 		try {
 			const response = await fetch(`${IP.toString()}:${PORT.toString()}/get_missing_reports_in_area?long=${longitude}&long_delta=${longitude_delta}&lat=${latitude}&lat_delta=${latitude_delta}`);
 			const data = await response.json();
-			setReports(data[0]);
+			// setReports(data[0]);
+			console.log("Fetched Reports:", data); // Log fetched data
+      		setReports(Array.isArray(data[0]) ? data[0] : []);//new
 		} catch (error) {
 			console.error(error);
 		}
@@ -106,7 +110,9 @@ export default function MapPage() {
 		try{
 			const response = await fetch(`${IP.toString()}:${PORT.toString()}/get_sightings_in_area?long=${longitude}&long_delta=${longitude_delta}&lat=${latitude}&lat_delta=${latitude_delta}`);
 			const data = await response.json();
-			setSightings(data[0]);
+			// setSightings(data[0]);
+			console.log("Fetched Sightings:", data); // Log fetched data
+      	setSightings(Array.isArray(data[0]) ? data[0] : []);
 		} catch (error) {
 			console.error(error);
 		}
@@ -114,26 +120,54 @@ export default function MapPage() {
 	
 	return (
 		<View style={styles.container}>
-			<MapView ref={(ref) => this.mapView = ref} provider={PROVIDER_GOOGLE} style={styles.map} initialRegion={mapRegion} showCompass={true} showsIndoors={false} rotateEnabled={false}
-				loadingEnabled={true}
-				mapType={"standard"} onRegionChangeComplete={(newRegion) => handleRegionChange(newRegion)}>
+			    <MapView
+        ref={(ref) => this.mapView = ref}
+        provider={PROVIDER_GOOGLE}
+        style={styles.map}
+        initialRegion={mapRegion}
+        showCompass={true}
+        showsIndoors={false}
+        rotateEnabled={false}
+        loadingEnabled={true}
+        mapType={"standard"}
+        onRegionChangeComplete={(newRegion) => handleRegionChange(newRegion)}
+    >
+        {/* Render reports markers */}
+        {isViewReports && Array.isArray(reports) 
+            ? reports.map((report, index) => (
+                <Marker
+                    key={`${report[0]}_${report[3]}_${report[4]}`}
+                    title={report[6]}
+                    coordinate={{ longitude: report[3], latitude: report[4] }}
+                    onPress={() =>
+                        this.mapView.animateToRegion({
+                            longitude: report[3],
+                            latitude: report[4],
+                            longitudeDelta: 0.0015,
+                        })
+                    }
+                ></Marker>
+            ))
+            : null}
 
-				{/*MARKERS*/}
-				{
-					isViewReports ? 
-					// ACTIVE REPORTS
-					reports && reports.map((report, index) => (
-						<Marker key={`${report[0]}_${report[3]}_${report[4]}`} title={report[6]} coordinate={{longitude: report[3], latitude: report[4]}} onPress={() => this.mapView.animateToRegion({longitude: report[3], latitude: report[4], longitudeDelta: 0.0015})}></Marker>
-					))
-					 :
-					 // ACTIVE SIGHTINGS
-					sightings && sightings.map((sighting, index) => (
-						<Marker key={`${sighting[0]}_${sighting[2]}_${sighting[3]}`} title={sighting[10]} coordinate={{longitude: sighting[2], latitude: sighting[3]}} onPress={() => this.mapView.animateToRegion({longitude: sighting[2], latitude: sighting[3], longitudeDelta: 0.0015})}></Marker>
-					))
-				}
-				{/* <Marker coordinate={mapRegion} title='Marker'></Marker> */}
-
-			</MapView>
+        {/* Render sightings markers */}
+        {!isViewReports && Array.isArray(sightings) 
+            ? sightings.map((sighting, index) => (
+                <Marker
+                    key={`${sighting[0]}_${sighting[2]}_${sighting[3]}`}
+                    title={sighting[10]}
+                    coordinate={{ longitude: sighting[2], latitude: sighting[3] }}
+                    onPress={() =>
+                        this.mapView.animateToRegion({
+                            longitude: sighting[2],
+                            latitude: sighting[3],
+                            longitudeDelta: 0.0015,
+                        })
+                    }
+                ></Marker>
+            ))
+            : null}
+    </MapView>
 
 
 			{/* Switch and label */}
