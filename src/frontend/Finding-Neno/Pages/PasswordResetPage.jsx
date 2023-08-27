@@ -13,8 +13,7 @@ import store from "../store/store";
 
 const PasswordResetPage = () => {
 
-	const IP = useSelector((state) => state.IP);
-	const PORT = useSelector((state) => state.PORT);
+	const { IP, PORT } = useSelector((state) => state.api);
 	
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});

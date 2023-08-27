@@ -6,18 +6,18 @@
     "preview": {
       "channel": "preview",
       "distribution": "internal",
-      "developmentClient": true,
       "env": {
-        "IP": "https://finding-neno-backend-e7784ead43b6.herokuapp.com",
-        "PORT": "5000"
+        "IP": "https://finding-neno-backend-e7784ead43b6.herokuapp.com"
+      },
+      "android": {
+        "buildType": "apk"
       }
     },
     "production": {
       "channel": "production",
       "distribution": "internal",
       "env": {
-        "IP": "https://finding-neno-backend-e7784ead43b6.herokuapp.com",
-        "PORT": "5000"
+        "IP": "https://finding-neno-backend-e7784ead43b6.herokuapp.com"
       }
     }
   },
