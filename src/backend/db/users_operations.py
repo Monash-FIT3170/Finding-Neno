@@ -320,7 +320,7 @@ def archive_missing_report_in_database(connection: psycopg2.extensions.connectio
     return result
 
 
-def retrieve_missing_reports_from_database(connection: psycopg2.extensions.connection, author_id: int, user_id: int, access_token: str):
+def retrieve_missing_reports_from_database(connection: psycopg2.extensions.connection, author_id: int,  user_id: int, access_token: str):
     """
     This function retrieves all missing reports or missing reports of a user if user_id is provided.
     Missing report, pet, and owner information are all returned.
@@ -368,7 +368,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
                     JOIN 
                         users AS u ON mr.author_id = u.id
                     WHERE 
-                        u.id = %s
+                        u.id = %s AND mr.isActive = true
                     ORDER BY 
                         mr.date_time DESC;
                 """
