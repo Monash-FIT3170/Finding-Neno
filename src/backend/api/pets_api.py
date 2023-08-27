@@ -13,6 +13,7 @@ from db.pets import *
 
 def get_owner_pets_operation(conn, owner_id):
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
     db_output = get_all_pets(connection=conn, owner_id=owner_id, access_token=access_token)
 
@@ -33,6 +34,7 @@ def get_pet_operation(conn, pet_id):
 def insert_pet_operation(conn, owner_id):
     data = request.get_json()
     token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
     print(data)
 
@@ -43,6 +45,7 @@ def insert_pet_operation(conn, owner_id):
         breed=data["breed"],
         description=data["description"],
         image_url=data["image_url"],
+        is_missing = data["is_missing"],
         owner_id=owner_id,
         access_token=token
     )
@@ -54,6 +57,7 @@ def insert_pet_operation(conn, owner_id):
 def update_pet_operation(conn):
     data = request.get_json()
     token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
     success = edit_pet(
         connection=conn,
@@ -70,18 +74,35 @@ def update_pet_operation(conn):
         return "", 201
     return ""
 
+def toggle_missing_status_operation(conn):
+    data = request.get_json()
+    token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+
+    success = update_pet_missing_status(
+        connection=conn,
+        pet_id=data["pet_id"],
+        new_status=data["isMissing"],
+        #access_token=token
+    )
+    if success:
+        return "", 200
+    return "", 400
+
 
 def delete_pet_operation(conn, pet_id):
     token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
 
     success = delete_pet(
         connection=conn,
         id=pet_id,
-        access_token=token
+        access_token=token, user_id=user_id
     )
     if success:
-        return "", 201
-    return ""
+        return jsonify({'message': 'Pet deleted successfully'}), 201
+    else:
+        return jsonify({'message': 'Failed to delete pet'}), 500
 
 
 
