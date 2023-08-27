@@ -13,6 +13,7 @@ const Report = ({report, userId}) => {
     const lastSeen = report[1];
     const reportDesc = report[2];
     const location = report[3];
+    const authorId = report[14]
     
     const petName = report[6][0].toUpperCase() +report[6].substring(1);
     const petSpecies = report[7];
@@ -73,21 +74,26 @@ const Report = ({report, userId}) => {
       <Box width={windowWidth - 40} height={180} paddingLeft={5} paddingTop={5} paddingBottom={1}>
       <Image source={{ uri: petImage }} style={{ width: '100%', height: '100%', borderTopLeftRadius: 20, borderTopRightRadius: 20  }} alt='pet' />
 
-      <HStack width={'100%'} height={10} marginTop = {2} spacing = {0}>
-        <ReportSightingModal
-					report={report}
-					userId={userId}
-					closeModal={closeModal}
-          showModal={showModal}
-				/>
-        <Button width={'70%'} borderBottomLeftRadius={10} borderTopRightRadius={0}  borderBottomRightRadius={0} 
-          marginRight = {'2%'}
-                onPress={() => setShowModal(true)}>
-          Report a Sighting
-        </Button>
-
       
-        <Button width={'28%'} borderBottomLeftRadius={0} borderTopLeftRadius={0}  borderBottomRightRadius={10}>
+      <HStack width={'100%'} height={10} marginTop = {2} spacing = {0}>
+
+        { authorId != userId ?
+          <>
+           <ReportSightingModal
+           report={report}
+            userId={userId}
+            closeModal={closeModal}
+            showModal={showModal}
+          />
+          <Button width={'70%'} borderBottomLeftRadius={10} borderTopRightRadius={0}  borderBottomRightRadius={0} 
+            marginRight = {'2%'}
+                  onPress={() => setShowModal(true)}>
+            Report a Sighting
+          </Button> 
+          </> : ""
+        }
+      
+        <Button width={authorId == userId ? '100%' : '28%'} borderBottomLeftRadius={authorId == userId ? 10 : 0} borderTopLeftRadius={authorId == userId ? 5 : 0}  borderBottomRightRadius={10}>
           Share
         </Button>
     
