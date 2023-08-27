@@ -15,7 +15,7 @@ export default function SightingsPage({navigation: {navigate}}) {
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
     
 
-    // console.log("Sighting: " + user);
+    // NOTE: This page is no longer in use, but keeping this code here in case we need it in future, or for reference
   
     return (
         <ScrollView>
@@ -24,7 +24,7 @@ export default function SightingsPage({navigation: {navigate}}) {
                 <Box height={3}/>
                 <Button
                 bg="#FA8072"
-                onPress={() => navigate('New Sighting Page')} 
+                // onPress={() => navigate('New Sighting Page')} 
                 width={windowWidth - 60}
                 height="40px"
                 >

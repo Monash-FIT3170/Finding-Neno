@@ -30,42 +30,26 @@ export default function ReportPage({ navigation: { navigate}}) {
 
     useEffect(() => {
       if (isFocused) {
-        fetchAllReports();
+        fetchUserReports();
       }
     }, [isFocused]);
   
-    const fetchAllReports = async () => {
+    const fetchUserReports = async () => {
       try {
-        const response = await fetch(`${IP}:${PORT}/get_missing_reports?owner_id=${USER_ID}`);
+        const url = `${IP}:${PORT}/get_missing_reports?author_id=${USER_ID}`;
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                'User-ID': USER_ID
+            },
+        });
         const data = await response.json();
         setReports(data[0]);
       } catch (error) {
         console.error(error);
       }
-    };
-
-    const owner = {
-        name: "Human Being",
-        image: "https://wallpaperaccess.com/full/317501.jpg",
-        phone: "0412 345 678"
-    };
-
-    const pet1 = {
-        name: "Peanutbutter",
-        species: "Dog",
-        breed: "Labrador",
-        desc: "Is this a crossever episode and i am testing that this is wrapping around",
-        lastSeen: "3:00 pm, 18/05/2023",
-        lastKnownLocation: "Clayton"
-    };
-
-    const pet2 = {
-        name: "Princess Carolyn",
-        species: "Cat",
-        breed: "Manager",
-        desc: "Is this a crossever episode and i am testing that this is wrapping around",
-        lastSeen: "3:00 pm, 18/05/2023",
-        lastKnownLocation: "Clayton"
     };
 
     return (
@@ -84,6 +68,11 @@ export default function ReportPage({ navigation: { navigate}}) {
         <Box height={3}/>
 
         
+        <>
+          {reports && reports.map((report, index) => (
+              <Report userId={USER_ID} report={report} key={index}/>
+          ))}
+        </> 
     </Box>
     </ScrollView>
     
