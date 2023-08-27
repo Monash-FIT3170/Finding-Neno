@@ -115,7 +115,7 @@ const DashboardPage = () => {
             </View>
           </Pressable>
         )}>
-          <Menu.Item onPress={() => navigation.navigate('New Report Page', { screen: 'New Report Page' })}>Report</Menu.Item>
+          <Menu.Item onPress={() => navigation.navigate('Report', { screen: 'New Report Page' })}>Report</Menu.Item>
           <Menu.Item onPress={() => navigation.navigate('Dashboard', { screen: 'New Sighting Page' })}>Sighting</Menu.Item>
         </Menu>
       </View>

@@ -340,7 +340,8 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
                     SELECT 
                         mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, 
                         p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
-                        u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+                        u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number,
+                        mr.author_id
                     FROM 
                         missing_reports AS mr
                     JOIN 
@@ -358,7 +359,8 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
                     SELECT 
                         mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
                         p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
-                        u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+                        u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number,
+                        mr.author_id
                     FROM 
                         missing_reports AS mr
                     JOIN 
