@@ -187,6 +187,39 @@ def retrieve_sightings(connection, missing_report_id) -> Tuple[str, int]:
             return sightings, 200
         elif len(sightings) == 0:
             return [], 204
+    
+def retrieve_missing_reports_in_area(connection, longitude, longitude_delta, latitude, latitude_delta) -> Tuple[str, int]:
+    """
+    This function calls the function that connects to the db to retrieve missing reports in an area of width longitude_delta, height
+    latitude_delta and centre latitude longitude.
+    """
+    missing_reports = retrieve_missing_reports_in_area_from_database(connection, longitude, longitude_delta, latitude, latitude_delta)
+    
+    if missing_reports is False:
+        return "User does not have access", 401
+    else:
+        if len(missing_reports) > 0:
+            return missing_reports, 200
+        elif len(missing_reports) == 0:
+            return [], 204
+    
+
+def retrieve_sightings_in_area(connection, longitude, longitude_delta, latitude, latitude_delta) -> Tuple[str, int]:
+    """
+    This function calls the function that connects to the db to retrieve sightings in an area of width longitude_delta, height
+    latitude_delta and centre latitude longitude.
+    """
+    sightings = retrieve_sightings_in_area_from_database(connection, longitude, longitude_delta, latitude, latitude_delta)
+
+    if sightings is False:
+        return "User does not have access", 401
+    else:
+        if len(sightings) > 0:
+            return sightings, 200
+        elif len(sightings) == 0:
+            return [], 204
+    
+    
 
 def login(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
