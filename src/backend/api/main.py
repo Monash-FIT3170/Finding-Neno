@@ -110,7 +110,7 @@ def update_pet_api():
 def toggle_missing_status_api():
     return toggle_missing_status_operation(get_connection())
 
-@app.route("/delete_pet", methods=["DELETE"]) # Requires Access_token and user ID for authorization
+@app.route("/delete_pet", methods=["GET", "DELETE"]) # Requires Access_token and user ID for authorization
 def delete_pet_api():
     pet_id = request.args.get("pet_id")
     return delete_pet_operation(get_connection(), pet_id)

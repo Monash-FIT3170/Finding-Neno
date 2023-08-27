@@ -12,6 +12,7 @@ import { login, logout } from "./store/user";
 
 
 import DashboardPage from "./Pages/DashboardPage";
+import EditPetPage from "./Pages/EditPetPage";
 import LoginPage from "./Pages/LoginPage";
 import MapPage from "./Pages/MapPage";
 import NewPetPage from "./Pages/NewPetPage";
@@ -191,10 +192,11 @@ function ReportStackNavigator() {
 }
 
 function ProfileStackNavigator() {
-	return (
-		<Stack.Navigator initialRouteName="ProfilePage">
-			<Stack.Screen name="Profile Page" component={ProfilePage} />
-			<Stack.Screen name="New Pet Page" component={NewPetPage} />
-		</Stack.Navigator>
-	)
+  return (
+    <Stack.Navigator initialRouteName="ProfilePage">
+      <Stack.Screen name="Profile Page" component={ProfilePage} />
+      <Stack.Screen name="New Pet Page" component={NewPetPage} />
+      <Stack.Screen name="Edit Pet Page" component={EditPetPage} />
+    </Stack.Navigator>
+  )
 }

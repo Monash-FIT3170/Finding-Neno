@@ -40,6 +40,8 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 	const [petBreed, setPetBreed] = useState(pet ? pet.breed : '');
 	const [petDescription, setPetDescription] = useState(pet ? pet.description : '');
 
+	const LOADING_IMAGE = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWRwMHI0cmlnOGU3Mm4xbzZwcTJwY2Nrb2hlZ3YwNmtleHo4Zm15MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L05HgB2h6qICDs5Sms/giphy.gif";
+
 	const onAddPetPress = () => {
 		setIsButtonDisabled(true);
 		setButtonText("Adding Pet...");
@@ -113,35 +115,47 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
 	const validateDetails = (formData) => {
 		// Validates details. If details are valid, send formData object to onAddPetPress.
-		foundErrors = {};
-
-		if (!formData.petName || formData.petName == "") {
-			foundErrors = { ...foundErrors, petName: 'Pet name is required' }
+		const foundErrors = {};
+	  
+		if (!formData.petName || formData.petName === "") {
+		  foundErrors.petName = "Pet name is required";
+		} else if (formData.petName.length > 25) {
+			foundErrors.petName = "Must not exceed 25 characters";
 		}
-
-		if (!formData.petType || formData.petType == "") {
-			foundErrors = { ...foundErrors, petType: 'Please select a pet type' }
+	  
+		if (!formData.petType || formData.petType === "") {
+		  foundErrors.petType = "Please select a pet type";
 		}
-
-		if (!formData.petBreed || formData.petBreed == "") {
-			foundErrors = { ...foundErrors, petBreed: 'Pet breed is required' }
+	  
+		if (!formData.petBreed || formData.petBreed === "") {
+		  foundErrors.petBreed = "Pet breed is required";
+		} else if (formData.petBreed.length > 25) {
+			foundErrors.petBreed = "Must not exceed 25 characters";
 		}
-
-		if (formData.petDescription.length > 500) {
-			foundErrors = { ...foundErrors, petDescription: 'Must not exceed 500 characters' }
+	  
+		if (formData.petDescription.length > 100) {
+		  foundErrors.petDescription = "Must not exceed 100 characters";
 		}
-
+	  
+		// Check that image is not the LOADING_IMAGE and not empty
+		if (petImage === LOADING_IMAGE || !petImage) {
+		  foundErrors.petImage = "Please make sure a photo has been loaded";
+		}
+	  
 		setErrors(foundErrors);
-
-		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
+	  
+		// Return true if no errors (foundErrors is empty), false if errors found
 		return Object.keys(foundErrors).length === 0;
-	}
+	};
 
 	const uploadImage = async (base64Img, setPetImage) => {
         setIsButtonDisabled(true);
         setIsUploading(true);
 		// Uploads an image to Imgur and sets the petImage state to the uploaded image URL
 		const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
+
+		// Set loading image while the chosen image is being uploaded
+		setPetImage(LOADING_IMAGE);
 
 		const formData = new FormData();
 		formData.append("image", base64Img);
@@ -292,8 +306,13 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
 										<FormControl isInvalid={'petDescription' in errors}>
 											<FormControl.Label>Pet Description</FormControl.Label>
-											<Input onChangeText={value => setFormData({ ...formData, petDescription: value })} placeholder="Please describe more about your pet"/>
-											{'petDescription' in errors && <FormControl.ErrorMessage>{errors.petDescription}</FormControl.ErrorMessage>}
+											<Input
+												onChangeText={(value) => setFormData({ ...formData, petDescription: value })}
+												placeholder="Please describe more about your pet"
+											/>
+											{'petDescription' in errors && (
+												<FormControl.ErrorMessage>{errors.petDescription}</FormControl.ErrorMessage>
+											)}
 										</FormControl>
 
 										<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onAddPetPress}>
