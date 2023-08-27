@@ -449,6 +449,191 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
     cur.close()
     return result
 
+def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensions.connection, longitude, longitude_delta, latitude, latitude_delta):
+    """
+    This function retrieves the missing reports near a coordinate point at latitude longitude. longitude_delta is the width of the area with longitude
+    as the centre and latitude_delta is the height of the area with latitude as its centre.
+    """
+    cur = connection.cursor()
+    
+    # Area is between -180 and +180 long
+    longitude_min_section_one = float(longitude) - float(longitude_delta)/2
+    longitude_max_section_one = float(longitude) + float(longitude_delta)/2
+    latitude_min = float(latitude) - float(latitude_delta)/2
+    latitude_max = float(latitude) + float(latitude_delta)/2
+
+    longitude_min_section_two, longitude_max_section_two = None, None
+
+    # The longitude range of what the map returns is -110 to +250. This calculates if the user's view contains the -110 or +250 boundary.
+    if longitude_min_section_one < -110:
+        # Area crosses over -110 long i.e. -160 to +160, regions are -160 to -180 and +180 to +160
+        longitude_min_section_two = 360 + longitude_min_section_one 
+        longitude_max_section_two = 250
+        longitude_min_section_one = -110
+    elif longitude_max_section_one > 250:
+        # Area crosses over +250 long i.e. +230 to -90, regions are +230 to +25 and -110 to -90
+        longitude_min_section_two = -110
+        longitude_max_section_two = longitude_max_section_one - 360
+        longitude_max_section_one = 250
+
+    if longitude_min_section_two == None and longitude_max_section_two == None:
+        print("ONE SECTION")
+        print(f"{longitude_min_section_one} - {longitude} - {longitude_max_section_one}  d = {longitude_delta}")
+        print(f"{latitude_min} - {latitude} - {latitude_max}  d = {latitude_delta}")
+
+        query = """SELECT 
+                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
+                        p.id AS pet_id, p.name AS pet_name, p.animal, p.breed,
+                        u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+                    FROM 
+                        missing_reports AS mr
+                    JOIN 
+                        pets AS p ON mr.pet_id = p.id
+                    JOIN 
+                        users AS u ON mr.author_id = u.id
+                    WHERE 
+                        mr.location_longitude BETWEEN %s AND %s AND mr.location_latitude BETWEEN %s AND %s AND mr.isactive IS TRUE
+                    ORDER BY 
+                        mr.date_time DESC;"""
+    else:
+        print("TWO SECTIONS")
+        print(f"{longitude_min_section_one} - {longitude} - {longitude_max_section_one}  d = {longitude_delta}")
+        print(f"{longitude_min_section_two} - {longitude_max_section_two}  d = {longitude_delta}")
+        print(f"{latitude_min} - {latitude} - {latitude_max}  d = {latitude_delta}")
+
+        query = """SELECT 
+                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
+                        p.id AS pet_id, p.name AS pet_name, p.animal, p.breed,
+                        u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+                    FROM 
+                        missing_reports AS mr
+                    JOIN 
+                        pets AS p ON mr.pet_id = p.id
+                    JOIN 
+                        users AS u ON mr.author_id = u.id
+                    WHERE (
+                        mr.location_longitude BETWEEN %s AND %s OR mr.location_longitude BETWEEN %s AND %s) AND mr.isActive IS TRUE
+                        AND mr.location_latitude BETWEEN %s AND %s
+                    ORDER BY 
+                        mr.date_time DESC;"""
+    
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    try:
+        if longitude_min_section_two == None and longitude_max_section_two == None:
+            cur.execute(query, (longitude_min_section_one, longitude_max_section_one, latitude_min, latitude_max))
+        else:
+            cur.execute(query, (longitude_min_section_one, longitude_max_section_one, longitude_min_section_two, longitude_max_section_two, latitude_min, latitude_max))
+            
+        # Retrieve rows as an array
+        missing_reports = cur.fetchall()
+
+        print(f"Missing reports in area successfully retrieved")
+
+        result = missing_reports
+    except Exception as e:
+        print(f"Error with retrieving missing reports in area: {e}")
+
+    cur.close()
+    return result
+
+def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.connection, longitude, longitude_delta, latitude, latitude_delta):
+    """
+    This function retrieves the sightings near a coordinate point at latitude longitude. longitude_delta is the width of the area with longitude
+    as the centre and latitude_delta is the height of the area with latitude as its centre.
+    """
+    cur = connection.cursor()
+    
+    # Area is between -180 and +180 long
+    longitude_min_section_one = float(longitude) - float(longitude_delta)/2
+    longitude_max_section_one = float(longitude) + float(longitude_delta)/2
+    latitude_min = float(latitude) - float(latitude_delta)/2
+    latitude_max = float(latitude) + float(latitude_delta)/2
+
+    longitude_min_section_two, longitude_max_section_two = None, None
+
+    # The longitude range of what the map returns is -110 to +250. This calculates if the user's view contains the -110 or +250 boundary.
+    if longitude_min_section_one < -110:
+        # Area crosses over -110 long i.e. -160 to +160, regions are -160 to -180 and +180 to +160
+        longitude_min_section_two = 360 + longitude_min_section_one 
+        longitude_max_section_two = 250
+        longitude_min_section_one = -110
+    elif longitude_max_section_one > 250:
+        # Area crosses over +250 long i.e. +230 to -90, regions are +230 to +25 and -110 to -90
+        longitude_min_section_two = -110
+        longitude_max_section_two = longitude_max_section_one - 360
+        longitude_max_section_one = 250
+
+    if longitude_min_section_two == None and longitude_max_section_two == None:
+        print("ONE SECTION SIGHTINGS")
+        print(f"{longitude_min_section_one} - {longitude} - {longitude_max_section_one}  d = {longitude_delta}")
+        print(f"{latitude_min} - {latitude} - {latitude_max}  d = {latitude_delta}")
+        query = """SELECT 
+                        s.id AS sightings_id, s.date_time, s.location_longitude, s.location_latitude, s.description, s.animal, s.breed, s.image_url,
+                        mr.id AS missing_report_id, mr.date_time, mr.description,
+                        u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+                    FROM 
+                        sightings AS s
+                    LEFT JOIN 
+                        missing_reports AS mr ON s.missing_report_id = mr.id
+                    JOIN 
+                        users AS u ON s.author_id = u.id
+                    WHERE 
+                        (s.location_longitude BETWEEN %s AND %s AND s.location_latitude BETWEEN %s AND %s)
+                        AND (mr.isActive IS TRUE OR s.missing_report_id IS NULL)
+                    ORDER BY 
+                        s.date_time DESC;"""
+    else:
+        print("TWO SECTIONS SIGHTINGS")
+        print(f"{longitude_min_section_one} - {longitude} - {longitude_max_section_one}  d = {longitude_delta}")
+        print(f"{longitude_min_section_two} - {longitude_max_section_two}  d = {longitude_delta}")
+        print(f"{latitude_min} - {latitude} - {latitude_max}  d = {latitude_delta}")
+
+        query = """SELECT 
+                        s.id AS sightings_id, s.date_time, s.location_longitude, s.location_latitude, s.description, s.animal, s.breed, s.image_url,
+                        mr.id AS missing_report_id, mr.date_time, mr.description,
+                        u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+                    FROM 
+                        sightings AS s
+                    LEFT JOIN 
+                        missing_reports AS mr ON s.missing_report_id = mr.id
+                    JOIN 
+                        users AS u ON s.author_id = u.id
+                    WHERE 
+                        (s.location_longitude BETWEEN %s AND %s OR s.location_longitude BETWEEN %s AND %s) AND s.location_latitude BETWEEN %s AND %s
+                        AND (mr.isActive IS TRUE OR s.missing_report_id IS NULL)
+                        
+                    ORDER BY 
+                        s.date_time DESC;"""
+    
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    try:
+        if longitude_min_section_two == None and longitude_max_section_two == None:
+            cur.execute(query, (longitude_min_section_one, longitude_max_section_one, latitude_min, latitude_max))
+        else:
+            cur.execute(query, (longitude_min_section_one, longitude_max_section_one, longitude_min_section_two, longitude_max_section_two, latitude_min, latitude_max))
+            
+        # Retrieve rows as an array
+        sightings = cur.fetchall()
+
+        print(f"Sightings in area successfully retrieved")
+
+        print(f"{len(sightings)} retrieved")
+
+        result = sightings
+    except Exception as e:
+        print(f"Error with retrieving sightings in area: {e}")
+
+    cur.close()
+    return result
+
+
+
 def change_password_in_database(connection: psycopg2.extensions.connection, email: int, new_password: str, user_id: int, access_token: str):
     """
     This function updates the password of the row in the database which matches the email provided.
