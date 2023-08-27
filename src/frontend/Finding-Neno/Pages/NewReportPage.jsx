@@ -233,7 +233,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			});
 			setFormData({
                 ...formData,
-                lastLocation: `${parseFloat(firstResult.lat)}, ${parseFloat(firstResult.lon)}`,
+                lastLocation: `${parseFloat(firstResult.lon)}, ${parseFloat(firstResult.lat)}`,
             });
 			// You can animate to the new coordinates here if you want
 			mapViewRef.current.animateToRegion({
