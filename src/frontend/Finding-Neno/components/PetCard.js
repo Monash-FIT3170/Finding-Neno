@@ -1,11 +1,9 @@
 import React, {useState, useEffect} from 'react';
-import { View, Modal, TouchableOpacity } from 'react-native'
+import { View, TouchableOpacity, Modal } from 'react-native'
 import { Image, Text, Box, Button } from 'native-base';
-import store from '../redux/store';
 import { useSelector, useDispatch } from 'react-redux';
-import { border } from 'native-base/lib/typescript/theme/styled-system';
 
-const PetCard = ({color, height, pet, onClick, editMode}) => {
+const PetCard = ({color, pet, onClick, editMode}) => {
   const {IP, PORT} = useSelector((state) => state.api)
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
@@ -13,8 +11,6 @@ const PetCard = ({color, height, pet, onClick, editMode}) => {
     NENO_BLUE: 'blue' 
   };
 
-  
-  // need to fix image appearing on the application correctly
   const petName = pet.name[0].toUpperCase() + pet.name.substring(1);
   const petType = pet.animal[0].toUpperCase() + pet.animal.substring(1);
   const petBreed = pet.breed[0].toUpperCase() + pet.breed.substring(1);
@@ -42,8 +38,8 @@ const PetCard = ({color, height, pet, onClick, editMode}) => {
         <Button
           title="Missing"
           bg="#454545"
-          style={{ borderRadius: 0, borderBottomRightRadius: 20 }}
-          onPress={handleMissingButtonPress} // Attach the onPress handler
+          style={{ borderRadius: 0, borderBottomRightRadius: 20, borderBottomLeftRadius: 20 }}
+          onPress={toggleMissingStatus} // Attach the onPress handler
         >
           Found Me!
         </Button>
@@ -53,29 +49,8 @@ const PetCard = ({color, height, pet, onClick, editMode}) => {
     }
   };
 
-  // Modal to confirm is user has found pet
-  // Define the modal content
-  const modalContent = (
-    <View style={{ backgroundColor: 'white', padding: 20, borderRadius: 10 }}>
-      <Text>Have you reunited with your pet?</Text>
-      <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: 20 }}>
-        <Button onPress={toggleMissingStatus}>Yes</Button>
-        <Button onPress={toggleModal}>No</Button>
-      </View>
-    </View>
-  );
-
-  const [isModalVisible, setIsModalVisible] = useState(false); // Initialize modal state
-
-  const handleMissingButtonPress = () => {
-    toggleModal(); // Toggle the modal when "Missing" button is pressed
-  };
-
-  const toggleModal = () => {
-    setIsModalVisible(!isModalVisible); // Toggle modal visibility
-  };
-
   const toggleMissingStatus = async () => {
+    console.log("Updating the pet status")
     try {
         petId = pet.id;
         const response = await fetch(`${IP}:${PORT}/update_missing_status`, {
@@ -93,7 +68,6 @@ const PetCard = ({color, height, pet, onClick, editMode}) => {
         if (response.ok) {
             await fetchMissingReport();
             // Perform any necessary updates on the frontend
-            toggleModal();
             setMissing(!missing);
           } else {
             console.log('Error while toggling status:', response.statusText);
@@ -120,7 +94,7 @@ const fetchMissingReport = async () => {
     if (response.ok) {
       const data = await response.json();
       report = data[0][0];
-
+      
       console.log('Response data:', report);
 
       await updateMissingReport(report);
@@ -135,6 +109,7 @@ const fetchMissingReport = async () => {
 
 const updateMissingReport = async (report) => {
   report_id = report[0];
+  console.log(report_id)
   try {
     const response = await fetch(`${IP}:${PORT}/update_report_active_status`, {
       method: 'PUT',
@@ -162,6 +137,7 @@ const updateMissingReport = async (report) => {
 
   
   return (
+    <View>
     <TouchableOpacity
     activeOpacity={editMode ? 0.6 : 1}
     onPress={editMode ? onClick : null}>
@@ -169,8 +145,8 @@ const updateMissingReport = async (report) => {
         backgroundColor={color}
         borderTopLeftRadius={20}
         borderBottomRightRadius={borderRadius()}
+        borderBottomLeftRadius={borderRadius()}
         height={150 + descriptionHeight}
-        marginBottom={4}
         style={{ opacity: editMode ? 0.8 : 1, borderRadius: 20, overflow: "hidden" }}
       >
         <View>
@@ -229,18 +205,13 @@ const updateMissingReport = async (report) => {
             </View>
           </View>
         </View>
-        {displayMissingButton()}
-        <Box h="4"></Box>
       </Box>
-
-          {/* Custom modal overlay */}
-            {isModalVisible && (
-        <View style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, justifyContent: 'center', alignItems: 'center' }}>
-          {modalContent}
-        </View>
-      )}
     </TouchableOpacity>
+    {displayMissingButton()}
+    <Box h="4"></Box>
+    </View>
   );
 };
+
 
 export default PetCard;
