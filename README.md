@@ -1,7 +1,17 @@
 # Finding-Neno
-Finding Neno is a mobile application created to help pet owners find and reunite with their pets!
+Finding Neno is a mobile application created to help pet owners find and reunite with their lost pets!
 
-All documentation can be found in the team's [Google Drive](https://drive.google.com/drive/u/1/folders/1URib5DxULDa4vhqCTlcQM6K4CIRcmrmG).
+Finding Neno currently has the following features: 
+* Signup, login and logout
+* A dashboard that displays recent pet sightings and missing pet reports
+* A 'My Reports' page which displays the user's own missing pet reports 
+* A map view that displays pet sightings and reports on a map
+* Adding pets to your profile 
+* Creating a missing pet report, creating a pet sighting
+* Creating a pet sighting for a specific missing pet report
+* Resolving a report by marking a pet as found 
+
+Detailed documentation can be found in the team's [Google Drive](https://drive.google.com/drive/u/1/folders/1URib5DxULDa4vhqCTlcQM6K4CIRcmrmG).
 
 ## Getting Started
 
