@@ -1,4 +1,4 @@
-# Finding-Neno
+# Finding Neno
 Finding Neno is a mobile application created to help pet owners find and reunite with their lost pets!
 
 Finding Neno currently has the following features: 
@@ -6,7 +6,7 @@ Finding Neno currently has the following features:
 * A dashboard that displays recent pet sightings and missing pet reports
 * A 'My Reports' page which displays the user's own missing pet reports 
 * A map view that displays pet sightings and reports on a map
-* Adding pets to your profile 
+* Adding pets to your profile and editing its details
 * Creating a missing pet report, creating a pet sighting
 * Creating a pet sighting for a specific missing pet report
 * Resolving a report by marking a pet as found 
@@ -17,7 +17,7 @@ Detailed documentation can be found in the team's [Google Drive](https://drive.g
 
 ### Hardware Requirements 
 * A Windows or Mac machine
-* A smartphone 
+* A smartphone (or Simulator on Mac devices)
 
 ### Software Requirements and Dependencies
 
@@ -48,7 +48,7 @@ Create a .env file in the root directory. Add the following to the .env file (en
    DATABASE_HOST=localhost  
    DATABASE_PORT=5432  
   ``` 
-Create a .env file within the src/frontend/finding-neno directory. Add the following to this .env file:  
+Create a .env file within the src/frontend/Finding-Neno directory. Add the following to this .env file:  
   ```
   IP=your device’s IP address 
   PORT=5000
@@ -98,11 +98,15 @@ Run the following command from the root directory:
     ```
     or 
     ```
-    npx react-native start --reset-cache
+    npx expo start -c
     ```
+    or
+    ```
+    npx react-native start --reset-cache
+  * Ensure that the IP and PORT on the src/frontend/Finding-Neno/.env are correct
   * Ensure that your device is on the same IP/network as the server
   * Run the app again 
-* psycho2 module not found:
+* psycopg2 module not found:
   * Run the command:
     ```
     pip3 install psycopg2-binary
