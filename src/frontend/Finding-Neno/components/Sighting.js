@@ -21,7 +21,7 @@ const Report = ({userId, sighting}) => {
     const sightingImage = sighting[6];
     const sightingDesc = sighting[7];
     const sightingAnimal = sighting[8][0].toUpperCase() +sighting[8].substring(1);;
-    const sightingBreed = sighting[9];r
+    const sightingBreed = sighting[9];
     const ownerName = sighting[10];
     const ownerEmail = sighting[11];
     const sightingPhoneNumber = sighting[12];
