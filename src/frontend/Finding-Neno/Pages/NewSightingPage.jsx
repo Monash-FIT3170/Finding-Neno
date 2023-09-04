@@ -330,7 +330,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
                                         <FormControl>
                                             <FormControl.Label>Date and Time of Sighting</FormControl.Label>
-                                            <Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
+                                            <Button onPress={openPicker}>{`${selectedDatetime.toDateString()} ${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')}`}</Button>
                                             <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
                                                 onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
                                         </FormControl>
