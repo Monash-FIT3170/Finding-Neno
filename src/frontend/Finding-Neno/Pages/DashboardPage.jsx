@@ -109,7 +109,7 @@ const DashboardPage = () => {
     <View>
       <View justifyContent="center" alignItems="flex-start" bg={'blue.300'} padding={4}>
         <Menu shadow={2} w="360"  trigger={(triggerProps) => (
-          <Pressable accessibilityLabel="More options menu" {...triggerProps}>
+          <Pressable width="100%" accessibilityLabel="More options menu" {...triggerProps}>
             <View style={{ alignItems: 'flex-start' }}>
               <Heading> ➕ New Post </Heading>
             </View>
