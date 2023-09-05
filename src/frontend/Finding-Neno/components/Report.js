@@ -16,8 +16,8 @@ const Report = ({report, userId}) => {
     const authorId = report[14]
     
     const petName = report[6][0].toUpperCase() +report[6].substring(1);
-    const petSpecies = report[7];
-    const petBreed = report[8];
+    const petSpecies = report[7][0].toUpperCase() +report[7].substring(1);;
+    const petBreed = report[8][0].toUpperCase() +report[8].substring(1);;
     const petImage = report[9];
 
     const [showModal, setShowModal] = useState(false);
@@ -44,7 +44,8 @@ const Report = ({report, userId}) => {
       </Text>
 
       <Heading size = "sm" paddingLeft={5} paddingTop={2}>
-        need to add location here
+        {/* Insert "Suburb, State" here */}
+        {/* Clayton, VIC */}
       </Heading>
 
       <Text paddingLeft={5}>

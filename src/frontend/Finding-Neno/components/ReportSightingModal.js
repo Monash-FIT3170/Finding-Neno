@@ -2,10 +2,13 @@ import { useNavigation } from '@react-navigation/native';
 import { Menu, Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView } from "native-base";
 import { ActivityIndicator, Dimensions } from 'react-native';
 import { Color } from "../components/atomic/Theme";
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import * as ImagePicker from 'expo-image-picker';
+import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import axios from 'axios';
+import { StyleSheet } from 'react-native';
 
 
 
@@ -172,8 +175,6 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 
 		if (!formData.lastLocation || formData.lastLocation == "") {
 			foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
-		} else if (!validateCoordinates(formData.lastLocation)) {
-			foundErrors = { ...foundErrors, lastLocation: 'Location coordinates is invalid e.g. 24.212, -54.122' }
 		}
 
 		if (formData.description.length > 500) {
@@ -234,6 +235,55 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 		setReportSightingBtnDisabled(false);
 	}
 
+	    //map box for last known location
+	// Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
+	const [mapRegion, setMapRegion] = useState({
+		latitude: -37.8136,
+		longitude: 144.9631,
+		latitudeDelta: 0.6,
+		longitudeDelta: 0.6,
+	})
+
+// Retrieves coordinates of current centre of map when map is moved around
+const handleRegionChange = (region) => {
+	setMapRegion(region);
+}	
+
+const [address, setAddress] = useState('');
+const [coordinates, setCoordinates] = useState(null);
+const mapViewRef = useRef(null);
+
+const handleSearch = async () => {
+	try {
+	  const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
+
+	  const response = await axios.get(apiUrl);
+	  if (response.data.length > 0) {
+		const firstResult = response.data[0];
+		setCoordinates({
+		  latitude: parseFloat(firstResult.lat),
+		  longitude: parseFloat(firstResult.lon),
+		});
+		setSightingData({
+			...sightingData,
+			lastLocation: `${parseFloat(firstResult.lon)}, ${parseFloat(firstResult.lat)}`,		});
+		// You can animate to the new coordinates here if you want
+		mapViewRef.current.animateToRegion({
+		  latitude: parseFloat(firstResult.lat),
+		  longitude: parseFloat(firstResult.lon),
+		  latitudeDelta: 0.03,
+		  longitudeDelta: 0.05,
+		});
+		console.log(firstResult);
+	  } else {
+		setCoordinates(null);
+	  }
+	} catch (error) {
+	  console.error('Error fetching data:', error);
+	  setCoordinates(null);
+	}
+  };
+
     return (
         <>
         {showModal &&
@@ -260,16 +310,29 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 							{/* form details */}
 							<FormControl >
 								<FormControl.Label>Date and Time of Sighting</FormControl.Label>
-								<Button onPress={openPicker}>{`${sightingDateTime.getHours().toString().padStart(2, '0')}:${sightingDateTime.getMinutes().toString().padStart(2, '0')} ${sightingDateTime.toDateString()}`}</Button>
+								<Button onPress={openPicker}>{`${sightingDateTime.toDateString()} ${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')}`}</Button>
 								<DateTimePickerModal date={sightingDateTime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
 									onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 							</FormControl>
 
-							<FormControl isInvalid={'lastLocation' in sightingFormErrors}>
-								<FormControl.Label>Location of Sighting</FormControl.Label>
-								<Input value={sightingData.lastLocation} onChangeText={value => setSightingData({ ...sightingData, lastLocation: value })} placeholder="long (-180 to 180), lat (-90 to 90)" />
-								{'lastLocation' in sightingFormErrors && <FormControl.ErrorMessage>{sightingFormErrors.lastLocation}</FormControl.ErrorMessage>}
-							</FormControl>
+							<FormControl>
+									<FormControl.Label>Last Known Location</FormControl.Label>
+									<Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
+									{coordinates === null && <FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
+								</FormControl> 
+
+								<Button title="Search" onPress={handleSearch}>Search</Button>
+
+								<Box height={150}>
+								<MapView
+									ref={mapViewRef}
+									provider={PROVIDER_GOOGLE}
+									style={styles.map}
+									initialRegion={mapRegion}
+								>
+									{coordinates !== null && <Marker coordinate={coordinates} />}
+								</MapView>
+								</Box>
 
 							<FormControl isInvalid={'description' in sightingFormErrors}>
 								<FormControl.Label>Description (Additional Info)</FormControl.Label>
@@ -300,5 +363,23 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
     )
 
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+    },
+    map: {
+        ...StyleSheet.absoluteFillObject,
+    },
+    text: {
+        fontSize: 20
+    },
+    button: {
+        borderRadius: 20,
+        backgroundColor: 'blue',
+    }
+});
 
 export default ReportSightingModal;
