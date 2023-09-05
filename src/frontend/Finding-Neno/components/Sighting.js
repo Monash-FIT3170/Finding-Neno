@@ -10,6 +10,8 @@ const Report = ({userId, sighting}) => {
     // Pet Data
     const windowWidth = Dimensions.get('window').width; 
 
+    console.log(sighting)
+
     const id = sighting[0];
     const missingReportId = sighting[1];
     const authorId = sighting[2];
@@ -18,7 +20,7 @@ const Report = ({userId, sighting}) => {
     const locationLatitude = sighting[5];
     const sightingImage = sighting[6];
     const sightingDesc = sighting[7];
-    const sightingAnimal = sighting[8];
+    const sightingAnimal = sighting[8][0].toUpperCase() +sighting[8].substring(1);;
     const sightingBreed = sighting[9];
     const ownerName = sighting[10];
     const ownerEmail = sighting[11];
