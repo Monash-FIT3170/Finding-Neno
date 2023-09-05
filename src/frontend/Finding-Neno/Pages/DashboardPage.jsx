@@ -10,7 +10,6 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useSelector } from "react-redux";
 import Report from '../components/Report';
 import Sighting from '../components/Sighting';
-import { fetchReports } from './shared';
 
 const DashboardPage = () => {
 	const { IP, PORT } = useSelector((state) => state.api)
@@ -34,6 +33,7 @@ const DashboardPage = () => {
 	const [isUploading, setIsUploading] = useState(false);
 	const [tabValue, setTabValue] = useState("reports");
 	const [allSightings, setAllSightings] = useState([]);
+	const [filters, setFilters] = useState({sort_order: "DESC"});
 
 	useEffect(() => {
 		if (isFocused) {

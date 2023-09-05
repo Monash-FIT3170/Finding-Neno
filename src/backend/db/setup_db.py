@@ -48,7 +48,7 @@ def create_tables(connection: psycopg2.extensions.connection):
         # Create missing_reports table
         """CREATE TABLE "missing_reports" (id SERIAL PRIMARY KEY, pet_id INTEGER REFERENCES pets(id), author_id 
         INTEGER REFERENCES "users"(id), date_time_of_creation TIMESTAMP NOT NULL, date_time TIMESTAMP NOT NULL, location_longitude FLOAT, location_latitude 
-        FLOAT, description VARCHAR(255), isActive BOOLEAN NOT NULL);""",
+        FLOAT, description VARCHAR(255), is_active BOOLEAN NOT NULL);""",
         # Create sightings table
         """CREATE TABLE "sightings" (id SERIAL PRIMARY KEY, missing_report_id INTEGER REFERENCES missing_reports(id), 
         author_id INTEGER REFERENCES "users"(id), date_time_of_creation TIMESTAMP NOT NULL, animal VARCHAR(255), breed VARCHAR(255), date_time TIMESTAMP NOT NULL, location_longitude FLOAT, 

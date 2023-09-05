@@ -203,13 +203,13 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
 
     # Construct and INSERT query to insert this user into the DB
     query = """INSERT INTO missing_reports (pet_id, author_id, date_time_of_creation, date_time, location_longitude, 
-    location_latitude, description, isActive) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
+    location_latitude, description, is_active) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
 
     # Execute the query
     try:
         # New reports are automatically set as active
-        isActive = True
-        cur.execute(query, (author_id, date_time_of_creation, pet_id, last_seen, location_longitude, location_latitude, description, isActive))
+        is_active = True
+        cur.execute(query, (author_id, date_time_of_creation, pet_id, last_seen, location_longitude, location_latitude, description, is_active))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -224,7 +224,7 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     return result
 
 def update_missing_report_in_database(connection: psycopg2.extensions.connection, report_id: int,  pet_id: int, author_id: int,
-                                      last_seen, location_longitude, location_latitude, description, isActive, access_token):
+                                      last_seen, location_longitude, location_latitude, description, is_active, access_token):
     """
     This function is used to update a missing report in the database.
 
@@ -243,7 +243,7 @@ def update_missing_report_in_database(connection: psycopg2.extensions.connection
                     missing_reports 
                 SET 
                     pet_id = %s, author_id = %s, date_time = %s, location_longitude = %s, 
-                    location_latitude = %s, description = %s, isActive = %s 
+                    location_latitude = %s, description = %s, is_active = %s 
                 WHERE 
                     id = %s;
                 """
@@ -253,7 +253,7 @@ def update_missing_report_in_database(connection: psycopg2.extensions.connection
 
     # Execute the query
     try:
-        cur.execute(query, (pet_id, author_id, last_seen, location_longitude, location_latitude, description, isActive, report_id))
+        cur.execute(query, (pet_id, author_id, last_seen, location_longitude, location_latitude, description, is_active, report_id))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -272,7 +272,7 @@ def update_report_active_status(connection: psycopg2.extensions.connection, repo
         cur = connection.cursor()
 
         # Update the missing status in the database
-        cur.execute("UPDATE missing_reports SET isActive = %s WHERE id = %s;", (new_status, report_id))
+        cur.execute("UPDATE missing_reports SET is_active = %s WHERE id = %s;", (new_status, report_id))
 
         connection.commit()
         cur.close()
@@ -284,7 +284,7 @@ def update_report_active_status(connection: psycopg2.extensions.connection, repo
         return False
 
 
-def archive_missing_report_in_database(connection: psycopg2.extensions.connection, reportId, isActive, user_id, access_token):
+def archive_missing_report_in_database(connection: psycopg2.extensions.connection, reportId, is_active, user_id, access_token):
     """
     This function is used to archive a missing report.
 
@@ -298,14 +298,14 @@ def archive_missing_report_in_database(connection: psycopg2.extensions.connectio
     cur = connection.cursor()
 
     # UPDATE query to archive report
-    query = """UPDATE missing_reports SET isActive = %s WHERE id = %s;"""
+    query = """UPDATE missing_reports SET is_active = %s WHERE id = %s;"""
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
 
     # Execute the query
     try:
-        cur.execute(query, (isActive, reportId))
+        cur.execute(query, (is_active, reportId))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -350,7 +350,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
                     JOIN 
                         users AS u ON mr.author_id = u.id
                     WHERE
-                        mr.isActive = true -- Condition to filter out only active missing reports
+                        mr.is_active = true -- Condition to filter out only active missing reports
                     ORDER BY 
                         mr.date_time DESC;
                 """
@@ -369,7 +369,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
                     JOIN 
                         users AS u ON mr.author_id = u.id
                     WHERE 
-                        u.id = %s AND mr.isActive = true
+                        u.id = %s AND mr.is_active = true
                     ORDER BY 
                         mr.date_time DESC;
                 """
@@ -409,8 +409,6 @@ def filter_missing_reports_from_database(connection: psycopg2.extensions.connect
         return False
     
 
-    # Initialise parameters
-    params = []
     
     # Start building the query
     query = """
@@ -422,6 +420,9 @@ def filter_missing_reports_from_database(connection: psycopg2.extensions.connect
                         u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number,
                         mr.author_id
             """
+
+    # Initialise parameters
+    params = []
 
     # Add extra columns if location filters are provided to enable sorting by distance     
     if filters.get("location_radius"):     
@@ -442,12 +443,12 @@ def filter_missing_reports_from_database(connection: psycopg2.extensions.connect
                 JOIN 
                     users AS u ON mr.author_id = u.id
                 WHERE
-                    mr.isActive = %s
+                    mr.is_active = %s
             """
     
 
-    if filters.get("isActive"):
-        params.append(filters.get("isActive"))
+    if filters.get("is_active"):
+        params.append(filters.get("is_active"))
     else:
         params.append(True)
     
@@ -495,7 +496,8 @@ def filter_missing_reports_from_database(connection: psycopg2.extensions.connect
         query += "ORDER BY date_time DESC "
 
     # Sort by closest to furthest
-    query += ", distance ASC;"
+    if filters.get("location_radius"):
+        query += ", distance ASC;"
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
@@ -534,12 +536,32 @@ def filter_sightings_from_database(connection: psycopg2.extensions.connection, f
     # Verify access token
     if not verify_access_token(connection, user_id, access_token):
         return False
+        
     
     # Start building the query
     query = """
-                SELECT 
-                    s.id AS sighting_id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
-                    u.id AS author_id, u.name AS author_name, u.email_address AS author_email, u.phone_number AS author_phone_number
+                SELECT *
+                FROM (
+                    SELECT
+                        s.id AS sighting_id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
+                        u.id AS author_id, u.name AS author_name, u.email_address AS author_email, u.phone_number AS author_phone_number
+            """
+        
+    # Initialise parameters
+    params = []
+
+    # Add extra columns if location filters are provided to enable sorting by distance     
+    if filters.get("location_radius"):     
+        query += """                    
+                    , ST_Distance(
+                            ST_GeogFromText('Point(%s %s)'),
+                            ST_GeogFromText(CONCAT('Point(', s.location_longitude,' ', s.location_latitude, ')'))
+                        ) / 1000 AS distance
+                """
+        params.extend([filters["location_longitude"], filters["location_latitude"]])         
+                    
+    # Continue building query
+    query += """ 
                 FROM 
                     sightings AS s
                 JOIN 
@@ -547,14 +569,12 @@ def filter_sightings_from_database(connection: psycopg2.extensions.connection, f
                 JOIN 
                     users AS u ON s.author_id = u.id
                 WHERE
-                    s.isActive = %s
+                    s.is_active = %s
             """
     
-    # Initialise parameters
-    params = []
 
-    if filters.get("isActive"):
-        params.append(filters.get("isActive"))
+    if filters.get("is_active"):
+        params.append(filters.get("is_active"))
     else:
         params.append(True)
     
@@ -655,7 +675,7 @@ def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_i
         JOIN 
             users AS u ON mr.author_id = u.id
         WHERE 
-            mr.isActive = true -- Condition to filter out only active missing reports
+            mr.is_active = true -- Condition to filter out only active missing reports
         AND
             p.id = %s;
 
@@ -806,7 +826,7 @@ def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensio
                     JOIN 
                         users AS u ON mr.author_id = u.id
                     WHERE 
-                        mr.location_longitude BETWEEN %s AND %s AND mr.location_latitude BETWEEN %s AND %s AND mr.isactive IS TRUE
+                        mr.location_longitude BETWEEN %s AND %s AND mr.location_latitude BETWEEN %s AND %s AND mr.is_active IS TRUE
                     ORDER BY 
                         mr.date_time DESC;"""
     else:
@@ -827,7 +847,7 @@ def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensio
                         users AS u ON mr.author_id = u.id
                     WHERE 
                         (mr.location_longitude BETWEEN %s AND %s OR mr.location_longitude BETWEEN %s AND %s) AND
-                        mr.location_latitude BETWEEN %s AND %s AND mr.isActive IS TRUE
+                        mr.location_latitude BETWEEN %s AND %s AND mr.is_active IS TRUE
                     ORDER BY 
                         mr.date_time DESC;"""
     
@@ -899,7 +919,7 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
                         users AS u ON s.author_id = u.id
                     WHERE 
                         (s.location_longitude BETWEEN %s AND %s AND s.location_latitude BETWEEN %s AND %s)
-                        AND (mr.isActive IS TRUE OR s.missing_report_id IS NULL)
+                        AND (mr.is_active IS TRUE OR s.missing_report_id IS NULL)
                     ORDER BY 
                         s.date_time DESC;"""
     else:
@@ -920,7 +940,7 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
                         users AS u ON s.author_id = u.id
                     WHERE 
                         (s.location_longitude BETWEEN %s AND %s OR s.location_longitude BETWEEN %s AND %s) AND s.location_latitude BETWEEN %s AND %s
-                        AND (mr.isActive IS TRUE OR s.missing_report_id IS NULL)
+                        AND (mr.is_active IS TRUE OR s.missing_report_id IS NULL)
                         
                     ORDER BY 
                         s.date_time DESC;"""

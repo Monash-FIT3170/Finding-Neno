@@ -120,7 +120,7 @@ const updateMissingReport = async (report) => {
       },
       body: JSON.stringify({
         report_id: report_id,
-        isActive: false,
+        is_active: false,
       }),
     });
 
