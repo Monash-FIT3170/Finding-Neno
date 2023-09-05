@@ -19,6 +19,7 @@ const Report = ({report, userId}) => {
     const petSpecies = report[7][0].toUpperCase() +report[7].substring(1);;
     const petBreed = report[8][0].toUpperCase() +report[8].substring(1);;
     const petImage = report[9];
+    const distance = Math.round(parseFloat(report[15] * 100)) / 100;
 
     const [showModal, setShowModal] = useState(false);
 
@@ -54,22 +55,33 @@ const Report = ({report, userId}) => {
       <HStack>
         <VStack>
           <Heading size = "sm" paddingLeft={5} paddingTop={2}>
-            {petSpecies}
+            Specie
           </Heading>
           <Text paddingLeft={5}>
-            Species
+            {petSpecies}
           </Text>
         </VStack>
 
         <VStack>
           <Heading size = "sm" paddingLeft={5} paddingTop={2}>
-              {petBreed}
+              Breed
           </Heading>
           <Text paddingLeft={5}>
-              Breed
+              {petBreed}
+          </Text>
+        </VStack>
+
+        <VStack >
+          <Heading size = "sm" paddingLeft={5} paddingTop={2}>
+              Distance
+          </Heading>
+          <Text paddingLeft={5}>
+              {distance} km
           </Text>
         </VStack>
       </HStack>
+
+      
 
       <Box width={windowWidth - 40} height={180} paddingLeft={5} paddingTop={5} paddingBottom={1}>
       <Image source={{ uri: petImage }} style={{ width: '100%', height: '100%', borderTopLeftRadius: 20, borderTopRightRadius: 20  }} alt='pet' />

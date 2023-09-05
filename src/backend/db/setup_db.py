@@ -111,6 +111,20 @@ def drop_tables(connection: psycopg2.extensions.connection):
     connection.commit()
     cur.close()
 
+def setup_postGIS(connection: psycopg2.extensions.connection):
+    """
+    Sets up postGIS extension for the database
+    """
+    cur = connection.cursor()
+    try:
+        cur.execute("CREATE EXTENSION postgis;")
+        print("PostGIS extension created successfully")
+    except Exception as e:
+        print(f"Error while creating PostGIS extension: {e}")
+    connection.commit()
+    cur.close()
+
+
 
 if __name__ == "__main__":
     # Get environment file path from command line arguments
@@ -136,3 +150,4 @@ if __name__ == "__main__":
         drop_tables(connection=conn)
         # Create/recreate tables
         create_tables(connection=conn)
+        setup_postGIS(connection=conn)

@@ -175,16 +175,12 @@ def retrieve_missing_reports(connection, author_id) -> Tuple[str, int]:
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
     missing_reports = retrieve_missing_reports_from_database(connection, author_id, user_id, access_token)
-
     if missing_reports is False:
         return "User does not have access", 401
     else:
         if len(missing_reports) > 0:
-            print("returning ")
-            print(missing_reports)
             return missing_reports, 200
         elif len(missing_reports) == 0:
-            print("returning empty")
             return [], 204
         
 def filter_missing_reports(connection):
@@ -194,13 +190,12 @@ def filter_missing_reports(connection):
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
     filters = request.get_json()
-    print(filters)
     missing_reports = filter_missing_reports_from_database(connection, filters, user_id, access_token)
-
     if missing_reports is False:
         return "User does not have access", 401
     else:
         if len(missing_reports) > 0:
+            print(f"Returning {len(missing_reports)}")
             return missing_reports, 200
         elif len(missing_reports) == 0:
             return [], 204

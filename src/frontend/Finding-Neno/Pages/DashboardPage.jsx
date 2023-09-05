@@ -21,56 +21,63 @@ const DashboardPage = () => {
 	const toast = useToast();
 	const isFocused = useIsFocused();
 
-  // TODO: change report structure to be an array of dictionaries? Refer to mock data that is commented out for desired structure
-  const [reports, setReports] = useState([]);
-//   const [modalVisible, setModalVisible] = useState(false);
-  const [sightingDateTime, setSightingDateTime] = useState(new Date());
-  const [sightingData, setSightingData] = useState({authorId: USER_ID});
-  const [reportSightingBtnDisabled, setReportSightingBtnDisabled] = useState(false);
-  const [sightingFormErrors, setSightingFormErrors] = useState({});
-  const [showPicker, setShowPicker] = useState(false);
-  // const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
-  const [sightingImage, setSightingImage] = useState(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [tabValue, setTabValue] = useState("reports");
-  const [allSightings, setAllSightings] = useState([]);
+	// TODO: change report structure to be an array of dictionaries? Refer to mock data that is commented out for desired structure
+	const [reports, setReports] = useState([]);
+	//   const [modalVisible, setModalVisible] = useState(false);
+	const [sightingDateTime, setSightingDateTime] = useState(new Date());
+	const [sightingData, setSightingData] = useState({ authorId: USER_ID });
+	const [reportSightingBtnDisabled, setReportSightingBtnDisabled] = useState(false);
+	const [sightingFormErrors, setSightingFormErrors] = useState({});
+	const [showPicker, setShowPicker] = useState(false);
+	// const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
+	const [sightingImage, setSightingImage] = useState(null);
+	const [isUploading, setIsUploading] = useState(false);
+	const [tabValue, setTabValue] = useState("reports");
+	const [allSightings, setAllSightings] = useState([]);
 
 	useEffect(() => {
 		if (isFocused) {
-			fetchReports({sort_order: "desc", pet_type: ["dog"]}, IP, PORT, USER_ID, ACCESS_TOKEN);
-      fetchAllSightings();
+			if (tabValue == "reports") {
+				fetchAllReports();
+			} else {
+				fetchAllSightings();
+			}
 		}
-	}, [isFocused]);
+	}, [tabValue])
 
 	// TODO: replace this image with the actual image from DB ? 
 	const image = "https://wallpaperaccess.com/full/317501.jpg";
 
-	// // API calls 
-	// const fetchAllReports = async () => {
-	// 	try {
-	// 		const url = `${IP}:${PORT}/get_missing_reports`;
-	// 		const response = await fetch(url, {
-	// 			method: "GET",
-	// 			headers: {
-	// 				'Content-Type': 'application/json',
-	// 				'Authorization': `Bearer ${ACCESS_TOKEN}`,
-	// 				'User-ID': USER_ID,
-	// 			},
-	// 		});
+	// API calls 
+	const fetchAllReports = async () => {
+		// const filters = { sort_order: "ASC", 
+		// 	location_longitude: 144.9431, 
+		// 	location_latitude: -37.8136, location_radius: 50};
+		try {
+			const url = `${IP}:${PORT}/filter_missing_reports`;
+			const response = await fetch(url, {
+				method: "POST",
+				headers: {
+					'Content-Type': 'application/json',
+					'Authorization': `Bearer ${ACCESS_TOKEN}`,
+					'User-ID': USER_ID,
+				},
+				body: JSON.stringify(filters),
+			});
 
-	// 		if (!response.ok) {
-	// 			throw new Error(`Request failed with status: ${response.status}`);
-	// 		}
+			if (!response.ok) {
+				throw new Error(`Request failed with status: ${response.status}`);
+			}
 
-	// 		const data = await response.json();
-	// 		setReports(data[0]);
-	// 	} catch (error) {
-	// 		console.error(error);
-	// 	}
-	// };
+			const data = await response.json();
+			setReports(data[0]);
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
-  const fetchAllSightings = async () => {
-    try {
+	const fetchAllSightings = async () => {
+		try {
 			const url = `${IP}:${PORT}/get_sightings`;
 			const response = await fetch(url, {
 				method: "GET",
@@ -86,80 +93,74 @@ const DashboardPage = () => {
 			}
 
 			const data = await response.json();
-      setAllSightings(data[0]);
+			setAllSightings(data[0]);
 		} catch (error) {
 			console.error(error);
 		}
-  };
+	};
 
-  // image_url is not being set properly without this useEffect - should probs find a more robust way to fix it later 
-  	useEffect(() => {
-		setSightingData({...sightingData, image_url: sightingImage})
+	// image_url is not being set properly without this useEffect - should probs find a more robust way to fix it later 
+	useEffect(() => {
+		setSightingData({ ...sightingData, image_url: sightingImage })
 	}, [sightingImage]);
 
-  useEffect(() => {
-    if (tabValue == "reports") {
-      fetchReports({sort_order: "desc", pet_type: ["dog"]}, IP, PORT, USER_ID, ACCESS_TOKEN);
-    } else {
-      fetchAllSightings();
-    }
-  }, [tabValue])
 
-    return (
-      <View>
-    <View>
-      <View justifyContent="center" alignItems="flex-start" bg={'blue.300'} padding={4}>
-        <Menu shadow={2} w="360"  trigger={(triggerProps) => (
-          <Pressable accessibilityLabel="More options menu" {...triggerProps}>
-            <View style={{ alignItems: 'flex-start' }}>
-              <Heading> ➕ New Post </Heading>
-            </View>
-          </Pressable>
-        )}>
-          <Menu.Item onPress={() => navigation.navigate('Report', { screen: 'New Report Page' })}>Report</Menu.Item>
-          <Menu.Item onPress={() => navigation.navigate('Dashboard', { screen: 'New Sighting Page' })}>Sighting</Menu.Item>
-        </Menu>
-      </View>
-    </View>
+	return (
+		<View>
+			<View>
+				<View justifyContent="center" alignItems="flex-start" bg={'blue.300'} padding={4}>
+					<Menu shadow={2} w="360" trigger={(triggerProps) => (
+						<Pressable accessibilityLabel="More options menu" {...triggerProps}>
+							<View style={{ alignItems: 'flex-start' }}>
+								<Heading> ➕ New Post </Heading>
+							</View>
+						</Pressable>
+					)}>
+						<Menu.Item onPress={() => navigation.navigate('Report', { screen: 'New Report Page' })}>Report</Menu.Item>
+						<Menu.Item onPress={() => navigation.navigate('Dashboard', { screen: 'New Sighting Page' })}>Sighting</Menu.Item>
+					</Menu>
+				</View>
+			</View>
 
-    {/* TABS */}
-        <ToggleButton.Row onValueChange={value => {
-          value != null ? setTabValue(value) : ''}} 
-                        value={tabValue}
-                        style={{justifyContent: 'space-between', width: Dimensions.get('window').width}}>
-        <ToggleButton icon={()=> <Text>Reports</Text>} 
-                      value="reports" 
-                      style={{width: '50%'}}/>
-        <ToggleButton icon={()=> <Text>Sightings</Text>} 
-                      value="sightings" 
-                      style={{width: '50%'}}/>
-        </ToggleButton.Row>
+			{/* TABS */}
+			<ToggleButton.Row onValueChange={value => {
+				value != null ? setTabValue(value) : ''
+			}}
+				value={tabValue}
+				style={{ justifyContent: 'space-between', width: Dimensions.get('window').width }}>
+				<ToggleButton icon={() => <Text>Reports</Text>}
+					value="reports"
+					style={{ width: '50%' }} />
+				<ToggleButton icon={() => <Text>Sightings</Text>}
+					value="sightings"
+					style={{ width: '50%' }} />
+			</ToggleButton.Row>
 
-        {/* TODO: fix this - it is not scrolling all the way */}
+			{/* TODO: fix this - it is not scrolling all the way */}
 
-        <ScrollView style={{backgroundColor: '#EDEDED'}}>
-          
-          {/* display depending on tabs */}
-          { tabValue == "reports" 
-          ?
-            <>
-              {reports && reports.map((report, index) => (
-                  <Report userId={USER_ID} report={report} key={index}/>
-              ))}
-            </> 
-          : 
-            <>
-              {allSightings && allSightings.map((sighting, index) => (
-                  <Sighting userId={USER_ID} sighting={sighting} key={index}/>
-              ))}
-            </>
-          }
+			<ScrollView style={{ backgroundColor: '#EDEDED' }}>
 
-          <Box h={180}></Box>
+				{/* display depending on tabs */}
+				{tabValue == "reports"
+					?
+					<>
+						{reports && reports.map((report, index) => (
+							<Report userId={USER_ID} report={report} key={index} />
+						))}
+					</>
+					:
+					<>
+						{allSightings && allSightings.map((sighting, index) => (
+							<Sighting userId={USER_ID} sighting={sighting} key={index} />
+						))}
+					</>
+				}
 
-        </ScrollView>
-        </View>
-    );
+				<Box h={180}></Box>
+
+			</ScrollView>
+		</View>
+	);
 }
 
 export default DashboardPage;
