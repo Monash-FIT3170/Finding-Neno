@@ -10,6 +10,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { useSelector } from "react-redux";
 import Report from '../components/Report';
 import Sighting from '../components/Sighting';
+import { fetchReports } from './shared';
 
 const DashboardPage = () => {
 	const { IP, PORT } = useSelector((state) => state.api)
@@ -36,7 +37,7 @@ const DashboardPage = () => {
 
 	useEffect(() => {
 		if (isFocused) {
-			fetchAllReports();
+			fetchReports({sort_order: "desc", pet_type: ["dog"]}, IP, PORT, USER_ID, ACCESS_TOKEN);
       fetchAllSightings();
 		}
 	}, [isFocused]);
@@ -44,29 +45,29 @@ const DashboardPage = () => {
 	// TODO: replace this image with the actual image from DB ? 
 	const image = "https://wallpaperaccess.com/full/317501.jpg";
 
-	// API calls 
-	const fetchAllReports = async () => {
-		try {
-			const url = `${IP}:${PORT}/get_missing_reports`;
-			const response = await fetch(url, {
-				method: "GET",
-				headers: {
-					'Content-Type': 'application/json',
-					'Authorization': `Bearer ${ACCESS_TOKEN}`,
-					'User-ID': USER_ID,
-				},
-			});
+	// // API calls 
+	// const fetchAllReports = async () => {
+	// 	try {
+	// 		const url = `${IP}:${PORT}/get_missing_reports`;
+	// 		const response = await fetch(url, {
+	// 			method: "GET",
+	// 			headers: {
+	// 				'Content-Type': 'application/json',
+	// 				'Authorization': `Bearer ${ACCESS_TOKEN}`,
+	// 				'User-ID': USER_ID,
+	// 			},
+	// 		});
 
-			if (!response.ok) {
-				throw new Error(`Request failed with status: ${response.status}`);
-			}
+	// 		if (!response.ok) {
+	// 			throw new Error(`Request failed with status: ${response.status}`);
+	// 		}
 
-			const data = await response.json();
-			setReports(data[0]);
-		} catch (error) {
-			console.error(error);
-		}
-	};
+	// 		const data = await response.json();
+	// 		setReports(data[0]);
+	// 	} catch (error) {
+	// 		console.error(error);
+	// 	}
+	// };
 
   const fetchAllSightings = async () => {
     try {
@@ -98,7 +99,7 @@ const DashboardPage = () => {
 
   useEffect(() => {
     if (tabValue == "reports") {
-      fetchAllReports();
+      fetchReports({sort_order: "desc", pet_type: ["dog"]}, IP, PORT, USER_ID, ACCESS_TOKEN);
     } else {
       fetchAllSightings();
     }

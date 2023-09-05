@@ -151,6 +151,20 @@ def get_missing_reports():
     author_id = request.args.get("author_id")
     return jsonify(retrieve_missing_reports(g.db, author_id))
 
+@app.route("/filter_missing_reports", methods=["POST"])
+def get_filtered_missing_reports():
+    """
+    Returns an array of all missing reports or missing reports of a user if author_id is provided, sorted by latest to oldest, of the following format.
+
+    [
+        missing_report_id, date_time (last seen), description (additional info), location_longitude, location_latitude,
+        pet_id, pet_name, pet_animal, pet_breed, image_url,
+        owner_id, owner_name, owner_email, owner_phone_number,
+        author_id
+    ]
+    """
+    return jsonify(filter_missing_reports(g.db))
+
 @app.route("/get_reports_by_pet", methods=["GET"])
 def get_reports_by_pet():
     """

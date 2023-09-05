@@ -169,14 +169,33 @@ def separate_datetime(datetime: str) -> Tuple[int, int, int, int, int]:
 
 def retrieve_missing_reports(connection, author_id) -> Tuple[str, int]:
     """
-    This function calls the function that connectionects to the db to retrieve all missing reports or missing reports of an user if author_id is provided.
+    This function calls the function that connects to the db to retrieve all missing reports or missing reports of an user if author_id is provided.
     """
 
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
-    print(access_token)
-    print(user_id)
     missing_reports = retrieve_missing_reports_from_database(connection, author_id, user_id, access_token)
+
+    if missing_reports is False:
+        return "User does not have access", 401
+    else:
+        if len(missing_reports) > 0:
+            print("returning ")
+            print(missing_reports)
+            return missing_reports, 200
+        elif len(missing_reports) == 0:
+            print("returning empty")
+            return [], 204
+        
+def filter_missing_reports(connection):
+    """
+    This function calls the function that connects to the db to retrieve all missing reports or missing reports of an user if author_id is provided.
+    """
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+    filters = request.get_json()
+    print(filters)
+    missing_reports = filter_missing_reports_from_database(connection, filters, user_id, access_token)
 
     if missing_reports is False:
         return "User does not have access", 401
@@ -185,6 +204,7 @@ def retrieve_missing_reports(connection, author_id) -> Tuple[str, int]:
             return missing_reports, 200
         elif len(missing_reports) == 0:
             return [], 204
+
 
 def retrieve_reports_by_pet(connection, pet_id) -> Tuple[str, int]:
     """

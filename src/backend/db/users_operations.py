@@ -320,6 +320,7 @@ def archive_missing_report_in_database(connection: psycopg2.extensions.connectio
     return result
 
 
+
 def retrieve_missing_reports_from_database(connection: psycopg2.extensions.connection, author_id: int,  user_id: int, access_token: str):
     """
     This function retrieves all missing reports or missing reports of a user if user_id is provided.
@@ -395,6 +396,112 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
     cur.close()
     return result
 
+def filter_missing_reports_from_database(connection: psycopg2.extensions.connection, filters, user_id: int, access_token: str):
+    """
+    This function retrieves filtered list of missing reports by pet type, pet breed, proximity to a location.
+    Missing report, pet, and owner information are all returned.
+
+    Returns False if access token is invalid, empty array if no reports exist or an error is encountered, otherwise returns
+    missing reports.
+    """
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+    
+    # Start building the query
+    query = """
+                SELECT 
+                    mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
+                    p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
+                    u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number,
+                    mr.author_id
+                FROM 
+                    missing_reports AS mr
+                JOIN 
+                    pets AS p ON mr.pet_id = p.id
+                JOIN 
+                    users AS u ON mr.author_id = u.id
+                WHERE
+                    mr.isActive = %s
+            """
+    
+    # Initialise parameters
+    params = []
+
+    if filters.get("isActive"):
+        params.append(filters.get("isActive"))
+    else:
+        params.append(True)
+    
+    if filters.get("author_id"):
+        query += "AND mr.author_id = %s "
+        params.append(filters["author_id"])
+
+    # Check if pet_breed is provided
+    if filters.get("pet_breed"):
+        # query += "AND p.animal IN %s "
+        # params.append(tuple(filters["pet_animal"]))
+
+        # Create a list of filter conditions for each substring
+        breed_conditions = []
+        for breed in filters["pet_breed"]:
+            breed_conditions.append("p.breed ILIKE %s")
+            params.append(f"%{breed}%")
+
+        # Combine the conditions with OR
+        breed_condition_query = " OR ".join(breed_conditions)
+        
+        # Add combined condition to the query
+        query += f"AND ({breed_condition_query}) "
+
+    # Check if pet_type is provided
+    if filters.get("pet_type"):
+        query += "AND p.animal IN %s "
+        params.append(tuple(filters["pet_type"]))
+
+    # Check if location filters are provided
+    if filters.get("location_longitude") and filters.get("location_latitude"):
+        query += """
+            AND ST_Distance(
+                    ST_Point(%s, %s),
+                    ST_Point(mr.location_longitude, mr.location_latitude)
+                ) <= %s
+
+        """
+        params.extend([filters["location_longitude"], filters["location_latitude"], filters["location_radius"]])
+
+    # Finish building the query
+    query += "ORDER BY mr.date_time %s;"
+    params.append(filters["sort_order"])
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    cur = connection.cursor()
+
+    print(query)
+    try:
+        # if author_id == None:
+        # cur.execute(query)
+        # else:
+        cur.execute(query, params)
+
+        # Retrieve rows as an array
+        missing_reports = cur.fetchall()
+
+        print(f"Missing reports successfully retrieved: {missing_reports}")
+
+        if missing_reports is not None:
+            result = missing_reports
+        else:
+            result = []
+    except Exception as e:
+        print(f"Error with retrieving missing reports: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
 def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_id: int, user_id: int, access_token: str):
     """
     This function retrieves reports based on the provided pet_id.
@@ -430,7 +537,7 @@ def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_i
     """
 
     # Result is the object returned or True if no errors encountered, False if there is an error
-    result = None
+    result = False
 
     try:
         cur.execute(query, (pet_id, ))
@@ -438,11 +545,12 @@ def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_i
         # Retrieve the reports
         reports = cur.fetchall()
 
-        if reports:
+        if reports is not None:
             print(f"Reports successfully retrieved: {reports}")
             result = reports
         else:
             print(f"No reports found for the provided pet_id")
+            result = []
 
     except Exception as e:
         print(f"Error with retrieving the reports: {e}")
@@ -466,60 +574,65 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
     # Open cursor to access the connection.
     cur = connection.cursor()
 
-    if missing_report_id == None:
-        # Query returns all sightings in the database
-        query = """
-                    SELECT
-                        s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
-                        u.name, u.email_address, u.phone_number
-                    FROM
-                        sightings AS s
-                    LEFT JOIN
-                        missing_reports AS mr ON s.missing_report_id = mr.id
-                    JOIN
-                        users AS u ON s.author_id = u.id
-                    ORDER BY
-                        s.date_time DESC;
-                """
-    else:
-        # Query returns all sightings of a missing report
-        query = """
-                    SELECT
-                        s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
-                        u.name, u.email_address, u.phone_number
-                    FROM
-                        sightings AS s
-                    JOIN
-                        missing_reports AS mr ON s.missing_report_id = mr.id
-                    JOIN
-                        users AS u ON s.author_id = u.id
-                    WHERE 
-                        s.missing_report_id = %s
-                    ORDER BY
-                        s.date_time DESC;
-                """
+    # if missing_report_id == None:
+    #     # Query returns all sightings in the database
+    #     query = """
+    #                 SELECT
+    #                     s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
+    #                     u.name, u.email_address, u.phone_number
+    #                 FROM
+    #                     sightings AS s
+    #                 LEFT JOIN
+    #                     missing_reports AS mr ON s.missing_report_id = mr.id
+    #                 JOIN
+    #                     users AS u ON s.author_id = u.id
+    #                 ORDER BY
+    #                     s.date_time DESC;
+    #             """
+    # else:
+    #     # Query returns all sightings of a missing report
+    query = """
+                SELECT
+                    s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
+                    u.name, u.email_address, u.phone_number
+                FROM
+                    sightings AS s
+                JOIN
+                    missing_reports AS mr ON s.missing_report_id = mr.id
+                JOIN
+                    users AS u ON s.author_id = u.id
+                WHERE 
+                    s.missing_report_id = %s
+                ORDER BY
+                    s.date_time DESC;
+            """
         
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
 
     try:
-        if missing_report_id == None:
-            cur.execute(query)
-        else:
-            cur.execute(query, (missing_report_id, ))
+        # if missing_report_id == None:
+        #     cur.execute(query)
+        # else:
+        cur.execute(query, (missing_report_id, ))
 
         # Retrieve rows as an array
         sightings = cur.fetchall()
 
         print(f"Sightings successfully retrieved")
 
-        result = sightings
+        if sightings is not None:
+            result = sightings
+        else:
+            result = []
     except Exception as e:
         print(f"Error with retrieving sightings: {e}")
 
     # Close the cursor
     cur.close()
     return result
+
+
 
 def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensions.connection, longitude, longitude_delta, latitude, latitude_delta):
     """
@@ -529,28 +642,31 @@ def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensio
     cur = connection.cursor()
     
     # Area is between -180 and +180 long
-    longitude_min_section_one = float(longitude) - float(longitude_delta)/2
-    longitude_max_section_one = float(longitude) + float(longitude_delta)/2
+    # Calculate longitude boundaries
+    longitude_min = float(longitude) - float(longitude_delta)/2
+    longitude_max = float(longitude) + float(longitude_delta)/2
+    # Calculate latitude boundaries
     latitude_min = float(latitude) - float(latitude_delta)/2
     latitude_max = float(latitude) + float(latitude_delta)/2
 
     longitude_min_section_two, longitude_max_section_two = None, None
 
+    # Re-adjusting boundaries. 
     # The longitude range of what the map returns is -110 to +250. This calculates if the user's view contains the -110 or +250 boundary.
-    if longitude_min_section_one < -110:
+    if longitude_min < -110:
         # Area crosses over -110 long i.e. -160 to +160, regions are -160 to -180 and +180 to +160
-        longitude_min_section_two = 360 + longitude_min_section_one 
+        longitude_min_section_two = 360 + longitude_min 
         longitude_max_section_two = 250
-        longitude_min_section_one = -110
-    elif longitude_max_section_one > 250:
+        longitude_min = -110
+    elif longitude_max > 250:
         # Area crosses over +250 long i.e. +230 to -90, regions are +230 to +25 and -110 to -90
         longitude_min_section_two = -110
-        longitude_max_section_two = longitude_max_section_one - 360
-        longitude_max_section_one = 250
+        longitude_max_section_two = longitude_max - 360
+        longitude_max = 250
 
     if longitude_min_section_two == None and longitude_max_section_two == None:
         print("ONE SECTION")
-        print(f"{longitude_min_section_one} - {longitude} - {longitude_max_section_one}  d = {longitude_delta}")
+        print(f"{longitude_min} - {longitude} - {longitude_max}  d = {longitude_delta}")
         print(f"{latitude_min} - {latitude} - {latitude_max}  d = {latitude_delta}")
 
         query = """SELECT 
@@ -569,7 +685,7 @@ def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensio
                         mr.date_time DESC;"""
     else:
         print("TWO SECTIONS")
-        print(f"{longitude_min_section_one} - {longitude} - {longitude_max_section_one}  d = {longitude_delta}")
+        print(f"{longitude_min} - {longitude} - {longitude_max}  d = {longitude_delta}")
         print(f"{longitude_min_section_two} - {longitude_max_section_two}  d = {longitude_delta}")
         print(f"{latitude_min} - {latitude} - {latitude_max}  d = {latitude_delta}")
 
@@ -583,9 +699,9 @@ def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensio
                         pets AS p ON mr.pet_id = p.id
                     JOIN 
                         users AS u ON mr.author_id = u.id
-                    WHERE (
-                        mr.location_longitude BETWEEN %s AND %s OR mr.location_longitude BETWEEN %s AND %s) AND mr.isActive IS TRUE
-                        AND mr.location_latitude BETWEEN %s AND %s
+                    WHERE 
+                        (mr.location_longitude BETWEEN %s AND %s OR mr.location_longitude BETWEEN %s AND %s) AND
+                        mr.location_latitude BETWEEN %s AND %s AND mr.isActive IS TRUE
                     ORDER BY 
                         mr.date_time DESC;"""
     
@@ -594,10 +710,10 @@ def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensio
     result = False
 
     try:
-        if longitude_min_section_two == None and longitude_max_section_two == None:
-            cur.execute(query, (longitude_min_section_one, longitude_max_section_one, latitude_min, latitude_max))
+        if longitude_min_section_two is None:
+            cur.execute(query, (longitude_min, longitude_max, latitude_min, latitude_max))
         else:
-            cur.execute(query, (longitude_min_section_one, longitude_max_section_one, longitude_min_section_two, longitude_max_section_two, latitude_min, latitude_max))
+            cur.execute(query, (longitude_min, longitude_max, longitude_min_section_two, longitude_max_section_two, latitude_min, latitude_max))
             
         # Retrieve rows as an array
         missing_reports = cur.fetchall()
@@ -619,28 +735,31 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
     cur = connection.cursor()
     
     # Area is between -180 and +180 long
-    longitude_min_section_one = float(longitude) - float(longitude_delta)/2
-    longitude_max_section_one = float(longitude) + float(longitude_delta)/2
+    # Calculate longitude boundaries
+    longitude_min = float(longitude) - float(longitude_delta)/2
+    longitude_max = float(longitude) + float(longitude_delta)/2
+    # Calculate latitude boundaries
     latitude_min = float(latitude) - float(latitude_delta)/2
     latitude_max = float(latitude) + float(latitude_delta)/2
 
     longitude_min_section_two, longitude_max_section_two = None, None
 
+    # Re-adjusting boundaries. 
     # The longitude range of what the map returns is -110 to +250. This calculates if the user's view contains the -110 or +250 boundary.
-    if longitude_min_section_one < -110:
+    if longitude_min < -110:
         # Area crosses over -110 long i.e. -160 to +160, regions are -160 to -180 and +180 to +160
-        longitude_min_section_two = 360 + longitude_min_section_one 
+        longitude_min_section_two = 360 + longitude_min 
         longitude_max_section_two = 250
-        longitude_min_section_one = -110
-    elif longitude_max_section_one > 250:
+        longitude_min = -110
+    elif longitude_max > 250:
         # Area crosses over +250 long i.e. +230 to -90, regions are +230 to +25 and -110 to -90
         longitude_min_section_two = -110
-        longitude_max_section_two = longitude_max_section_one - 360
-        longitude_max_section_one = 250
+        longitude_max_section_two = longitude_max - 360
+        longitude_max = 250
 
     if longitude_min_section_two == None and longitude_max_section_two == None:
         print("ONE SECTION SIGHTINGS")
-        print(f"{longitude_min_section_one} - {longitude} - {longitude_max_section_one}  d = {longitude_delta}")
+        print(f"{longitude_min} - {longitude} - {longitude_max}  d = {longitude_delta}")
         print(f"{latitude_min} - {latitude} - {latitude_max}  d = {latitude_delta}")
         query = """SELECT 
                         s.id AS sightings_id, s.date_time, s.location_longitude, s.location_latitude, s.description, s.animal, s.breed, s.image_url,
@@ -659,7 +778,7 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
                         s.date_time DESC;"""
     else:
         print("TWO SECTIONS SIGHTINGS")
-        print(f"{longitude_min_section_one} - {longitude} - {longitude_max_section_one}  d = {longitude_delta}")
+        print(f"{longitude_min} - {longitude} - {longitude_max}  d = {longitude_delta}")
         print(f"{longitude_min_section_two} - {longitude_max_section_two}  d = {longitude_delta}")
         print(f"{latitude_min} - {latitude} - {latitude_max}  d = {latitude_delta}")
 
@@ -686,9 +805,9 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
 
     try:
         if longitude_min_section_two == None and longitude_max_section_two == None:
-            cur.execute(query, (longitude_min_section_one, longitude_max_section_one, latitude_min, latitude_max))
+            cur.execute(query, (longitude_min, longitude_max, latitude_min, latitude_max))
         else:
-            cur.execute(query, (longitude_min_section_one, longitude_max_section_one, longitude_min_section_two, longitude_max_section_two, latitude_min, latitude_max))
+            cur.execute(query, (longitude_min, longitude_max, longitude_min_section_two, longitude_max_section_two, latitude_min, latitude_max))
             
         # Retrieve rows as an array
         sightings = cur.fetchall()
