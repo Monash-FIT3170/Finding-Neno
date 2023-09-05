@@ -501,6 +501,7 @@ def filter_missing_reports_from_database(connection: psycopg2.extensions.connect
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
+
     cur = connection.cursor()
 
     try:
@@ -528,7 +529,7 @@ def filter_missing_reports_from_database(connection: psycopg2.extensions.connect
 def filter_sightings_from_database(connection: psycopg2.extensions.connection, filters, user_id: int, access_token: str):
     """
     This function retrieves filtered list of sightings by pet type, pet breed, proximity to a location.
-    Missing report, pet, and owner information are all returned.
+    Sighting and author information are all returned.
 
     Returns False if access token is invalid, empty array if no sightings exist or an error is encountered, otherwise returns
     sightings.
@@ -607,19 +608,21 @@ def filter_sightings_from_database(connection: psycopg2.extensions.connection, f
     # Check if location filters are provided
     if filters.get("location_longitude") and filters.get("location_latitude"):
         query += """
-            AND ST_Distance(
-                    ST_Point(%s, %s),
-                    ST_Point(mr.location_longitude, mr.location_latitude)
-                ) <= %s
+                    WHERE 
+                        distance <= %s
 
-        """
-        params.extend([filters["location_longitude"], filters["location_latitude"], filters["location_radius"]])
+                """
+        params.extend([filters["location_radius"]])
 
     # Finish building the query
     if filters.get("sort_order") == "ASC":
         query += "ORDER BY mr.date_time ASC; "
     else:
         query += "ORDER BY mr.date_time DESC; "
+
+    # Sort by closest to furthest
+    if filters.get("location_radius"):
+        query += ", distance ASC;"
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
@@ -633,16 +636,16 @@ def filter_sightings_from_database(connection: psycopg2.extensions.connection, f
         cur.execute(query, params)
 
         # Retrieve rows as an array
-        missing_reports = cur.fetchall()
+        sightings = cur.fetchall()
 
-        print(f"Missing reports successfully retrieved")
+        print(f"Sightings successfully retrieved")
 
-        if missing_reports is not None:
-            result = missing_reports
+        if sightings is not None:
+            result = sightings
         else:
             result = []
     except Exception as e:
-        print(f"Error with retrieving missing reports: {e}")
+        print(f"Error with retrieving sightings: {e}")
 
     # Close the cursor
     cur.close()
