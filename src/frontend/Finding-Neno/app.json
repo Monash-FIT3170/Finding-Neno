@@ -15,7 +15,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.monash.findingneno"
     },
     "android": {
       "adaptiveIcon": {
@@ -25,6 +26,8 @@
     },
     "web": {
       "favicon": "./assets/favicon.png"
+    },
+    "extra": {
     }
   }
 }

@@ -5,26 +5,23 @@ import {Dimensions} from 'react-native';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
-import { IP, PORT } from "@env";
-
-
 
 import Report from "../components/Report";
 
-export default function ReportPage({ navigation: { navigate}, route}) {
+import { useSelector, useDispatch } from "react-redux";
+import store from "../store/store";
+
+
+export default function ReportPage({ navigation: { navigate}}) {
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
-    
-    const {headers} = route.params;
-    const ownerId = headers["userid"];
-    const accessToken = headers["accesstoken"]
 
-
+    const {IP, PORT} = useSelector((state) => state.api)
+    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
     const isFocused = useIsFocused();
     
-    console.log("Report: " + owner);
     const image = "https://wallpaperaccess.com/full/317501.jpg";
     const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
 
@@ -33,42 +30,26 @@ export default function ReportPage({ navigation: { navigate}, route}) {
 
     useEffect(() => {
       if (isFocused) {
-        fetchAllReports();
+        fetchUserReports();
       }
     }, [isFocused]);
   
-    const fetchAllReports = async () => {
+    const fetchUserReports = async () => {
       try {
-        const response = await fetch(`${IP}:${PORT}/get_missing_reports?owner_id=${ownerId}`);
+        const url = `${IP}:${PORT}/get_missing_reports?author_id=${USER_ID}`;
+        const response = await fetch(url, {
+            method: "GET",
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                'User-ID': USER_ID
+            },
+        });
         const data = await response.json();
         setReports(data[0]);
       } catch (error) {
         console.error(error);
       }
-    };
-
-    const owner = {
-        name: "Human Being",
-        image: "https://wallpaperaccess.com/full/317501.jpg",
-        phone: "0412 345 678"
-    };
-
-    const pet1 = {
-        name: "Peanutbutter",
-        species: "Dog",
-        breed: "Labrador",
-        desc: "Is this a crossever episode and i am testing that this is wrapping around",
-        lastSeen: "3:00 pm, 18/05/2023",
-        lastKnownLocation: "Clayton"
-    };
-
-    const pet2 = {
-        name: "Princess Carolyn",
-        species: "Cat",
-        breed: "Manager",
-        desc: "Is this a crossever episode and i am testing that this is wrapping around",
-        lastSeen: "3:00 pm, 18/05/2023",
-        lastKnownLocation: "Clayton"
     };
 
     return (
@@ -87,6 +68,11 @@ export default function ReportPage({ navigation: { navigate}, route}) {
         <Box height={3}/>
 
         
+        <>
+          {reports && reports.map((report, index) => (
+              <Report userId={USER_ID} report={report} key={index}/>
+          ))}
+        </> 
     </Box>
     </ScrollView>
     

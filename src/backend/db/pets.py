@@ -39,7 +39,7 @@ def get_all_pets(
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
-        return False
+        return []
 
     cur.close()
 
@@ -50,7 +50,8 @@ def get_all_pets(
         "breed": pet[3], 
         "description": pet[4], 
         "image_url": pet[5], 
-        "owner_id": pet[6]
+        "is_missing": pet[6],
+        "owner_id": pet[7],
     } for pet in pets]
 
     return pets
@@ -58,7 +59,7 @@ def get_all_pets(
 
 def get_pet(
         connection: psycopg2.extensions.connection,
-        pet_id: int
+        pet_id: int,
 ):
     """
     Returns a pet by the given id
@@ -106,6 +107,7 @@ def add_pet(
     breed: str, 
     description: str, 
     image_url: str, 
+    is_missing: bool,
     owner_id: int, 
     access_token: str,
 ):
@@ -130,11 +132,11 @@ def add_pet(
 
     cur = connection.cursor()
 
-    query = """INSERT INTO pets (name, animal, breed, description, image_url, owner_id) VALUES (%s, %s, %s, %s, %s, %s);"""
+    query = """INSERT INTO pets (name, animal, breed, description, image_url, ismissing, owner_id) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
 
     try:
         # Execute query
-        cur.execute(query, (name, animal, breed, description, image_url, owner_id,))
+        cur.execute(query, (name, animal, breed, description, image_url, is_missing, owner_id,))
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
@@ -181,23 +183,44 @@ def edit_pet(
 
     query = """UPDATE pets SET name = %s, animal = %s, breed = %s, description = %s, image_url = %s, owner_id = %s WHERE id = %s;"""
 
+
+    result = False
     try:
         # Execute query
         cur.execute(query, (name, animal, breed, description, image_url, owner_id, id))
+        result = True
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
-        return False
 
     cur.close()
     connection.commit()
 
-    return True
+    return result
+
+def update_pet_missing_status(connection: psycopg2.extensions.connection, pet_id: int, new_status: bool) -> bool:
+
+    result = False
+    try:
+        cur = connection.cursor()
+
+        # Update the missing status in the database
+        cur.execute("UPDATE pets SET isMissing = %s WHERE id = %s;", (new_status, pet_id))
+
+        connection.commit()
+        cur.close()
+        result = True
+    
+    except Exception as e:
+        print(f"Error updating status: {e}")
+        connection.rollback()
+
+    return result
 
 def delete_pet(
     connection: psycopg2.extensions.connection, 
     id: int,
-    access_token: str,
+    access_token: str, user_id: int
 ):
     """
     Deletes an existing pet in the database
@@ -211,21 +234,21 @@ def delete_pet(
     """
 
     cur = connection.cursor()
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
 
-
+    result = False
     try:
         # Get the pet's owner's ID
         query = """SELECT owner_id FROM pets WHERE id = %s;"""
         cur.execute(query, (id,))
-        owner_id = cur.fetchone()[0]
         
-        # Verify access token
-        if not verify_access_token(connection, owner_id, access_token):
-            return False
         
         # Delete the pet
         query = """DELETE FROM pets WHERE id = %s;"""
         cur.execute(query, (id,))
+        result = True
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
@@ -234,4 +257,4 @@ def delete_pet(
     cur.close()
     connection.commit()
 
-    return True
+    return result
