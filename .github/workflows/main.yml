@@ -55,11 +55,11 @@ jobs:
       - name: Setup EAS
         uses: expo/expo-github-action@v8
         with:
-          eas-version: latest
+          eas-version: 3.17.1
           token: ${{ secrets.EXPO_TOKEN }}
 
       - name: Install dependencies
         run: npm install
 
       - name: Publish update
-        run: eas update --auto --platform android --channel preview
+        run: eas update --channel preview --platform android --auto

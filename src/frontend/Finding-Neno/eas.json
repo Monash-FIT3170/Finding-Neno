@@ -3,13 +3,11 @@
     "version": ">= 3.17.1"
   },
   "build": {
-    // Development build is for testing with 'npx expo start --dev-client'
     "development": {
       "channel": "development",
       "developmentClient": true,
       "distribution": "internal"
     },
-    // Preview build is for independent of the Expo Go app and can be run independently
     "preview": {
       "channel": "preview",
       "distribution": "internal",
@@ -17,7 +15,6 @@
         "API_URL": "https://finding-neno-backend-e7784ead43b6.herokuapp.com"
       }
     },
-    // Production build has not been set up yet
     "production": {
       "channel": "production",
       "distribution": "internal",
