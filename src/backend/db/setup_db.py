@@ -29,27 +29,6 @@ To run this script, run the following command from the root directory:
     python src/backend/db/setup_db.py .env
 """
 
-def drop_connections(connection: psycopg2.extensions.connection, dbname: str):
-    """
-    Drops all other connections to the database (if they exist)
-    """
-    cur = connection.cursor()
-    query = f"""
-        SELECT pg_terminate_backend(pg_stat_activity.pid)
-        FROM pg_stat_activity
-        WHERE pg_stat_activity.datname = '{dbname}'
-        AND pid <> pg_backend_pid();
-    """
-    try:
-        cur.execute(query)
-        print("Successfully dropped all other connections to the database")
-    except Exception as e:
-        print(f"Error while executing query: {e}")
-    
-    connection.commit()
-    cur.close()
-
-
 def create_tables(connection: psycopg2.extensions.connection):
     """
     Sets up the database, including tables, keys and foreign key constraints
@@ -152,11 +131,11 @@ if __name__ == "__main__":
             port=os.getenv("DATABASE_PORT"),
         )
 
-        # Disconnect other connections to database if they exist
-        drop_connections(connection=conn, dbname=os.getenv("DATABASE_NAME"))
-
         # Drop tables if they exist
         drop_tables(connection=conn)
 
         # Create/recreate tables
         create_tables(connection=conn)
+
+        # Close connection
+        conn.close()

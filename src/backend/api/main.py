@@ -14,7 +14,6 @@ sys.path.append(str(package_root_directory))
 
 from api.user_service import *
 from api.pets_api import *
-from db.setup_db import drop_connections
 
 database_pool = None
 
@@ -46,6 +45,26 @@ def get_connection():
         database_pool = create_database_pool()
     return database_pool.getconn()
     
+
+def drop_db_connections(connection: psycopg2.extensions.connection, dbname: str):
+    """
+    Drops all other connections to the database (if they exist)
+    """
+    cur = connection.cursor()
+    query = f"""
+        SELECT pg_terminate_backend(pg_stat_activity.pid)
+        FROM pg_stat_activity
+        WHERE pg_stat_activity.datname = '{dbname}'
+        AND pid <> pg_backend_pid();
+    """
+    try:
+        cur.execute(query)
+        print("Successfully dropped all other connections to the database")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+    
+    connection.commit()
+    cur.close()
 
 
 """
@@ -258,7 +277,7 @@ if __name__ == "__main__":
     database_pool = create_database_pool()
 
     # Disconnect other connections to database if they exist
-    drop_connections(connection=database_pool.getconn(), dbname=os.getenv("DATABASE_NAME"))
+    drop_db_connections(connection=database_pool.getconn(), dbname=os.getenv("DATABASE_NAME"))
 
     # Run Flask app
     app.run(host="0.0.0.0", debug=True)
