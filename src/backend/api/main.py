@@ -84,7 +84,7 @@ def after_request(response):
 
 @app.route("/")
 def root():
-    return "Finding Neno Server is Up!"
+    return "Finding Neno Back-End Server is Up!"
 
 @app.route("/manual_start_connection")
 def manual_start_database_pool():
