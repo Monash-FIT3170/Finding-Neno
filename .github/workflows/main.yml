@@ -37,6 +37,10 @@ jobs:
     # The type of runner that the job will run on
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: src/frontend/Finding-Neno
+
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v3
@@ -46,19 +50,15 @@ jobs:
         with:
           node-version: 18.x
           cache: yarn
-        working-directory: src/frontend/Finding-Neno
 
       - name: Setup EAS
         uses: expo/expo-github-action@v8
         with:
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
-        working-directory: src/frontend/Finding-Neno
 
       - name: Install dependencies
         run: yarn install
-        working-directory: src/frontend/Finding-Neno
 
       - name: Publish update
         run: eas update --auto --platform android --channel preview
-        working-directory: src/frontend/Finding-Neno
