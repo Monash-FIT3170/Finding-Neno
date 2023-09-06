@@ -23,6 +23,11 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCY2ViODQMi61iKlGDts-DMMfOszRex8E4"
+        }
+      },
       "package": "com.josiahschuller.findingneno"
     },
     "web": {
