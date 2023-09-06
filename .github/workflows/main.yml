@@ -62,10 +62,12 @@ jobs:
         run: npm install
 
       # Build the preview of the app
-      - name: Create preview
+      - name: Build preview application
         uses: expo/expo-github-action/preview@v8
         with:
-          command: eas update --auto
+          command: |
+            cd src/frontend/Finding-Neno
+            eas update --auto
           comment: false
 
       - name: Output preview URL
