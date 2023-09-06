@@ -33,6 +33,12 @@
         "projectId": "6b02a04a-94c0-4b03-baee-2a3b9739dc63"
       }
     },
-    "owner": "josiahschuller"
+    "owner": "josiahschuller",
+    "runtimeVersion": {
+      "policy": "sdkVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/6b02a04a-94c0-4b03-baee-2a3b9739dc63"
+    }
   }
 }
