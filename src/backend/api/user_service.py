@@ -200,6 +200,22 @@ def filter_missing_reports(connection):
         elif len(missing_reports) == 0:
             return [], 204
 
+def filter_sightings(connection):
+    """
+    This function calls the function that connects to the db to retrieve all missing reports or missing reports of an user if author_id is provided.
+    """
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+    filters = request.get_json()
+    sightings = filter_sightings_from_database(connection, filters, user_id, access_token)
+    if sightings is False:
+        return "User does not have access", 401
+    else:
+        if len(sightings) > 0:
+            print(f"Returning {len(sightings)}")
+            return sightings, 200
+        elif len(sightings) == 0:
+            return [], 204
 
 def retrieve_reports_by_pet(connection, pet_id) -> Tuple[str, int]:
     """

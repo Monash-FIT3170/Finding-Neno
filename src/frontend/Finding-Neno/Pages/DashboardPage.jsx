@@ -22,6 +22,7 @@ const DashboardPage = () => {
 
 	// TODO: change report structure to be an array of dictionaries? Refer to mock data that is commented out for desired structure
 	const [reports, setReports] = useState([]);
+	const [sightings, setSightings] = useState([]);
 	//   const [modalVisible, setModalVisible] = useState(false);
 	const [sightingDateTime, setSightingDateTime] = useState(new Date());
 	const [sightingData, setSightingData] = useState({ authorId: USER_ID });
@@ -32,8 +33,7 @@ const DashboardPage = () => {
 	const [sightingImage, setSightingImage] = useState(null);
 	const [isUploading, setIsUploading] = useState(false);
 	const [tabValue, setTabValue] = useState("reports");
-	const [allSightings, setAllSightings] = useState([]);
-	const [filters, setFilters] = useState({
+	const [reportFilters, setReportFilters] = useState({
 		pet_type: [],
 		pet_breed: [],
 		location: {longitude: null, latitude: null, radius: null},
@@ -41,13 +41,20 @@ const DashboardPage = () => {
 		is_active: null,
 		sort_order: "DESC", 
 	});
+	const [sightingFilters, setSightingFilters] = useState({
+		pet_type: [],
+		pet_breed: [],
+		location: {longitude: null, latitude: null, radius: null},
+		author_id: null,
+		sort_order: "DESC", 
+	});
 
 	useEffect(() => {
 		if (isFocused) {
 			if (tabValue == "reports") {
-				fetchAllReports();
+				fetchReports();
 			} else {
-				fetchAllSightings();
+				fetchSightings();
 			}
 		}
 	}, [tabValue])
@@ -56,10 +63,7 @@ const DashboardPage = () => {
 	const image = "https://wallpaperaccess.com/full/317501.jpg";
 
 	// API calls 
-	const fetchAllReports = async () => {
-		// const filters = { sort_order: "ASC", 
-		// 	location_longitude: 144.9431, 
-		// 	location_latitude: -37.8136, location_radius: 50};
+	const fetchReports = async () => {
 		try {
 			const url = `${IP}:${PORT}/filter_missing_reports`;
 			const response = await fetch(url, {
@@ -69,7 +73,7 @@ const DashboardPage = () => {
 					'Authorization': `Bearer ${ACCESS_TOKEN}`,
 					'User-ID': USER_ID,
 				},
-				body: JSON.stringify(filters),
+				body: JSON.stringify(reportFilters),
 			});
 
 			if (!response.ok) {
@@ -83,16 +87,17 @@ const DashboardPage = () => {
 		}
 	};
 
-	const fetchAllSightings = async () => {
+	const fetchSightings = async () => {
 		try {
-			const url = `${IP}:${PORT}/get_sightings`;
+			const url = `${IP}:${PORT}/filter_sightings`;
 			const response = await fetch(url, {
-				method: "GET",
+				method: "POST",
 				headers: {
 					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${ACCESS_TOKEN}`,
 					'User-ID': USER_ID,
 				},
+				body: JSON.stringify(sightingFilters),
 			});
 
 			if (!response.ok) {
@@ -100,7 +105,7 @@ const DashboardPage = () => {
 			}
 
 			const data = await response.json();
-			setAllSightings(data[0]);
+			setSightings(data[0]);
 		} catch (error) {
 			console.error(error);
 		}
@@ -157,7 +162,7 @@ const DashboardPage = () => {
 					</>
 					:
 					<>
-						{allSightings && allSightings.map((sighting, index) => (
+						{sightings && sightings.map((sighting, index) => (
 							<Sighting userId={USER_ID} sighting={sighting} key={index} />
 						))}
 					</>

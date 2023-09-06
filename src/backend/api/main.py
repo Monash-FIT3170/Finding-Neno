@@ -166,6 +166,20 @@ def get_filtered_missing_reports():
     reports = filter_missing_reports(g.db)
     return jsonify(reports)
 
+@app.route("/filter_sightings", methods=["POST"])
+def get_filtered_sightings():
+    """
+    Returns an array of filtered sightings by pet type, pet breed, and/or proximity to a location.
+
+    [
+        sighting_id, missing_report_id, author_id (author of sighting), date_time (date time sighting was made), 
+        location_longitude, location_latitude, image_url, description, author's name, author's email, author's phone number,
+        distance (distance from location)
+    ]
+    """
+    sightings = filter_sightings(g.db)
+    return jsonify(sightings)
+
 @app.route("/get_reports_by_pet", methods=["GET"])
 def get_reports_by_pet():
     """
@@ -173,7 +187,6 @@ def get_reports_by_pet():
     """
     pet_id = request.args.get("pet_id")
     return jsonify(retrieve_reports_by_pet(g.db, pet_id))  # Updated function name
-
 
 
 @app.route("/get_sightings", methods=["GET"])

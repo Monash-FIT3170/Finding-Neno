@@ -536,140 +536,6 @@ def filter_missing_reports_from_database(connection: psycopg2.extensions.connect
     cur.close()
     return result
 
-def filter_sightings_from_database(connection: psycopg2.extensions.connection, filters, user_id: int, access_token: str):
-    """
-    This function retrieves filtered list of sightings by pet type, pet breed, proximity to a location.
-    Sighting and author information are all returned.
-
-    Returns False if access token is invalid, empty array if no sightings exist or an error is encountered, otherwise returns
-    sightings.
-    """
-    # Verify access token
-    if not verify_access_token(connection, user_id, access_token):
-        return False
-        
-    
-    # Start building the query
-    query = """
-                SELECT *
-                FROM (
-                    SELECT
-                        s.id AS sighting_id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
-                        u.id AS author_id, u.name AS author_name, u.email_address AS author_email, u.phone_number AS author_phone_number
-            """
-        
-    # Initialise parameters
-    params = []
-
-    # Add extra columns if location filters are provided to enable sorting by distance     
-    distance_filter = False
-    if filters.get("location"):    
-        longitude = filters["location"]["longitude"]
-        latitude = filters["location"]["latitude"] 
-        query += """                    
-                    , ST_Distance(
-                            ST_GeogFromText('Point(%s %s)'),
-                            ST_GeogFromText(CONCAT('Point(', s.location_longitude,' ', s.location_latitude, ')'))
-                        ) / 1000 AS distance
-                """
-        params.extend([longitude, latitude])
-        distance_filter = True
-                    
-    # Continue building query
-    query += """ 
-                FROM 
-                    sightings AS s
-                JOIN 
-                    missing_reports AS mr ON s.missing_report_id = mr.id
-                JOIN 
-                    users AS u ON s.author_id = u.id
-                WHERE
-                    s.is_active = %s
-            """
-    
-    # Check if is_active is provided
-    if filters.get("is_active") != None:
-        params.append(filters.get("is_active"))
-    else:
-        params.append(True)
-    
-    # Check if author_id is provided
-    if filters.get("author_id") != None:
-        query += "AND s.author_id = %s "
-        params.append(filters["author_id"])
-
-    # Check if pet_type is provided and includes pets with type in the list
-    if len(filters.get("pet_type")) > 0:
-        query += "AND s.animal IN %s "
-        params.append(tuple(filters["pet_type"]))
-        
-    # Check if pet_breed is provided and includes pets with breed in the list
-    if len(filters.get("pet_breed")) > 0:
-        # query += "AND p.animal IN %s "
-        # params.append(tuple(filters["pet_animal"]))
-
-        # Create a list of filter conditions for each substring
-        breed_conditions = []
-        for breed in filters["pet_breed"]:
-            breed_conditions.append("s.breed ILIKE %s")
-            params.append(f"%{breed.strip()}%")
-
-        # Combine the conditions with OR
-        breed_condition_query = " OR ".join(breed_conditions)
-        
-        # Add combined condition to the query
-        query += f"AND ({breed_condition_query}) "
-
-
-    # Close subquery
-    query += ") AS filtered_reports "
-
-    # Check if location filters are provided
-    if distance_filter:
-        radius = filters["location"]["radius"]
-        query += """
-                    WHERE 
-                        distance <= %s
-                """
-        params.append(radius)
-
-    # Finish building the query
-    if filters.get("sort_order") == "ASC":
-        query += "ORDER BY mr.date_time ASC; "
-    else:
-        query += "ORDER BY mr.date_time DESC; "
-
-    # Sort by closest to furthest
-    if distance_filter:
-        query += ", distance ASC;"
-
-    # Result is the object returned or True if no errors encountered, False if there is an error
-    result = False
-
-    cur = connection.cursor()
-
-    try:
-        # if author_id == None:
-        # cur.execute(query)
-        # else:
-        cur.execute(query, params)
-
-        # Retrieve rows as an array
-        sightings = cur.fetchall()
-
-        print(f"Sightings successfully retrieved")
-
-        if sightings is not None:
-            result = sightings
-        else:
-            result = []
-    except Exception as e:
-        print(f"Error with retrieving sightings: {e}")
-
-    # Close the cursor
-    cur.close()
-    return result
-
 def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_id: int, user_id: int, access_token: str):
     """
     This function retrieves reports based on the provided pet_id.
@@ -745,10 +611,10 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
     query = """
                 SELECT
                     s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
-                    u.name, u.email_address, u.phone_number
+                    s.animal, s.breed, u.name, u.email_address, u.phone_number
                 FROM
                     sightings AS s
-                JOIN
+                LEFT JOIN
                     missing_reports AS mr ON s.missing_report_id = mr.id
                 JOIN
                     users AS u ON s.author_id = u.id
@@ -784,6 +650,133 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
     return result
 
 
+
+def filter_sightings_from_database(connection: psycopg2.extensions.connection, filters, user_id: int, access_token: str):
+    """
+    This function retrieves filtered list of sightings by pet type, pet breed, proximity to a location.
+    Sighting and author information are all returned.
+
+    Returns False if access token is invalid, empty array if no sightings exist or an error is encountered, otherwise returns
+    sightings.
+    """
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+        
+    
+    # Start building the query
+    query = """
+                SELECT *
+                FROM (
+                    SELECT
+                        s.id AS sighting_id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
+                        s.animal, s.breed, u.id AS author_id, u.name AS author_name, u.email_address AS author_email, u.phone_number AS author_phone_number
+            """
+        
+    # Initialise parameters
+    params = []
+
+    # Add extra columns if location filters are provided to enable sorting by distance     
+    distance_filter = False
+    if filters.get("location"):    
+        longitude = filters["location"]["longitude"]
+        latitude = filters["location"]["latitude"] 
+
+        if longitude != None and latitude != None:
+            query += """                    
+                        , ST_Distance(
+                                ST_GeogFromText('Point(%s %s)'),
+                                ST_GeogFromText(CONCAT('Point(', s.location_longitude,' ', s.location_latitude, ')'))
+                            ) / 1000 AS distance
+                    """
+            params.extend([longitude, latitude])
+            distance_filter = True
+                    
+    # Continue building query
+    query += """ 
+                FROM 
+                    sightings AS s
+                LEFT JOIN 
+                    missing_reports AS mr ON s.missing_report_id = mr.id
+                JOIN 
+                    users AS u ON s.author_id = u.id
+                WHERE
+                    TRUE
+            """
+    
+    # Check if author_id is provided
+    if filters.get("author_id") != None:
+        query += "AND s.author_id = %s "
+        params.append(filters["author_id"])
+
+    # Check if pet_type is provided and includes pets with type in the list
+    if len(filters.get("pet_type")) > 0:
+        query += "AND s.animal IN %s "
+        params.append(tuple(filters["pet_type"]))
+        
+    # Check if pet_breed is provided and includes pets with breed in the list
+    if len(filters.get("pet_breed")) > 0:
+        # query += "AND p.animal IN %s "
+        # params.append(tuple(filters["pet_animal"]))
+
+        # Create a list of filter conditions for each substring
+        breed_conditions = []
+        for breed in filters["pet_breed"]:
+            breed_conditions.append("s.breed ILIKE %s")
+            params.append(f"%{breed.strip()}%")
+
+        # Combine the conditions with OR
+        breed_condition_query = " OR ".join(breed_conditions)
+        
+        # Add combined condition to the query
+        query += f"AND ({breed_condition_query}) "
+
+
+    # Close subquery
+    query += ") AS filtered_reports "
+
+    # Check if location filters are provided
+    if distance_filter:
+        radius = filters["location"]["radius"]
+        query += """
+                    WHERE 
+                        distance <= %s
+                """
+        params.append(radius)
+
+    # Finish building the query
+    if filters.get("sort_order") == "ASC":
+        query += "ORDER BY date_time ASC"
+    else:
+        query += "ORDER BY date_time DESC"
+
+    # Sort by closest to furthest
+    if distance_filter:
+        query += ", distance ASC;"
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    cur = connection.cursor()
+
+    try:
+        cur.execute(query, params)
+
+        # Retrieve rows as an array
+        sightings = cur.fetchall()
+
+        print(f"Sightings successfully retrieved")
+
+        if sightings is not None:
+            result = sightings
+        else:
+            result = []
+    except Exception as e:
+        print(f"Error with retrieving sightings: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
 
 def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensions.connection, longitude, longitude_delta, latitude, latitude_delta):
     """
