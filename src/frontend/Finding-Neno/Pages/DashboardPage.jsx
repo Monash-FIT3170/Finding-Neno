@@ -33,7 +33,14 @@ const DashboardPage = () => {
 	const [isUploading, setIsUploading] = useState(false);
 	const [tabValue, setTabValue] = useState("reports");
 	const [allSightings, setAllSightings] = useState([]);
-	const [filters, setFilters] = useState({sort_order: "DESC"});
+	const [filters, setFilters] = useState({
+		pet_type: [],
+		pet_breed: [],
+		location: {longitude: null, latitude: null, radius: null},
+		author_id: null,
+		is_active: null,
+		sort_order: "DESC", 
+	});
 
 	useEffect(() => {
 		if (isFocused) {
