@@ -1,10 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-    // IP: process.env.EXPO_PUBLIC_IP,
-    // PORT: process.env.EXPO_PUBLIC_PORT,
-    IP: "https://finding-neno-backend-e7784ead43b6.herokuapp.com",
-    PORT: "",
+    API_URL: process.env.API_URL,
 }
 
 export const apiSlice = createSlice({
@@ -12,9 +9,7 @@ export const apiSlice = createSlice({
     initialState,
     reducers: {
         updateConnection: (state, {payload}) => {
-            state.IP = payload.IP;
-            state.PORT = payload.PORT;
-        
+            state.API_URL = payload.API_URL;
         },
     },
 });

@@ -18,7 +18,7 @@ import marker from '../assets/marker_icon.png';
 import { formatDatetime, petTypeOptions } from "./shared";
 
 const NewSightingPage = ({ navigation: { navigate } }) => {
-    const { IP, PORT } = useSelector((state) => state.api)
+    const { API_URL } = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
     const navigation = useNavigation();
@@ -179,7 +179,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 				lastLocation: `${coordinates.longitude}, ${coordinates.latitude}`
             }
 
-            const url = `${IP}:${PORT}/insert_sighting`;
+            const url = `${API_URL}/insert_sighting`;
 
             await fetch(url, {
                 method: "POST",

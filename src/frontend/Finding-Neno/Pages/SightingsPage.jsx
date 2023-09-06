@@ -11,7 +11,7 @@ export default function SightingsPage({navigation: {navigate}}) {
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
 
-	const {IP, PORT} = useSelector((state) => state.api)
+	const {API_URL} = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
     
 

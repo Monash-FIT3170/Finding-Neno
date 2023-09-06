@@ -19,7 +19,7 @@ const SignupPage = () => {
 	const [buttonText, setButtonText] = useState("Sign up")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-	const {IP, PORT} = useSelector((state) => state.api)
+	const {API_URL} = useSelector((state) => state.api)
 
 	const navigation = useNavigation();
 
@@ -31,7 +31,7 @@ const SignupPage = () => {
 
 		let isValid = validateDetails(formData);
 		if (isValid) {
-			const url = `${IP}:${PORT}/insert_user`;
+			const url = `${API_URL}/insert_user`;
 
 			fetch(url, {
 				method: "POST",
