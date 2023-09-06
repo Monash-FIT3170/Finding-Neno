@@ -63,14 +63,4 @@ jobs:
 
       # Build the preview of the app
       - name: Build preview application
-        uses: expo/expo-github-action/preview@v8
-        id: preview
-        with:
-          command: eas build --channel preview --platform android
-          working-directory: src/frontend/Finding-Neno
-          comment: false
-
-      - name: Output preview URL
-        run: |
-          echo ${{ steps.preview.outputs.link }}
-          echo ${{ steps.preview.outputs.qr }}
+        run: eas build --profile preview --platform android --clear-cache --non-interactive
