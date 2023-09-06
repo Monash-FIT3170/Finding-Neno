@@ -7,13 +7,14 @@ from flask_cors import CORS
 from pathlib import Path
 
 # Add the parent directory to the path so that backend deployment works
+# and so that you can access scripts from the db directory
 file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
 sys.path.append(str(package_root_directory))
 
 from api.user_service import *
-
 from api.pets_api import *
+from db.setup_db import drop_connections
 
 database_pool = None
 
@@ -36,7 +37,7 @@ def create_database_pool():
     )
 
 
-def get_connetion():
+def get_connection():
     """
     Returns the connection to the database.
     """
@@ -52,7 +53,7 @@ Code by Sohaib Farooqi, edited by user956424 on Stack Overflow: https://stackove
 """
 @app.before_request
 def before_request():
-   conn = get_connetion()
+   conn = get_connection()
    g.db = conn
 
 @app.after_request
@@ -255,6 +256,9 @@ if __name__ == "__main__":
         
     # Connect to database
     database_pool = create_database_pool()
+
+    # Disconnect other connections to database if they exist
+    drop_connections(connection=database_pool.getconn(), dbname=os.getenv("DATABASE_NAME"))
 
     # Run Flask app
     app.run(host="0.0.0.0", debug=True)
