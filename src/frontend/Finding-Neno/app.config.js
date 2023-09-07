@@ -1,4 +1,4 @@
-{
+module.exports = {
   "expo": {
     "name": "Finding-Neno",
     "slug": "finding-neno",
@@ -25,7 +25,7 @@
       },
       "config": {
         "googleMaps": {
-          "apiKey": "AIzaSyCY2ViODQMi61iKlGDts-DMMfOszRex8E4"
+          "apiKey": process.env.GOOGLE_MAPS_API_KEY
         }
       },
       "package": "com.josiahschuller.findingneno"
@@ -45,5 +45,5 @@
     "updates": {
       "url": "https://u.expo.dev/6b02a04a-94c0-4b03-baee-2a3b9739dc63"
     }
-  }
+  } 
 }

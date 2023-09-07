@@ -108,13 +108,18 @@ def get_verify_token():
 def post_login():
     print("logging in")
     data = login(g.db)
-    print(data)
-    headers = {
-        'userId': data[2],
-        'accessToken': data[3],
-    }
 
-    return data[0], data[1], headers
+    if data[1] == 200:
+        print(data)
+        headers = {
+            'userId': data[2],
+            'accessToken': data[3],
+        }
+
+        return data[0], data[1], headers
+    else:
+        print(data)
+        return data[0], data[1]
 
 @app.route("/retrieve_profile", methods=["GET"]) # Requires Access_token and user ID for authorization
 def retrieve_profile_information():
