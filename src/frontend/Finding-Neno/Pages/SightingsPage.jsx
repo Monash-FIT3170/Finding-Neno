@@ -15,7 +15,7 @@ export default function SightingsPage({navigation: {navigate}}) {
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
     
 
-    // NOTE: This page is no longer in use, but keeping this code here in case we need it in future, or for reference
+    // TODO: display saved sightings + sightings linked to user's own reports here 
   
     return (
         <ScrollView>
