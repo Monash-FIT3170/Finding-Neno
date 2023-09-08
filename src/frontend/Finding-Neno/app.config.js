@@ -25,7 +25,7 @@ module.exports = {
       },
       "config": {
         "googleMaps": {
-          "apiKey": process.env.GOOGLE_MAPS_API_KEY
+          "apiKey": "AIzaSyCY2ViODQMi61iKlGDts-DMMfOszRex8E4"
         }
       },
       "package": "com.josiahschuller.findingneno"
