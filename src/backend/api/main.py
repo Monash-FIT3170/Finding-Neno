@@ -168,7 +168,7 @@ def get_sightings():
 
     [
         sighting_id, missing_report_id, author_id (author of sighting), date_time (date time sighting was made), 
-        location_longitude, location_latitude, image_url, description, author's name, author's email, author's phone number
+        location_longitude, location_latitude, image_url, description, author's name, author's email, author's phone number, pet_name
     ]
     """
     missing_report_id = request.args.get("missing_report_id")
@@ -217,7 +217,7 @@ def get_my_report_sightings():
 
     [
         sighting_id, missing_report_id, author_id (author of sighting), date_time (date time sighting was made), 
-        sighting longitude , sighting latitude, sighting image_url, sighting description, animal, breed, author's name, author's email, author's phone number
+        sighting longitude , sighting latitude, sighting image_url, sighting description, animal, breed, author's name, author's email, author's phone number, pet_name
     ]
     """
     return jsonify(retrieve_my_report_sightings(g.db))

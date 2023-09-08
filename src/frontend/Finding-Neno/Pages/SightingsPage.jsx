@@ -50,7 +50,7 @@ export default function SightingsPage({navigation: {navigate}}) {
       };
     
 
-    // TODO: display saved sightings + sightings linked to user's own reports here 
+    // TODO: display saved sightings here too (if any)
   
     return (
         <ScrollView style={{backgroundColor: '#EDEDED'}}>

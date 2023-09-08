@@ -25,14 +25,14 @@ const Report = ({userId, sighting}) => {
     const ownerName = sighting[10];
     const ownerEmail = sighting[11];
     const sightingPhoneNumber = sighting[12];
+    const petName = sighting[13]
     
   return (
     <View justifyContent = "center" alignItems = "center" padding={4}>
         {/* TODO: unhard code the heights, widths etc later */}
     <Box width={windowWidth - 20} height={sightingImage ? 400 : 250} bg="#F9FDFF" borderRadius={15} paddingLeft={5} paddingTop={2}>
-       {/* TODO: update sql query to get pet name too */}
       <Heading size = "lg"  paddingTop={3}>
-        Pet name here...
+        {petName}
       </Heading>
 
       <Heading size = "sm"  paddingTop={2}>

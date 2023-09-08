@@ -466,11 +466,13 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
         query = """
                     SELECT
                         s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
-                        u.name, u.email_address, u.phone_number
+                        u.name, u.email_address, u.phone_number, p.name as pet_name
                     FROM
                         sightings AS s
                     LEFT JOIN
                         missing_reports AS mr ON s.missing_report_id = mr.id
+                    JOIN 
+		                pets AS p ON p.id = mr.pet_id
                     JOIN
                         users AS u ON s.author_id = u.id
                     ORDER BY
@@ -531,13 +533,17 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
     cur = connection.cursor()
 
     query = """
-                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed, u.name, u.email_address, u.phone_number
+                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, 
+                    s.breed, u.name, u.email_address, u.phone_number, p.name as pet_name
                 FROM sightings AS s
-                    LEFT JOIN 
+                    JOIN 
                         missing_reports AS mr ON s.missing_report_id = mr.id
+                    JOIN 
+		                pets AS p ON p.id = mr.pet_id
                     JOIN
                         users AS u ON s.author_id = u.id
-                WHERE mr.author_id = 1
+                WHERE 
+                    mr.author_id = %s
                 ORDER BY
                 s.date_time DESC;
             """
@@ -545,7 +551,7 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
     result = False
 
     try:
-        cur.execute(query)
+        cur.execute(query, (user_id,))
 
         # Retrieve rows as an array
         sightings = cur.fetchall()
