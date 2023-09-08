@@ -233,6 +233,10 @@ def post_insert_sighting():
 def get_saved_sighting():
     return retrieve_saved_sightings(g.db)
 
+@app.route("/save_sighting", methods=["POST"]) # Requires Access_token and user ID for authorization
+def post_saved_sighting():
+    return save_user_sighting(g.db)
+
 
 if __name__ == "__main__": 
     # Get environment file path from command line arguments

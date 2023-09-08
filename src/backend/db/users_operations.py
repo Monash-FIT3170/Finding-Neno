@@ -752,6 +752,38 @@ def retrieve_user_saved_sightings(connection: psycopg2.extensions.connection, us
     return result
 
 
+def save_sighting_for_user(connection: psycopg2.extensions.connection, user_id: int, access_token: str, sighting_id: int):
+    """
+    This function records a user saving a sighting
+    """
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    # Construct and INSERT query to insert this user into the DB
+    query = """INSERT INTO users_saved_sightings (user_id, sighting_id) VALUES (%s, %s);"""
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id, sighting_id))
+        print(f"Query executed successfully: {query}")
+
+        # Commit the change
+        connection.commit()
+
+        result = True  # set to True only if it executes successfully
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
 
 def delete_missing_reports_of_pet(connection: psycopg2.extensions.connection, pet_id: int):
     """
