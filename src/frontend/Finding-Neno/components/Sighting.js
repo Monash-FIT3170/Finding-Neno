@@ -1,17 +1,19 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { View } from 'react-native'
 import {Dimensions} from 'react-native';
 import ReportSightingModal from '../components/ReportSightingModal';
 import * as ImagePicker from 'expo-image-picker';
 import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 import { Ionicons } from '@expo/vector-icons'; 
+import { useSelector } from "react-redux";
 
 
 const Sighting = ({userId, sighting}) => {
     // Pet Data
     const windowWidth = Dimensions.get('window').width; 
 
-    console.log(sighting)
+    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+    const { IP, PORT } = useSelector((state) => state.api)
 
     const id = sighting[0];
     const missingReportId = sighting[1];
@@ -27,10 +29,40 @@ const Sighting = ({userId, sighting}) => {
     const ownerEmail = sighting[11];
     const sightingPhoneNumber = sighting[12];
 
-    const [sightingSaved, setSightingSaved] = useState(false);
 
-    const handleSaveSighting = () => {
-      setSightingSaved(!sightingSaved);
+    const [sightingSaved, setSightingSaved] = useState(false);
+    const [saveSightingEndpoint, setSaveSightingEndpoint] = useState('save_sighting');
+
+    useEffect(() => {
+      if (sightingSaved) {
+        setSaveSightingEndpoint('unsave_sighting');
+      } else {
+        setSaveSightingEndpoint('save_sighting');
+      }
+    }, [sightingSaved]);
+    
+    const handlePressSaveBtn = async () => {
+
+      const url = `${IP}:${PORT}/${saveSightingEndpoint}`;
+
+      console.log(url);
+    
+      await fetch(url, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          'Authorization': `Bearer ${ACCESS_TOKEN}`,
+          'User-ID': USER_ID
+        },
+        body: JSON.stringify({sightingId: id}),
+      })
+        .then((res) => {
+          if (res.status == 201) {
+            setSightingSaved(!sightingSaved);
+            console.log("sighting saved/unsaved successfully")
+          }
+        })
+        .catch((error) => alert(error));
     }
     
   return (
@@ -42,7 +74,7 @@ const Sighting = ({userId, sighting}) => {
       <Heading size = "lg" >
         Glen Waverley, 3150
       </Heading>
-      <Ionicons name={sightingSaved ? "bookmark": "bookmark-outline"} size={"20px"} onPress={handleSaveSighting}/>
+      <Ionicons name={sightingSaved ? "bookmark": "bookmark-outline"} size={20} onPress={handlePressSaveBtn}/>
       
       </HStack>
 
