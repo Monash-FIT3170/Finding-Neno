@@ -704,6 +704,55 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
     cur.close()
     return result
 
+def retrieve_user_saved_sightings(connection: psycopg2.extensions.connection, user_id: int, access_token: str ):
+    """
+    This function retrieves the sightings a user has saved
+    """
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    query = """
+        SELECT 
+            s.id AS sightings_id, s.date_time, s.location_longitude, s.location_latitude, s.description, s.animal, s.breed, s.image_url,
+            u.id
+        FROM 
+            users_saved_sightings AS us
+        JOIN 
+            users AS u ON us.user_id = u.id
+        JOIN
+            sightings as s ON us.sighting_id = s.id
+        WHERE 
+            us.user_id = %s
+            
+    """
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id,))
+        sightings = cur.fetchall()
+
+        result = sightings
+
+        print(f"User saved sightings successfully retrieved")
+
+        print(f"{len(sightings)} retrieved")
+
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
+
+
 def delete_missing_reports_of_pet(connection: psycopg2.extensions.connection, pet_id: int):
     """
     This function deletes all missing reports associated with pet.

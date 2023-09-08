@@ -229,6 +229,10 @@ def put_archive_missing_report():
 def post_insert_sighting():
     return insert_sighting(g.db)
 
+@app.route("/retrieve_saved_sightings", methods=["GET"]) # Requires Access_token and user ID for authorization
+def get_saved_sighting():
+    return retrieve_saved_sightings(g.db)
+
 
 if __name__ == "__main__": 
     # Get environment file path from command line arguments
