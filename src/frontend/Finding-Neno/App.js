@@ -140,16 +140,16 @@ function TabNavigator() {
 					),
 				}}
 			/>
-			{/* <Tab.Screen
+			<Tab.Screen
 				name="Sightings"
-				component={SightingsStackNavigator}
+				component={SightingsPage}
 				options={{
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="search" color={color} size={size} />
 					),
-					headerShown: false
+					headerShown: true
 				}}
-			/> */}
+			/>
 			<Tab.Screen
 				name="Report"
 				component={ReportStackNavigator}
