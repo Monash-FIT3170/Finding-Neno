@@ -4,9 +4,10 @@ import {Dimensions} from 'react-native';
 import ReportSightingModal from '../components/ReportSightingModal';
 import * as ImagePicker from 'expo-image-picker';
 import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
+import { Ionicons } from '@expo/vector-icons'; 
 
 
-const Report = ({userId, sighting}) => {
+const Sighting = ({userId, sighting}) => {
     // Pet Data
     const windowWidth = Dimensions.get('window').width; 
 
@@ -25,14 +26,25 @@ const Report = ({userId, sighting}) => {
     const ownerName = sighting[10];
     const ownerEmail = sighting[11];
     const sightingPhoneNumber = sighting[12];
+
+    const [sightingSaved, setSightingSaved] = useState(false);
+
+    const handleSaveSighting = () => {
+      setSightingSaved(!sightingSaved);
+    }
     
   return (
     <View justifyContent = "center" alignItems = "center" padding={4}>
         {/* TODO: unhard code the heights, widths etc later */}
-    <Box width={windowWidth - 20} height={sightingImage ? 400 : 250} bg="#F9FDFF" borderRadius={15} paddingLeft={5} paddingTop={2}>
-      <Heading size = "lg"  paddingTop={3}>
+    <Box width={windowWidth - 20} height={sightingImage ? 400 : 250} bg="#F9FDFF" borderRadius={15} paddingLeft={5} paddingTop={2} paddingRight={5}>
+      
+      <HStack paddingTop={3} alignItems={"center"} justifyContent={"space-between"}>
+      <Heading size = "lg" >
         Glen Waverley, 3150
       </Heading>
+      <Ionicons name={sightingSaved ? "bookmark": "bookmark-outline"} size={"20px"} onPress={handleSaveSighting}/>
+      
+      </HStack>
 
       <Heading size = "sm"  paddingTop={2}>
         {dateTime}
@@ -76,5 +88,4 @@ const Report = ({userId, sighting}) => {
   );
 };
 
-export default Report;
-
+export default Sighting;
