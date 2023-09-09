@@ -11,6 +11,7 @@ sys.path.append(str(package_root_directory))
 
 from db.authentication import verify_access_token
 from db.users_operations import *
+from db.pets import get_pet, get_owner
 
 
 def check_access_token(connection) -> bool:
@@ -346,3 +347,37 @@ def reset_password(username, new_password):
     return True
     # Replace with password reset logic
 
+
+def send_notification_to_pet_owner(
+    connection: psycopg2.extensions.connection,
+    pet_id: int,
+):
+    """
+    Sends a notification to the pet owner of the pet with the given pet_id
+
+    Arguments:
+        connection: Database connection
+        pet_id: ID of the pet
+    """    
+    # Get pet
+    pet = get_pet(connection=connection, pet_id=pet_id)
+
+    # Get owner
+    owner = get_owner(connection=connection, pet_id=pet_id)
+
+    # Send notification to owner
+    title = f"{pet['name']} has been sighted!"
+    body = (
+        f"Hi {owner['name']},<br><br>"
+        f"Your pet {pet['name']} has been sighted!\n\n"
+    )
+    res = send_notification(
+        email_address=owner["email_address"],
+        subject=title,
+        content=body,
+    )
+    if res:
+        print("Notification sent successfully")
+    else:
+        print("Notification failed to send")
+    return res

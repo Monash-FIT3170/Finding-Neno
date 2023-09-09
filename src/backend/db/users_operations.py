@@ -3,6 +3,8 @@ import string
 import hashlib
 import psycopg2
 import datetime
+import os
+import requests # pip install requests==2.31.0 - TODO: add to requirements.txt
 
 from db.authentication import verify_access_token
 
@@ -764,3 +766,51 @@ def change_password_in_database(connection: psycopg2.extensions.connection, emai
     # Close the cursor
     cur.close()
     return result
+
+
+def send_notification(
+    email_address: str,
+    subject: str,
+    content: str,
+):
+    """
+    Sends an email notification using Sendgrid.
+
+    Arguments:
+        email_address: The email address to send the notification to.
+        subject: The subject of the email notification.
+        bcontentdy: The content of the email notification.
+    Returns: True if the notification was sent successfully, False otherwise.
+    """
+    FROM_EMAIL_ADDRESS = "findingnenoofficial@gmail.com"
+    URL = "https://api.sendgrid.com/v3/mail/send"
+    response = requests.post(
+        url=URL,
+        headers={
+            "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "personalizations": [
+                {
+                    "to": [{"email": email_address}],
+                    "subject": subject,
+                }
+            ],
+            "content": [
+                {
+                    "type": "text/html",
+                    "value": content,
+                }
+            ],
+            "from": {"email": FROM_EMAIL_ADDRESS, "name": "Finding Neno"},
+            "reply_to": {"email": FROM_EMAIL_ADDRESS, "name": "Finding Neno"},
+        }
+    )
+    
+    if response.status_code == 202:
+        return True
+    else:
+        print(response.status_code)
+        print(response.text)
+        return False

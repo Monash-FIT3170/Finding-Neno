@@ -258,3 +258,51 @@ def delete_pet(
     connection.commit()
 
     return result
+
+
+def get_owner(
+    connection: psycopg2.extensions.connection,
+    pet_id: int,
+):
+    """
+    Gets the owner of a pet
+
+    Arguments:
+        connection: postgres connection
+        pet_id: id of the pet
+    Returns:
+        The owner of the pet with the following format:
+        {
+            "id": id of the owner,
+            "name": name of the owner,
+            "email_address": email of the owner,
+            "phone_number": phone number of the owner
+        }
+    """
+    cur = connection.cursor()
+    
+    query = """
+        SELECT users.id, users.name, users.email_address, users.phone_number
+        FROM users INNER JOIN pets ON users.id = pets.owner_id
+        WHERE pets.id = %s;
+    """
+
+    try:
+        # Execute query
+        cur.execute(query, (pet_id,))
+        owner_db = cur.fetchone()
+        print(f"Query executed successfully: {query}")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+        return False
+    
+    cur.close()
+
+    owner = {
+        "id": owner_db[0],
+        "name": owner_db[1],
+        "email_address": owner_db[2],
+        "phone_number": owner_db[3]
+    }
+
+    return owner
