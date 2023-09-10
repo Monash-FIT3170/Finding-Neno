@@ -187,6 +187,7 @@ function DashboardStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="DashboardPage">
 			<Stack.Screen name="Dashboard Page" component={DashboardPage} />
+			<Stack.Screen name="New Report Page" component={NewReportPage} />
 			<Stack.Screen name="New Sighting Page" component={NewSightingPage} />
 		</Stack.Navigator>
 	)
