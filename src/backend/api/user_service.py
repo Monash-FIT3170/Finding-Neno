@@ -273,10 +273,10 @@ def retrieve_sightings_in_area(connection, longitude, longitude_delta, latitude,
 def login(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("user login attempt: ", json_data)
-    email = json_data["email"].lower()
+    username = json_data["username"].lower()
     password = json_data["password"]
     print(password)
-    user_exists = check_user_exists_in_database(connection, email, password)
+    user_exists = check_user_exists_in_database(connection, username, password)
     if user_exists:
         user_id, access_token = user_exists  # Unpack the tuple
         return "Success", 200, user_id, access_token  # Return user_id and access_token
