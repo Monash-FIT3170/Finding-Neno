@@ -6,6 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 import { Ionicons } from '@expo/vector-icons'; 
 import { useSelector } from "react-redux";
+import { useIsFocused } from '@react-navigation/native';
 
 
 const Sighting = ({userId, sighting}) => {
@@ -14,6 +15,7 @@ const Sighting = ({userId, sighting}) => {
 
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
     const { IP, PORT } = useSelector((state) => state.api)
+    const isFocused = useIsFocused();
 
     const id = sighting[0];
     const missingReportId = sighting[1];
@@ -23,29 +25,32 @@ const Sighting = ({userId, sighting}) => {
     const locationLatitude = sighting[5];
     const sightingImage = sighting[6];
     const sightingDesc = sighting[7];
-    const sightingAnimal = sighting[8][0].toUpperCase() +sighting[8].substring(1);;
+    const sightingAnimal = sighting[8][0].toUpperCase() +sighting[8].substring(1);
     const sightingBreed = sighting[9];
     const ownerName = sighting[10];
     const ownerEmail = sighting[11];
     const sightingPhoneNumber = sighting[12];
+    const savedByUser = sighting[13];
+    const savedId = sighting[14];
 
-
-    const [sightingSaved, setSightingSaved] = useState(false);
+    const [sightingSaved, setSightingSaved] = useState(savedByUser==USER_ID); // true if the sighting is saved by this user
     const [saveSightingEndpoint, setSaveSightingEndpoint] = useState('save_sighting');
 
     useEffect(() => {
-      if (sightingSaved) {
-        setSaveSightingEndpoint('unsave_sighting');
-      } else {
-        setSaveSightingEndpoint('save_sighting');
-      }
+      
+        if (sightingSaved) {
+          setSaveSightingEndpoint('unsave_sighting');
+        } else {
+          setSaveSightingEndpoint('save_sighting');
+        }
+    
+      console.log("sighting id: ", id, "saved by: ", savedByUser);
+      console.log(" ")
     }, [sightingSaved]);
     
     const handlePressSaveBtn = async () => {
 
       const url = `${IP}:${PORT}/${saveSightingEndpoint}`;
-
-      console.log(url);
     
       await fetch(url, {
         method: "POST",
@@ -59,7 +64,6 @@ const Sighting = ({userId, sighting}) => {
         .then((res) => {
           if (res.status == 201) {
             setSightingSaved(!sightingSaved);
-            console.log("sighting saved/unsaved successfully")
           }
         })
         .catch((error) => alert(error));
