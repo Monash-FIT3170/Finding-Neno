@@ -270,7 +270,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
 			<Box flex={1} alignItems="center" justifyContent="center">
-				<Center w="100%">
 					<Box safeArea p="2" py="8" w="90%" maxW="290">
 						<VStack>
 							<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Create a Report</Heading>
@@ -332,7 +331,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 							</VStack>
 						</VStack>
 					</Box>
-				</Center>
 			</Box>
 		</KeyboardAvoidingView>
 	);

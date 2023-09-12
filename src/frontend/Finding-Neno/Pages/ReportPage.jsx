@@ -1,10 +1,11 @@
 import React from 'react';
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { ScrollView, Button, Box, Image, View, Heading, VStack, HStack, Text } from 'native-base';
-import {Dimensions} from 'react-native';
+import {Dimensions, SafeAreaView} from 'react-native';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
+import { AnimatedFAB, FAB, PaperProvider, Portal } from 'react-native-paper';
 
 import Report from "../components/Report";
 
@@ -52,29 +53,25 @@ export default function ReportPage({ navigation: { navigate}}) {
       }
     };
 
-    return (
-    <ScrollView>
-    <Box alignItems="center" bg="#FFFFFF">
-        <Box height={3}/>
-        <Button
-        bg="#FA8072"
-        onPress={() => navigate('New Report Page')} 
-        width={windowWidth - 60}
-        height="40px"
-        >
-        Add New Report
-        </Button>
+  return (
+    <SafeAreaView style={{flex: 1, alignItems: 'center'}}>
+      <ScrollView height="100%">
+        <Box alignItems="center" bg="#FFFFFF" marginTop={2}>
 
-        <Box height={3}/>
+          <>
+            {reports && reports.map((report, index) => (
+              <Report userId={USER_ID} report={report} key={index} />
+            ))}
+          </>
+        </Box>
+      </ScrollView>
+      <FAB 
+        icon={'plus'}
+        onPress={() => navigate('New Report Page')}
+        visible={true}
+        style={[{position: 'absolute', bottom: 16, right: 16}]}
+      />
+    </SafeAreaView>
 
-        
-        <>
-          {reports && reports.map((report, index) => (
-              <Report userId={USER_ID} report={report} key={index}/>
-          ))}
-        </> 
-    </Box>
-    </ScrollView>
-    
-    )
+  )
 }

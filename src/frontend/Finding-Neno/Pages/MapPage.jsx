@@ -2,7 +2,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { Switch, Image, StyleSheet, View } from 'react-native';
+import { Switch, Image, StyleSheet, View, SafeAreaView } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { Button, Text } from 'react-native';
 import store from "../store/store";
@@ -10,6 +10,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { Dimensions } from 'react-native';
 
 import { VStack } from 'native-base';
+import { SegmentedButtons } from 'react-native-paper';
 
 "Make a button to toggle between reports and sightings. Then make a function "
 
@@ -30,6 +31,7 @@ export default function MapPage() {
 
 	// Radio button to toggle between reports (true) and sightings (false)
 	const [isViewReports, setIsViewReports] = useState(true);
+	const [tabValue, setTabValue] = useState("reports");
 
 	// Reloads data when map page is opened
 	useEffect(() => {
@@ -111,82 +113,93 @@ export default function MapPage() {
 	}
 
 	return (
-		<View style={styles.container}>
-			<MapView
-				ref={(ref) => this.mapView = ref}
-				provider={PROVIDER_GOOGLE}
-				style={styles.map}
-				initialRegion={mapRegion}
-				showCompass={true}
-				showsIndoors={false}
-				rotateEnabled={false}
-				loadingEnabled={true}
-				mapType={"standard"}
-				onRegionChangeComplete={(newRegion) => handleRegionChange(newRegion)}
-			>
-				{/* Render reports markers */}
-				{isViewReports && Array.isArray(reports)
-					? reports.map((report, index) => (
-						<Marker
-							key={`${report[0]}_${report[3]}_${report[4]}`}
-							title={report[6]}
-							coordinate={{ longitude: report[3], latitude: report[4] }}
-							onPress={() =>
-								this.mapView.animateToRegion({
-									longitude: report[3],
-									latitude: report[4],
-									longitudeDelta: 0.0015,
-								})
-							}
-						></Marker>
-					))
-					: null}
-
-				{/* Render sightings markers */}
-				{!isViewReports && Array.isArray(sightings)
-					? sightings.map((sighting, index) => (
-						<Marker
-							key={`${sighting[0]}_${sighting[2]}_${sighting[3]}`}
-							title={sighting[10]}
-							coordinate={{ longitude: sighting[2], latitude: sighting[3] }}
-							onPress={() =>
-								this.mapView.animateToRegion({
-									longitude: sighting[2],
-									latitude: sighting[3],
-									longitudeDelta: 0.0015,
-								})
-							}
-						></Marker>
-					))
-					: null}
-			</MapView>
-
-
-			{/* Switch and label */}
-			<View style={styles.switchContainer}>
-				<Text style={styles.switchLabel}>{isViewReports ? 'Reports' : 'Sightings'}</Text>
-				<Switch
-					trackColor={{ false: "#767577", true: "#81b0ff" }}
-					thumbColor={isViewReports ? "#f5dd4b" : "#f4f3f4"}
-					value={isViewReports}
-					onValueChange={value => handleViewToggle(value)}
+		<SafeAreaView style={styles.container}>
+			<View>
+				<SegmentedButtons value={tabValue} onValueChange={setTabValue} style={{ marginTop: 5, width: Dimensions.get('window').width - 20, backgroundColor: '#EDEDED' }}
+					buttons={[
+						{ label: 'Reports', icon: 'bullhorn', value: 'reports' },
+						{ label: 'Sightings', icon: 'eye', value: 'sightings' },
+					]}
 				/>
+
 			</View>
 
-			{/* <VStack style={{position:'absolute', bottom:0, right:0, alignItems:'center', margin: 10, padding: 10, borderRadius: }} backgroundColor="grey"> */}
-			<View style={{ position: 'absolute', top: 30 }} alignItems='center'>
+			<View style={styles.container}>
+				<MapView
+					ref={(ref) => this.mapView = ref}
+					provider={PROVIDER_GOOGLE}
+					style={styles.map}
+					initialRegion={mapRegion}
+					showCompass={true}
+					showsIndoors={false}
+					rotateEnabled={false}
+					loadingEnabled={true}
+					mapType={"standard"}
+					onRegionChangeComplete={(newRegion) => handleRegionChange(newRegion)}
+				>
+					{/* Render reports markers */}
+					{isViewReports && Array.isArray(reports)
+						? reports.map((report, index) => (
+							<Marker
+								key={`${report[0]}_${report[3]}_${report[4]}`}
+								title={report[6]}
+								coordinate={{ longitude: report[3], latitude: report[4] }}
+								onPress={() =>
+									this.mapView.animateToRegion({
+										longitude: report[3],
+										latitude: report[4],
+										longitudeDelta: 0.0015,
+									})
+								}
+							></Marker>
+						))
+						: null}
 
-				{
-					isViewReports ? <Text style={styles.boldText}> {reports.length} reports in area</Text> : <Text style={styles.boldText}> {sightings.length} sightings in area</Text>
-				}
+					{/* Render sightings markers */}
+					{!isViewReports && Array.isArray(sightings)
+						? sightings.map((sighting, index) => (
+							<Marker
+								key={`${sighting[0]}_${sighting[2]}_${sighting[3]}`}
+								title={sighting[10]}
+								coordinate={{ longitude: sighting[2], latitude: sighting[3] }}
+								onPress={() =>
+									this.mapView.animateToRegion({
+										longitude: sighting[2],
+										latitude: sighting[3],
+										longitudeDelta: 0.0015,
+									})
+								}
+							></Marker>
+						))
+						: null}
+				</MapView>
 
-				<TouchableOpacity style={styles.button} onPress={onPressSearch}>
-					<Text style={styles.buttonText}>Search this area</Text>
-				</TouchableOpacity>
+
+				{/* Switch and label */}
+				{/* <View style={styles.switchContainer}>
+					<Text style={styles.switchLabel}>{isViewReports ? 'Reports' : 'Sightings'}</Text>
+					<Switch
+						trackColor={{ false: "#767577", true: "#81b0ff" }}
+						thumbColor={isViewReports ? "#f5dd4b" : "#f4f3f4"}
+						value={isViewReports}
+						onValueChange={value => handleViewToggle(value)}
+					/>
+				</View> */}
+
+				{/* <VStack style={{position:'absolute', bottom:0, right:0, alignItems:'center', margin: 10, padding: 10, borderRadius: }} backgroundColor="grey"> */}
+				<View style={{ position: 'absolute', top: 30 }} alignItems='center'>
+
+					{
+						isViewReports ? <Text style={styles.boldText}> {reports.length} reports in area</Text> : <Text style={styles.boldText}> {sightings.length} sightings in area</Text>
+					}
+
+					<TouchableOpacity style={styles.button} onPress={onPressSearch}>
+						<Text style={styles.buttonText}>Search this area</Text>
+					</TouchableOpacity>
+				</View>
+
 			</View>
-
-
-		</View>
+		</SafeAreaView>
 	);
 }
 
