@@ -33,11 +33,13 @@ const Sighting = ({userId, sighting}) => {
     const savedByUser = sighting[13];
     const savedId = sighting[14];
 
+    console.log(`creating sighting card ${id}`)
+    console.log("sighting id: ", id, "saved by: ", savedByUser);
+    console.log(savedByUser==USER_ID);
     const [sightingSaved, setSightingSaved] = useState(savedByUser==USER_ID); // true if the sighting is saved by this user
     const [saveSightingEndpoint, setSaveSightingEndpoint] = useState('save_sighting');
 
     useEffect(() => {
-      
         if (sightingSaved) {
           setSaveSightingEndpoint('unsave_sighting');
         } else {
@@ -49,6 +51,12 @@ const Sighting = ({userId, sighting}) => {
     }, [sightingSaved]);
     
     const handlePressSaveBtn = async () => {
+
+      if (sightingSaved) {
+        setSaveSightingEndpoint('unsave_sighting');
+      } else {
+        setSaveSightingEndpoint('save_sighting');
+      }
 
       const url = `${IP}:${PORT}/${saveSightingEndpoint}`;
     

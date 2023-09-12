@@ -488,13 +488,15 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
         query = """
                     SELECT
                         s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
-                        u.name, u.email_address, u.phone_number
+                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by, ss.saved_id
                     FROM
                         sightings AS s
                     JOIN
                         missing_reports AS mr ON s.missing_report_id = mr.id
                     JOIN
                         users AS u ON s.author_id = u.id
+                    LEFT JOIN 
+	                    users_saved_sightings AS ss ON ss.sighting_id = s.id
                     WHERE 
                         s.missing_report_id = %s
                     ORDER BY
