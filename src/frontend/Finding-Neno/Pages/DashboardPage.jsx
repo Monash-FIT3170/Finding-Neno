@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
 import { Menu, Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView } from "native-base";
-import { ActivityIndicator, Dimensions, SafeAreaView } from 'react-native';
+import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
@@ -32,15 +32,28 @@ const DashboardPage = () => {
 	const [sightingImage, setSightingImage] = useState(null);
 	const [tabValue, setTabValue] = useState("reports");
 
-
-
-
-
 	const [routes] = useState([
 		{ key: 'reports', title: 'Reports' },
 		{ key: 'sightings', title: 'Sightings' },
 	])
 	const [index, setIndex] = useState(0);
+
+	useEffect(() => {
+		if (isFocused) {
+			fetchData();
+		}
+	}, [isFocused]);
+
+	const onRefresh = () => {
+		fetchData();
+	}
+
+	const fetchData = () => {
+		fetchAllReports();
+		setReportCards(generateReportCards());
+		fetchAllSightings();
+		setSightingCards(generateSightingCards());
+	}
 
 	const generateReportCards = () => {
 		return (
@@ -59,33 +72,22 @@ const DashboardPage = () => {
 	}
 
 	const ReportsView = () => (
-		<ScrollView style={{ backgroundColor: '#EDEDED' }}>
+		<ScrollView style={{ backgroundColor: '#EDEDED' }} refreshControl={<RefreshControl onRefresh={onRefresh} />}>
 			{reportCards}
 		</ScrollView>
 	)
 
 	const SightingsView = () => (
-		<ScrollView style={{ backgroundColor: '#EDEDED' }}>
+		<ScrollView style={{ backgroundColor: '#EDEDED' }} refreshControl={<RefreshControl onRefresh={onRefresh} />}>
 			{sightingCards}
 		</ScrollView>
 	)
-
-
-	useEffect(() => {
-		if (isFocused) {
-			fetchAllReports();
-			setReportCards(generateReportCards());
-			fetchAllSightings();
-			setSightingCards(generateSightingCards());
-		}
-	}, [isFocused]);
 
 	// TODO: replace this image with the actual image from DB ? 
 	const image = "https://wallpaperaccess.com/full/317501.jpg";
 
 	// API calls 
 	const fetchAllReports = async () => {
-		setReports([]);
 		try {
 			const url = `${IP}:${PORT}/get_missing_reports`;
 			const response = await fetch(url, {
@@ -108,7 +110,6 @@ const DashboardPage = () => {
 	};
 
 	const fetchAllSightings = async () => {
-		setAllSightings([]);
 		try {
 			const url = `${IP}:${PORT}/get_sightings`;
 			const response = await fetch(url, {
