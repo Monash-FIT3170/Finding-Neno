@@ -310,7 +310,7 @@ const handleSearch = async () => {
 							{/* form details */}
 							<FormControl >
 								<FormControl.Label>Date and Time of Sighting</FormControl.Label>
-								<Button onPress={openPicker}>{`${sightingDateTime.toDateString()} ${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')}`}</Button>
+								<Button onPress={openPicker}>{`${sightingDateTime.toDateString()} ${sightingDateTime.getHours().toString().padStart(2, '0')}:${sightingDateTime.getMinutes().toString().padStart(2, '0')}`}</Button>
 								<DateTimePickerModal date={sightingDateTime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
 									onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 							</FormControl>
