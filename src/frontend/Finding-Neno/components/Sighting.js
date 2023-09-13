@@ -71,19 +71,19 @@ const Report = ({userId, sighting}) => {
       <HStack space={8}>
         <VStack>
           <Heading size = "sm"  paddingTop={2}>
-            {sightingAnimal}
+            Species
           </Heading>
           <Text >
-            Species
+            {sightingAnimal}
           </Text>
         </VStack>
 
         <VStack>
           <Heading size = "sm" paddingTop={2}>
-              {sightingBreed}
-          </Heading>
-          <Text >
               Breed
+          </Heading>
+          <Text>
+              {sightingBreed}
           </Text>
         </VStack>
       </HStack>

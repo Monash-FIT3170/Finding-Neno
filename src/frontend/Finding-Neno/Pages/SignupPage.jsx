@@ -99,10 +99,6 @@ const SignupPage = () => {
 	const keyboardVerticalOffset = Platform.OS === 'ios' ? 170 : 0
 
 	return (
-		<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-		<>
-		{showAccountExistsModal && <AccountExistsModal modalVisible={showAccountExistsModal} onClose={redirectToLogin}/>}
-		{/* <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={keyboardVerticalOffset}> */}
 		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}
             resetScrollToCoords={{ x: 0, y: 0 }}
             scrollEnabled={true}
@@ -161,25 +157,25 @@ const SignupPage = () => {
 								</Heading>
 								<VStack space={3} mt="5">
 
-									<FormControl isInvalid={'name' in errors}>
+									<FormControl isRequired isInvalid={'name' in errors}>
 										<FormControl.Label>Name</FormControl.Label>
 										<Input onChangeText={value => setFormData({ ...formData, name: value })} />
 										{'name' in errors && <FormControl.ErrorMessage>{errors.name}</FormControl.ErrorMessage>}
 									</FormControl>
 
-									<FormControl isInvalid={'email' in errors}>
+									<FormControl isRequired isInvalid={'email' in errors}>
 										<FormControl.Label>Email</FormControl.Label>
 										<Input autoCapitalize="none" onChangeText={value => setFormData({ ...formData, email: value })} />
 										{'email' in errors && <FormControl.ErrorMessage>{errors.email}</FormControl.ErrorMessage>}
 									</FormControl>
 
-									<FormControl isInvalid={'phoneNumber' in errors}>
+									<FormControl isRequired isInvalid={'phoneNumber' in errors}>
 										<FormControl.Label>Phone Number</FormControl.Label>
 										<Input keyboardType="numeric" maxLength={10} onChangeText={value => setFormData({ ...formData, phoneNumber: value })} />
 										{'phoneNumber' in errors && <FormControl.ErrorMessage>{errors.phoneNumber}</FormControl.ErrorMessage>}
 									</FormControl>
 
-									<FormControl isInvalid={'password' in errors}>
+									<FormControl isRequired isInvalid={'password' in errors}>
 										<FormControl.Label>Password</FormControl.Label>
 										<Input type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
 											<Icon as={<MaterialIcons name={showPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
@@ -187,7 +183,7 @@ const SignupPage = () => {
 										{'password' in errors && <FormControl.ErrorMessage>{errors.password}</FormControl.ErrorMessage>}
 									</FormControl>
 
-									<FormControl isInvalid={'confirmPassword' in errors}>
+									<FormControl isRequired isInvalid={'confirmPassword' in errors}>
 										<FormControl.Label>Confirm Password</FormControl.Label>
 										<Input type={showConfirmPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
 											<Icon as={<MaterialIcons name={showConfirmPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
@@ -224,9 +220,8 @@ const SignupPage = () => {
 				</Box>
 			</Center>
 		</KeyboardAwareScrollView>
-		{/* </KeyboardAvoidingView> */}
-		</>
-		</TouchableWithoutFeedback>
+		// </>
+		// </TouchableWithoutFeedback>
 	);
 };
 

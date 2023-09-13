@@ -1,5 +1,5 @@
 import { Box, Button, Center, FormControl, Heading, HStack, Icon, Input, KeyboardAvoidingView, Link, VStack, Pressable, Text } from "native-base";
-import { StyleSheet, TouchableWithoutFeedback } from "react-native"
+import { SafeAreaView, StyleSheet, TouchableWithoutFeedback } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons'
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
@@ -82,52 +82,50 @@ const LoginPage = () => {
 	}
 
 	return (
-		<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-			<>
-				<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}
-					resetScrollToCoords={{ x: 0, y: 0 }}
-					scrollEnabled={true}
-					bounces={false}>
-					<StatusBar style="auto" />
-					<Box flex={1} alignItems="center" justifyContent="center">
-						<Center w="100%">
-							<Box safeArea p="2" py="8" w="90%" maxW="290">
-								<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>
-									Welcome to Finding Neno!
-								</Heading>
-								<VStack space={3} mt="5">
-									<FormControl isInvalid={'username' in errors}>
-										<FormControl.Label>Email / Phone Number</FormControl.Label>
-										<Input onChangeText={value => setFormData({ ...formData, username: value })} />
-										{'username' in errors && <FormControl.ErrorMessage>{errors.username}</FormControl.ErrorMessage>}
-									</FormControl>
+		<SafeAreaView>
+		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50, justifyContent: "center" }}
+			resetScrollToCoords={{ x: 0, y: 0 }}
+			scrollEnabled={true}
+			bounces={false}>
+			<StatusBar style="auto" />
+			<Box flex={1} alignItems="center" justifyContent="center">
+				<Center w="100%">
+					<Box safeArea p="2" py="8" w="90%" maxW="290">
+						<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>
+							Welcome to Finding Neno!
+						</Heading>
+						<VStack space={3} mt="5">
+							<FormControl isRequired isInvalid={'username' in errors}>
+								<FormControl.Label>Email / Phone Number</FormControl.Label>
+								<Input onChangeText={value => setFormData({ ...formData, username: value })} />
+								{'username' in errors && <FormControl.ErrorMessage>{errors.username}</FormControl.ErrorMessage>}
+							</FormControl>
 
-									<FormControl isInvalid={'password' in errors}>
-										<FormControl.Label>Password</FormControl.Label>
-										<Input type={show ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShow(!show)}>
-											<Icon as={<MaterialIcons name={show ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
-										</Pressable>} onChangeText={value => setFormData({ ...formData, password: value })} />
-										{'password' in errors && <FormControl.ErrorMessage>{errors.password}</FormControl.ErrorMessage>}
+							<FormControl isRequired isInvalid={'password' in errors}>
+								<FormControl.Label>Password</FormControl.Label>
+								<Input type={show ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShow(!show)}>
+									<Icon as={<MaterialIcons name={show ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
+								</Pressable>} onChangeText={value => setFormData({ ...formData, password: value })} />
+								{'password' in errors && <FormControl.ErrorMessage>{errors.password}</FormControl.ErrorMessage>}
 
-										<Link _text={styles.actionButton} alignSelf="flex-end" mt="1" href=""
-											onPress={() => { navigation.navigate("ForgotPassword"); }}> Forgot Password </Link>
-									</FormControl>
+								<Link _text={styles.actionButton} alignSelf="flex-end" mt="1" href=""
+									onPress={() => { navigation.navigate("ForgotPassword"); }}> Forgot Password </Link>
+							</FormControl>
 
-									<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onLoginPress}>
-										{buttonText}
-									</Button>
-									<HStack mt="6" justifyContent="center">
-										<Text fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200", }}>New user?{" "}</Text>
-										<Link _text={styles.actionButton} href=""
-											onPress={() => { navigation.navigate("Signup"); }}>Sign Up</Link>
-									</HStack>
-								</VStack>
-							</Box>
-						</Center>
+							<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onLoginPress}>
+								{buttonText}
+							</Button>
+							<HStack mt="6" justifyContent="center">
+								<Text fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200", }}>New user?{" "}</Text>
+								<Link _text={styles.actionButton} href=""
+									onPress={() => { navigation.navigate("Signup"); }}>Sign Up</Link>
+							</HStack>
+						</VStack>
 					</Box>
-				</KeyboardAwareScrollView>
-			</>
-		</TouchableWithoutFeedback>
+				</Center>
+			</Box>
+		</KeyboardAwareScrollView>
+		</SafeAreaView>
 	)
 };
 

@@ -69,19 +69,19 @@ const Report = ({report, userId}) => {
       <HStack>
         <VStack>
           <Heading size = "sm" paddingLeft={5} paddingTop={2}>
-            {petSpecies}
+            Species
           </Heading>
           <Text paddingLeft={5}>
-            Species
+            {petSpecies}
           </Text>
         </VStack>
 
         <VStack>
           <Heading size = "sm" paddingLeft={5} paddingTop={2}>
-              {petBreed}
+              Breed
           </Heading>
           <Text paddingLeft={5}>
-              Breed
+              {petBreed}
           </Text>
         </VStack>
       </HStack>
