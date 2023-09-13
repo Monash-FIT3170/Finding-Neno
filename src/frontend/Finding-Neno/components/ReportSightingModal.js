@@ -7,7 +7,6 @@ import { useIsFocused } from '@react-navigation/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import * as ImagePicker from 'expo-image-picker';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import axios from 'axios';
 import { StyleSheet } from 'react-native';
 
 
@@ -257,7 +256,7 @@ const handleSearch = async () => {
 	try {
 	  const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
 
-	  const response = await axios.get(apiUrl);
+	  const response = await fetch(apiUrl);
 	  if (response.data.length > 0) {
 		const firstResult = response.data[0];
 		setCoordinates({
