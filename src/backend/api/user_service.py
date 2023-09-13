@@ -3,7 +3,7 @@ from flask import request, jsonify
 from pathlib import Path
 import sys
 import datetime
-from typing import Tuple
+from typing import Tuple, Dict, Any
 
 file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
@@ -68,7 +68,7 @@ def insert_sighting(connection) -> Tuple[str, int]:
         return "User does not have access", 401
     else:
         if missing_report_id is not None:
-            send_notification_to_report_author(connection, missing_report_id=missing_report_id)
+            send_notification_to_report_author(connection, sighting_data=json_data)
         return "Success", 201
 
 def insert_missing_report(connection) -> Tuple[str, int]:
@@ -369,21 +369,24 @@ def reset_password(username, new_password):
 
 def send_notification_to_report_author(
     connection: psycopg2.extensions.connection,
-    missing_report_id: int,
+    sighting_data: Dict[str, Any],
 ):
     """
     Sends a notification to the author of a missing report
 
     Arguments:
         connection: Database connection
-        missing_report_id: ID of the missing report
+        sighting_data: Data in sighting
     """
 
     # Get missing report
-    missing_report = get_missing_report(connection=connection, missing_report_id=missing_report_id)
+    missing_report = get_missing_report(connection=connection, missing_report_id=sighting_data["missingReportId"])
 
     # Get pet
     pet = get_pet(connection=connection, pet_id=missing_report["pet_id"])
+
+    # Get information of the person who sighted the pet
+    sighter = get_user_details(connection=connection, user_id=sighting_data["authorId"])
 
     # Get owner
     owner = get_user_details(connection=connection, user_id=missing_report["author_id"])
@@ -392,7 +395,13 @@ def send_notification_to_report_author(
     title = f"{pet['name']} has been sighted!"
     body = (
         f"Hi {owner['name']},<br><br>"
-        f"Your pet {pet['name']} has been sighted!\n\n"
+        f"Your pet {pet['name']} has been sighted by {sighter['name']} in <insert location>"
+        f"at {sighting_data['dateTime']}!<br><br>"
+        f"Please contact {sighter['name']} via {sighter['email_address']} or {sighter['phone_number']}"
+        f" to arrange a pickup.<br><br>"
+        f"Sighting description: {sighting_data['description']}<br><br>"
+        f"Image: {sighting_data['imageUrl']}<br><br>"
+        f"Thanks,<br>Finding Neno"
     )
     res = send_notification(
         email_address=owner["email_address"],
