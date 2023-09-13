@@ -55,6 +55,9 @@ const Report = ({userId, sighting}) => {
       <Heading size = "lg"  paddingTop={3}>
         {suburb}
       </Heading>
+      {/* <Heading size = "md"  paddingTop={2}>
+        {petName ? petName : ""}
+      </Heading> */}
 
       <Heading size = "sm"  paddingTop={2}>
         Last seen { dateTime} 
