@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { Box, Center, View, Heading, VStack, useToast, Image, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView, FlatList } from "native-base";
+import { Box, Center, View, Heading, VStack, useToast, Image, FormControl, Input, Select, Alert, Text, KeyboardAvoidingView, FlatList, HStack, WarningOutlineIcon } from "native-base";
 import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import * as ImagePicker from 'expo-image-picker';
@@ -10,7 +10,8 @@ import { ActivityIndicator } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-<StatusBar style="auto" />
+import { Button, TextInput } from 'react-native-paper';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
 import { useSelector, useDispatch } from "react-redux";
@@ -18,6 +19,7 @@ import store from "../store/store";
 import marker from '../assets/marker_icon.png';
 
 import { formatDatetime, petTypeOptions } from "./shared";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const NewSightingPage = ({ navigation: { navigate } }) => {
     const { IP, PORT } = useSelector((state) => state.api)
@@ -39,7 +41,8 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         breed: '',
         imageUrl: '',
         dateTime: formatDatetime(selectedDatetime),
-        description: ''
+        description: '',
+        petType: ''
     });
     const [sightingImage, setSightingImage] = useState(null);
     const [isUploading, setIsUploading] = useState(false);
@@ -94,6 +97,10 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         }
     };
 
+    const handleRemovePhoto = () => {
+        setSightingImage(null);
+    }
+
     const validateDetails = (formData) => {
         // Validates details. If details are valid, send formData object to onCreateReportPress.
         foundErrors = {};
@@ -101,6 +108,10 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         // if (!formData.lastLocation || formData.lastLocation == "") {
         //     foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
         // }
+
+        if (formData.petType == "") {
+            foundErrors = { ...foundErrors, petType: 'Pet type is required' }
+        }
 
         if (formData.description.length > 500) {
             foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
@@ -172,13 +183,13 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
             const sighting = {
                 authorId: USER_ID,
                 missingReportId: null,
-                animal: formData.animal,
+                animal: formData.petType,
                 breed: formData.breed,
                 imageUrl: sightingImage,
                 dateTime: formData.dateTime,
                 dateTimeOfCreation: formatDatetime(new Date()),
                 description: formData.description,
-				lastLocation: `${coordinates.longitude}, ${coordinates.latitude}`
+                lastLocation: `${coordinates.longitude}, ${coordinates.latitude}`
             }
 
             const url = `${IP}:${PORT}/insert_sighting`;
@@ -250,7 +261,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
     }
 
     const [address, setAddress] = useState('');
-    const [coordinates, setCoordinates] = useState({longitude: mapRegion.longitude, latitude: mapRegion.latitude});
+    const [coordinates, setCoordinates] = useState({ longitude: mapRegion.longitude, latitude: mapRegion.latitude });
     const mapViewRef = useRef(null);
 
     const handleSearch = async () => {
@@ -287,101 +298,101 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
 
     return (
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
+        <KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}>
             <StatusBar style="auto" />
-            <FlatList
-                data={[{ key: 'form' }]} // Use a single item array as data source
-                renderItem={() => (
-                    <Box flex={1} alignItems="center" justifyContent="center">
-                        <Center w="100%">
-                            <Box safeArea p="2" py="8" w="90%" maxW="290">
-                                <VStack>
-                                    <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Add a New Sighting</Heading>
+            <SafeAreaView style={{ flex: 1, alignItems: 'center', marginHorizontal: "10%" }}>
+                <VStack>
+                    <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Add a New Sighting</Heading>
 
-                                    <VStack space={3} mt="5">
-                                        <FormControl.Label>Photo</FormControl.Label>
-                                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                            {
-                                                isUploading ? <ActivityIndicator /> :
-                                                    sightingImage && <Image source={{ uri: sightingImage }} style={{ width: 200, height: 200 }} alt='pet sighting image' />
-                                            }
-                                        </View>
-                                        <Button variant="ghost" onPress={handleChoosePhoto}>
-                                            Choose From Library
-                                        </Button>
-                                        <Button variant="ghost" onPress={handleTakePhoto}>
-                                            Take Photo
-                                        </Button>
+                    <VStack space={3} mt="5">
+                        <FormControl.Label>Photo</FormControl.Label>
+                            {
+                                isUploading ? <ActivityIndicator /> :
+                                    sightingImage && <View borderRadius={"10%"} alignItems={"center"}><Image source={{ uri: sightingImage }} style={{ width: "90%", aspectRatio: "1", borderRadius: 20 }} alt='pet sighting image' /></View>
+                            }
+                        <HStack alignItems={"center"} justifyContent={"space-between"}>
+                            <Button style={{ width: "48%" }} buttonColor={Color.NENO_BLUE} compact={true} icon="camera" mode="contained" onPress={handleTakePhoto}>
+                                Take Photo
+                            </Button>
+                            <Button style={{ width: "48%" }} buttonColor={Color.NENO_BLUE} compact={true} icon="image" mode="contained" onPress={handleChoosePhoto}>
+                                Choose Photo
+                            </Button>
+                        </HStack>
 
-                                        <FormControl isInvalid={'petType' in errors}>
-                                            <FormControl.Label>Choose Pet Type</FormControl.Label>
-                                            <Select placeholder="Select a pet type"
-                                                selectedValue={formData.petType}
-                                                onValueChange={(value) => setFormData({ ...formData, animal: value })}>
-                                                <Select.Item label="Select a pet" value="" disabled hidden />
-                                                {petTypeOptions.map((option, index) => (
-                                                    <Select.Item key={index} label={option.label} value={option.value} />
-                                                ))}
-                                            </Select>
-                                            {'petType' in errors && <FormControl.ErrorMessage>{errors.petType}</FormControl.ErrorMessage>}
-                                        </FormControl>
+                        {
+                            sightingImage ?
+                                <View alignItems={"center"}>
+                                    <Button style={{ borderColor: Color.NENO_BLUE, width: "48%" }} textColor={Color.NENO_BLUE} icon="trash-can-outline" mode="outlined" onPress={handleRemovePhoto} >
+                                        Remove Photo
+                                    </Button>
+                                </View> : ""
+                        }
 
-                                        <FormControl>
-                                            <FormControl.Label>Breed</FormControl.Label>
-                                            <Input
-                                                placeholder="Pet breed"
-                                                onChangeText={value => setFormData({ ...formData, breed: value })}
-                                            />
-                                        </FormControl>
+                        <FormControl isRequired isInvalid={'petType' in errors}>
+                            <FormControl.Label>Pet Type</FormControl.Label>
+                            <Select placeholder="Select a pet type"
+                                selectedValue={formData.petType}
+                                onValueChange={(value) => setFormData({ ...formData, petType: value })}>
+                                <Select.Item label="Select a pet" value="" disabled hidden />
+                                {petTypeOptions.map((option, index) => (
+                                    <Select.Item key={index} label={option.label} value={option.value} />
+                                ))}
+                            </Select>
+                            {'petType' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petType}</FormControl.ErrorMessage>}
+                        </FormControl>
 
-                                        <FormControl>
-                                            <FormControl.Label>Date and Time of Sighting</FormControl.Label>
-                                            <Button onPress={openPicker}>{`${selectedDatetime.toDateString()} ${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')}`}</Button>
-                                            <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
-                                                onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
-                                        </FormControl>
+                        <FormControl>
+                            <FormControl.Label>Breed</FormControl.Label>
+                            <Input
+                                placeholder="Pet breed"
+                                onChangeText={value => setFormData({ ...formData, breed: value })}
+                            />
+                        </FormControl>
 
-                                        <FormControl>
-                                            <FormControl.Label>Last Known Location</FormControl.Label>
+                        <FormControl isRequired>
+                            <FormControl.Label>Date and Time of Sighting</FormControl.Label>
+                            <Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{`${selectedDatetime.toDateString()} ${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')}`}</Button>
+                            <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
+                                onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
+                        </FormControl>
 
-                                            <Box height={150} marginBottom={2}>
-                                                <MapView
-                                                    ref={mapViewRef}
-                                                    provider={PROVIDER_GOOGLE}
-                                                    style={styles.map}
-                                                    initialRegion={mapRegion}
-                                                    onRegionChange={handleRegionChange}
-                                                >
-                                                </MapView>
-                                                <View style={styles.markerView}>
-                                                    <Image source={marker} style={styles.marker}></Image>
-                                                </View>
-                                            </Box>
-                                            <Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
-                                            {coordinates === null && <FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
-                                        </FormControl>
+                        <FormControl isRequired>
+                            <FormControl.Label>Sighting Location</FormControl.Label>
 
-                                        <Button title="Search" onPress={handleSearch}>Search Address</Button>
+                            <View height={200} marginBottom={2}>
+                                <MapView
+                                    ref={mapViewRef}
+                                    provider={PROVIDER_GOOGLE}
+                                    style={styles.map}
+                                    initialRegion={mapRegion}
+                                    onRegionChangeComplete={handleRegionChange}
+                                >
+                                </MapView>
+                                <View style={styles.markerView}>
+                                    <Image source={marker} style={styles.marker} alt='Center marker'></Image>
+                                </View>
+                            </View>
+                            <Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
+                            {coordinates === null && <FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
+                        </FormControl>
+
+                        <Button style={{ borderColor: Color.NENO_BLUE }} textColor={Color.NENO_BLUE} col mode="outlined" title="Search Address" onPress={handleSearch}>Search Address</Button>
 
 
-                                        <FormControl isInvalid={'description' in errors}>
-                                            <FormControl.Label>Description (Additional Info)</FormControl.Label>
-                                            <Input onChangeText={value => setFormData({ ...formData, description: value })} />
-                                            {'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
-                                        </FormControl>
+                        <FormControl isInvalid={'description' in errors}>
+                            <FormControl.Label>Description</FormControl.Label>
+                            <Input placeholder="Additional info" onChangeText={value => setFormData({ ...formData, description: value })} />
+                            {'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
+                        </FormControl>
 
-                                        <Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onPress}>
-                                            {buttonText}
-                                        </Button>
+                        <Button buttonColor={Color.NENO_BLUE} mode="contained" disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onPress}>
+                            {buttonText}
+                        </Button>
 
-                                    </VStack>
-                                </VStack>
-                            </Box>
-                        </Center>
-                    </Box>
-                )}
-            />
-        </KeyboardAvoidingView>
+                    </VStack>
+                </VStack>
+            </SafeAreaView>
+        </KeyboardAwareScrollView>
     );
 
 }

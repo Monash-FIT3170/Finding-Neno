@@ -5,8 +5,9 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import React, { useEffect, useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import { useSelector, useDispatch } from "react-redux";
 import marker from '../assets/marker_icon.png';
@@ -266,7 +267,9 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	};
 
 	return (
-		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}>
+
+		{/* <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding"> */}
 			<StatusBar style="auto" />
 			<Box flex={1} alignItems="center" justifyContent="center">
 					<Box safeArea p="2" py="8" w="90%" maxW="290">
@@ -303,12 +306,12 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 											provider={PROVIDER_GOOGLE}
 											style={styles.map}
 											initialRegion={mapRegion}
-											onRegionChange={handleRegionChange}
+											onRegionChangeComplete={handleRegionChange}
 										>
 										</MapView>
 
 										<View style={styles.markerView}>
-											<Image source={marker} style={styles.marker}></Image>
+											<Image source={marker} style={styles.marker} alt='Center marker'></Image>
 										</View>
 									</Box>
 									<Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
@@ -331,7 +334,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 						</VStack>
 					</Box>
 			</Box>
-		</KeyboardAvoidingView>
+		</KeyboardAwareScrollView>
 	);
 };
 

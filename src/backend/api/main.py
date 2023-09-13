@@ -80,10 +80,13 @@ def post_login():
     print("logging in")
     data = login(g.db)
     print(data)
-    headers = {
-        'userId': data[2],
-        'accessToken': data[3],
+    if data[1] == 200:
+        headers = {
+            'userId': data[2],
+            'accessToken': data[3],
     }
+    else:
+        headers = None
 
     return data[0], data[1], headers
 

@@ -4,7 +4,7 @@ import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView } from 'rea
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { Appbar, FAB, PaperProvider, Portal, SegmentedButtons, ToggleButton } from 'react-native-paper';
+import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton } from 'react-native-paper';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { StatusBar } from 'expo-status-bar';
 
@@ -130,31 +130,9 @@ const DashboardPage = () => {
 	return (
 
 
-		<PaperProvider>
+		<Provider>
 			<StatusBar style="auto" />
-			<Portal>
-				<FAB.Group icon="plus" open={open} visible onStateChange={onStateChange} style={{ position: 'absolute', bottom: -20, right: 0 }}
-					actions={[
-						{ icon: 'bullhorn', label: 'New Report', onPress: () => navigation.navigate('Reports', { screen: 'New Report' }) },
-						{ icon: 'eye', label: 'New Sighting', onPress: () => navigation.navigate('Sightings', { screen: 'New Sighting' }) },
-					]} />
-			</Portal>
 			<SafeAreaView style={{ flex: 1, alignItems: 'center' }}>
-				{/* <View>
-        <View justifyContent="center" alignItems="flex-start" bg={'blue.300'} padding={4}>
-          <Menu shadow={2} w="360" trigger={(triggerProps) => (
-            <Pressable width="100%" accessibilityLabel="More options menu" {...triggerProps}>
-              <View style={{ alignItems: 'flex-start' }}>
-                <Heading> ➕ New Post </Heading>
-              </View>
-            </Pressable>
-          )}>
-            <Menu.Item onPress={() => navigation.navigate('Report', { screen: 'New Report Page' })}>Report</Menu.Item>
-            <Menu.Item onPress={() => navigation.navigate('Dashboard', { screen: 'New Sighting Page' })}>Sighting</Menu.Item>
-          </Menu>
-        </View>
-      </View> */}
-
 				{/* TABS */}
 				<SegmentedButtons value={tabValue} onValueChange={setTabValue} style={{ marginTop: 5, width: Dimensions.get('window').width - 20, backgroundColor: '#EDEDED' }}
 					buttons={[
@@ -162,18 +140,6 @@ const DashboardPage = () => {
 						{ label: 'Sightings', icon: 'eye', value: 'sightings' },
 					]}
 				/>
-				{/* <ToggleButton.Row onValueChange={value => {
-        value != null ? setTabValue(value) : ''
-      }}
-        value={tabValue}
-        style={{ justifyContent: 'space-between', width: Dimensions.get('window').width }}>
-        <ToggleButton icon={() => <Text>Reports</Text>}
-          value="reports"
-          style={{ width: '50%' }} />
-        <ToggleButton icon={() => <Text>Sightings</Text>}
-          value="sightings"
-          style={{ width: '50%' }} />
-      </ToggleButton.Row> */}
 
 				{/* TODO: fix this - it is not scrolling all the way */}
 
@@ -196,8 +162,16 @@ const DashboardPage = () => {
 					<Box h={180}></Box>
 
 				</ScrollView>
+				
+				<Portal>
+					<FAB.Group icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange} 
+						actions={[
+							{ icon: 'bullhorn', label: 'New Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Report' }) },
+							{ icon: 'eye', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }) },
+						]} />
+				</Portal>
 			</SafeAreaView>
-		</PaperProvider>
+		</Provider>
 	);
 }
 

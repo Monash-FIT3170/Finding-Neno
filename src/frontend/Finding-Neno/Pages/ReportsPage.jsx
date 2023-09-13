@@ -1,7 +1,7 @@
 import React from 'react';
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { ScrollView, Button, Box, Image, View, Heading, VStack, HStack, Text } from 'native-base';
-import {Dimensions, SafeAreaView} from 'react-native';
+import { Dimensions, SafeAreaView } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";

@@ -1,5 +1,5 @@
 import { Box, Button, Center, FormControl, Heading, HStack, Icon, Input, KeyboardAvoidingView, Link, VStack, Pressable, Text, Alert, Modal } from "native-base";
-import { StyleSheet } from "react-native"
+import { StyleSheet, TouchableWithoutFeedback } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons'
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
@@ -7,6 +7,7 @@ import { Color } from "../components/atomic/Theme";
 import { validEmail, validPhoneNumber } from "./validation";
 import { useState } from "react";
 import { StatusBar } from 'expo-status-bar';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
@@ -98,9 +99,14 @@ const SignupPage = () => {
 	const keyboardVerticalOffset = Platform.OS === 'ios' ? 170 : 0
 
 	return (
+		<TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
 		<>
 		{showAccountExistsModal && <AccountExistsModal modalVisible={showAccountExistsModal} onClose={redirectToLogin}/>}
-		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={keyboardVerticalOffset}>
+		{/* <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={keyboardVerticalOffset}> */}
+		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}
+            resetScrollToCoords={{ x: 0, y: 0 }}
+            scrollEnabled={true}
+            bounces={false}>
 			<StatusBar style="auto" /><Center w="100%">
 				<Box safeArea p="2" py="8" w="90%" maxW="290">
 					{
@@ -217,8 +223,10 @@ const SignupPage = () => {
 						)}
 				</Box>
 			</Center>
-		</KeyboardAvoidingView>
+		</KeyboardAwareScrollView>
+		{/* </KeyboardAvoidingView> */}
 		</>
+		</TouchableWithoutFeedback>
 	);
 };
 
