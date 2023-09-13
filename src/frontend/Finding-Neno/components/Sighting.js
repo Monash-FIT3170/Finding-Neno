@@ -25,18 +25,20 @@ const Report = ({userId, sighting}) => {
     const ownerName = sighting[10];
     const ownerEmail = sighting[11];
     const sightingPhoneNumber = sighting[12];
+    const petName = sighting[13]
     
   return (
     <View justifyContent = "center" alignItems = "center" padding={4}>
         {/* TODO: unhard code the heights, widths etc later */}
     <Box width={windowWidth - 20} height={sightingImage ? 400 : 250} bg="#F9FDFF" borderRadius={15} paddingLeft={5} paddingTop={2}>
       <Heading size = "lg"  paddingTop={3}>
-        Glen Waverley, 3150
+        {petName}
       </Heading>
 
       <Heading size = "sm"  paddingTop={2}>
-        {dateTime}
+        Last seen { dateTime} 
       </Heading>
+      {/* TODO: put reverse geocoded location here  */}
 
       <Text paddingTop={2}>
         {sightingDesc}
