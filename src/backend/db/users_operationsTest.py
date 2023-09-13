@@ -3,7 +3,7 @@ from unittest.mock import MagicMock, patch
 import string
 import hashlib
 import secrets
-from users_operations import get_salt, salt_and_hash, generate_access_token, insert_user_to_database, check_user_exists_in_database  # replace 'your_module' with the name of your module
+from users_operations import get_salt, salt_and_hash, generate_access_token, insert_user_to_database, check_user_login_details  # replace 'your_module' with the name of your module
 
 class TestDatabaseFunctions(unittest.TestCase):
 
@@ -65,7 +65,7 @@ class TestDatabaseFunctions(unittest.TestCase):
             ('test@example.com', '1234567890', 'Test User', hashed_password, 'access_token')]
 
         # Call the function with the mock objects
-        result = check_user_exists_in_database(mock_conn, 'test@example.com', 'password')  # use 'password' here
+        result = check_user_login_details(mock_conn, 'test@example.com', 'password')  # use 'password' here
 
         # Check that the cursor's execute method was called with the right parameters
         query = """SELECT * FROM users WHERE email_address = %s"""

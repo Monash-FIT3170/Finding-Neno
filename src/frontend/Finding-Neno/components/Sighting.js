@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { View } from 'react-native'
 import {Dimensions} from 'react-native';
 import ReportSightingModal from '../components/ReportSightingModal';
@@ -26,14 +26,38 @@ const Report = ({userId, sighting}) => {
     const ownerEmail = sighting[11];
     const sightingPhoneNumber = sighting[12];
     const petName = sighting[13]
+
+    const [suburb, setSuburb] = useState("");
+
+
+    useEffect(() => {
+      getSuburb();
+    }, [])
+
+    const getSuburb = async () => {
+      try {
+          const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${locationLatitude}&lon=${locationLongitude}&format=json`;
+
+          const response = await fetch(apiUrl);
+
+          const result = await response.json();
+          setSuburb(`${result.address.suburb}, ${result.address.state}`)
+          
+      } catch (error) {
+          console.error('Error fetching data:', error);
+      }
+  };
     
   return (
     <View justifyContent = "center" alignItems = "center" padding={4}>
         {/* TODO: unhard code the heights, widths etc later */}
     <Box width={windowWidth - 20} height={sightingImage ? 400 : 250} bg="#F9FDFF" borderRadius={15} paddingLeft={5} paddingTop={2}>
       <Heading size = "lg"  paddingTop={3}>
-        {petName}
+        {suburb}
       </Heading>
+      {/* <Heading size = "md"  paddingTop={2}>
+        {petName ? petName : ""}
+      </Heading> */}
 
       <Heading size = "sm"  paddingTop={2}>
         Last seen { dateTime} 

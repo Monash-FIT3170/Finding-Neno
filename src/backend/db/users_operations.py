@@ -109,7 +109,32 @@ def retrieve_user(connection: psycopg2.extensions.connection, profile_user_id: i
     cur.close()
     return result
 
-def check_user_exists_in_database(connection: psycopg2.extensions.connection, email: str, password: str):
+
+def check_user_exists(connection: psycopg2.extensions.connection, email: str, phoneNumber: str):
+    """
+    This function is used to check if a user exists with the same email or phone number
+    """
+
+    cur = connection.cursor()
+
+    # Check if a user with this email or phone numer exists in the database
+    query = """SELECT id, access_token FROM users WHERE (email_address = %s OR phone_number = %s)"""
+
+    result = None
+
+    # Execute the query
+    try:
+        cur.execute(query, (email, phoneNumber))
+        user = cur.fetchall()
+        result = (len(user) == 0)
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
+def check_user_login_details(connection: psycopg2.extensions.connection, username: str, password: str):
     """
     This function is used to check if a user exists in the database and if the password match
     """
@@ -121,17 +146,17 @@ def check_user_exists_in_database(connection: psycopg2.extensions.connection, em
 
     # Check if a user with this email exists in the database
     # Construct a SELECT query to check if the user exists in the database and if its password matches
-    query = """SELECT id, access_token FROM users WHERE email_address = %s AND password = %s """
+    query = """SELECT id, access_token FROM users WHERE (email_address = %s OR phone_number = %s) AND password = %s """
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
 
     # Execute the query
     try:
-        cur.execute(query, (email, hashed_pass))
+        cur.execute(query, (username, username, hashed_pass))
         user = cur.fetchall()
         if len(user) == 0:  # If a user with the provided email could not be found
-            print("Invalid email or password combination.")
+            print("Invalid email/phone number or password combination.")
         else: # If login is correct
             result = user[0]
     except Exception as e:

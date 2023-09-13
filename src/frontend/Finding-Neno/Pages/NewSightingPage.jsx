@@ -8,7 +8,6 @@ import { Color } from "../components/atomic/Theme";
 import { validDateTime, validateCoordinates } from "./validation"
 import { ActivityIndicator } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import axios from 'axios';
 import { StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 <StatusBar style="auto" />
@@ -258,7 +257,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         try {
             const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
 
-            const response = await axios.get(apiUrl);
+            const response = await fetch(apiUrl);
             if (response.data.length > 0) {
                 const firstResult = response.data[0];
                 setCoordinates({
