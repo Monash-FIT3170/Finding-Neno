@@ -38,7 +38,6 @@ module.exports = {
         "projectId": "6b02a04a-94c0-4b03-baee-2a3b9739dc63"
       }
     },
-    "owner": "josiahschuller",
     "runtimeVersion": {
       "policy": "sdkVersion"
     },
