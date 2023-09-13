@@ -32,6 +32,10 @@ def insert_user(connection) -> Tuple[str, int]:
     phoneNumber = json_data["phoneNumber"]
     password = json_data["password"]
     name = json_data["name"]
+
+    user_exists = check_user_exists(connection, email, phoneNumber)
+    if not user_exists:
+        return 'User already exists', 409
     insert_user_to_database(connection, email, phoneNumber, name, password)
     return "Success", 201
 
@@ -276,7 +280,7 @@ def login(connection) -> Tuple[str, int]:
     username = json_data["username"].lower()
     password = json_data["password"]
     print(password)
-    user_exists = check_user_exists_in_database(connection, username, password)
+    user_exists = check_user_login_details(connection, username, password)
     if user_exists:
         user_id, access_token = user_exists  # Unpack the tuple
         return "Success", 200, user_id, access_token  # Return user_id and access_token

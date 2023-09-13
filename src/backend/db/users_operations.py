@@ -109,7 +109,32 @@ def retrieve_user(connection: psycopg2.extensions.connection, profile_user_id: i
     cur.close()
     return result
 
-def check_user_exists_in_database(connection: psycopg2.extensions.connection, username: str, password: str):
+
+def check_user_exists(connection: psycopg2.extensions.connection, email: str, phoneNumber: str):
+    """
+    This function is used to check if a user exists with the same email or phone number
+    """
+
+    cur = connection.cursor()
+
+    # Check if a user with this email or phone numer exists in the database
+    query = """SELECT id, access_token FROM users WHERE (email_address = %s OR phone_number = %s)"""
+
+    result = None
+
+    # Execute the query
+    try:
+        cur.execute(query, (email, phoneNumber))
+        user = cur.fetchall()
+        result = (len(user) == 0)
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
+def check_user_login_details(connection: psycopg2.extensions.connection, username: str, password: str):
     """
     This function is used to check if a user exists in the database and if the password match
     """
