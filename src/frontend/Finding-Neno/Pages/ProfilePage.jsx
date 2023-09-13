@@ -398,7 +398,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
           <Button
             onPress={() => {
-              navigate("New Pet Page");
+              navigate("New Pet");
             }}
             width={windowWidth - 80}
             height="40px"
