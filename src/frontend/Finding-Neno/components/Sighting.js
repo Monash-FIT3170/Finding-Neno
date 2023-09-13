@@ -25,6 +25,7 @@ const Report = ({userId, sighting}) => {
     const ownerName = sighting[10];
     const ownerEmail = sighting[11];
     const sightingPhoneNumber = sighting[12];
+    const petName = sighting[13]
 
     const [suburb, setSuburb] = useState("");
 
@@ -56,8 +57,9 @@ const Report = ({userId, sighting}) => {
       </Heading>
 
       <Heading size = "sm"  paddingTop={2}>
-        {dateTime}
+        Last seen { dateTime} 
       </Heading>
+      {/* TODO: put reverse geocoded location here  */}
 
       <Text paddingTop={2}>
         {sightingDesc}
