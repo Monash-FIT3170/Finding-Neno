@@ -17,7 +17,7 @@ import LoginPage from "./Pages/LoginPage";
 import MapPage from "./Pages/MapPage";
 import NewPetPage from "./Pages/NewPetPage";
 import ProfilePage from "./Pages/ProfilePage";
-import ReportPage from "./Pages/ReportPage";
+import ReportsPage from "./Pages/ReportsPage";
 import SignupPage from "./Pages/SignupPage";
 import ForgotPasswordPage from "./Pages/ForgotPasswordPage";
 import PasswordResetPage from "./Pages/PasswordResetPage";
@@ -142,16 +142,16 @@ function TabNavigator() {
 			/>
 			<Tab.Screen
 				name="Sightings"
-				component={SightingsPage}
+				component={SightingsStackNavigator}
 				options={{
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="search" color={color} size={size} />
 					),
-					headerShown: true
+					headerShown: false
 				}}
 			/>
 			<Tab.Screen
-				name="Report"
+				name="Reports"
 				component={ReportStackNavigator}
 				options={{
 					tabBarIcon: ({ color, size }) => (
@@ -174,20 +174,18 @@ function TabNavigator() {
 	);
 }
 
-// function SightingsStackNavigator() {
-// 	return (
-// 		<Stack.Navigator initialRouteName="SightingsPage">
-// 			{/* <Stack.Screen name="Sightings" component={SightingsPage} /> */}
-// 			<Stack.Screen name="New Sighting" component={NewSightingPage} />
-// 		</Stack.Navigator>
-// 	)
-// }
-
 function DashboardStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="DashboardPage">
-			<Stack.Screen name="Dashboard" component={DashboardPage} />
-			<Stack.Screen name="New Report" component={NewReportPage} />
+			<Stack.Screen name="Dashboard Page" component={DashboardPage} options={{ title: "Dashboard" }} />
+		</Stack.Navigator>
+	)
+}
+
+function SightingsStackNavigator() {
+	return (
+		<Stack.Navigator initialRouteName="SightingsPage">
+			<Stack.Screen name="Sightings Page"  component={SightingsPage} options={{ title: "Sightings" }} />
 			<Stack.Screen name="New Sighting" component={NewSightingPage} />
 		</Stack.Navigator>
 	)
@@ -195,8 +193,8 @@ function DashboardStackNavigator() {
 
 function ReportStackNavigator() {
 	return (
-		<Stack.Navigator initialRouteName="ReportPage">
-			<Stack.Screen name="Report" component={ReportPage} />
+		<Stack.Navigator initialRouteName="ReportsPage">
+			<Stack.Screen name="Reports Page" component={ReportsPage} options={{ title: "Reports" }} />
 			<Stack.Screen name="New Report" component={NewReportPage} />
 		</Stack.Navigator>
 	)
@@ -205,7 +203,7 @@ function ReportStackNavigator() {
 function ProfileStackNavigator() {
   return (
     <Stack.Navigator initialRouteName="ProfilePage">
-      <Stack.Screen name="Profile" component={ProfilePage} />
+      <Stack.Screen name="Profile Page" component={ProfilePage} options={{ title: "Profile" }} />
       <Stack.Screen name="New Pet" component={NewPetPage} />
       <Stack.Screen name="Edit Pet" component={EditPetPage} />
     </Stack.Navigator>
