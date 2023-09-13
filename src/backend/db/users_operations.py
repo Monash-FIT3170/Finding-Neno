@@ -812,6 +812,107 @@ def change_password_in_database(connection: psycopg2.extensions.connection, emai
     return result
 
 
+def get_user_details(connection: psycopg2.extensions.connection, user_id: int):
+    """
+    Retrieves a user from the database using its id.
+
+    Arguments:
+        connection: The connection to the database.
+        user_id: The id of the user to retrieve.
+    Returns: The user if it exists
+    """
+    cur = connection.cursor()
+
+    query = """
+        SELECT 
+            id, email_address, phone_number, name
+        FROM 
+            users
+        WHERE 
+            id = %s;
+    """
+    try:
+        cur.execute(query, (user_id, ))
+
+        # Retrieve rows as an array
+        user = cur.fetchall()
+
+        if user:
+            print(f"Missing report successfully retrieved: {user}")
+            result = user[0]
+        else:
+            return None
+
+    except Exception as e:
+        print(f"Error with retrieving the missing report: {e}")
+        return None
+
+    # Close the cursor
+    cur.close()
+
+    user_details = {
+        "id": result[0],
+        "email_address": result[1],
+        "phone_number": result[2],
+        "name": result[3],
+    }
+
+    return user_details
+        
+
+def get_missing_report(connection: psycopg2.extensions.connection, missing_report_id: int):
+    """
+    Retrieves a missing report from the database using its id.
+    
+    Arguments:
+        connection: The connection to the database.
+        missing_report_id: The id of the missing report to retrieve.
+    Returns: The missing report if it exists
+    """
+    cur = connection.cursor()
+
+    query = """
+        SELECT 
+            id, pet_id, author_id, date_time_of_creation, date_time, location_longitude, location_latitude, description, isactive
+        FROM 
+            missing_reports
+        WHERE 
+            id = %s;
+    """
+    try:
+        cur.execute(query, (missing_report_id, ))
+
+        # Retrieve rows as an array
+        missing_report = cur.fetchall()
+
+        if missing_report:
+            print(f"Missing report successfully retrieved: {missing_report}")
+            result = missing_report[0]
+        else:
+            return None
+
+    except Exception as e:
+        print(f"Error with retrieving the missing report: {e}")
+        return None
+
+    # Close the cursor
+    cur.close()
+
+    mr = {
+        "id": result[0],
+        "pet_id": result[1],
+        "author_id": result[2],
+        "date_time_of_creation": result[3],
+        "date_time": result[4],
+        "location_longitude": result[5],
+        "location_latitude": result[6],
+        "description": result[7],
+        "isactive": result[8],
+    }
+
+    return mr
+
+
 def send_notification(
     email_address: str,
     subject: str,

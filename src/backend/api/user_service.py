@@ -11,7 +11,7 @@ sys.path.append(str(package_root_directory))
 
 from db.authentication import verify_access_token
 from db.users_operations import *
-from db.pets import get_pet, get_owner
+from db.pets import get_pet
 
 
 def check_access_token(connection) -> bool:
@@ -67,6 +67,8 @@ def insert_sighting(connection) -> Tuple[str, int]:
     if result is False:
         return "User does not have access", 401
     else:
+        if missing_report_id is not None:
+            send_notification_to_report_author(connection, missing_report_id=missing_report_id)
         return "Success", 201
 
 def insert_missing_report(connection) -> Tuple[str, int]:
@@ -365,22 +367,26 @@ def reset_password(username, new_password):
     # Replace with password reset logic
 
 
-def send_notification_to_pet_owner(
+def send_notification_to_report_author(
     connection: psycopg2.extensions.connection,
-    pet_id: int,
+    missing_report_id: int,
 ):
     """
-    Sends a notification to the pet owner of the pet with the given pet_id
+    Sends a notification to the author of a missing report
 
     Arguments:
         connection: Database connection
-        pet_id: ID of the pet
-    """    
+        missing_report_id: ID of the missing report
+    """
+
+    # Get missing report
+    missing_report = get_missing_report(connection=connection, missing_report_id=missing_report_id)
+
     # Get pet
-    pet = get_pet(connection=connection, pet_id=pet_id)
+    pet = get_pet(connection=connection, pet_id=missing_report["pet_id"])
 
     # Get owner
-    owner = get_owner(connection=connection, pet_id=pet_id)
+    owner = get_user_details(connection=connection, user_id=missing_report["author_id"])
 
     # Send notification to owner
     title = f"{pet['name']} has been sighted!"
