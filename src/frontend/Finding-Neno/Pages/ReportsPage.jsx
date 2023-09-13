@@ -5,7 +5,7 @@ import {Dimensions, SafeAreaView} from 'react-native';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
-import { AnimatedFAB, FAB, PaperProvider, Portal } from 'react-native-paper';
+import { FAB } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
 
 import Report from "../components/Report";
@@ -14,7 +14,7 @@ import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 
 
-export default function ReportPage({ navigation: { navigate}}) {
+export default function ReportsPage({ navigation: { navigate}}) {
     const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
     const windowHeight = Dimensions.get('window').height;
@@ -69,7 +69,7 @@ export default function ReportPage({ navigation: { navigate}}) {
       </ScrollView>
       <FAB 
         icon={'plus'}
-        onPress={() => navigate('New Report Page')}
+        onPress={() => navigate('New Report')}
         visible={true}
         style={[{position: 'absolute', bottom: 16, right: 16}]}
       />

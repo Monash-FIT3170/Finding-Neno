@@ -135,8 +135,8 @@ const DashboardPage = () => {
 			<Portal>
 				<FAB.Group icon="plus" open={open} visible onStateChange={onStateChange} style={{ position: 'absolute', bottom: -20, right: 0 }}
 					actions={[
-						{ icon: 'bullhorn', label: 'New Report', onPress: () => navigation.navigate('Report', { screen: 'New Report Page' }) },
-						{ icon: 'eye', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting Page' }) },
+						{ icon: 'bullhorn', label: 'New Report', onPress: () => navigation.navigate('Reports', { screen: 'New Report' }) },
+						{ icon: 'eye', label: 'New Sighting', onPress: () => navigation.navigate('Sightings', { screen: 'New Sighting' }) },
 					]} />
 			</Portal>
 			<SafeAreaView style={{ flex: 1, alignItems: 'center' }}>

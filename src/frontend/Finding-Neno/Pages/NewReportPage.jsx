@@ -4,13 +4,11 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 import React, { useEffect, useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { validDateTime, validateCoordinates } from "./validation"
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { Image, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import { useSelector, useDispatch } from "react-redux";
-import store from "../store/store";
 import marker from '../assets/marker_icon.png';
 
 import { formatDatetime } from "./shared"

@@ -4,7 +4,7 @@ import { Box, Center, View, Heading, VStack, useToast, Image, FormControl, Input
 import { useIsFocused } from '@react-navigation/native';
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from 'react';
-import store from "../store/store";
+import { FAB } from 'react-native-paper';
 import Sighting from '../components/Sighting';
 import { StatusBar } from 'expo-status-bar';
 
@@ -63,7 +63,14 @@ export default function SightingsPage({navigation: {navigate}}) {
                     <Sighting userId={USER_ID} sighting={sighting} key={index}/>
                 ))
             : 
-                <Text>No sightings yet!</Text>}
+                <Text>No sightings yet!</Text>
+            }
+            <FAB 
+                icon={'plus'}
+                onPress={() => navigate('New Sighting')}
+                visible={true}
+                style={[{position: 'absolute', bottom: 16, right: 16}]}
+            />
         </ScrollView>
     )
 }
