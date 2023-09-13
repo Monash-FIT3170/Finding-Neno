@@ -6,6 +6,7 @@ import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import { validEmail, validPhoneNumber } from "./validation";
 import { useState } from "react";
+import { StatusBar } from 'expo-status-bar';
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
@@ -19,7 +20,7 @@ const SignupPage = () => {
 	const [buttonText, setButtonText] = useState("Sign up")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-	const {IP, PORT} = useSelector((state) => state.api)
+	const { IP, PORT } = useSelector((state) => state.api)
 
 	const navigation = useNavigation();
 
@@ -95,7 +96,7 @@ const SignupPage = () => {
 
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={keyboardVerticalOffset}>
-			<Center w="100%">
+			<StatusBar style="auto" /><Center w="100%">
 				<Box safeArea p="2" py="8" w="90%" maxW="290">
 					{
 						isRegistered ? (

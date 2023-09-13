@@ -21,6 +21,7 @@ import { Color } from "../components/atomic/Theme";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import store from "../store/store";
+import { StatusBar } from 'expo-status-bar';
 
 import { petTypeOptions } from "./shared";
 
@@ -236,6 +237,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
+      <StatusBar style="auto" />
       <FlatList
         data={[{ key: "form" }]}
         renderItem={() => (

@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import { AnimatedFAB, FAB, PaperProvider, Portal } from 'react-native-paper';
+import { StatusBar } from 'expo-status-bar';
 
 import Report from "../components/Report";
 
@@ -55,6 +56,7 @@ export default function ReportPage({ navigation: { navigate}}) {
 
   return (
     <SafeAreaView style={{flex: 1, alignItems: 'center'}}>
+      <StatusBar style="auto" />
       <ScrollView height="100%">
         <Box alignItems="center" bg="#FFFFFF" marginTop={2}>
 

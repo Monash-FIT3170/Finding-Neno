@@ -5,6 +5,7 @@ import { Color } from "../components/atomic/Theme";
 import { useNavigation } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
 import { ActivityIndicator } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
@@ -248,6 +249,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 	  
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
+			<StatusBar style="auto" />
 			<FlatList
 				data={[{ key: 'form' }]} // Use a single item array as data source
 				renderItem={() => (

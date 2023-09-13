@@ -177,8 +177,8 @@ function TabNavigator() {
 // function SightingsStackNavigator() {
 // 	return (
 // 		<Stack.Navigator initialRouteName="SightingsPage">
-// 			{/* <Stack.Screen name="Sightings Page" component={SightingsPage} /> */}
-// 			<Stack.Screen name="New Sighting Page" component={NewSightingPage} />
+// 			{/* <Stack.Screen name="Sightings" component={SightingsPage} /> */}
+// 			<Stack.Screen name="New Sighting" component={NewSightingPage} />
 // 		</Stack.Navigator>
 // 	)
 // }
@@ -186,9 +186,9 @@ function TabNavigator() {
 function DashboardStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="DashboardPage">
-			<Stack.Screen name="Dashboard Page" component={DashboardPage} />
-			<Stack.Screen name="New Report Page" component={NewReportPage} />
-			<Stack.Screen name="New Sighting Page" component={NewSightingPage} />
+			<Stack.Screen name="Dashboard" component={DashboardPage} />
+			<Stack.Screen name="New Report" component={NewReportPage} />
+			<Stack.Screen name="New Sighting" component={NewSightingPage} />
 		</Stack.Navigator>
 	)
 }
@@ -196,8 +196,8 @@ function DashboardStackNavigator() {
 function ReportStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="ReportPage">
-			<Stack.Screen name="Report Page" component={ReportPage} />
-			<Stack.Screen name="New Report Page" component={NewReportPage} />
+			<Stack.Screen name="Report" component={ReportPage} />
+			<Stack.Screen name="New Report" component={NewReportPage} />
 		</Stack.Navigator>
 	)
 }
@@ -205,9 +205,9 @@ function ReportStackNavigator() {
 function ProfileStackNavigator() {
   return (
     <Stack.Navigator initialRouteName="ProfilePage">
-      <Stack.Screen name="Profile Page" component={ProfilePage} />
-      <Stack.Screen name="New Pet Page" component={NewPetPage} />
-      <Stack.Screen name="Edit Pet Page" component={EditPetPage} />
+      <Stack.Screen name="Profile" component={ProfilePage} />
+      <Stack.Screen name="New Pet" component={NewPetPage} />
+      <Stack.Screen name="Edit Pet" component={EditPetPage} />
     </Stack.Navigator>
   )
 }

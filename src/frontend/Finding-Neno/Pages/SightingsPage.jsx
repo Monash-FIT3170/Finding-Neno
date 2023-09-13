@@ -6,6 +6,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from 'react';
 import store from "../store/store";
 import Sighting from '../components/Sighting';
+import { StatusBar } from 'expo-status-bar';
 
 export default function SightingsPage({navigation: {navigate}}) {
 
@@ -54,6 +55,7 @@ export default function SightingsPage({navigation: {navigate}}) {
   
     return (
         <ScrollView style={{backgroundColor: '#EDEDED'}}>
+            <StatusBar style="auto" />
 
             {myReportSightings 
             ? 

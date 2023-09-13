@@ -8,6 +8,7 @@ import { Button, Text } from 'react-native';
 import store from "../store/store";
 import { useSelector, useDispatch } from "react-redux";
 import { Dimensions } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
 import { VStack } from 'native-base';
 import { SegmentedButtons } from 'react-native-paper';
@@ -114,6 +115,7 @@ export default function MapPage() {
 
 	return (
 		<SafeAreaView style={styles.container}>
+			<StatusBar style="auto" />
 			<View>
 				<SegmentedButtons value={tabValue} onValueChange={setTabValue} style={{ marginTop: 5, width: Dimensions.get('window').width - 20, backgroundColor: '#EDEDED' }}
 					buttons={[

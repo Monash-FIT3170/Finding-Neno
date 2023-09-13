@@ -5,6 +5,7 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
+import { StatusBar } from 'expo-status-bar';
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
@@ -93,6 +94,7 @@ const PasswordResetPage = () => {
 
     return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+			<StatusBar style="auto" />
 			<Box flex={1} alignItems="center" justifyContent="center">
 				<Center w="100%">
 					<Box safeArea p="2" py="8" w="90%" maxW="290">

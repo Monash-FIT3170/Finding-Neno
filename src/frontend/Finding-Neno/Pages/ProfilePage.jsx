@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import PetCard from "../components/PetCard";
 import { Checkbox } from "native-base";
 import { DeleteIcon } from "native-base";
+import { StatusBar } from 'expo-status-bar';
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
@@ -233,6 +234,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
   return (
     <ScrollView>
+      <StatusBar style="auto" />
       <Box alignItems="center" justifyContent="center">
         <Box
           alignSelf="center"

@@ -8,6 +8,7 @@ import { validDateTime, validateCoordinates } from "./validation"
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import axios from 'axios';
 import { Image, StyleSheet, View } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
@@ -269,6 +270,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+			<StatusBar style="auto" />
 			<Box flex={1} alignItems="center" justifyContent="center">
 					<Box safeArea p="2" py="8" w="90%" maxW="290">
 						<VStack>

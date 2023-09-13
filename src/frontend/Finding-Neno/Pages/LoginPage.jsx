@@ -2,6 +2,8 @@ import { Box, Button, Center, FormControl, Heading, HStack, Icon, Input, Keyboar
 import { StyleSheet } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons'
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
+import { StatusBar } from 'expo-status-bar';
+
 
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
@@ -81,6 +83,7 @@ const LoginPage = () => {
 
   	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+			<StatusBar style="auto" />
       		<Box flex={1} alignItems="center" justifyContent="center">
 				<Center w="100%">
 					<Box safeArea p="2" py="8" w="90%" maxW="290">

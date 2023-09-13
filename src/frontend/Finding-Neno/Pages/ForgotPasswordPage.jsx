@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
+import { StatusBar } from 'expo-status-bar';
 
 
 const ForgotPasswordPage = () => {
@@ -56,6 +57,7 @@ const ForgotPasswordPage = () => {
 
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
+			<StatusBar style="auto" />
 			<Box flex={1} alignItems="center" justifyContent="center">
 				<Center w="100%">
 					<Box safeArea p="2" py="8" w="90%" maxW="290">

@@ -10,6 +10,9 @@ import { ActivityIndicator } from 'react-native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import axios from 'axios';
 import { StyleSheet } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
+<StatusBar style="auto" />
+
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
@@ -286,6 +289,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
     return (
         <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
+            <StatusBar style="auto" />
             <FlatList
                 data={[{ key: 'form' }]} // Use a single item array as data source
                 renderItem={() => (
