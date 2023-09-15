@@ -7,7 +7,6 @@ import { useIsFocused } from '@react-navigation/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import * as ImagePicker from 'expo-image-picker';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import axios from 'axios';
 import { StyleSheet } from 'react-native';
 
 
@@ -257,7 +256,7 @@ const handleSearch = async () => {
 	try {
 	  const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
 
-	  const response = await axios.get(apiUrl);
+	  const response = await fetch(apiUrl);
 	  if (response.data.length > 0) {
 		const firstResult = response.data[0];
 		setCoordinates({
@@ -310,7 +309,7 @@ const handleSearch = async () => {
 							{/* form details */}
 							<FormControl >
 								<FormControl.Label>Date and Time of Sighting</FormControl.Label>
-								<Button onPress={openPicker}>{`${sightingDateTime.toDateString()} ${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')}`}</Button>
+								<Button onPress={openPicker}>{`${sightingDateTime.toDateString()} ${sightingDateTime.getHours().toString().padStart(2, '0')}:${sightingDateTime.getMinutes().toString().padStart(2, '0')}`}</Button>
 								<DateTimePickerModal date={sightingDateTime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
 									onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 							</FormControl>

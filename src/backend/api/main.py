@@ -168,7 +168,7 @@ def get_sightings():
 
     [
         sighting_id, missing_report_id, author_id (author of sighting), date_time (date time sighting was made), 
-        location_longitude, location_latitude, image_url, description, author's name, author's email, author's phone number
+        location_longitude, location_latitude, image_url, description, author's name, author's email, author's phone number, pet_name
     ]
     """
     missing_report_id = request.args.get("missing_report_id")
@@ -210,6 +210,17 @@ def get_sightings_in_area():
     latitude_delta = request.args.get("lat_delta")
     return jsonify(retrieve_sightings_in_area(g.db, longitude, longitude_delta, latitude, latitude_delta))
 
+@app.route("/get_my_report_sightings", methods=["GET"])
+def get_my_report_sightings():
+    """
+    Returns an array of sightings for the current user's missing reports, sorted by latest to oldest, of the following format.
+
+    [
+        sighting_id, missing_report_id, author_id (author of sighting), date_time (date time sighting was made), 
+        sighting longitude , sighting latitude, sighting image_url, sighting description, animal, breed, author's name, author's email, author's phone number, pet_name
+    ]
+    """
+    return jsonify(retrieve_my_report_sightings(g.db))
 
 
 

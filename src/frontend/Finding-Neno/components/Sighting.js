@@ -69,6 +69,27 @@ const Sighting = ({userId, sighting}) => {
         })
         .catch((error) => alert(error));
     }
+
+    const [suburb, setSuburb] = useState("");
+
+
+    useEffect(() => {
+      getSuburb();
+    }, [])
+
+    const getSuburb = async () => {
+      try {
+          const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${locationLatitude}&lon=${locationLongitude}&format=json`;
+
+          const response = await fetch(apiUrl);
+
+          const result = await response.json();
+          setSuburb(`${result.address.suburb}, ${result.address.state}`)
+          
+      } catch (error) {
+          console.error('Error fetching data:', error);
+      }
+  };
     
   return (
     <View justifyContent = "center" alignItems = "center" padding={4}>
@@ -77,15 +98,16 @@ const Sighting = ({userId, sighting}) => {
       
       <HStack paddingTop={3} alignItems={"center"} justifyContent={"space-between"}>
       <Heading size = "lg" >
-        Glen Waverley, 3150
+        {suburb}
       </Heading>
       <Ionicons name={sightingSaved ? "bookmark": "bookmark-outline"} size={20} onPress={handlePressSaveBtn}/>
       
       </HStack>
 
       <Heading size = "sm"  paddingTop={2}>
-        {dateTime}
+        Last seen { dateTime} 
       </Heading>
+      {/* TODO: put reverse geocoded location here  */}
 
       <Text paddingTop={2}>
         {sightingDesc}
