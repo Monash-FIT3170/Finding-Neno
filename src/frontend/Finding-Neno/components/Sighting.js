@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { View } from 'react-native'
 import {Dimensions} from 'react-native';
-import ReportSightingModal from '../components/ReportSightingModal';
-import * as ImagePicker from 'expo-image-picker';
 import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 import { Ionicons } from '@expo/vector-icons'; 
 import { useSelector } from "react-redux";
@@ -33,9 +31,6 @@ const Sighting = ({userId, sighting}) => {
     const savedByUser = sighting[13];
     const savedId = sighting[14];
 
-    console.log(`creating sighting card ${id}`)
-    console.log("sighting id: ", id, "saved by: ", savedByUser);
-    console.log(savedByUser==USER_ID);
     const [sightingSaved, setSightingSaved] = useState(savedByUser==USER_ID); // true if the sighting is saved by this user
     const [saveSightingEndpoint, setSaveSightingEndpoint] = useState('save_sighting');
 
@@ -46,8 +41,6 @@ const Sighting = ({userId, sighting}) => {
           setSaveSightingEndpoint('save_sighting');
         }
     
-      console.log("sighting id: ", id, "saved by: ", savedByUser);
-      console.log(" ")
     }, [sightingSaved]);
     
     const handlePressSaveBtn = async () => {

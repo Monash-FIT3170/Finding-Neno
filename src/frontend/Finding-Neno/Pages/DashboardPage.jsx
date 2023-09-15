@@ -1,11 +1,9 @@
 import { useNavigation } from '@react-navigation/native';
-import { Menu, Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView } from "native-base";
-import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView } from 'react-native';
+import { Menu, useToast, ScrollView, View, Heading, Pressable } from "native-base";
+import { Dimensions, RefreshControl, SafeAreaView } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { ToggleButton } from 'react-native-paper';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import { useSelector } from "react-redux";
@@ -21,16 +19,14 @@ const DashboardPage = () => {
 	const toast = useToast();
 	const isFocused = useIsFocused();
 
-	// TODO: change report structure to be an array of dictionaries? Refer to mock data that is commented out for desired structure
 	const [reports, setReports] = useState([]);
 	const [allSightings, setAllSightings] = useState([]);
 	const [reportCards, setReportCards] = useState('');
 	const [sightingCards, setSightingCards] = useState('');
-	//   const [modalVisible, setModalVisible] = useState(false);
 	const [sightingData, setSightingData] = useState({ authorId: USER_ID });
-	// const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
 	const [sightingImage, setSightingImage] = useState(null);
-	const [tabValue, setTabValue] = useState("reports");
+	const [initialReportsLoaded, setInitialReportsLoaded] = useState(false);
+	const [initialSightingsLoaded, setInitialSightingsLoaded] = useState(false);
 
 	const [routes] = useState([
 		{ key: 'reports', title: 'Reports' },
@@ -38,11 +34,12 @@ const DashboardPage = () => {
 	])
 	const [index, setIndex] = useState(0);
 
+	// 
 	useEffect(() => {
 		if (isFocused) {
 			fetchData();
 		}
-	}, [isFocused]);
+	}, [isFocused, initialReportsLoaded, initialSightingsLoaded]);
 
 	const onRefresh = () => {
 		fetchData();
@@ -83,9 +80,6 @@ const DashboardPage = () => {
 		</ScrollView>
 	)
 
-	// TODO: replace this image with the actual image from DB ? 
-	const image = "https://wallpaperaccess.com/full/317501.jpg";
-
 	// API calls 
 	const fetchAllReports = async () => {
 		try {
@@ -103,7 +97,10 @@ const DashboardPage = () => {
 				throw new Error(`Request failed with status: ${response.status}`);
 			}
 
-			await response.json().then(data => setReports(data[0]));
+			await response.json().then(data => {
+				setReports(data[0]);
+				setInitialReportsLoaded(true);
+			});
 		} catch (error) {
 			console.error(error);
 		}
@@ -125,9 +122,11 @@ const DashboardPage = () => {
 				throw new Error(`Request failed with status: ${response.status}`);
 			}
 
-			await response.json().then(data => setAllSightings(data[0]));
-			console.log("done fetching")
-			console.log(allSightings.length)
+			await response.json().then(data => {
+				setAllSightings(data[0]);
+				setInitialSightingsLoaded(true);
+			});
+			
 		} catch (error) {
 			console.error(error);
 		}
@@ -153,22 +152,6 @@ const DashboardPage = () => {
 				</Menu>
 			</View>
 
-			{/* TABS */}
-			{/* <ToggleButton.Row onValueChange={value => {
-        value != null ? setTabValue(value) : ''
-      }}
-        value={tabValue}
-        style={{ justifyContent: 'space-between', width: Dimensions.get('window').width }}>
-        <ToggleButton icon={() => <Text>Reports</Text>}
-          value="reports"
-          style={{ width: '50%' }} />
-        <ToggleButton icon={() => <Text>Sightings</Text>}
-          value="sightings"
-          style={{ width: '50%' }} />
-      </ToggleButton.Row>
-
-			{/* TODO: fix this - it is not scrolling all the way */}
-
 			<TabView
 				navigationState={{ index, routes }}
 				renderScene={({ route }) => {
@@ -178,7 +161,7 @@ const DashboardPage = () => {
 						case 'sightings':
 							return SightingsView();
 						default:
-							return null;
+							return null; // TODO: make a view that says "no reports/sightings yet" etc for when theres nothing on the app yet ?
 					}
 				}}
 				onIndexChange={setIndex}
@@ -186,27 +169,6 @@ const DashboardPage = () => {
 				renderTabBar={props => <TabBar {...props} style={{backgroundColor: Color.NENO_BLUE}}/>}
 			/>
 
-			{/* <ScrollView style={{ backgroundColor: '#EDEDED' }}>
-
-				{tabValue == "reports"
-					?
-					<>
-						{reports && reports?.map((report, index) => (
-							<Report userId={USER_ID} report={report} key={index} />
-						))}
-					</>
-					:
-					<>
-						{allSightings && allSightings?.map((sighting, index) => (
-							<Sighting userId={USER_ID} sighting={sighting} key={index} />
-						))
-						}
-					</>
-				}
-
-				<Box h={180}></Box>
-
-			</ScrollView> */}
 		</SafeAreaView>
 	);
 }
