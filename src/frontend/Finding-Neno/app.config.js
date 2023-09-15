@@ -35,7 +35,7 @@ module.exports = {
     },
     "extra": {
       "eas": {
-        "projectId": "6b02a04a-94c0-4b03-baee-2a3b9739dc63"
+        "projectId": process.env.EAS_PROJECT_ID
       }
     },
     "runtimeVersion": {
