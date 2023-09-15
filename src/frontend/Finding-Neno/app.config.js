@@ -33,11 +33,6 @@ module.exports = {
     "web": {
       "favicon": "./assets/favicon.png"
     },
-    "extra": {
-      "eas": {
-        "projectId": process.env.EAS_PROJECT_ID
-      }
-    },
     "owner": "josiahschuller",
     "runtimeVersion": {
       "policy": "sdkVersion"
