@@ -29,7 +29,6 @@ const Sighting = ({userId, sighting}) => {
     const ownerEmail = sighting[11];
     const sightingPhoneNumber = sighting[12];
     const savedByUser = sighting[13];
-    const savedId = sighting[14];
 
     const [sightingSaved, setSightingSaved] = useState(savedByUser==USER_ID); // true if the sighting is saved by this user
     const [saveSightingEndpoint, setSaveSightingEndpoint] = useState('save_sighting');
@@ -110,7 +109,8 @@ const Sighting = ({userId, sighting}) => {
       {/* TODO: put reverse geocoded location here  */}
 
       <Text paddingTop={2}>
-        {sightingDesc}
+        {/* {sightingDesc} */}
+        test description
       </Text>
 
       <HStack space={8}>

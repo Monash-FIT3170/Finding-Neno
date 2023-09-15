@@ -125,6 +125,7 @@ const DashboardPage = () => {
 			await response.json().then(data => {
 				setAllSightings(data[0]);
 				setInitialSightingsLoaded(true);
+				console.log(data[0].length)
 			});
 			
 		} catch (error) {
@@ -137,6 +138,7 @@ const DashboardPage = () => {
 		setSightingData({ ...sightingData, image_url: sightingImage })
 	}, [sightingImage]);
 
+	// console.log(allSightings.length)
 	return (
 		<SafeAreaView style={{height: "100%"}}>
 			<View justifyContent="center" alignItems="flex-start" bg={'blue.300'} padding={4}>
