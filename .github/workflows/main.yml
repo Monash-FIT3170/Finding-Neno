@@ -64,7 +64,5 @@ jobs:
       # Build the preview of the app
       - name: Build preview application
         run: |
+          eas secret:create --name GOOGLE_MAPS_API_KEY --value ${{ secrets.GOOGLE_MAPS_API_KEY }} --type string --force --non-interactive
           eas build --profile preview --platform android --clear-cache --non-interactive
-        env:
-          GOOGLE_MAPS_API_KEY: ${{ secrets.GOOGLE_MAPS_API_KEY }}
-          EXPO_ENVIRONMENT: "build"
