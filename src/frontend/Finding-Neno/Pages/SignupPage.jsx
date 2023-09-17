@@ -1,4 +1,4 @@
-import { Box, Button, Center, FormControl, Heading, HStack, Icon, Input, KeyboardAvoidingView, Link, VStack, Pressable, Text, Alert } from "native-base";
+import { Box, Button, Center, FormControl, Heading, HStack, Icon, Input, KeyboardAvoidingView, Link, VStack, Pressable, Text, Alert, Modal } from "native-base";
 import { StyleSheet } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons'
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
@@ -18,6 +18,7 @@ const SignupPage = () => {
 	const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 	const [buttonText, setButtonText] = useState("Sign up")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
+	const [showAccountExistsModal,setShowAccountExistsModal] = useState(false);
 
 	const {API_URL} = useSelector((state) => state.api)
 
@@ -25,7 +26,7 @@ const SignupPage = () => {
 
 	console.log("SignupPage");
 
-	const onSignupPress = () => {
+	const onSignupPress = async () => {
 		setIsButtonDisabled(true);
 		setButtonText("Signing up...")
 
@@ -33,20 +34,17 @@ const SignupPage = () => {
 		if (isValid) {
 			const url = `${API_URL}/insert_user`;
 
-			fetch(url, {
+			const res = await fetch(url, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
 				body: JSON.stringify(formData),
 			})
-				.then((res) => {
-					if (res.status == 201) {
-						setIsRegistered(true);
-					}
-				})
-				.catch((error) => {
-					console.log(error)
-					alert(error)
-				});
+
+			if (res.status == 201) {
+				setIsRegistered(true);
+			} else if (res.status == 409) {
+				setShowAccountExistsModal(true)
+			}
 		}
 
 		setButtonText("Sign up");
@@ -91,9 +89,16 @@ const SignupPage = () => {
 		return Object.keys(foundErrors).length === 0;
 	}
 
+	const redirectToLogin = () => {
+		setShowAccountExistsModal(false);
+		navigation.navigate("Login");
+	}
+
 	const keyboardVerticalOffset = Platform.OS === 'ios' ? 170 : 0
 
 	return (
+		<>
+		{showAccountExistsModal && <AccountExistsModal modalVisible={showAccountExistsModal} onClose={redirectToLogin}/>}
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding" keyboardVerticalOffset={keyboardVerticalOffset}>
 			<Center w="100%">
 				<Box safeArea p="2" py="8" w="90%" maxW="290">
@@ -212,8 +217,29 @@ const SignupPage = () => {
 				</Box>
 			</Center>
 		</KeyboardAvoidingView>
+		</>
 	);
 };
+
+function AccountExistsModal({modalVisible, onClose}) {
+	return <Modal isOpen={modalVisible} onClose={onClose} size={"md"}>
+		<Modal.Content >
+			<Modal.CloseButton />
+			<Modal.Header>Account Already Exists</Modal.Header>
+			<Modal.Body>
+				<Text>You already have an account with this email or phone number.</Text>
+			</Modal.Body>
+
+			<Modal.Footer>
+				<Button.Group space={2}>
+					<Button variant="ghost" onPress={onClose} >
+						Ok
+					</Button>
+				</Button.Group>
+			</Modal.Footer>
+		</Modal.Content>
+	</Modal>
+}
 
 const styles = StyleSheet.create({
 	actionButton: {
