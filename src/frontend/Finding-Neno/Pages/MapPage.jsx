@@ -235,3 +235,19 @@ const styles = StyleSheet.create({
 
 
 });
+/*<MapView
+            style={{ flex: 1 }}
+            // ... other MapView props
+        >
+            {reports.map((report, index) => (
+                <Marker
+                    key={report.id} // Assuming report has an id property, replace with appropriate key
+                    coordinate={{ latitude: report.latitude, longitude: report.longitude }} // replace with actual report latitude and longitude properties
+                    title={report.title}
+                    description={report.description}
+                    onPress={() => navigation.navigate('ReportPage', { report })}
+                />
+            ))}
+        </MapView>
+    );
+}*/
