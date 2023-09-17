@@ -20,6 +20,7 @@ import { TouchableOpacity } from "react-native-gesture-handler";
 
 export default function ProfilePage({ navigation: { navigate } }) {
   const navigation = useNavigation();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const { IP, PORT } = useSelector((state) => state.api);
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
@@ -76,6 +77,10 @@ export default function ProfilePage({ navigation: { navigate } }) {
 			console.log(error);
 		}
 	}
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
 
 	// Retrieve Profile Information
 	const fetchProfileInfo = async () => {
@@ -261,16 +266,60 @@ export default function ProfilePage({ navigation: { navigate } }) {
         >
           PROFILE
         </Text>
-        <Ionicons 
-          name="settings-outline" 
-          size={25} 
-          style={{
-            position: 'absolute',
-            top: 73,
-            right: 20,
-          }}
-          color='rgba(255, 255, 255, 0.8)'
-        />
+        {/* Cog Icon */}
+        {/* Button */}
+        <Button
+            style={{
+              width: 50,
+              height: 50,
+              backgroundColor: 'rgba(255, 255, 255, 0)',
+              borderRadius: 50,
+              top: 62,
+              right: 10,
+              position: 'absolute',
+              zIndex: 1,
+            }}
+            onPress={() => {
+              toggleDropdown();
+            }}
+          >
+            <Ionicons
+              name="settings-outline"
+              size={25}
+              color='rgba(255, 255, 255, 0.8)'
+            />
+          </Button>
+
+
+          {isDropdownOpen && (
+            <Box
+              style={{
+                backgroundColor: 'white',
+                position: 'absolute',
+                top: 110,
+                right: 20,
+                width: 150,
+                borderRadius: 5,
+                zIndex: 1,
+                shadowColor: '#000',
+                shadowOffset: { width: 0, height: 2 },
+                shadowOpacity: 0.3,
+                shadowRadius: 4,
+                elevation: 3, // For Android
+              }}
+            >
+              <TouchableOpacity style={{ paddingVertical: 10, paddingHorizontal: 15 }}>
+                <Text>Option 1</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ paddingVertical: 10, paddingHorizontal: 15 }}>
+                <Text>Option 2</Text>
+              </TouchableOpacity>
+              <TouchableOpacity style={{ paddingVertical: 10, paddingHorizontal: 15 }}>
+                <Text>Option 3</Text>
+              </TouchableOpacity>
+            </Box>
+          )}
+
 
         {/* Wrapping View with Shadow */}
         <View
