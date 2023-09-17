@@ -1,5 +1,5 @@
 import { useNavigation } from "@react-navigation/native";
-import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link, Modal} from "native-base";
+import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link, Modal, View} from "native-base";
 import { Dimensions } from "react-native";
 import { Color } from "../components/atomic/Theme";
 import { useIsFocused } from "@react-navigation/native";
@@ -13,6 +13,10 @@ import store from "../store/store";
 import pet, { selectPet } from "../store/pet";
 import LogoutButton from '../components/LogoutButton';
 import { logout } from '../store/user';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from "react-native-gesture-handler";
+
 
 export default function ProfilePage({ navigation: { navigate } }) {
   const navigation = useNavigation();
@@ -232,182 +236,142 @@ export default function ProfilePage({ navigation: { navigate } }) {
   };
 
   return (
-    <ScrollView>
-      <Box alignItems="center" justifyContent="center">
-        <Box
-          alignSelf="center"
-          _text={{
-            alignSelf: "center",
-            justifyContent: "center",
-            fontSize: "lg",
-            fontWeight: "medium",
-            color: "warmGray.50",
-            letterSpacing: "lg",
+    <ScrollView style={{backgroundColor: 'white' }}>
+      <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginBottom: 30 }}>
+      <LinearGradient
+        colors={['#FF5733', '#FFA500']} // Gradient colors
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{
+          alignSelf: 'center',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: windowWidth,
+          height: windowHeight / 3.2, // Adjust this to control the gradient height
+        }}
+      >
+        {/* Your Page Header */}
+        <Text
+          style={{
+            fontSize: 18,
+            color: 'rgba(255, 255, 255, 0.8)',
+            position: 'absolute',
+            top: 75,
           }}
-          bg={Color.NENO_BLUE}
-          width={windowWidth}
-          height={windowHeight / 8}
         >
-          <Box height={3} />
-          <HStack>
-            <Box width={8} />
-            <Box
-              bg="#FFFFFF"
-              height={76}
-              width={76}
-              borderRadius={38}
-              alignSelf="center"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Image
-                alignSelf="center"
-                size={70}
-                borderRadius={35}
-                source={{
-                  uri: "https://wallpaperaccess.com/full/317501.jpg",
-                }}
-                alt="Alternate Text"
-              />
-            </Box>
-            <Box width={9} />
-            <Heading
-              alignSelf="center"
-              size="lg"
-              fontWeight="600"
-              color="warmGray.200"
-              _dark={{ color: "coolGray.600" }}
-            >
-              {name}
-            </Heading>
-          </HStack>
-        </Box>
+          PROFILE
+        </Text>
+        <Ionicons 
+          name="settings-outline" 
+          size={25} 
+          style={{
+            position: 'absolute',
+            top: 73,
+            right: 20,
+          }}
+          color='rgba(255, 255, 255, 0.8)'
+        />
 
-        <VStack>
-          <HStack mt="6" justifyContent="space-between">
-            <Heading
-              fontSize="sm"
-              color="coolGray.600"
-              _dark={{ color: "warmGray.200" }}
-              pr={windowWidth / 3.5}
-            >
-              USER DETAILS
-            </Heading>
-            <Text pl={windowWidth / 3.5}></Text>
-          </HStack>
+        {/* Wrapping View with Shadow */}
+        <View
+          style={{
+            shadowColor: "#A9A9A9",
+            shadowOffset: { width: 0, height: -8 },
+            shadowOpacity: 0.3,
+            shadowRadius: 4,
+            elevation: 2,
+          }}
+        >
 
-          <Box h="2"></Box>
+          {/* Circular foreground */}
+          <Box
+            bg="#FFFFFF"
+            height={windowWidth *1.8}
+            width={windowWidth *1.8}
+            marginTop={windowWidth * 1.8}
+            borderRadius={windowWidth}
+            alignSelf="center"
+            alignItems="center"
+            justifyContent="center"
+          >
 
-          <Box bg="gray.200" px="2" py="1" borderRadius="md">
-            <HStack mt="2" justifyContent="space-between">
-              <Heading
-                fontSize="sm"
-                color="coolGray.600"
-                _dark={{ color: "warmGray.200" }}
-              >
-                Email
-              </Heading>
+              {/* Profile Name */}
               <Text
-                fontSize="sm"
-                color="coolGray.600"
-                _dark={{ color: "warmGray.200" }}
+                style={{
+                  fontSize: 20,
+                  color: 'rgba(0, 0, 0, 0.8)',
+                  position: 'absolute',
+                  top: 50,
+                }}
+              >
+                {name}
+              </Text>
+
+              {/* Profile email */}
+              <Text
+                style={{
+                  fontSize: 15,
+                  color: 'rgba(0, 0, 0, 0.4)',
+                  position: 'absolute',
+                  top: 80,
+                }}
               >
                 {email}
               </Text>
-            </HStack>
           </Box>
 
-          <Box h="2"></Box>
+        </View>
 
-          <Box bg="gray.200" px="2" py="1" borderRadius="md">
-            <HStack mt="2" justifyContent="space-between">
-              <Heading
-                fontSize="sm"
-                color="coolGray.600"
-                _dark={{ color: "warmGray.200" }}
-              >
-                Phone
-              </Heading>
-              <Text
-                fontSize="sm"
-                color="coolGray.600"
-                _dark={{ color: "warmGray.200" }}
-              >
-                {phone}
-              </Text>
-            </HStack>
-          </Box>
-					<Box h="2"></Box>
+      </LinearGradient>
 
-					<Button onPress={() => setLogoutModalVisible(true)} backgroundColor={"#FA8072"}>
-						Logout
-					</Button>
+      {/* Button */}
+      <TouchableOpacity
+          style={{
+            width: 100,
+            height: 40,
+            backgroundColor: '#FA8072',
+            borderRadius: 50,
+            alignItems: 'center',
+            justifyContent: 'center',
+            marginBottom: 15,
+          }}
+          onPress={() => {
+            // Handle button press here
+          }}
+        >
+          <Text style={{ color: 'white' }}>VIEW</Text>
+        </TouchableOpacity>
 
-					<LogoutModal logoutModalVisible={logoutModalVisible} setLogoutModalVisible={setLogoutModalVisible} />
+        <HStack mt="6" justifyContent="flex-start" alignItems="center" marginRight={windowWidth/1.8} marginBottom={2}>
+          <Heading
+            fontSize="sm"
+            color="coolGray.600"
+            _dark={{ color: "warmGray.200" }}
+          >
+            PETS
+          </Heading>
 
-        </VStack>
-
-        <Box height={1} />
-
-        <VStack>
-          <HStack mt="6" justifyContent="space-between" alignItems="center">
-            <Heading
-              fontSize="sm"
-              color="coolGray.600"
-              _dark={{ color: "warmGray.200" }}
-              pr={windowWidth / 3.5}
-            >
-              PETS
-            </Heading>
-
-            {editMode ? (
-              <HStack alignItems="center">
-                <Button
-                  size="sm"
-                  marginTop={4}
-                  onPress={deleteSelectedPets}
-                  bg="transparent" // Make the button transparent
-                >
-                  <DeleteIcon color="#FF0000" />{" "}
-                  {/* Change the color of DeleteIcon */}
-                </Button>
-                <Text marginLeft={-2}>{selectedPets.length}</Text>
-                <Button
-                  size="sm"
-                  onPress={() => {
-                    deleteSelectedPets();
-                  }}
-                  variant="link"
-                  paddingLeft={6}
-                >
-                  Done
-                </Button>
-              </HStack>
-            ) : (
-              <Button
-                pl={windowWidth / 3}
-                variant="link"
-                onPress={() => setEditMode(true)}
-              >
-                Edit
-              </Button>
-            )}
-          </HStack>
-
-          <Button
+          <TouchableOpacity
+            style={{
+              width: 18,
+              height: 18,
+              backgroundColor: 'warmGray.200',
+              borderRadius: 50,
+              marginLeft: 12,
+              marginBottom: 6,
+            }}
             onPress={() => {
               navigate("New Pet Page");
             }}
-            width={windowWidth - 80}
-            height="40px"
           >
-            Add New Pet
-          </Button>
-          <Box h="4"></Box>
-        </VStack>
+            <Text style={{ color: 'black', fontSize: 18 }}>+</Text>
+          </TouchableOpacity>
 
-        {petCards()}      </Box>
+        </HStack>
 
+        {petCards()}
+
+        </View>
 
     </ScrollView>
   );
