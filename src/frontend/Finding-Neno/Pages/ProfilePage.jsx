@@ -16,6 +16,8 @@ import { logout } from '../store/user';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from "react-native-gesture-handler";
+import { Linking } from 'react-native';
+
 
 
 export default function ProfilePage({ navigation: { navigate } }) {
@@ -42,7 +44,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 	const [user, setUser] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [selectedPets, setSelectedPets] = useState([]);
-	const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
 
 	useEffect(() => {
 		if (isFocused) {
@@ -77,6 +79,25 @@ export default function ProfilePage({ navigation: { navigate } }) {
 			console.log(error);
 		}
 	}
+
+  const openLink = async (url) => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+  
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        console.error('Could not open the URL:', url);
+      }
+    } catch (error) {
+      console.error('An error occurred while opening the URL:', error);
+    }
+  };
+
+  const handleLogout = () => {
+    setIsLogoutModalVisible(true);
+  };
+  
 
   const toggleDropdown = () => {
     setIsDropdownOpen(!isDropdownOpen);
@@ -243,18 +264,6 @@ export default function ProfilePage({ navigation: { navigate } }) {
   return (
     <ScrollView style={{backgroundColor: 'white' }}>
       <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginBottom: 30 }}>
-      <LinearGradient
-        colors={['#FF5733', '#FFA500']} // Gradient colors
-        start={{ x: 0, y: 0 }}
-        end={{ x: 1, y: 1 }}
-        style={{
-          alignSelf: 'center',
-          justifyContent: 'center',
-          alignItems: 'center',
-          width: windowWidth,
-          height: windowHeight / 3.2, // Adjust this to control the gradient height
-        }}
-      >
         {/* Your Page Header */}
         <Text
           style={{
@@ -262,6 +271,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
             color: 'rgba(255, 255, 255, 0.8)',
             position: 'absolute',
             top: 75,
+            zIndex: 1,
           }}
         >
           PROFILE
@@ -308,18 +318,57 @@ export default function ProfilePage({ navigation: { navigate } }) {
                 elevation: 3, // For Android
               }}
             >
-              <TouchableOpacity style={{ paddingVertical: 10, paddingHorizontal: 15 }}>
-                <Text>Option 1</Text>
+              <TouchableOpacity
+                style={{ paddingVertical: 10, paddingHorizontal: 15 }}
+                onPress={() => {
+                  toggleDropdown();
+                  // set edit
+                }}
+              >
+                <Text>Edit</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{ paddingVertical: 10, paddingHorizontal: 15 }}>
-                <Text>Option 2</Text>
+
+              <TouchableOpacity
+                style={{ paddingVertical: 10, paddingHorizontal: 15 }}
+                onPress={() => {
+                  openLink('https://docs.google.com/document/d/1JnLxuZf_ELNUQptn7H71IjDpMYgeFg43LLitybX1MZ8/edit?usp=sharing');
+                }}
+              >
+                <Text>Terms of Use</Text>
               </TouchableOpacity>
-              <TouchableOpacity style={{ paddingVertical: 10, paddingHorizontal: 15 }}>
-                <Text>Option 3</Text>
+
+              <TouchableOpacity
+                style={{ paddingVertical: 10, paddingHorizontal: 15 }}
+                onPress={() => {
+                  openLink('https://docs.google.com/document/d/1deTDNJJdMBqrisotJRy35lA9JQfQgItkFpE1_erhNss/edit?usp=sharing')
+                }}
+              >
+                <Text>Privacy Policy</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{ paddingVertical: 10, paddingHorizontal: 15 }}
+                onPress={() => {
+                  handleLogout();
+                }}
+              >
+                <Text>Logout</Text>
               </TouchableOpacity>
             </Box>
           )}
-
+          
+      <LinearGradient
+        colors={['#FF5733', '#FFA500']} // Gradient colors
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={{
+          alignSelf: 'center',
+          justifyContent: 'center',
+          alignItems: 'center',
+          width: windowWidth,
+          height: windowHeight / 3.2, // Adjust this to control the gradient height
+        }}
+      >
 
         {/* Wrapping View with Shadow */}
         <View
@@ -372,6 +421,13 @@ export default function ProfilePage({ navigation: { navigate } }) {
         </View>
 
       </LinearGradient>
+
+      {isLogoutModalVisible && (
+        <LogoutModal
+          logoutModalVisible={isLogoutModalVisible}
+          setLogoutModalVisible={setIsLogoutModalVisible}
+        />
+      )}
 
       {/* Button */}
       <TouchableOpacity
