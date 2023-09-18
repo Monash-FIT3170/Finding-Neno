@@ -207,14 +207,14 @@ def retrieve_reports_by_pet(connection, pet_id) -> Tuple[str, int]:
         return reports, 200
 
 
-def retrieve_sightings(connection, missing_report_id) -> Tuple[str, int]:
+def retrieve_sightings(connection, missing_report_id, expiry_time) -> Tuple[str, int]:
     """
     This function calls the function that connects to the db to retrieve all sightings or sightings for a missing 
     report if its missing_report_id is provided.
     """
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
-    sightings = retrieve_sightings_from_database(connection, missing_report_id, user_id, access_token)
+    sightings = retrieve_sightings_from_database(connection, missing_report_id, expiry_time, user_id, access_token)
 
     if sightings is False:
         return "User does not have access", 401

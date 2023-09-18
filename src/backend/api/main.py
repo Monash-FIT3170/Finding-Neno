@@ -172,7 +172,8 @@ def get_sightings():
     ]
     """
     missing_report_id = request.args.get("missing_report_id")
-    return jsonify(retrieve_sightings(g.db, missing_report_id))
+    expiry_time = request.args.get("expiry_time")
+    return jsonify(retrieve_sightings(g.db, missing_report_id, expiry_time))
 
 
 @app.route("/get_missing_reports_in_area", methods=["GET"])

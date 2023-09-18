@@ -474,7 +474,7 @@ def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_i
     cur.close()
     return result
 
-def retrieve_sightings_from_database(connection: psycopg2.extensions.connection, missing_report_id: int, user_id: int, access_token: str):
+def retrieve_sightings_from_database(connection: psycopg2.extensions.connection, missing_report_id: int, expiry_time, user_id: int, access_token: str):
     """
     This function returns all pet sightings or pet sightings for a missing report if missing_report_id is provided.
 
@@ -488,10 +488,6 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
 
     # Open cursor to access the connection.
     cur = connection.cursor()
-
-    # Sightings should expire after 1 month
-    expiryTime = 100
-    missing_report_id = 5
 
     # Iniltialise list of parameters for query
     params = []
@@ -512,12 +508,6 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
                 WHERE
                     TRUE
             """
-    
-    if expiryTime != None:
-        query += """
-                    AND s.date_time_of_creation > CURRENT_DATE - %s
-                """
-        params.append(expiryTime);
         
     if missing_report_id != None:
         query += """
@@ -525,6 +515,12 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
                 """
         
         params.append(missing_report_id)
+    
+    if expiry_time != None:
+        query += """
+                    AND s.date_time_of_creation > CURRENT_DATE - %s
+                """
+        params.append(int(expiry_time));
             
     query += """
                 ORDER BY
