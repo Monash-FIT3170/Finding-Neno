@@ -490,54 +490,50 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
     cur = connection.cursor()
 
     # Sightings should expire after 1 month
-    expiryTime = 30
+    expiryTime = 100
+    missing_report_id = 5
 
-    if missing_report_id == None:
-        # Query returns all sightings in the database
-        query = """
-                    SELECT
-                        s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
-                        u.name, u.email_address, u.phone_number, p.name as pet_name
-                    FROM
-                        sightings AS s
-                    LEFT JOIN
-                        missing_reports AS mr ON s.missing_report_id = mr.id
-                    LEFT JOIN 
-		                pets AS p ON p.id = mr.pet_id
-                    JOIN
-                        users AS u ON s.author_id = u.id
-                    WHERE
-                        s.date_time_of_creation > CURRENT_DATE - %s
-                    ORDER BY
-                        s.date_time DESC;
+    # Iniltialise list of parameters for query
+    params = []
+
+    # Query returns all sightings in the database
+    query = """
+                SELECT
+                    s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
+                    u.name, u.email_address, u.phone_number, p.name as pet_name
+                FROM
+                    sightings AS s
+                LEFT JOIN
+                    missing_reports AS mr ON s.missing_report_id = mr.id
+                LEFT JOIN 
+                    pets AS p ON p.id = mr.pet_id
+                JOIN
+                    users AS u ON s.author_id = u.id
+                WHERE
+                    TRUE
+            """
+    
+    if expiryTime != None:
+        query += """
+                    AND s.date_time_of_creation > CURRENT_DATE - %s
                 """
-    else:
-        # Query returns all sightings of a missing report
-        query = """
-                    SELECT
-                        s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
-                        u.name, u.email_address, u.phone_number
-                    FROM
-                        sightings AS s
-                    JOIN
-                        missing_reports AS mr ON s.missing_report_id = mr.id
-                    JOIN
-                        users AS u ON s.author_id = u.id
-                    WHERE 
-                        s.missing_report_id = %s
-                        AND s.date_time_of_creation > CURRENT_DATE - %s
-                    ORDER BY
-                        s.date_time DESC;
+        params.append(expiryTime);
+        
+    if missing_report_id != None:
+        query += """
+                    AND s.missing_report_id = %s
                 """
         
-    # Result is the object returned or True if no errors encountered, False if there is an error
+        params.append(missing_report_id)
+            
+    query += """
+                ORDER BY
+                s.date_time DESC;
+            """
     result = False
 
     try:
-        if missing_report_id == None:
-            cur.execute(query, (expiryTime, ))
-        else:
-            cur.execute(query, (missing_report_id, expiryTime, ))
+        cur.execute(query, params)
 
         # Retrieve rows as an array
         sightings = cur.fetchall()
