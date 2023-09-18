@@ -254,9 +254,10 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         try {
             const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
 
-            const response = await fetch(apiUrl);
-            if (response.data.length > 0) {
-                const firstResult = response.data[0];
+			const response = await fetch(apiUrl);
+			const result = await response.json();
+			if (result.length > 0) {
+				const firstResult = result[0];
                 setCoordinates({
                     latitude: parseFloat(firstResult.lat),
                     longitude: parseFloat(firstResult.lon),
