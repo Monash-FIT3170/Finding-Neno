@@ -43,15 +43,7 @@ export default function SightingsPage({navigation: {navigate}}) {
                 }
     
                 const data = await response.json();
-                // Filter out expired sightings
-                const currentTime = new Date().getTime();
-                const oneMonthInMilliseconds = 30 * 24 * 60 * 60 * 1000; // 30 days
-                const filteredSightings = data.filter(sighting => {
-                    const createdTime = new Date(sighting.createdDate).getTime();
-                    return createdTime + oneMonthInMilliseconds > currentTime;
-                });
-
-                setMyReportSightings(filteredSightings);
+                setMyReportSightings(data[0]);
             } catch (error) {
                 console.error(error);
             }
