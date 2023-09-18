@@ -486,6 +486,9 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
     # Open cursor to access the connection.
     cur = connection.cursor()
 
+    # Sightings should expire after 1 month
+    expiryTime = 30
+
     if missing_report_id == None:
         # Query returns all sightings in the database
         query = """
@@ -496,10 +499,12 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
                         sightings AS s
                     LEFT JOIN
                         missing_reports AS mr ON s.missing_report_id = mr.id
-                    JOIN 
+                    LEFT JOIN 
 		                pets AS p ON p.id = mr.pet_id
                     JOIN
                         users AS u ON s.author_id = u.id
+                    WHERE
+                        s.date_time_of_creation > CURRENT_DATE - expiryTime
                     ORDER BY
                         s.date_time DESC;
                 """
@@ -517,6 +522,7 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
                         users AS u ON s.author_id = u.id
                     WHERE 
                         s.missing_report_id = %s
+                        AND s.date_time_of_creation > CURRENT_DATE - expiryTime
                     ORDER BY
                         s.date_time DESC;
                 """
