@@ -336,6 +336,7 @@ def archive_missing_report_in_database(connection: psycopg2.extensions.connectio
     except Exception as e:
         print(f"Error while executing query: {e}")
 
+
     # Close the cursor
     cur.close()
     return result
@@ -410,6 +411,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
         result = missing_reports
     except Exception as e:
         print(f"Error with retrieving missing reports: {e}")
+        result = []
 
     # Close the cursor
     cur.close()
@@ -466,6 +468,7 @@ def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_i
 
     except Exception as e:
         print(f"Error with retrieving the reports: {e}")
+        result = []
 
     # Close the cursor
     cur.close()
@@ -504,7 +507,7 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
                     JOIN
                         users AS u ON s.author_id = u.id
                     WHERE
-                        s.date_time_of_creation > CURRENT_DATE - expiryTime
+                        s.date_time_of_creation > CURRENT_DATE - %s
                     ORDER BY
                         s.date_time DESC;
                 """
@@ -522,7 +525,7 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
                         users AS u ON s.author_id = u.id
                     WHERE 
                         s.missing_report_id = %s
-                        AND s.date_time_of_creation > CURRENT_DATE - expiryTime
+                        AND s.date_time_of_creation > CURRENT_DATE - %s
                     ORDER BY
                         s.date_time DESC;
                 """
@@ -532,18 +535,22 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
 
     try:
         if missing_report_id == None:
-            cur.execute(query)
+            cur.execute(query, (expiryTime, ))
         else:
-            cur.execute(query, (missing_report_id, ))
+            cur.execute(query, (missing_report_id, expiryTime, ))
 
         # Retrieve rows as an array
         sightings = cur.fetchall()
 
         print(f"Sightings successfully retrieved")
 
-        result = sightings
+        if sightings is not None:
+            result = sightings
+        else:
+            result = []
     except Exception as e:
         print(f"Error with retrieving sightings: {e}")
+        result = []
 
     # Close the cursor
     cur.close()
@@ -589,9 +596,14 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
 
         print(f"Sightings for user reports successfully retrieved")
 
-        result = sightings
+        if sightings is not None:
+            result = sightings
+        else:
+            result = []
+
     except Exception as e:
         print(f"Error with retrieving sightings: {e}")
+        result = []
 
     # Close the cursor
     cur.close()
@@ -680,9 +692,13 @@ def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensio
 
         print(f"Missing reports in area successfully retrieved")
 
-        result = missing_reports
+        if missing_reports is not None:
+            result = missing_reports
+        else:
+            result = []
     except Exception as e:
         print(f"Error with retrieving missing reports in area: {e}")
+        result = []
 
     cur.close()
     return result
@@ -773,9 +789,13 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
 
         print(f"{len(sightings)} retrieved")
 
-        result = sightings
+        if sightings is not None:
+            result = sightings
+        else:
+            result = []
     except Exception as e:
         print(f"Error with retrieving sightings in area: {e}")
+        result = []
 
     cur.close()
     return result
