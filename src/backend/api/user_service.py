@@ -426,7 +426,7 @@ def generate_email_body(owner, pet, sighter, sighting_data):
         pet: the missing pet
         sighter: the person who sighted the pet
     """
-
+    location_longitude, location_latitude = sighting_data['lastLocation'].split(",")
     html_code = f""" <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
     <head>
@@ -545,7 +545,7 @@ def generate_email_body(owner, pet, sighter, sighting_data):
                                                 <table width="100%" cellspacing="0" cellpadding="0" role="presentation" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                                                     <tr>
                                                     <td align="left" style="padding:0;Margin:0">
-                                                        <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Dear {owner},&nbsp;&nbsp;</p>
+                                                        <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Dear {owner['name']},&nbsp;&nbsp;</p>
                                                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">We hope this message finds you well. We understand the emotional toll of losing a beloved pet, and we're committed to helping you reunite with your furry friend. We have some promising news to share with you today.&nbsp;&nbsp;</p>
                                                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">It appears that someone in our community may have spotted a pet that matches the description of your beloved companion! We want to keep you informed and provide you with all the details. Here's the information we have received:&nbsp;&nbsp;</p>
                                                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">​</p>
@@ -555,13 +555,13 @@ def generate_email_body(owner, pet, sighter, sighting_data):
                                                                 <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Date and Time: {sighting_data['dateTime']}</p>
                                                             </li>
                                                             <li>
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Location: {sighting_data["lastLocation"]}</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Location: {location_latitude + ', ' + location_longitude}</p>
                                                             </li>
                                                             <li>
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Description: {pet['description']}&nbsp;</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Description: {sighting_data['description']}&nbsp;</p>
                                                             </li>
                                                             <li>
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Picture: See attachment&nbsp;</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Picture: See picture at this link {sighting_data['imageUrl']}&nbsp;</p>
                                                             </li>
                                                         </ul>
                                                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">​</p>
