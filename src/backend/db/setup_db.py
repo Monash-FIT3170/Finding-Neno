@@ -63,6 +63,9 @@ def create_tables(connection: psycopg2.extensions.connection):
         # Create users_notification_logs table
         """CREATE TABLE "users_notification_logs" (user_id INTEGER REFERENCES "users"(id), notification_id INTEGER 
         REFERENCES "notification_logs"(id));""",
+        # Create users_saved_sightings
+        """CREATE TABLE "users_saved_sightings" (saved_id SERIAL PRIMARY KEY, user_id INTEGER REFERENCES "users"(id),
+        sighting_id INTEGER REFERENCES "sightings"(id));""",
     ]
 
     for query in queries:
@@ -83,6 +86,8 @@ def drop_tables(connection: psycopg2.extensions.connection):
     cur = connection.cursor()
 
     queries = [
+        # Drop users_saved_sightings table
+        """DROP TABLE IF EXISTS users_saved_sightings;""",
         # Drop users_notification_logs table
         """DROP TABLE IF EXISTS users_notification_logs;""",
         # Drop notification_logs table

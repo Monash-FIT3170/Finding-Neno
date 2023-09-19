@@ -491,15 +491,17 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
         query = """
                     SELECT
                         s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
-                        u.name, u.email_address, u.phone_number, p.name as pet_name
+                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by
                     FROM
                         sightings AS s
                     LEFT JOIN
                         missing_reports AS mr ON s.missing_report_id = mr.id
-                    JOIN 
+                    LEFT JOIN 
 		                pets AS p ON p.id = mr.pet_id
                     JOIN
                         users AS u ON s.author_id = u.id
+                    LEFT JOIN 
+	                    users_saved_sightings AS ss ON ss.sighting_id = s.id
                     ORDER BY
                         s.date_time DESC;
                 """
@@ -773,6 +775,120 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
     except Exception as e:
         print(f"Error with retrieving sightings in area: {e}")
 
+    cur.close()
+    return result
+
+def retrieve_user_saved_sightings(connection: psycopg2.extensions.connection, user_id: int, access_token: str ):
+    """
+    This function retrieves the sightings a user has saved
+    """
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    query = """
+        SELECT 
+            s.id AS sightings_id, s.date_time, s.location_longitude, s.location_latitude, s.description, s.animal, s.breed, s.image_url,
+            u.id
+        FROM 
+            users_saved_sightings AS us
+        JOIN 
+            users AS u ON us.user_id = u.id
+        JOIN
+            sightings as s ON us.sighting_id = s.id
+        WHERE 
+            us.user_id = %s
+            
+    """
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id,))
+        sightings = cur.fetchall()
+
+        result = sightings
+
+        print(f"User saved sightings successfully retrieved")
+
+        print(f"{len(sightings)} retrieved")
+
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
+
+def save_sighting_for_user(connection: psycopg2.extensions.connection, user_id: int, access_token: str, sighting_id: int):
+    """
+    This function records a user saving a sighting
+    """
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    # Construct and INSERT query to insert this user into the DB
+    query = """INSERT INTO users_saved_sightings (user_id, sighting_id) VALUES (%s, %s);"""
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id, sighting_id))
+        print(f"Query executed successfully: {query}")
+
+        # Commit the change
+        connection.commit()
+
+        result = True  # set to True only if it executes successfully
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
+def unsave_sighting_for_user(connection: psycopg2.extensions.connection, user_id: int, access_token: str, sighting_id: int):
+    """
+    This function records a user unsaving a sighting
+    """
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    # Construct and INSERT query to insert this user into the DB
+    query = """DELETE FROM users_saved_sightings WHERE user_id = %s AND sighting_id = %s;"""
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id, sighting_id))
+        print(f"Query executed successfully: {query}")
+
+        # Commit the change
+        connection.commit()
+
+        result = True  # set to True only if it executes successfully
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
     cur.close()
     return result
 

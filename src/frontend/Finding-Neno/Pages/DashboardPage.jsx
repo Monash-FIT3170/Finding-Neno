@@ -5,12 +5,13 @@ import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton } from 'react-native-paper';
+import { TabBar, TabView } from 'react-native-tab-view';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { StatusBar } from 'expo-status-bar';
 
 import { useSelector } from "react-redux";
-import Report from '../components/Report';
-import Sighting from '../components/Sighting';
+import ReportsComponent from '../components/ReportsComponent';
+import SightingsComponent from '../components/SightingsComponent';
 
 const DashboardPage = () => {
 	const { IP, PORT } = useSelector((state) => state.api)
@@ -27,53 +28,68 @@ const DashboardPage = () => {
 	const [sightingData, setSightingData] = useState({ authorId: USER_ID });
 	// const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
 	const [sightingImage, setSightingImage] = useState(null);
+	const [isUploading, setIsUploading] = useState(false);
 	const [tabValue, setTabValue] = useState("reports");
 	const [allSightings, setAllSightings] = useState([]);
+	const [reportCards, setReportCards] = useState("");
 	const [sightingCards, setSightingCards] = useState("");
 
 	const [FABstate, setFABState] = useState({ open: false });
 	const onStateChange = ({ open }) => setFABState({ open });
 	const { open } = FABstate;
 
-	// Fetch on initial load
-	useEffect(() => {
-		initialFetch();
-	}, []);
+	const [routes] = useState([
+		{ key: 'reports', title: 'Reports' },
+		{ key: 'sightings', title: 'Sightings' },
+	])
+	const [index, setIndex] = useState(0);
 
-	// Fetch all reports and sightings
-	initialFetch = () => {
-		fetchAllReports();
-		fetchAllSightings();
-	}
-
+	// 
 	// Fetch when tab is changed or page is focused
 	useEffect(() => {
-		fetchData();
-	}, [isFocused, tabValue]);
-
-	// Fetch when user pulls down to refresh
-	onRefresh = () => {
-		fetchData();
-	}
-
-	// Fetch data depending on tab
-	fetchData = () => {
-		if (tabValue == "reports") {
-			fetchAllReports();
-		} else {
-			fetchAllSightings();
+		if (isFocused) {
+			fetchData();
 		}
+	}, [isFocused]);
+
+	const onRefresh = () => {
+		fetchData();
 	}
 
-	useEffect(() => {
-		setSightingCards(allSightings.map((sighting, index) => (
-			<Sighting userId={USER_ID} sighting={sighting} key={index} />
-		)))
-	}, [allSightings]);
+	const fetchData = () => {
+		fetchAllReports();
+		// setReportCards(generateReportCards());
+		fetchAllSightings();
+		// setSightingCards(generateSightingCards());
+	}
 
+	// const generateReportCards = () => {
+	// 	return (
+	// 		reports?.map((report, index) => (
+	// 			<Report userId={USER_ID} report={report} key={index} />
+	// 		))
+	// 	)
+	// }
 
-	// TODO: replace this image with the actual image from DB ? 
-	const image = "https://wallpaperaccess.com/full/317501.jpg";
+	// const generateSightingCards = () => {
+	// 	return (
+	// 		allSightings?.map((sighting, index) => (
+	// 			<Sighting userId={USER_ID} sighting={sighting} key={index} />
+	// 		))
+	// 	)
+	// }
+
+	const ReportsView = () => (
+		<ScrollView style={{ backgroundColor: '#EDEDED' }} refreshControl={<RefreshControl onRefresh={onRefresh} />}>
+			{reportCards}
+		</ScrollView>
+	)
+
+	const SightingsView = () => (
+		<ScrollView style={{ backgroundColor: '#EDEDED' }} refreshControl={<RefreshControl onRefresh={onRefresh} />}>
+			{sightingCards}
+		</ScrollView>
+	)
 
 	// API calls 
 	const fetchAllReports = async () => {
@@ -92,8 +108,9 @@ const DashboardPage = () => {
 				throw new Error(`Request failed with status: ${response.status}`);
 			}
 
-			const data = await response.json();
-			setReports(data[0]);
+			await response.json().then(data => {
+				setReports(data[0]);
+			});
 		} catch (error) {
 			console.error(error);
 		}
@@ -115,8 +132,10 @@ const DashboardPage = () => {
 				throw new Error(`Request failed with status: ${response.status}`);
 			}
 
-			const data = await response.json();
-			setAllSightings(data[0]);
+			await response.json().then(data => {
+				setAllSightings(data[0]);
+				console.log(data[0].length)
+			});
 		} catch (error) {
 			console.error(error);
 		}
@@ -128,43 +147,32 @@ const DashboardPage = () => {
 	}, [sightingImage]);
 
 	return (
-
-
 		<Provider>
-			<StatusBar style="auto" />
-			<SafeAreaView style={{ flex: 1, alignItems: 'center' }}>
+			<SafeAreaView style={{ flex: 1, height: '100%' }}>
+				<StatusBar style="auto" />
 				{/* TABS */}
-				<SegmentedButtons value={tabValue} onValueChange={setTabValue} style={{ marginTop: 5, width: Dimensions.get('window').width - 20, backgroundColor: '#EDEDED' }}
-					buttons={[
-						{ label: 'Reports', icon: 'bullhorn', value: 'reports' },
-						{ label: 'Sightings', icon: 'eye', value: 'sightings' },
-					]}
+				<TabView lazy
+					navigationState={{ index, routes }}
+					renderScene={({ route }) => {
+						switch (route.key) {
+							case 'reports':
+								console.log(reports)
+								return <ReportsComponent reports={reports} onRefresh={onRefresh} />;
+							case 'sightings':
+								return <SightingsComponent sightings={allSightings} onRefresh={onRefresh} />;
+							default:
+								return null; // TODO: make a view that says "no reports/sightings yet" etc for when theres nothing on the app yet ?
+						}
+					}}
+					onIndexChange={setIndex}
+					initialLayout={{ width: windowWidth }}
+					renderTabBar={props => <TabBar {...props} style={{ backgroundColor: Color.NENO_BLUE }} />}
 				/>
 
 				{/* TODO: fix this - it is not scrolling all the way */}
 
-				<ScrollView height="100%" style={{ backgroundColor: '#EDEDED' }} refreshControl={<RefreshControl onRefresh={onRefresh} />}>
-
-					{/* display depending on tabs */}
-					{tabValue == "reports"
-						?
-						<>
-							{reports && reports.map((report, index) => (
-								<Report userId={USER_ID} report={report} key={index} />
-							))}
-						</>
-						:
-						<>
-							{sightingCards}
-						</>
-					}
-
-					<Box h={180}></Box>
-
-				</ScrollView>
-				
 				<Portal>
-					<FAB.Group icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange} 
+					<FAB.Group icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
 						actions={[
 							{ icon: 'bullhorn', label: 'New Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Report' }) },
 							{ icon: 'eye', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }) },

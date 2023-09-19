@@ -271,8 +271,61 @@ def retrieve_sightings_in_area(connection, longitude, longitude_delta, latitude,
             return sightings, 200
         elif len(sightings) == 0:
             return [], 204
-    
-    
+
+def retrieve_saved_sightings(connection) -> Tuple[str,int]:
+    """
+    This function calls the function that connects to the db to retrieve sightings that an user has saved
+    """
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+
+    sightings = retrieve_user_saved_sightings(connection, user_id, access_token)
+
+    if sightings is False:
+        return "User does not have access", 401
+    else:
+        if len(sightings) > 0:
+            return sightings, 200
+        elif len(sightings) == 0:
+            return [], 204
+
+def save_user_sighting(connection) -> Tuple[str,int]:
+    """
+    This function calls the function that connects to the db to insert a sighting that a user has saved
+    """
+    json_data = request.get_json(force=True)
+    print("saving a sighting for user: ", json_data)
+
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+
+    sighting_id = json_data["sightingId"]
+
+    sightings = save_sighting_for_user(connection, user_id, access_token, sighting_id)
+
+    if sightings is False:
+        return "User does not have access", 401
+    else:
+        return "Success", 201
+
+def unsave_user_sighting(connection) -> Tuple[str,int]:
+    """
+    This function calls the function that connects to the db to insert a sighting that a user has unsaved
+    """
+    json_data = request.get_json(force=True)
+    print("unsaving a sighting for user: ", json_data)
+
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+
+    sighting_id = json_data["sightingId"]
+
+    sightings = unsave_sighting_for_user(connection, user_id, access_token, sighting_id)
+
+    if sightings is False:
+        return "User does not have access", 401
+    else:
+        return "Success", 201
 
 def login(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
