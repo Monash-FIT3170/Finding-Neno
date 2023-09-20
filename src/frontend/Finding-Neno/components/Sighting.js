@@ -86,31 +86,15 @@ const Sighting = ({userId, sighting}) => {
 
       const result = await response.json();
 
-      // Check if suburb info is available
-      if (result.address.suburb == undefined) {
-        // Check if city info is available 
-        if (result.address.city == undefined) {
-          // Display only state info if both suburb and city infos are unavailable
-          suburb = `${result.address.state}`
-        }
-        else {
-          // Display City Name, State Name
-          suburb = `${result.address.city}, ${result.address.state}`;
-        }
-      }
-      else {
-        // Display Suburb Name, State Name
-        suburb = `${result.address.suburb}, ${result.address.state}`;
-      }
+      suburb = `${result.address.suburb ? result.address.suburb : (result.address.city ? result.address.city : "") }`
+      state = `${result.address.state ? result.address.state : ""}`;
 
     } catch (error) {
       console.error('Error fetching data:', error);
     }
-
-    console.log(`${locationLatitude}, ${locationLongitude}`)
-    console.log(suburb)
+    
     if (suburb != null) {
-      setSuburb(suburb);
+      setSuburb(`${suburb}${suburb && state ? "," : ""} ${state}`);
     }
     else {
       setSuburb("Location information unavailable");
