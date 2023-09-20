@@ -4,7 +4,7 @@ import { Modal } from 'native-base';
 import { Image, Text, Box, Button } from 'native-base';
 import { useSelector, useDispatch } from 'react-redux';
 
-const PetCard = ({color, pet, onClick, editMode}) => {
+const PetCard = ({color, pet, onClick, editMode, onUpdate}) => {
   const {IP, PORT} = useSelector((state) => state.api)
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
@@ -20,14 +20,13 @@ const PetCard = ({color, pet, onClick, editMode}) => {
   pet.description.length > 50
     ? pet.description.substring(0, 50) + "..."
     : pet.description;
-  const [missing, setMissing] = useState(pet.is_missing);
   const [showConfirmFoundModal, setShowConfirmFoundModal] = useState(false);
   const descriptionHeight =
   pet.description.length > 50 && !editMode ? petDescription.length * 0.5 : 0;
 
   // Button to confirm if user has found pet
   const borderRadius = () => {
-    if (missing) {
+    if (pet.is_missing) {
       return 0;
     } else {
       return 20;
@@ -35,7 +34,7 @@ const PetCard = ({color, pet, onClick, editMode}) => {
   };
 
   const displayMissingButton = () => {
-    if (missing) {
+    if (pet.is_missing) {
       return (
         <Button
           title="Missing"
@@ -70,7 +69,7 @@ const PetCard = ({color, pet, onClick, editMode}) => {
         if (response.ok) {
             await fetchMissingReport();
             // Perform any necessary updates on the frontend
-            setMissing(!missing);
+            onUpdate();
           } else {
             console.log('Error while toggling status:', response.statusText);
         }
