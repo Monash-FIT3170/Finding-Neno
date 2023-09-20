@@ -2,7 +2,10 @@ import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import marker from '../assets/marker_icon.png';
 import { Image, StyleSheet, View } from 'react-native';
 import { useRef, useState } from 'react';
-import { Button, Input } from "native-base";
+import { Input } from "native-base";
+import { Button } from 'react-native-paper';
+import { Color } from "../components/atomic/Theme";
+
 
 const MapAddressSearch = ({ setFormData, formData }) => {
 
@@ -67,7 +70,7 @@ const MapAddressSearch = ({ setFormData, formData }) => {
 
     return (
         <View>
-            <View height={150} marginBottom={2}>
+            <View style={{height: 150, marginBottom: 5}}>
                 <MapView
                     ref={mapViewRef}
                     provider={PROVIDER_GOOGLE}
@@ -84,7 +87,7 @@ const MapAddressSearch = ({ setFormData, formData }) => {
             </View>
             <Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
 
-            <Button title="Search" onPress={handleSearch}>Search Adress</Button>
+            <Button style={{ marginTop: 5, borderColor: Color.NENO_BLUE }} textColor={Color.NENO_BLUE} col mode="outlined" title="Search Address" onPress={handleSearch}>Search Address</Button>
         </View>
     )
 }

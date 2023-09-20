@@ -79,18 +79,6 @@ const DashboardPage = () => {
 	// 	)
 	// }
 
-	const ReportsView = () => (
-		<ScrollView style={{ backgroundColor: '#EDEDED' }} refreshControl={<RefreshControl onRefresh={onRefresh} />}>
-			{reportCards}
-		</ScrollView>
-	)
-
-	const SightingsView = () => (
-		<ScrollView style={{ backgroundColor: '#EDEDED' }} refreshControl={<RefreshControl onRefresh={onRefresh} />}>
-			{sightingCards}
-		</ScrollView>
-	)
-
 	// API calls 
 	const fetchAllReports = async () => {
 		try {
@@ -134,7 +122,6 @@ const DashboardPage = () => {
 
 			await response.json().then(data => {
 				setAllSightings(data[0]);
-				console.log(data[0].length)
 			});
 		} catch (error) {
 			console.error(error);
@@ -156,7 +143,6 @@ const DashboardPage = () => {
 					renderScene={({ route }) => {
 						switch (route.key) {
 							case 'reports':
-								console.log(reports)
 								return <ReportsComponent reports={reports} onRefresh={onRefresh} />;
 							case 'sightings':
 								return <SightingsComponent sightings={allSightings} onRefresh={onRefresh} />;

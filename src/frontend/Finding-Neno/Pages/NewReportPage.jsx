@@ -1,20 +1,19 @@
 import { useNavigation } from '@react-navigation/native';
-import { Box, Center, Heading, VStack, useToast, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
+import { Box, Center, Heading, VStack, useToast, FormControl, Input, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 import React, { useEffect, useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { Image, StyleSheet, TouchableWithoutFeedback, View } from 'react-native';
+import { Image, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
+import { Button } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
-
 import { useSelector, useDispatch } from "react-redux";
-import marker from '../assets/marker_icon.png';
 
 import { formatDatetime } from "./shared";
 
 import MapAddressSearch from "../components/MapAddressSearch";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
@@ -103,13 +102,8 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 							placement: "top"
 						})
 
-						// navigation.navigate("DashboardPage");
-
 						// Pop to previous screen
 						navigation.goBack();
-
-						// Pop to top of stack
-						// navigation.dispatch(StackActions.popToTop());
 					}
 					else {
 						setButtonText("Create report")
@@ -135,10 +129,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		if (!formData.missingPetId || formData.missingPetId == "") {
 			foundErrors = { ...foundErrors, missingPetId: 'Please select a pet' }
 		}
-
-		// if (!formData.lastLocation || formData.lastLocation == "") {
-		// 	foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
-		// }
 
 		if (formData.description.length > 500) {
 			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
@@ -216,123 +206,56 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		dateTimeOfCreation: formatDatetime(new Date())
 	});
 
-
-
-	// const handleSearch = async () => {
-	// 	try {
-	// 		const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
-
-	// 		const response = await fetch(apiUrl);
-	// 		if (response.data.length > 0) {
-	// 			const firstResult = response.data[0];
-	// 			setCoordinates({
-	// 				latitude: parseFloat(firstResult.lat),
-	// 				longitude: parseFloat(firstResult.lon),
-	// 			});
-	// 			setFormData({
-	// 				...formData,
-	// 				lastLocation: `${parseFloat(firstResult.lon)}, ${parseFloat(firstResult.lat)}`,
-	// 			});
-	// 			// You can animate to the new coordinates here if you want
-	// 			mapViewRef.current.animateToRegion({
-	// 				latitude: parseFloat(firstResult.lat),
-	// 				longitude: parseFloat(firstResult.lon),
-	// 				longitudeDelta: 0.0015,
-	// 			});
-	// 		} else {
-	// 			setCoordinates(null);
-	// 		}
-	// 	} catch (error) {
-	// 		console.error('Error fetching data:', error);
-	// 		setCoordinates(null);
-	// 	}
-	// };
-
 	return (
 		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}>
-
-		{/* <KeyboardAvoidingView style={{ flex: 1 }} behavior="padding"> */}
 			<StatusBar style="auto" />
-			<Box flex={1} alignItems="center" justifyContent="center">
-					<Box safeArea p="2" py="8" w="90%" maxW="290">
-						<VStack>
-							<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Create a Report</Heading>
+			<SafeAreaView style={{ flex: 1, alignItems: 'center', marginHorizontal: "10%" }}>
+				<VStack>
+					<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Create a Report</Heading>
 
-							<VStack space={3} mt="5">
+					<VStack space={3} mt="5">
 
-								<FormControl isInvalid={'missingPetId' in errors}>
-									<FormControl.Label>Choose Pet</FormControl.Label>
-									<Select placeholder="Select a pet"
-										selectedValue={formData.missingPetId}
-										onValueChange={(value) => setFormData({ ...formData, missingPetId: value })}>
-										<Select.Item label="Select a pet" value="" disabled hidden />
-										{dropdownOptions.map((option, index) => (
-											<Select.Item key={index} label={option[0]} value={option[1]} />
-										))}
-									</Select>
-									{'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPetId}</FormControl.ErrorMessage>}
-								</FormControl>
+						<FormControl isRequired isInvalid={'missingPetId' in errors}>
+							<FormControl.Label>Your Pet</FormControl.Label>
+							<Select placeholder="Select a pet"
+								selectedValue={formData.missingPetId}
+								onValueChange={(value) => setFormData({ ...formData, missingPetId: value })}>
+								<Select.Item label="Select a pet" value="" disabled hidden />
+								{dropdownOptions.map((option, index) => (
+									<Select.Item key={index} label={option[0]} value={option[1]} />
+								))}
+							</Select>
+							{'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPetId}</FormControl.ErrorMessage>}
+						</FormControl>
 
-								<FormControl>
-									<FormControl.Label>Last Seen</FormControl.Label>
-									<Button onPress={openPicker}>{`${selectedDatetime.toDateString()} ${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')}`}</Button>
-									<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
-										onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
-								</FormControl>
+						<FormControl isRequired>
+							<FormControl.Label>Date and Time of Sighting</FormControl.Label>
+							<Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{`${selectedDatetime.toDateString()} ${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')}`}</Button>
+							<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
+								onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
+						</FormControl>
 
-								<FormControl>
-									<FormControl.Label>Last Known Location</FormControl.Label>
-									<MapAddressSearch formData={formData} setFormData={setFormData} />
-									{<FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
-								</FormControl>
+						<FormControl isRequired>
+							<FormControl.Label>Last Known Location</FormControl.Label>
+							<MapAddressSearch formData={formData} setFormData={setFormData} />
+							{<FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
+						</FormControl>
 
-								<FormControl isInvalid={'description' in errors}>
-									<FormControl.Label>Additional Info</FormControl.Label>
-									<Input onChangeText={value => setFormData({ ...formData, description: value })} />
-									{'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
-								</FormControl>
+						<FormControl isInvalid={'description' in errors}>
+							<FormControl.Label>Additional Info</FormControl.Label>
+							<Input onChangeText={value => setFormData({ ...formData, description: value })} />
+							{'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
+						</FormControl>
 
-								<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onCreateReportPress}>
-									{buttonText}
-								</Button>
+                        <Button buttonColor={Color.NENO_BLUE} mode="contained" disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onCreateReportPress}>
+                            {buttonText}
+                        </Button>
 
-							</VStack>
-						</VStack>
-					</Box>
-			</Box>
+					</VStack>
+				</VStack>
+			</SafeAreaView>
 		</KeyboardAwareScrollView>
 	);
 };
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'flex-end',
-		alignItems: 'center'
-	},
-	map: {
-		...StyleSheet.absoluteFillObject,
-	},
-	text: {
-		fontSize: 20
-	},
-	button: {
-		borderRadius: 20,
-		backgroundColor: 'blue',
-	},
-	markerView: {
-		top: '50%',
-		left: '50%',
-		marginLeft: -24,
-		marginTop: -44,
-		position: 'absolute',
-	},
-	marker: {
-		height: 48,
-		width: 48
-	}
-});
-
-
 
 export default NewReportPage;

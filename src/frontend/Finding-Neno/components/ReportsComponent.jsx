@@ -6,7 +6,7 @@ import { memo } from "react";
 function ReportsComponent({reports, onRefresh}) {
     console.log(reports)
     return (
-		<ScrollView style={{ backgroundColor: '#EDEDED' }} refreshControl={<RefreshControl onRefresh={onRefresh} />}>
+		<ScrollView width='100%' style={{ backgroundColor: '#EDEDED' }} contentContainerStyle={{ alignItems: 'center' }} refreshControl={<RefreshControl onRefresh={onRefresh} />}>
 			{
                 reports?.map((report, index) => (
                     <Report report={report} key={index} />

@@ -1,22 +1,19 @@
 import { useNavigation } from '@react-navigation/native';
-import { Box, Center, View, Heading, VStack, useToast, Image, FormControl, Input, Select, Alert, Text, KeyboardAvoidingView, FlatList, HStack, WarningOutlineIcon } from "native-base";
+import { View, Heading, VStack, useToast, Image, FormControl, Input, Select, FlatList, HStack, WarningOutlineIcon } from "native-base";
 import { Picker } from '@react-native-picker/picker';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import * as ImagePicker from 'expo-image-picker';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { validDateTime, validateCoordinates } from "./validation"
 import { ActivityIndicator } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
 import { StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Button, TextInput } from 'react-native-paper';
+import { Button } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 
-import { useSelector, useDispatch } from "react-redux";
-import store from "../store/store";
-import marker from '../assets/marker_icon.png';
+import { useSelector } from "react-redux";
 
 import { formatDatetime, petTypeOptions } from "./shared";
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -210,7 +207,8 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                             description: "Your sighting has been added!",
                             placement: "top"
                         })
-                        navigate('Dashboard Page')
+                        
+                        navigation.goBack();
                     }
                     else {
                         setButtonText("Add sighting");
@@ -258,7 +256,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                         <FormControl.Label>Photo</FormControl.Label>
                             {
                                 isUploading ? <ActivityIndicator /> :
-                                    sightingImage && <View borderRadius={"10%"} alignItems={"center"}><Image source={{ uri: sightingImage }} style={{ width: "90%", aspectRatio: "1", borderRadius: 20 }} alt='pet sighting image' /></View>
+                                    sightingImage && <View borderRadius={"10%"} alignItems={"center"}><Image source={{ uri: sightingImage }} style={{ width: "40%", aspectRatio: "1", borderRadius: 20 }} alt='pet sighting image' /></View>
                             }
                         <HStack alignItems={"center"} justifyContent={"space-between"}>
                             <Button style={{ width: "48%" }} buttonColor={Color.NENO_BLUE} compact={true} icon="camera" mode="contained" onPress={handleTakePhoto}>
@@ -306,11 +304,11 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                                 onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
                         </FormControl>
 
-                                        <FormControl>
-                                            <FormControl.Label>Last Known Location</FormControl.Label>
-                                            <MapAddressSearch formData={formData} setFormData={setFormData} />
-                                            {<FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
-                                        </FormControl>
+                        <FormControl>
+                            <FormControl.Label>Last Known Location</FormControl.Label>
+                            <MapAddressSearch formData={formData} setFormData={setFormData} />
+                            {<FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
+                        </FormControl>
 
                         <FormControl isInvalid={'description' in errors}>
                             <FormControl.Label>Description</FormControl.Label>
@@ -327,38 +325,6 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
             </SafeAreaView>
         </KeyboardAwareScrollView>
     );
-
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center'
-    },
-    map: {
-        ...StyleSheet.absoluteFillObject,
-    },
-    text: {
-        fontSize: 20
-    },
-    button: {
-        borderRadius: 20,
-        backgroundColor: 'blue',
-    },
-    markerView: {
-        top: '50%',
-        left: '50%',
-        marginLeft: -24,
-        marginTop: -44,
-        position: 'absolute',
-    },
-    marker: {
-        height: 48,
-        width: 48
-    }
-});
-
-
 
 export default NewSightingPage;
