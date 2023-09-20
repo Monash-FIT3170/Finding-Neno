@@ -17,7 +17,7 @@ import { logout } from '../store/user';
 export default function ProfilePage({ navigation: { navigate } }) {
   const navigation = useNavigation();
 
-  const { IP, PORT } = useSelector((state) => state.api);
+  const { API_URL } = useSelector((state) => state.api);
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
   const isFocused = useIsFocused();
@@ -49,7 +49,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
 	const fetchOwnerPets = async () => {
 		try {
-			const url = `${IP}:${PORT}/get_owner_pets?owner_id=${USER_ID}`;
+			const url = `${API_URL}/get_owner_pets?owner_id=${USER_ID}`;
 			const response = await fetch(url, {
 				method: "GET",
 				headers: {
@@ -76,7 +76,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 	// Retrieve Profile Information
 	const fetchProfileInfo = async () => {
 		try {
-			const url = `${IP}:${PORT}/retrieve_profile?user_id=${USER_ID}`;
+			const url = `${API_URL}/retrieve_profile?user_id=${USER_ID}`;
 			const response = await fetch(url, {
 				method: "GET",
 				headers: {
@@ -103,7 +103,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
   const deletePet = async (petId) => {
     try {
-      const url = `${IP}:${PORT}/delete_pet?pet_id=${petId}`;
+      const url = `${API_URL}/delete_pet?pet_id=${petId}`;
       const response = await fetch(url, {
         method: "DELETE",
         headers: {
