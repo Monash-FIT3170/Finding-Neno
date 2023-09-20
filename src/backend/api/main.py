@@ -3,14 +3,22 @@ import psycopg2.pool
 import sys, os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, g
-import flask
+from flask_cors import CORS
+from pathlib import Path
 
-from user_service import *
-from pets_api import *
+# Add the parent directory to the path so that backend deployment works
+# and so that you can access scripts from the db directory
+file = Path(__file__).resolve()
+package_root_directory = file.parents[1]
+sys.path.append(str(package_root_directory))
+
+from api.user_service import *
+from api.pets_api import *
 
 database_pool = None
 
 app = Flask(__name__)
+CORS(app)
 
 
 def create_database_pool():
@@ -19,7 +27,7 @@ def create_database_pool():
     """
     return psycopg2.pool.SimpleConnectionPool(
         minconn=1,
-        maxconn=1000,
+        maxconn=99999,
         dbname=os.getenv("DATABASE_NAME"),
         user=os.getenv("DATABASE_USER"),
         password=os.getenv("DATABASE_PASSWORD"),
@@ -28,22 +36,43 @@ def create_database_pool():
     )
 
 
-def get_connetion():
+def get_connection():
     """
     Returns the connection to the database.
     """
-    if database_pool is not None:
-        return database_pool.getconn()
-    else:
-        return None
+    global database_pool
+    if database_pool is None:
+        database_pool = create_database_pool()
+    return database_pool.getconn()
     
+
+def drop_db_connections(connection: psycopg2.extensions.connection, dbname: str):
+    """
+    Drops all other connections to the database (if they exist)
+    """
+    cur = connection.cursor()
+    query = f"""
+        SELECT pg_terminate_backend(pg_stat_activity.pid)
+        FROM pg_stat_activity
+        WHERE pg_stat_activity.datname = '{dbname}'
+        AND pid <> pg_backend_pid();
+    """
+    try:
+        cur.execute(query)
+        print("Successfully dropped all other connections to the database")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+    
+    connection.commit()
+    cur.close()
+
 
 """
 Code by Sohaib Farooqi, edited by user956424 on Stack Overflow: https://stackoverflow.com/a/48021571
 """
 @app.before_request
 def before_request():
-   conn = get_connetion()
+   conn = get_connection()
    g.db = conn
 
 @app.after_request
@@ -55,7 +84,7 @@ def after_request(response):
 
 @app.route("/")
 def root():
-    return "Finding Neno Server is Up!"
+    return "Finding Neno Back-End Server is Up!"
 
 @app.route("/manual_start_connection")
 def manual_start_database_pool():
@@ -79,13 +108,18 @@ def get_verify_token():
 def post_login():
     print("logging in")
     data = login(g.db)
-    print(data)
-    headers = {
-        'userId': data[2],
-        'accessToken': data[3],
-    }
 
-    return data[0], data[1], headers
+    if data[1] == 200:
+        print(data)
+        headers = {
+            'userId': data[2],
+            'accessToken': data[3],
+        }
+
+        return data[0], data[1], headers
+    else:
+        print(data)
+        return data[0], data[1]
 
 @app.route("/retrieve_profile", methods=["GET"]) # Requires Access_token and user ID for authorization
 def retrieve_profile_information():
@@ -242,21 +276,25 @@ def post_insert_sighting():
 
 
 if __name__ == "__main__": 
-    # Get environment file path from command line arguments
-    if len(sys.argv) < 2:
-        raise Exception(
-            "No environment file path provided - see top of this file for instructions"
-        )
-    environment_file_path = sys.argv[1]
-    if environment_file_path is None or environment_file_path == "":
-        raise Exception(
-            "No environment file path provided - see top of this file for instructions"
-        )
+    if len(sys.argv) >= 2:
+        # Get environment file path from command line arguments
+        environment_file_path = sys.argv[1]
+        if environment_file_path is None or environment_file_path == "":
+            raise Exception(
+                "No environment file path provided - see top of this file for instructions"
+            )
+        else:
+            # Load environment variables
+            load_dotenv(environment_file_path)
     else:
-        # Load environment variables
-        load_dotenv(environment_file_path)
+        print("Warning: no environment file path provided.")
+        
+    # Connect to database
+    database_pool = create_database_pool()
 
-        database_pool = create_database_pool()
+    # Disconnect other connections to database if they exist
+    drop_db_connections(connection=database_pool.getconn(), dbname=os.getenv("DATABASE_NAME"))
 
-        app.run(host="0.0.0.0", debug=True)
+    # Run Flask app
+    app.run(host="0.0.0.0", debug=True)
 
