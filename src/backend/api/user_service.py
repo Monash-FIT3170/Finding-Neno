@@ -394,16 +394,6 @@ def send_notification_to_report_author(
     # Send notification to owner
     title = " Potential Sighting Alert for Your Lost Pet "
     body = generate_email_body(owner = owner, pet = pet, sighter = sighter, sighting_data = sighting_data)
-    """
-    f"Hi {owner['name']},<br><br>"
-    f"Your pet {pet['name']} has been sighted by {sighter['name']} in <insert location>"
-    f"at {sighting_data['dateTime']}!<br><br>"
-    f"Please contact {sighter['name']} via {sighter['email_address']} or {sighter['phone_number']}"
-    f" to arrange a pickup.<br><br>"
-    f"Sighting description: {sighting_data['description']}<br><br>"
-    f"Image: {sighting_data['imageUrl']}<br><br>"
-    f"Thanks,<br>Finding Neno"
-    """
 
     
     res = send_notification(
@@ -570,7 +560,7 @@ def generate_email_body(owner, pet, sighter, sighting_data):
                                                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"><strong>Here's what you can do:&nbsp;&nbsp;</strong></p>
                                                         <ol>
                                                             <li>
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"><strong>Contact the Poster:</strong>&nbsp;Reply to the sighting post or send a private message to the member who reported the sighting. They may have more information to share or could assist you further.&nbsp;&nbsp;</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"><strong>Contact the Poster:</strong>&nbsp;Send a private message to the member who reported the sighting. They may have more information to share or could assist you further. Their contact details are: Name: {sighter['name']} Email address: {sighter['email_address']} Phone number: {sighter['phone_number']}. Please be in touch with them as soon as possible to see if they can help.&nbsp;&nbsp;</p>
                                                             </li>
                                                             <li>
                                                                 <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"><strong>Visit the Location:</strong>&nbsp;If the sighting location is nearby, consider visiting it as soon as possible. Bring a recent photo of your pet and any identification or documentation you have.&nbsp;</p>
