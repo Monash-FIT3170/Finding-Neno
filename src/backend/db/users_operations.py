@@ -540,6 +540,7 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
         print(f"Sightings successfully retrieved")
 
         result = sightings
+        print(sightings)
     except Exception as e:
         print(f"Error with retrieving sightings: {e}")
 

@@ -12,7 +12,9 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { useSelector, useDispatch } from "react-redux";
 import marker from '../assets/marker_icon.png';
 
-import { formatDatetime } from "./shared"
+import { formatDatetime } from "./shared";
+
+import MapAddressSearch from "../components/MapAddressSearch";
 
 const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
@@ -81,7 +83,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 				description: formData.description,
 				lastSeenDateTime: formatDatetime(selectedDatetime),
 				dateTimeOfCreation: formatDatetime(new Date()),
-				lastLocation: `${coordinates.longitude}, ${coordinates.latitude}`,
+				lastLocation: formData.lastLocation,
 			}
 
 			await fetch(url, {
@@ -143,10 +145,8 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		}
 
 		const exists = await missingReportExists(formData.missingPetId);
-		console.log("does the pet report exists " + exists)
 
 		if (exists) {
-			console.log("pet report exists")
 			foundErrors = { ...foundErrors, missingPetId: 'Pet Report already exists' }
 		}
 
@@ -216,55 +216,37 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		dateTimeOfCreation: formatDatetime(new Date())
 	});
 
-	//map box for last known location
-	// Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
-	const [mapRegion, setMapRegion] = useState({
-		latitude: -37.8136,
-		longitude: 144.9631,
-		latitudeDelta: 0.03,
-		longitudeDelta: 0.03,
-	})
 
-	// Retrieves coordinates of current centre of map when map is moved around
-	const handleRegionChange = (region) => {
-		setMapRegion(region);
-        setCoordinates({ longitude: region.longitude, latitude: region.latitude });
-		console.log(coordinates)
-    }
 
-    const [address, setAddress] = useState('');
-    const [coordinates, setCoordinates] = useState({longitude: mapRegion.longitude, latitude: mapRegion.latitude});
-	const mapViewRef = useRef(null);
+	// const handleSearch = async () => {
+	// 	try {
+	// 		const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
 
-	const handleSearch = async () => {
-		try {
-			const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
-
-			const response = await fetch(apiUrl);
-			if (response.data.length > 0) {
-				const firstResult = response.data[0];
-				setCoordinates({
-					latitude: parseFloat(firstResult.lat),
-					longitude: parseFloat(firstResult.lon),
-				});
-				setFormData({
-					...formData,
-					lastLocation: `${parseFloat(firstResult.lon)}, ${parseFloat(firstResult.lat)}`,
-				});
-				// You can animate to the new coordinates here if you want
-				mapViewRef.current.animateToRegion({
-					latitude: parseFloat(firstResult.lat),
-					longitude: parseFloat(firstResult.lon),
-					longitudeDelta: 0.0015,
-				});
-			} else {
-				setCoordinates(null);
-			}
-		} catch (error) {
-			console.error('Error fetching data:', error);
-			setCoordinates(null);
-		}
-	};
+	// 		const response = await fetch(apiUrl);
+	// 		if (response.data.length > 0) {
+	// 			const firstResult = response.data[0];
+	// 			setCoordinates({
+	// 				latitude: parseFloat(firstResult.lat),
+	// 				longitude: parseFloat(firstResult.lon),
+	// 			});
+	// 			setFormData({
+	// 				...formData,
+	// 				lastLocation: `${parseFloat(firstResult.lon)}, ${parseFloat(firstResult.lat)}`,
+	// 			});
+	// 			// You can animate to the new coordinates here if you want
+	// 			mapViewRef.current.animateToRegion({
+	// 				latitude: parseFloat(firstResult.lat),
+	// 				longitude: parseFloat(firstResult.lon),
+	// 				longitudeDelta: 0.0015,
+	// 			});
+	// 		} else {
+	// 			setCoordinates(null);
+	// 		}
+	// 	} catch (error) {
+	// 		console.error('Error fetching data:', error);
+	// 		setCoordinates(null);
+	// 	}
+	// };
 
 	return (
 		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}>
@@ -300,25 +282,9 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 								<FormControl>
 									<FormControl.Label>Last Known Location</FormControl.Label>
-									<Box height={150} marginBottom={2}>
-										<MapView
-											ref={mapViewRef}
-											provider={PROVIDER_GOOGLE}
-											style={styles.map}
-											initialRegion={mapRegion}
-											onRegionChangeComplete={handleRegionChange}
-										>
-										</MapView>
-
-										<View style={styles.markerView}>
-											<Image source={marker} style={styles.marker} alt='Center marker'></Image>
-										</View>
-									</Box>
-									<Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
-									{coordinates === null && <FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
+									<MapAddressSearch formData={formData} setFormData={setFormData} />
+									{<FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
 								</FormControl>
-
-								<Button title="Search" onPress={handleSearch}>Set Adress</Button>
 
 								<FormControl isInvalid={'description' in errors}>
 									<FormControl.Label>Additional Info</FormControl.Label>

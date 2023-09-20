@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native'
-import {Dimensions} from 'react-native';
+import { Dimensions } from 'react-native';
 import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 import { Ionicons } from '@expo/vector-icons'; 
 import { useSelector } from "react-redux";
@@ -69,25 +69,52 @@ const Sighting = ({userId, sighting}) => {
         .catch((error) => alert(error));
     }
 
-    const [suburb, setSuburb] = useState("");
+  const [suburb, setSuburb] = useState("");
 
 
-    useEffect(() => {
-      getSuburb();
-    }, [])
+  useEffect(() => {
+    getSuburb();
+  }, [])
 
-    const getSuburb = async () => {
-      try {
-          const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${locationLatitude}&lon=${locationLongitude}&format=json`;
+  // Retrieve suburb info from OpenStreetMap API by reverse geocoding
+  const getSuburb = async () => {
+    var suburb = null;
+    try {
+      const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${locationLatitude}&lon=${locationLongitude}&format=json`;
 
-          const response = await fetch(apiUrl);
+      const response = await fetch(apiUrl);
 
-          const result = await response.json();
-          setSuburb(`${result.address.suburb}, ${result.address.state}`)
-          
-      } catch (error) {
-          console.error('Error fetching data:', error);
+      const result = await response.json();
+
+      // Check if suburb info is available
+      if (result.address.suburb == undefined) {
+        // Check if city info is available 
+        if (result.address.city == undefined) {
+          // Display only state info if both suburb and city infos are unavailable
+          suburb = `${result.address.state}`
+        }
+        else {
+          // Display City Name, State Name
+          suburb = `${result.address.city}, ${result.address.state}`;
+        }
       }
+      else {
+        // Display Suburb Name, State Name
+        suburb = `${result.address.suburb}, ${result.address.state}`;
+      }
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+
+    console.log(`${locationLatitude}, ${locationLongitude}`)
+    console.log(suburb)
+    if (suburb != null) {
+      setSuburb(suburb);
+    }
+    else {
+      setSuburb("Location information unavailable");
+    }
   };
     
   return (
@@ -103,8 +130,8 @@ const Sighting = ({userId, sighting}) => {
       
       </HStack>
 
-      <Heading size = "sm"  paddingTop={2}>
-        Last seen { dateTime} 
+      <Heading size="sm" paddingTop={2}>
+        Last seen {dateTime}
       </Heading>
       {/* TODO: put reverse geocoded location here  */}
 
@@ -132,18 +159,18 @@ const Sighting = ({userId, sighting}) => {
         </VStack>
       </HStack>
 
-      <Box width={windowWidth - 40} height={180}  paddingTop={5} paddingBottom={1} paddingRight={5}>
-        {sightingImage && <Image source={{ uri: sightingImage }} style={{ width: '100%', height: '100%', borderRadius: 10, marginBottom: 8 }} alt="pet"/>}
-      
+      <Box width={windowWidth - 40} height={180} paddingTop={5} paddingBottom={1} paddingRight={5}>
+        {sightingImage && <Image source={{ uri: sightingImage }} style={{ width: '100%', height: '100%', borderRadius: 10, marginBottom: 8 }} alt="pet" />}
+
         <Button width={'100%'} borderRadius={10} paddingTop={3}>
           Share
         </Button>
-    
+
       </Box>
 
     </Box>
-    </View>
-  );
+  </View>
+);
 };
 
 export default Sighting;
