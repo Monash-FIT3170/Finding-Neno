@@ -415,6 +415,7 @@ def generate_email_body(owner, pet, sighter, sighting_data):
         owner: the owner of the missing pet 
         pet: the missing pet
         sighter: the person who sighted the pet
+        sighting_data: the data of the sighting
     """
     location_longitude, location_latitude = sighting_data['lastLocation'].split(",")
     html_code = f""" <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -560,7 +561,7 @@ def generate_email_body(owner, pet, sighter, sighting_data):
                                                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"><strong>Here's what you can do:&nbsp;&nbsp;</strong></p>
                                                         <ol>
                                                             <li>
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"><strong>Contact the Poster:</strong>&nbsp;Send a private message to the member who reported the sighting. They may have more information to share or could assist you further. Their contact details are: Name: {sighter['name']} Email address: {sighter['email_address']} Phone number: {sighter['phone_number']}. Please be in touch with them as soon as possible to see if they can help.&nbsp;&nbsp;</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"> <strong>Contact the Poster:</strong>&nbsp; Send a private message to the member who reported the sighting. They may have more information to share or could assist you further. Their contact details are: Name: {sighter['name']} Email address: <a href="mailto:{sighter['email_address']}">{sighter['email_address']}</a> Phone number: <a href="tel:{sighter['phone_number']}">{sighter['phone_number']}</a>. Please be in touch with them as soon as possible to see if they can help.&nbsp;&nbsp; </p>
                                                             </li>
                                                             <li>
                                                                 <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"><strong>Visit the Location:</strong>&nbsp;If the sighting location is nearby, consider visiting it as soon as possible. Bring a recent photo of your pet and any identification or documentation you have.&nbsp;</p>
