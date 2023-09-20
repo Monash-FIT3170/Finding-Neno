@@ -496,7 +496,7 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
                         sightings AS s
                     LEFT JOIN
                         missing_reports AS mr ON s.missing_report_id = mr.id
-                    JOIN 
+                    LEFT JOIN 
 		                pets AS p ON p.id = mr.pet_id
                     JOIN
                         users AS u ON s.author_id = u.id
@@ -536,6 +536,7 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
         print(f"Sightings successfully retrieved")
 
         result = sightings
+        print(sightings)
     except Exception as e:
         print(f"Error with retrieving sightings: {e}")
 
