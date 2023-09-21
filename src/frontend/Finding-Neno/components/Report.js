@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, Modal, TouchableHighlight, View } from 'react-native'
-import { Dimensions } from 'react-native';
 import ReportSightingModal from '../components/ReportSightingModal';
 import * as ImagePicker from 'expo-image-picker';
 import { HStack, Heading, Image, VStack, Text } from 'native-base';
@@ -96,38 +95,40 @@ const Report = ({ report, userId }) => {
 
             {/* Info */}
             <View style={{ marginHorizontal: '4%' }}>
-                <HStack maxWidth="100%" alignItems={'center'}>
+                <HStack maxWidth="100%" alignItems={'center'} justifyContent='space-around'>
                     <View style={{ width: "49%", aspectRatio: 1 }} >
                         {
                             smallImageLoading && <ActivityIndicator style={{ top: '50%', left: '50%', position: 'absolute' }} />
                         }
-                        <TouchableHighlight onPress={() => setEnlargeImage(true)} underlayColor="#DDDDDD" style={{ borderRadius: 20, shadowOpacity: 0.2, shadowOffset: {width: 2, height: 2} }}>
-                            <Image onLoadStart={() => setSmallImageLoading(true)} onLoadEnd={() => setSmallImageLoading(false)} source={{ uri: petImage }} style={{ maxHeight: '100%', aspectRatio: 1, borderRadius: 20 }} alt={`Image of missing pet ${petName}`} />
+                        <TouchableHighlight onPress={() => setEnlargeImage(true)} underlayColor="#DDDDDD"
+                            style={{ borderRadius: 20, shadowOpacity: 0.2, shadowOffset: { width: 2, height: 2 } }}>
+                            <Image onLoadStart={() => setSmallImageLoading(true)} onLoadEnd={() => setSmallImageLoading(false)}
+                                source={{ uri: petImage }} style={{ maxHeight: '100%', aspectRatio: 1, borderRadius: 20 }} alt={`Image of missing pet ${petName}`} />
                         </TouchableHighlight>
                     </View>
 
-                    <View style={{ maxWidth: "49%", paddingLeft: 10, justifyContent: 'center' }} height={200} bg="#F9FDFF">
+                    <View style={{ maxWidth: "49%", paddingLeft: 4, justifyContent: 'center' }} height={200} bg="#F9FDFF">
                         <View>
-                            <Heading fontSize={petNameFontSize} paddingTop={2}>{petName}</Heading>
+                            <Heading textAlign='center' fontSize={petNameFontSize}>{petName}</Heading>
                         </View>
 
                         <VStack>
-                            <HStack>
-                                <VStack>
-                                    <Heading size="sm" paddingTop={2}>Species</Heading>
+                            <HStack marginX='4%' marginTop='2%' justifyContent='space-between'>
+                                <VStack alignItems='center'>
+                                    <Heading size="sm">Species</Heading>
                                     <Text>{petSpecies}</Text>
                                 </VStack>
 
-                                <VStack paddingLeft={8}>
-                                    <Heading size="sm" paddingTop={2}>Breed</Heading>
+                                <VStack alignItems='center'>
+                                    <Heading size="sm">Breed</Heading>
                                     <Text>{petBreed}</Text>
                                 </VStack>
                             </HStack>
 
-                            <View>
-                                <Heading size="sm" paddingTop={2}>Last seen</Heading>
+                            <View style={{ alignItems: 'center' }}>
+                                <Heading size="sm" paddingTop='1%'>Last seen</Heading>
                                 <Text>{formattedDate}</Text>
-                                <Heading size="sm" maxWidth='100%' paddingTop={2}>{suburb}</Heading>
+                                <Heading size="sm" maxWidth='100%' paddingTop='1%'>{suburb}</Heading>
                             </View>
 
                         </VStack>
@@ -136,14 +137,14 @@ const Report = ({ report, userId }) => {
 
                 {
                     reportDesc &&
-                    <VStack marginBottom={3}>
+                    <VStack marginY={0}>
                         <Heading size="sm">Additional Description</Heading>
                         <Text>{reportDesc}</Text>
                     </VStack>
                 }
 
                 {/* Buttons */}
-                <HStack maxWidth={'100%'} justifyContent={"space-between"} marginBottom={3}>
+                <HStack maxWidth={'100%'} justifyContent={"space-between"} marginY='3%'>
                     {
                         // Controls what the owner of the report sees. If user is owner of the report, they
                         // won't be displayed with the option to report a sighting.
