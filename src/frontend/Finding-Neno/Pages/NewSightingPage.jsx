@@ -5,14 +5,12 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import * as ImagePicker from 'expo-image-picker';
 import React, { useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, TouchableHighlight } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Button } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-
-
+import ImageView from 'react-native-image-viewing';
 import { useSelector } from "react-redux";
-
 import { formatDatetime, formatDateTimeDisplay, petTypeOptions } from "./shared";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapAddressSearch from "../components/MapAddressSearch";
@@ -243,10 +241,18 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
     }
 
 
+    const [enlargeImage, setEnlargeImage] = useState(false);
+    const closeImageModal = () => {
+        setEnlargeImage(false);
+    }
+
+
     return (
         <KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}>
             <StatusBar style="auto" />
             <SafeAreaView style={{ flex: 1, alignItems: 'center', marginHorizontal: "10%" }}>
+                <ImageView images={[{uri: sightingImage}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor='gray'/>
+
                 <VStack>
                     <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Add a New Sighting</Heading>
 
@@ -254,7 +260,12 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                         <FormControl.Label>Photo</FormControl.Label>
                             {
                                 isUploading ? <ActivityIndicator /> :
-                                    sightingImage && <View borderRadius={"10%"} alignItems={"center"}><Image source={{ uri: sightingImage }} style={{ width: "40%", aspectRatio: "1", borderRadius: 20 }} alt='pet sighting image' /></View>
+                                    sightingImage && 
+                                    <View borderRadius={"10%"} alignItems={"center"}>
+                                        <TouchableHighlight onPress={() => setEnlargeImage(true)} underlayColor="#DDDDDD" style={{ borderRadius: 20 }}>
+                                            <Image source={{ uri: sightingImage }} style={{ width: "70%", aspectRatio: "1", borderRadius: 20 }} alt='pet sighting image' />
+                                        </TouchableHighlight>
+                                    </View>
                             }
                         <HStack alignItems={"center"} justifyContent={"space-between"}>
                             <Button style={{ width: "48%" }} buttonColor={Color.NENO_BLUE} compact={true} icon="camera" mode="contained" onPress={handleTakePhoto}>

@@ -157,8 +157,8 @@ const DashboardPage = () => {
 
 				{/* TODO: fix this - it is not scrolling all the way */}
 
-				<Portal>
-					<FAB.Group icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
+				<Portal height='100%'>
+					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
 						actions={[
 							{ icon: 'bullhorn', label: 'New Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Report' }) },
 							{ icon: 'eye', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }) },

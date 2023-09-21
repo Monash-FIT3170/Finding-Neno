@@ -22,9 +22,6 @@ export default function ReportsPage({ navigation: { navigate } }) {
 
 	const isFocused = useIsFocused();
 
-	const image = "https://wallpaperaccess.com/full/317501.jpg";
-	const petImage = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq"
-
 	const [reports, setReports] = useState([]);
 
 
@@ -57,9 +54,9 @@ export default function ReportsPage({ navigation: { navigate } }) {
 	};
 
 	return (
-		<SafeAreaView>
+		<SafeAreaView style={{height: '100%'}}>
+			<StatusBar style="auto" />
 			<View>
-				<StatusBar style="auto" />
 				<ReportsList reports={reports} onRefresh={onRefresh} />
 			</View>
 			<FAB
@@ -69,6 +66,5 @@ export default function ReportsPage({ navigation: { navigate } }) {
 				style={[{ position: 'absolute', bottom: 16, right: 16 }]}
 			/>
 		</SafeAreaView>
-
 	)
 }

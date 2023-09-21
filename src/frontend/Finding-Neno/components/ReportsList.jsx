@@ -12,7 +12,7 @@ function ReportsList({reports, onRefresh, columns}) {
     }
 
     return (
-        <FlatList width='100%' numColumns={columns} style={{ backgroundColor: '#EDEDED' }} contentContainerStyle={{ alignItems: 'center' }}
+        <FlatList marginTop='3%' width='100%' numColumns={columns} style={{ backgroundColor: '#EDEDED' }} contentContainerStyle={{ alignItems: 'center' }}
             data={reports}
             renderItem={({item}) => <Report report={item} />}
             keyExtractor={item => `${item[0]}`}

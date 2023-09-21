@@ -48,7 +48,6 @@ const Report = ({ report, userId }) => {
 
     const [enlargeImage, setEnlargeImage] = useState(false);
     const [smallImageLoading, setSmallImageLoading] = useState(false);
-    const [largeImageLoading, setLargeImageLoading] = useState(false);
     const [suburbIsLoaded, setSuburbIsLoaded] = useState(false);
 
     const closeImageModal = () => {
@@ -92,18 +91,7 @@ const Report = ({ report, userId }) => {
     return (
         suburbIsLoaded &&
 
-        <View style={{ maxWidth: "90%", marginTop: '5%', backgroundColor: 'white', borderRadius: 30, shadowOpacity: 0.15, shadowOffset: {height: 8} }}>
-            
-            {/* <Modal visible={enlargeImage} onClose={closeImageModal}> */}
-
-                        {/* {   
-                            largeImageLoading && <ActivityIndicator size='large' style={{ top: '50%', left: '50%', position: 'absolute' }}/>
-                        } */}
-                        {/* <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: 'blue'}}>
-                            <Image source={{ uri: petImage }} style={{ width: '100%', height: '100%' }} alt={`Enlarged image of missing pet ${petName}`} />
-                        </View> */}
-                {/* <ImageViewer imageUrls={[{url: petImage}]} onCancel={closeImageModal} enableSwipeDown/>
-            </Modal> */}
+        <View style={{ maxWidth: "90%", marginTop: '2%', marginBottom: '3%', backgroundColor: 'white', borderRadius: 30, shadowOpacity: 0.15, shadowOffset: {height: 8} }}>
             <ImageView images={[{uri: petImage}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor='gray'/>
 
             {/* Info */}

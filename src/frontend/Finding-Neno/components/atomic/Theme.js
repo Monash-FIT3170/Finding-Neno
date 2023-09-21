@@ -4,5 +4,6 @@ export const Color =  {
     PURE_BLACK: '#000000',
     WHITE: '#ffffff',
     LIGHT_GREEN: '#c4f3ca',
-    NENO_BLUE: '#2a9d8f'
+    NENO_BLUE: '#2a9d8f',
+    LIGHTER_BLUE: '#32c2b0',
   }
