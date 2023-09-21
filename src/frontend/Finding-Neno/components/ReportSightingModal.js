@@ -16,7 +16,7 @@ import { validDateTime, validateCoordinates } from "../Pages/validation"
 import { useSelector, useDispatch } from "react-redux";
 import marker from '../assets/marker_icon.png';
 
-import { formatDatetime } from '../Pages/shared';
+import { formatDatetime, formatDateTimeDisplay } from '../Pages/shared';
 import MapAddressSearch from "../components/MapAddressSearch";
 
 const ReportSightingModal = ({ report, userId, closeModal, showModal }) => {

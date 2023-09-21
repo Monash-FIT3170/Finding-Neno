@@ -6,8 +6,6 @@ import * as ImagePicker from 'expo-image-picker';
 import React, { useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
 import { ActivityIndicator } from 'react-native';
-import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
-import { StyleSheet } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Button } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
@@ -15,7 +13,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 
 import { useSelector } from "react-redux";
 
-import { formatDatetime, petTypeOptions } from "./shared";
+import { formatDatetime, formatDateTimeDisplay, petTypeOptions } from "./shared";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapAddressSearch from "../components/MapAddressSearch";
 
@@ -299,7 +297,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
                         <FormControl isRequired>
                             <FormControl.Label>Date and Time of Sighting</FormControl.Label>
-                            <Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{`${selectedDatetime.toDateString()} ${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')}`}</Button>
+                            <Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
                             <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
                                 onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
                         </FormControl>
