@@ -10,7 +10,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { StatusBar } from 'expo-status-bar';
 
 import { useSelector } from "react-redux";
-import ReportsComponent from '../components/ReportsComponent';
+import ReportsList from '../components/ReportsList';
 import SightingsComponent from '../components/SightingsComponent';
 
 const DashboardPage = () => {
@@ -143,7 +143,7 @@ const DashboardPage = () => {
 					renderScene={({ route }) => {
 						switch (route.key) {
 							case 'reports':
-								return <ReportsComponent reports={reports} onRefresh={onRefresh} />;
+								return <ReportsList reports={reports} onRefresh={onRefresh} columns={1}/>;
 							case 'sightings':
 								return <SightingsComponent sightings={allSightings} onRefresh={onRefresh} />;
 							default:

@@ -13,7 +13,7 @@ import Report from "../components/Report";
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 
-import ReportsComponent from '../components/ReportsComponent';
+import ReportsList from '../components/ReportsList';
 
 export default function ReportsPage({ navigation: { navigate } }) {
 
@@ -60,7 +60,7 @@ export default function ReportsPage({ navigation: { navigate } }) {
 		<SafeAreaView>
 			<View>
 				<StatusBar style="auto" />
-				<ReportsComponent reports={reports} onRefresh={onRefresh} />
+				<ReportsList reports={reports} onRefresh={onRefresh} />
 			</View>
 			<FAB
 				icon={'plus'}
