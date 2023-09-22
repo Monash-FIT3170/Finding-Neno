@@ -3,6 +3,7 @@ import { FlatList } from 'native-base';
 import { memo, useState } from 'react';
 import { View } from 'react-native';
 import { Text } from 'react-native-paper';
+import { formatDateTimeDisplay } from '../Pages/shared';
 
 function ReportsList({reports, onRefresh, columns}) {
     const [refreshing, setRefreshing] = useState(false);
@@ -21,7 +22,7 @@ function ReportsList({reports, onRefresh, columns}) {
                 keyExtractor={item => `${item[0]}`}
                 onRefresh={onListRefresh}
                 refreshing={refreshing}
-                ListFooterComponent={<Text style={{ paddingVertical: '5%', fontSize: 15, fontWeight: '700' }}>Last updated at {new Date().toLocaleTimeString()}</Text>}
+                ListFooterComponent={<Text style={{ paddingVertical: '5%', fontSize: 15, fontWeight: '700' }}>Last updated {formatDateTimeDisplay(new Date())}</Text>}
             />
             <Text>Last updated: {new Date().getTime()}</Text>
         </View>
