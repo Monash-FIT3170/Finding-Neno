@@ -5,20 +5,24 @@ import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 import { Ionicons } from '@expo/vector-icons'; 
 import { useSelector } from "react-redux";
 import { useIsFocused } from '@react-navigation/native';
+import { formatDateTimeDisplay } from '../Pages/shared';
+import ImageView from 'react-native-image-viewing';
 
 
-const Sighting = ({userId, sighting}) => {
+const Sighting = ({ sighting, userId }) => {
     // Pet Data
     const windowWidth = Dimensions.get('window').width; 
 
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
     const { IP, PORT } = useSelector((state) => state.api)
-    const isFocused = useIsFocused();
+
+    console.log(sighting)
+    console.log(sighting[3])
 
     const id = sighting[0];
     const missingReportId = sighting[1];
     const authorId = sighting[2];
-    const dateTime = sighting[3];
+    const dateTime = formatDateTimeDisplay(new Date(sighting[3]));
     const locationLongitude = sighting[4];
     const locationLatitude = sighting[5];
     const sightingImage = sighting[6];

@@ -14,7 +14,7 @@ import IconText from './IconText';
 
 const Report = ({ report, userId }) => {
     // Pet Data
-    const lastSeen = new Date(report[1]);
+    const lastSeen = formatDateTimeDisplay(new Date(report[1]));
     const reportDesc = report[2];
     const locationLongitude = report[3];
     const locationLatitude = report[4];
@@ -27,9 +27,6 @@ const Report = ({ report, userId }) => {
 
     const [showModal, setShowModal] = useState(false);
     const [suburb, setSuburb] = useState("");
-
-    // Create the formatted string
-    const formattedDate = formatDateTimeDisplay(lastSeen);
 
     // Set font size of pet name depending on length of name
     const [petNameFontSize, setPetNameFontSize] = useState(30);
@@ -146,7 +143,7 @@ const Report = ({ report, userId }) => {
 
                             <View style={{ alignItems: 'center' }}>
                                 <Heading size="sm" paddingTop='1%'>Last seen</Heading>
-                                <Text>{formattedDate}</Text>
+                                <Text>{lastSeen}</Text>
                                 <Heading size="sm" maxWidth='100%' paddingTop='1%'>{suburb}</Heading>
                             </View>
 
