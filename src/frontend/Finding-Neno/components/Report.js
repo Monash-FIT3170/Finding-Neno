@@ -8,6 +8,7 @@ import { Color } from './atomic/Theme';
 import { ScaleText } from 'react-scale-text';
 import { formatDateTimeDisplay } from '../Pages/shared';
 import ImageView from 'react-native-image-viewing';
+import IconText from './IconText';
 
 
 
@@ -126,13 +127,18 @@ const Report = ({ report, userId }) => {
                         </View>
 
                         <VStack>
-                            <HStack marginX='4%' marginTop='2%' justifyContent='space-between'>
-                                <VStack alignItems='center'>
-                                    <Heading size="sm">Species</Heading>
-                                    <Text>{petSpecies}</Text>
+                            <HStack marginTop='2%' justifyContent='space-between'>
+                                <VStack alignItems='center' marginX='2'>
+                                    <Heading size="sm" >Species</Heading>
+                                    {
+                                        petSpecies == 'Other' ? 
+                                        <Text>{petSpecies}</Text> :
+                                        <IconText iconName={petSpecies.toLowerCase()} text={petSpecies} 
+                                            iconColor={ Color.NENO_BLUE } textColor={ 'black' } iconSize={19} fontWeight='normal' />
+                                    }
                                 </VStack>
 
-                                <VStack alignItems='center'>
+                                <VStack alignItems='center' marginX='2'>
                                     <Heading size="sm">Breed</Heading>
                                     <Text>{petBreed}</Text>
                                 </VStack>

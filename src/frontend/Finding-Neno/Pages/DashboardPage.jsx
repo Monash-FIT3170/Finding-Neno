@@ -11,7 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 
 import { useSelector } from "react-redux";
 import ReportsList from '../components/ReportsList';
-import SightingsComponent from '../components/SightingsComponent';
+import SightingsList from '../components/SightingsList';
 import IconText from '../components/IconText';
 
 const DashboardPage = () => {
@@ -142,7 +142,7 @@ const DashboardPage = () => {
 							case 'reports':
 								return <ReportsList reports={reports} onRefresh={onRefresh} columns={1}/>;
 							case 'sightings':
-								return <SightingsComponent sightings={allSightings} onRefresh={onRefresh} />;
+								return <SightingsList sightings={allSightings} onRefresh={onRefresh} />;
 							default:
 								return null; // TODO: make a view that says "no reports/sightings yet" etc for when theres nothing on the app yet ?
 						}
@@ -151,7 +151,7 @@ const DashboardPage = () => {
 					initialLayout={{ width: windowWidth }}
           renderTabBar={props => <TabBar {...props} renderLabel={({ route, focused, color }) => (
             // <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
-            <IconText iconName={route.icon} text={route.title} color={ route.color } />
+            <IconText iconName={route.icon} text={route.title} textColor={route.color} iconColor={route.color} iconSize={24} fontWeight='bold' />
           )} style={{ backgroundColor: 'white' }} indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, width: '15%', left: '19%' }} />
         }
 				/>
