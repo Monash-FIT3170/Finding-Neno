@@ -242,7 +242,7 @@ def post_insert_sighting():
 
 @app.route("/retrieve_saved_sightings", methods=["GET"]) # Requires Access_token and user ID for authorization
 def get_saved_sighting():
-    return retrieve_saved_sightings(g.db)
+    return jsonify(retrieve_saved_sightings(g.db))
 
 @app.route("/save_sighting", methods=["POST"]) # Requires Access_token and user ID for authorization
 def post_saved_sighting():

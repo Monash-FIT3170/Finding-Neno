@@ -73,9 +73,9 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
     const [suburb, setSuburb] = useState("");
 
 
-    // useEffect(() => {
-    //   getSuburb();
-    // }, [])
+    useEffect(() => {
+      getSuburb();
+    }, [])
 
     const getSuburb = async () => {
       try {
@@ -98,8 +98,7 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
       
       <HStack paddingTop={3} alignItems={"center"} justifyContent={"space-between"}>
       <Heading size = "lg" >
-        hardcoding suburb for now 
-        {/* {suburb} */}
+        {suburb}
       </Heading>
       <Ionicons name={savedByUser==USER_ID ? "bookmark": "bookmark-outline"} size={20} onPress={handlePressSaveBtn}/>
       </HStack>

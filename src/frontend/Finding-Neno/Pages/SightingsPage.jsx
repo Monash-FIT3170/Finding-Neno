@@ -68,9 +68,8 @@ export default function SightingsPage({navigation: {navigate}}) {
                     throw new Error(`Request failed with status: ${response.status}`);
                 }
     
-                const data = await response.json(); // TODO: unsure why this one is not returned as a tuple like the rest 
-                setMySavedSightings(data);
-                console.log("saved sightings: :", data); // FIXME: could be where the JSON parse error is ocoming from - errors when there are no saved sightings
+                const data = await response.json(); 
+                setMySavedSightings(data[0]);
             } catch (error) {
                 console.error(error);
             }
@@ -79,7 +78,7 @@ export default function SightingsPage({navigation: {navigate}}) {
     return (
         <ScrollView style={{backgroundColor: '#EDEDED'}}>
             <Text>Sightings of your pets</Text>
-            {myReportSightings 
+            {myReportSightings.length > 0 
             ? 
                 myReportSightings.map((sighting, index) => (
                     <Sighting userId={USER_ID} sighting={sighting} key={index} setReloadParent={setReloadPage}/>
@@ -88,7 +87,7 @@ export default function SightingsPage({navigation: {navigate}}) {
                 <Text>No sightings of your pets yet!</Text>}
 
             <Text>Saved Sightings</Text>
-            {mySavedSightings 
+            {mySavedSightings.length > 0
                 ? 
                 mySavedSightings.map((sighting, index) => (
                     <Sighting userId={USER_ID} sighting={sighting} key={index} setReloadParent={setReloadPage}/>
