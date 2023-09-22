@@ -1,7 +1,7 @@
 import Report from './Report';
-import { FlatList, ScrollView } from "native-base";
+import { FlatList, ScrollView } from 'native-base';
 import { RefreshControl } from 'react-native';
-import { memo, useState } from "react";
+import { memo, useState } from 'react';
 
 function ReportsList({reports, onRefresh, columns}) {
     const [refreshing, setRefreshing] = useState(false);
@@ -12,7 +12,7 @@ function ReportsList({reports, onRefresh, columns}) {
     }
 
     return (
-        <FlatList marginTop='3%' width='100%' numColumns={columns} style={{ backgroundColor: '#EDEDED' }} contentContainerStyle={{ alignItems: 'center' }}
+        <FlatList paddingY='3%' width='100%' numColumns={columns} style={{ backgroundColor: 'transparent' }} contentContainerStyle={{ alignItems: 'center' }}
             data={reports}
             renderItem={({item}) => <Report report={item} />}
             keyExtractor={item => `${item[0]}`}

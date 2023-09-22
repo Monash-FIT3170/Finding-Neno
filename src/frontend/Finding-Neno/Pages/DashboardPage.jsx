@@ -12,6 +12,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useSelector } from "react-redux";
 import ReportsList from '../components/ReportsList';
 import SightingsComponent from '../components/SightingsComponent';
+import IconText from '../components/IconText';
 
 const DashboardPage = () => {
 	const { IP, PORT } = useSelector((state) => state.api)
@@ -28,19 +29,15 @@ const DashboardPage = () => {
 	const [sightingData, setSightingData] = useState({ authorId: USER_ID });
 	// const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
 	const [sightingImage, setSightingImage] = useState(null);
-	const [isUploading, setIsUploading] = useState(false);
-	const [tabValue, setTabValue] = useState("reports");
 	const [allSightings, setAllSightings] = useState([]);
-	const [reportCards, setReportCards] = useState("");
-	const [sightingCards, setSightingCards] = useState("");
 
 	const [FABstate, setFABState] = useState({ open: false });
 	const onStateChange = ({ open }) => setFABState({ open });
 	const { open } = FABstate;
 
 	const [routes] = useState([
-		{ key: 'reports', title: 'Reports' },
-		{ key: 'sightings', title: 'Sightings' },
+		{ key: 'reports', title: 'Reports', icon: 'bullhorn', color: Color.NENO_BLUE },
+		{ key: 'sightings', title: 'Sightings', icon: 'eye', color: Color.NENO_BLUE },
 	])
 	const [index, setIndex] = useState(0);
 
@@ -152,16 +149,20 @@ const DashboardPage = () => {
 					}}
 					onIndexChange={setIndex}
 					initialLayout={{ width: windowWidth }}
-					renderTabBar={props => <TabBar {...props} style={{ backgroundColor: Color.NENO_BLUE }} />}
+          renderTabBar={props => <TabBar {...props} renderLabel={({ route, focused, color }) => (
+            // <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
+            <IconText iconName={route.icon} text={route.title} color={ route.color } />
+          )} style={{ backgroundColor: 'white' }} indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, width: '15%', left: '19%' }} />
+        }
 				/>
 
 				{/* TODO: fix this - it is not scrolling all the way */}
 
 				<Portal height='100%'>
-					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
+					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
 						actions={[
-							{ icon: 'bullhorn', label: 'New Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Report' }) },
-							{ icon: 'eye', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }) },
+							{ icon: 'bullhorn', label: 'New Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Report' }), color: Color.NENO_BLUE },
+							{ icon: 'eye', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }), color: Color.NENO_BLUE },
 						]} />
 				</Portal>
 			</SafeAreaView>

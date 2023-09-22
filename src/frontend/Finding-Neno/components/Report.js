@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Modal, TouchableHighlight, View } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react';
+import { ActivityIndicator, Animated, TouchableHighlight, View } from 'react-native'
 import ReportSightingModal from '../components/ReportSightingModal';
 import * as ImagePicker from 'expo-image-picker';
 import { HStack, Heading, Image, VStack, Text } from 'native-base';
@@ -47,7 +47,7 @@ const Report = ({ report, userId }) => {
 
     const [enlargeImage, setEnlargeImage] = useState(false);
     const [smallImageLoading, setSmallImageLoading] = useState(false);
-    const [suburbIsLoaded, setSuburbIsLoaded] = useState(false);
+    const [suburbIsLoaded, setSuburbIsLoaded] = useState(true);
 
     const closeImageModal = () => {
         setEnlargeImage(false);
@@ -57,9 +57,9 @@ const Report = ({ report, userId }) => {
         setShowModal(false);
     }
 
-    useEffect(() => {
-        getSuburb();
-    }, [])
+    // useEffect(() => {
+    //     getSuburb();
+    // }, [])
 
     // Retrieve suburb info from OpenStreetMap API by reverse geocoding
     const getSuburb = async () => {
@@ -87,27 +87,40 @@ const Report = ({ report, userId }) => {
         setSuburbIsLoaded(true);
     };
 
-    return (
-        suburbIsLoaded &&
+    const fadeAnim = useRef(new Animated.Value(0)).current;
 
-        <View style={{ maxWidth: "90%", marginTop: '2%', marginBottom: '3%', backgroundColor: 'white', borderRadius: 30, shadowOpacity: 0.15, shadowOffset: {height: 8} }}>
+    useEffect(() => {
+        fadeIn();
+    }, [suburbIsLoaded])
+
+    const fadeIn = () => {
+        Animated.timing(fadeAnim, {
+            toValue: 1,
+            duration: 700,
+            useNativeDriver: true,
+        }).start();
+    }
+
+    return (
+        <Animated.View style={{ opacity: fadeAnim, maxWidth: 380, marginTop: 10, marginBottom: 10, backgroundColor: (suburbIsLoaded ? "white" : "grey"), borderRadius: 30, shadowOpacity: 0.15, shadowOffset: {height: 8} }}>
             <ImageView images={[{uri: petImage}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor='gray'/>
 
             {/* Info */}
-            <View style={{ marginHorizontal: '4%' }}>
-                <HStack maxWidth="100%" alignItems={'center'} justifyContent='space-around'>
+            {suburbIsLoaded &&
+            <View style={{ margin: '4%', marginBottom: 4 }}>
+                <HStack maxWidth="100%" justifyContent='space-between'>
                     <View style={{ width: "49%", aspectRatio: 1 }} >
                         {
                             smallImageLoading && <ActivityIndicator style={{ top: '50%', left: '50%', position: 'absolute' }} />
                         }
                         <TouchableHighlight onPress={() => setEnlargeImage(true)} underlayColor="#DDDDDD"
-                            style={{ borderRadius: 20, shadowOpacity: 0.2, shadowOffset: { width: 2, height: 2 } }}>
+                            style={{ borderRadius: 20, backgroundColor: 'white', shadowOpacity: 0.2, shadowOffset: { width: 2, height: 2 }, }}>
                             <Image onLoadStart={() => setSmallImageLoading(true)} onLoadEnd={() => setSmallImageLoading(false)}
                                 source={{ uri: petImage }} style={{ maxHeight: '100%', aspectRatio: 1, borderRadius: 20 }} alt={`Image of missing pet ${petName}`} />
                         </TouchableHighlight>
                     </View>
 
-                    <View style={{ maxWidth: "49%", paddingLeft: 4, justifyContent: 'center' }} height={200} bg="#F9FDFF">
+                    <View style={{ width: "48%", justifyContent: 'center', alignItems:'center' }} bg="#F9FDFF">
                         <View>
                             <Heading textAlign='center' fontSize={petNameFontSize}>{petName}</Heading>
                         </View>
@@ -137,26 +150,28 @@ const Report = ({ report, userId }) => {
 
                 {
                     reportDesc &&
-                    <VStack marginY={0}>
+                    <VStack marginTop='3%'>
                         <Heading size="sm">Additional Description</Heading>
                         <Text>{reportDesc}</Text>
                     </VStack>
                 }
 
                 {/* Buttons */}
-                <HStack maxWidth={'100%'} justifyContent={"space-between"} marginY='3%'>
+                <HStack maxWidth={'100%'} justifyContent={"space-between"} marginTop='4%' marginBottom='3%'>
                     {
                         // Controls what the owner of the report sees. If user is owner of the report, they
                         // won't be displayed with the option to report a sighting.
                         authorId != userId ?
-                            <Button style={{ width: '69%' }} buttonColor={Color.NENO_BLUE} compact={true} icon="eye" mode="contained"
+                            <Button style={{ width: '69%' }} buttonColor={Color.NENO_BLUE} textColor='white' compact={true} icon="eye" mode="elevated"
                                 onPress={() => setShowModal(true)}>Report a Sighting</Button>
 
                             : ""
                     }
-                    <Button style={{ width: authorId == userId ? '100%' : '29%' }} buttonColor={Color.NENO_BLUE} compact={true} icon="export-variant" mode="contained">Share</Button>
+                    <Button style={{ width: authorId == userId ? '100%' : '29%' }} textColor={Color.NENO_BLUE} 
+                        buttonColor='white' compact={true} icon="export-variant" mode="elevated">Share</Button>
                 </HStack>
             </View>
+            }
             {/* Modal for reporting a sighting */}
             {
                 authorId != userId ?
@@ -167,7 +182,7 @@ const Report = ({ report, userId }) => {
                         showModal={showModal}
                     /> : ""
             }
-        </View>
+        </Animated.View>
     );
 };
 
