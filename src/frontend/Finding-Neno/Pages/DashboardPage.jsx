@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { Menu, useToast, ScrollView, View, Heading, Pressable } from "native-base";
+import { Menu, useToast, ScrollView, View, Heading, Pressable, FlatList} from "native-base";
 import { Dimensions, RefreshControl, SafeAreaView } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
@@ -27,6 +27,7 @@ const DashboardPage = () => {
 	const [sightingImage, setSightingImage] = useState(null);
 	const [initialReportsLoaded, setInitialReportsLoaded] = useState(false);
 	const [initialSightingsLoaded, setInitialSightingsLoaded] = useState(false);
+	const [reloadPage, setReloadPage] = useState(false);
 
 	const [routes] = useState([
 		{ key: 'reports', title: 'Reports' },
@@ -37,9 +38,10 @@ const DashboardPage = () => {
 	// 
 	useEffect(() => {
 		if (isFocused) {
+			setReloadPage(false);
 			fetchData();
 		}
-	}, [isFocused, initialReportsLoaded, initialSightingsLoaded]);
+	}, [isFocused, initialReportsLoaded, initialSightingsLoaded, reloadPage]);
 
 	const onRefresh = () => {
 		fetchData();
@@ -49,7 +51,7 @@ const DashboardPage = () => {
 		fetchAllReports();
 		setReportCards(generateReportCards());
 		fetchAllSightings();
-		setSightingCards(generateSightingCards());
+		// setSightingCards(generateSightingCards(allSightings)); // moved this into fetchAllSightings
 	}
 
 	const generateReportCards = () => {
@@ -60,10 +62,10 @@ const DashboardPage = () => {
 		)
 	}
 
-	const generateSightingCards = () => {
+	const generateSightingCards = (data) => {
 		return (
-			allSightings?.map((sighting, index) => (
-				<Sighting userId={USER_ID} sighting={sighting} key={index} />
+			data?.map((sighting, index) => (
+				<Sighting userId={USER_ID} sighting={sighting} key={index} setReloadParent={setReloadPage}/>
 			))
 		)
 	}
@@ -125,7 +127,7 @@ const DashboardPage = () => {
 			await response.json().then(data => {
 				setAllSightings(data[0]);
 				setInitialSightingsLoaded(true);
-				console.log(data[0].length)
+				setSightingCards(generateSightingCards(data[0]));
 			});
 			
 		} catch (error) {
@@ -138,7 +140,6 @@ const DashboardPage = () => {
 		setSightingData({ ...sightingData, image_url: sightingImage })
 	}, [sightingImage]);
 
-	// console.log(allSightings.length)
 	return (
 		<SafeAreaView style={{height: "100%"}}>
 			<View justifyContent="center" alignItems="flex-start" bg={'blue.300'} padding={4}>
@@ -163,7 +164,7 @@ const DashboardPage = () => {
 						case 'sightings':
 							return SightingsView();
 						default:
-							return null; // TODO: make a view that says "no reports/sightings yet" etc for when theres nothing on the app yet ?
+							return null; 
 					}
 				}}
 				onIndexChange={setIndex}

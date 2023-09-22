@@ -1,6 +1,6 @@
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Text, Dimensions } from 'react-native';
-import { Box, Center, View, Heading, VStack, useToast, Image, FormControl, Input, Button, ScrollView, Alert, KeyboardAvoidingView } from "native-base";
+import { Box, Center, View, Heading, VStack, useToast, Image, FormControl, Input, Button, ScrollView, Alert, KeyboardAvoidingView, FlatList} from "native-base";
 import { useIsFocused } from '@react-navigation/native';
 import { useSelector, useDispatch } from "react-redux";
 import { useEffect, useState } from 'react';
@@ -20,12 +20,13 @@ export default function SightingsPage({navigation: {navigate}}) {
     const [myReportSightings, setMyReportSightings] = useState([]);
     const [mySavedSightings, setMySavedSightings] = useState([]);
 
+    const [reloadPage, setReloadPage] = useState(false);
+
     useEffect(() => {
-		if (isFocused) {
-			fetchMyReportSightings();
-            fetchMySavedSightings();
-		}
-	}, [isFocused]);
+        fetchMyReportSightings();
+        fetchMySavedSightings();
+        setReloadPage(false);
+	}, [isFocused, reloadPage]);
 
 
     const fetchMyReportSightings = async () => {
@@ -73,27 +74,28 @@ export default function SightingsPage({navigation: {navigate}}) {
                 console.error(error);
             }
       };
-  
+      
     return (
         <ScrollView style={{backgroundColor: '#EDEDED'}}>
             <Text>Sightings of your pets</Text>
             {myReportSightings 
             ? 
                 myReportSightings.map((sighting, index) => (
-                    <Sighting userId={USER_ID} sighting={sighting} key={index}/>
+                    <Sighting userId={USER_ID} sighting={sighting} key={index} setReloadParent={setReloadPage}/>
                 ))
             : 
                 <Text>No sightings of your pets yet!</Text>}
 
             <Text>Saved Sightings</Text>
             {mySavedSightings 
-            ? 
+                ? 
                 mySavedSightings.map((sighting, index) => (
-                    <Sighting userId={USER_ID} sighting={sighting} key={index}/>
+                    <Sighting userId={USER_ID} sighting={sighting} key={index} setReloadParent={setReloadPage}/>
                 ))
             : 
                 <Text>No saved sightings yet!</Text>}
 
+        
             
         </ScrollView>
     )

@@ -7,7 +7,7 @@ import { useSelector } from "react-redux";
 import { useIsFocused } from '@react-navigation/native';
 
 
-const Sighting = ({userId, sighting}) => {
+const Sighting = ({userId, sighting, setReloadParent}) => {
     // Pet Data
     const windowWidth = Dimensions.get('window').width; 
 
@@ -44,11 +44,11 @@ const Sighting = ({userId, sighting}) => {
     
     const handlePressSaveBtn = async () => {
 
-      if (sightingSaved) {
-        setSaveSightingEndpoint('unsave_sighting');
-      } else {
-        setSaveSightingEndpoint('save_sighting');
-      }
+      // if (sightingSaved) {
+      //   setSaveSightingEndpoint('unsave_sighting');
+      // } else {
+      //   setSaveSightingEndpoint('save_sighting');
+      // }
 
       const url = `${IP}:${PORT}/${saveSightingEndpoint}`;
     
@@ -64,6 +64,7 @@ const Sighting = ({userId, sighting}) => {
         .then((res) => {
           if (res.status == 201) {
             setSightingSaved(!sightingSaved);
+            setReloadParent(true);
           }
         })
         .catch((error) => alert(error));
@@ -99,8 +100,7 @@ const Sighting = ({userId, sighting}) => {
       <Heading size = "lg" >
         {suburb}
       </Heading>
-      <Ionicons name={sightingSaved ? "bookmark": "bookmark-outline"} size={20} onPress={handlePressSaveBtn}/>
-      
+      <Ionicons name={savedByUser==USER_ID ? "bookmark": "bookmark-outline"} size={20} onPress={handlePressSaveBtn}/>
       </HStack>
 
       <Heading size = "sm"  paddingTop={2}>
