@@ -485,13 +485,12 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
 
     # Open cursor to access the connection.
     cur = connection.cursor()
-
+    
     if missing_report_id == None:
         # Query returns all sightings in the database
         query = """
-                    SELECT
-                        s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
-                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by
+                    SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
+                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name
                     FROM
                         sightings AS s
                     LEFT JOIN
@@ -501,38 +500,40 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
                     JOIN
                         users AS u ON s.author_id = u.id
                     LEFT JOIN 
-	                    users_saved_sightings AS ss ON ss.sighting_id = s.id
+	                    (SELECT * FROM users_saved_sightings WHERE user_id = %s) as ss ON ss.sighting_id = s.id
                     ORDER BY
                         s.date_time DESC;
                 """
     else:
         # Query returns all sightings of a missing report
         query = """
-                    SELECT
-                        s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
-                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by, ss.saved_id
+                    SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
+                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name
                     FROM
                         sightings AS s
-                    JOIN
+                    LEFT JOIN
                         missing_reports AS mr ON s.missing_report_id = mr.id
+                    LEFT JOIN 
+		                pets AS p ON p.id = mr.pet_id
                     JOIN
                         users AS u ON s.author_id = u.id
                     LEFT JOIN 
-	                    users_saved_sightings AS ss ON ss.sighting_id = s.id
-                    WHERE 
-                        s.missing_report_id = %s
+	                    (SELECT * FROM users_saved_sightings WHERE user_id = %s) as ss ON ss.sighting_id = s.id
+                    WHERE s.missing_report_id = %s
                     ORDER BY
                         s.date_time DESC;
                 """
+        
+        
         
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
 
     try:
         if missing_report_id == None:
-            cur.execute(query)
+            cur.execute(query, (user_id, ))
         else:
-            cur.execute(query, (missing_report_id, ))
+            cur.execute(query, (user_id, missing_report_id, ))
 
         # Retrieve rows as an array
         sightings = cur.fetchall()
@@ -556,14 +557,14 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
     """
     # Verify access token
     if not verify_access_token(connection, user_id, access_token):
+        print("problem with access token")
         return False
 
     # Open cursor to access the connection.
     cur = connection.cursor()
 
     query = """
-                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, 
-                    s.breed, u.name, u.email_address, u.phone_number, p.name as pet_name
+                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed, u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name
                 FROM sightings AS s
                     JOIN 
                         missing_reports AS mr ON s.missing_report_id = mr.id
@@ -571,8 +572,10 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
 		                pets AS p ON p.id = mr.pet_id
                     JOIN
                         users AS u ON s.author_id = u.id
+                    LEFT JOIN 
+                    	(SELECT * FROM users_saved_sightings WHERE user_id = %s) as ss ON ss.sighting_id = s.id
                 WHERE 
-                    mr.author_id = %s
+                    mr.author_id = %s 
                 ORDER BY
                 s.date_time DESC;
             """
@@ -580,12 +583,10 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
     result = False
 
     try:
-        cur.execute(query, (user_id,))
+        cur.execute(query, (user_id, user_id))
 
         # Retrieve rows as an array
         sightings = cur.fetchall()
-
-        print(f"Sightings for user reports successfully retrieved")
 
         result = sightings
     except Exception as e:
@@ -789,19 +790,22 @@ def retrieve_user_saved_sightings(connection: psycopg2.extensions.connection, us
 
     cur = connection.cursor()
 
+    # same as retrieve_sightings_from_database but also has filter for saved_by
     query = """
-        SELECT 
-            s.id AS sightings_id, s.date_time, s.location_longitude, s.location_latitude, s.description, s.animal, s.breed, s.image_url,
-            u.id
-        FROM 
-            users_saved_sightings AS us
-        JOIN 
-            users AS u ON us.user_id = u.id
+        SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed, u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name
+        FROM
+            sightings AS s
+        LEFT JOIN
+            missing_reports AS mr ON s.missing_report_id = mr.id
+        LEFT JOIN 
+            pets AS p ON p.id = mr.pet_id
         JOIN
-            sightings as s ON us.sighting_id = s.id
-        WHERE 
-            us.user_id = %s
-            
+            users AS u ON s.author_id = u.id
+        LEFT JOIN 
+            users_saved_sightings AS ss ON ss.sighting_id = s.id
+        WHERE ss.user_id = %s
+        ORDER BY
+            s.date_time DESC;   
     """
 
     # Result is the object returned or True if no errors encountered, False if there is an error

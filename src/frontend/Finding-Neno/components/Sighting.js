@@ -83,7 +83,7 @@ const Sighting = ({userId, sighting}) => {
           const response = await fetch(apiUrl);
 
           const result = await response.json();
-          setSuburb(`${result.address.suburb}, ${result.address.state}`)
+          setSuburb(`${result.address.suburb}, ${result.address.state}`);
           
       } catch (error) {
           console.error('Error fetching data:', error);
@@ -106,11 +106,9 @@ const Sighting = ({userId, sighting}) => {
       <Heading size = "sm"  paddingTop={2}>
         Last seen { dateTime} 
       </Heading>
-      {/* TODO: put reverse geocoded location here  */}
 
       <Text paddingTop={2}>
-        {/* {sightingDesc} */}
-        test description
+        {sightingDesc}
       </Text>
 
       <HStack space={8}>
