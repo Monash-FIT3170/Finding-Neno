@@ -34,21 +34,21 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
     const [saveSightingEndpoint, setSaveSightingEndpoint] = useState('save_sighting');
 
     useEffect(() => {
-        if (sightingSaved) {
+        if (savedByUser==USER_ID) {
           setSaveSightingEndpoint('unsave_sighting');
         } else {
           setSaveSightingEndpoint('save_sighting');
         }
     
-    }, [sightingSaved]);
+    }, [savedByUser]);
     
     const handlePressSaveBtn = async () => {
 
-      // if (sightingSaved) {
-      //   setSaveSightingEndpoint('unsave_sighting');
-      // } else {
-      //   setSaveSightingEndpoint('save_sighting');
-      // }
+      if (savedByUser==USER_ID) {
+        setSaveSightingEndpoint('unsave_sighting');
+      } else {
+        setSaveSightingEndpoint('save_sighting');
+      }
 
       const url = `${IP}:${PORT}/${saveSightingEndpoint}`;
     
@@ -73,9 +73,9 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
     const [suburb, setSuburb] = useState("");
 
 
-    useEffect(() => {
-      getSuburb();
-    }, [])
+    // useEffect(() => {
+    //   getSuburb();
+    // }, [])
 
     const getSuburb = async () => {
       try {
@@ -98,7 +98,8 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
       
       <HStack paddingTop={3} alignItems={"center"} justifyContent={"space-between"}>
       <Heading size = "lg" >
-        {suburb}
+        hardcoding suburb for now 
+        {/* {suburb} */}
       </Heading>
       <Ionicons name={savedByUser==USER_ID ? "bookmark": "bookmark-outline"} size={20} onPress={handlePressSaveBtn}/>
       </HStack>

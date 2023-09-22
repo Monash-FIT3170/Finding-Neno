@@ -28,9 +28,9 @@ const Report = ({report, userId}) => {
       setShowModal(false);
     }
 
-    useEffect(() => {
-      getSuburb();
-    }, [])
+    // useEffect(() => {
+    //   getSuburb();
+    // }, [])
 
     const getSuburb = async () => {
       try {
@@ -58,7 +58,7 @@ const Report = ({report, userId}) => {
 
       <Heading size = "sm" paddingLeft={5} paddingTop={2}>
         {/* Insert "Suburb, State" here */}
-        {/* Clayton, VIC */}
+        hardcoding suburb for now
         {suburb}
       </Heading>
 

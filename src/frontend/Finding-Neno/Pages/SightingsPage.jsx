@@ -70,6 +70,7 @@ export default function SightingsPage({navigation: {navigate}}) {
     
                 const data = await response.json(); // TODO: unsure why this one is not returned as a tuple like the rest 
                 setMySavedSightings(data);
+                console.log("saved sightings: :", data); // FIXME: could be where the JSON parse error is ocoming from - errors when there are no saved sightings
             } catch (error) {
                 console.error(error);
             }
