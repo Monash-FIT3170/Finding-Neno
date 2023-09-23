@@ -14,7 +14,7 @@ export default function SightingsPage({navigation: {navigate}}) {
     const [sightingOfMyPetCards, setSightingOfMyPetCards] = useState('');
     const [savedSightingCards, setSavedSightingCards] = useState('');
 
-	const {IP, PORT} = useSelector((state) => state.api)
+	const {API_URL} = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
     const [reloadPage, setReloadPage] = useState(false);
@@ -65,7 +65,7 @@ export default function SightingsPage({navigation: {navigate}}) {
 
     const fetchSightingsOfMyPets = async () => {
         try {
-                const url = `${IP}:${PORT}/get_my_report_sightings`;
+                const url = `${API_URL}/get_my_report_sightings`;
                 const response = await fetch(url, {
                     method: "GET",
                     headers: {

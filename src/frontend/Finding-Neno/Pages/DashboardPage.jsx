@@ -11,7 +11,7 @@ import Report from '../components/Report';
 import Sighting from '../components/Sighting';
 
 const DashboardPage = () => {
-	const { IP, PORT } = useSelector((state) => state.api)
+	const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
 	const windowWidth = Dimensions.get('window').width;
@@ -85,7 +85,7 @@ const DashboardPage = () => {
 	// API calls 
 	const fetchAllReports = async () => {
 		try {
-			const url = `${IP}:${PORT}/get_missing_reports`;
+			const url = `${API_URL}/get_missing_reports`;
 			const response = await fetch(url, {
 				method: "GET",
 				headers: {
@@ -108,9 +108,9 @@ const DashboardPage = () => {
 		}
 	};
 
-	const fetchAllSightings = async () => {
-		try {
-			const url = `${IP}:${PORT}/get_sightings`;
+  const fetchAllSightings = async () => {
+    try {
+			const url = `${API_URL}/get_sightings`;
 			const response = await fetch(url, {
 				method: "GET",
 				headers: {

@@ -29,7 +29,6 @@ To run this script, run the following command from the root directory:
     python src/backend/db/setup_db.py .env
 """
 
-
 def create_tables(connection: psycopg2.extensions.connection):
     """
     Sets up the database, including tables, keys and foreign key constraints
@@ -139,5 +138,9 @@ if __name__ == "__main__":
 
         # Drop tables if they exist
         drop_tables(connection=conn)
+
         # Create/recreate tables
         create_tables(connection=conn)
+
+        # Close connection
+        conn.close()
