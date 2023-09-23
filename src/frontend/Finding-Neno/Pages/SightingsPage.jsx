@@ -88,7 +88,7 @@ export default function SightingsPage({navigation: {navigate}}) {
 
       const fetchMySavedSightings = async () => {
         try {
-                const url = `${IP}:${PORT}/retrieve_saved_sightings`;
+                const url = `${API_URL}/retrieve_saved_sightings`;
                 const response = await fetch(url, {
                     method: "GET",
                     headers: {

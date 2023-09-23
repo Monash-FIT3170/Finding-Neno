@@ -12,7 +12,7 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
     const windowWidth = Dimensions.get('window').width; 
 
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
-    const { IP, PORT } = useSelector((state) => state.api)
+    const {API_URL} = useSelector((state) => state.api)
     const isFocused = useIsFocused();
 
     const id = sighting[0];
@@ -50,7 +50,7 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
         setSaveSightingEndpoint('save_sighting');
       }
 
-      const url = `${IP}:${PORT}/${saveSightingEndpoint}`;
+      const url = `${API_URL}/${saveSightingEndpoint}`;
     
       await fetch(url, {
         method: "POST",
