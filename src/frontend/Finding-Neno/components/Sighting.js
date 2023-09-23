@@ -100,7 +100,7 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
       <Heading size = "lg" >
         {suburb}
       </Heading>
-      <Ionicons name={savedByUser==USER_ID ? "bookmark": "bookmark-outline"} size={20} onPress={handlePressSaveBtn}/>
+      <Ionicons name={savedByUser==USER_ID ? "bookmark": "bookmark-outline"} size={24} onPress={handlePressSaveBtn}/>
       </HStack>
 
       <Heading size = "sm"  paddingTop={2}>
