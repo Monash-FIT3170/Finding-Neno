@@ -128,7 +128,7 @@ function TabNavigator() {
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="home" color={color} size={size} />
 					),
-					headerShown: false
+					headerShown: false,
 				}}
 			/>
 			<Tab.Screen
@@ -141,21 +141,21 @@ function TabNavigator() {
 				}}
 			/>
 			<Tab.Screen
-				name="Sightings"
-				component={SightingsStackNavigator}
-				options={{
-					tabBarIcon: ({ color, size }) => (
-						<Ionicons name="search" color={color} size={size} />
-					),
-					headerShown: false
-				}}
-			/>
-			<Tab.Screen
 				name="Reports"
 				component={ReportStackNavigator}
 				options={{
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="document-text" color={color} size={size} />
+					),
+					headerShown: false
+				}}
+			/>
+			<Tab.Screen
+				name="Sightings"
+				component={SightingsStackNavigator}
+				options={{
+					tabBarIcon: ({ color, size }) => (
+						<Ionicons name="search" color={color} size={size} />
 					),
 					headerShown: false
 				}}
@@ -184,20 +184,20 @@ function DashboardStackNavigator() {
 	)
 }
 
-function SightingsStackNavigator() {
-	return (
-		<Stack.Navigator initialRouteName="SightingsPage">
-			<Stack.Screen name="Sightings Page"  component={SightingsPage} options={{ title: "Sightings" }} />
-			<Stack.Screen name="New Sighting" component={NewSightingPage} />
-		</Stack.Navigator>
-	)
-}
-
 function ReportStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="ReportsPage">
 			<Stack.Screen name="Reports Page" component={ReportsPage} options={{ title: "Reports" }} />
 			<Stack.Screen name="New Report" component={NewReportPage} />
+		</Stack.Navigator>
+	)
+}
+
+function SightingsStackNavigator() {
+	return (
+		<Stack.Navigator initialRouteName="SightingsPage">
+			<Stack.Screen name="Sightings Page"  component={SightingsPage} options={{ title: "Sightings" }} />
+			<Stack.Screen name="New Sighting" component={NewSightingPage} />
 		</Stack.Navigator>
 	)
 }

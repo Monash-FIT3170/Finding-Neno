@@ -165,12 +165,12 @@ const Report = ({ report, userId }) => {
                         // Controls what the owner of the report sees. If user is owner of the report, they
                         // won't be displayed with the option to report a sighting.
                         authorId != userId ?
-                            <Button style={{ width: '69%' }} buttonColor={Color.NENO_BLUE} textColor='white' compact={true} icon="eye" mode="elevated"
+                            <Button style={{ width: '69%' }} buttonColor={Color.NENO_BLUE} labelStyle={{ fontWeight: 'bold' }} textColor='white' compact={true} icon="magnify" mode="elevated"
                                 onPress={() => setShowModal(true)}>Report a Sighting</Button>
 
                             : ""
                     }
-                    <Button style={{ width: authorId == userId ? '100%' : '29%' }} textColor={Color.NENO_BLUE} 
+                    <Button style={{ width: authorId == userId ? '100%' : '29%' }} labelStyle={{ fontWeight: 'bold' }} textColor={Color.NENO_BLUE} 
                         buttonColor='white' compact={true} icon="export-variant" mode="elevated">Share</Button>
                 </HStack>
             </View>

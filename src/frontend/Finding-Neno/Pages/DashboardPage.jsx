@@ -1,12 +1,11 @@
 import { useNavigation } from '@react-navigation/native';
-import { Menu, Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView } from "native-base";
+import { useToast } from "native-base";
 import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton } from 'react-native-paper';
 import { TabBar, TabView } from 'react-native-tab-view';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import { StatusBar } from 'expo-status-bar';
 
 import { useSelector } from "react-redux";
@@ -36,8 +35,8 @@ const DashboardPage = () => {
 	const { open } = FABstate;
 
 	const [routes] = useState([
-		{ key: 'reports', title: 'Reports', icon: 'bullhorn', color: Color.NENO_BLUE },
-		{ key: 'sightings', title: 'Sightings', icon: 'eye', color: Color.NENO_BLUE },
+		{ key: 'reports', title: 'Reports', icon: 'file-document', color: Color.NENO_BLUE },
+		{ key: 'sightings', title: 'Sightings', icon: 'magnify', color: Color.NENO_BLUE },
 	])
 	const [index, setIndex] = useState(0);
 
@@ -130,17 +129,24 @@ const DashboardPage = () => {
 		setSightingData({ ...sightingData, image_url: sightingImage })
 	}, [sightingImage]);
 
+	const [tabBarRendered, setTabBarRendered] = useState(false);
+
+	const renderTabBar = (props) => (
+		<TabBar {...props} 
+			renderLabel={({ route, focused, color }) => (
+				// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
+				<IconText iconName={route.icon} text={route.title} textColor={route.color} iconColor={route.color} iconSize={24} fontWeight='bold' />)} 
+			style={{ backgroundColor: 'white' }}
+			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, borderRadius: 1.5, width: '15%', left: '17.5%' }} 
+		/>
+	);
+
 	return (
 		<Provider>
 			<SafeAreaView style={{ flex: 1, height: '100%' }}>
 				<StatusBar style="auto" />
 				{/* TABS */}
-				<TabView lazy
-					ren
-					renderTabBar={props => <TabBar {...props} renderLabel={({ route, focused, color }) => (
-						// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
-						<IconText iconName={route.icon} text={route.title} textColor={route.color} iconColor={route.color} iconSize={24} fontWeight='bold' />
-						)} style={{ backgroundColor: 'white' }} indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, borderRadius: 1.5, width: '15%', left: '17.5%' }} />}
+				<TabView renderTabBar={renderTabBar}
 					navigationState={{ index, routes }}
 					renderScene={({ route }) => {
 						switch (route.key) {
@@ -160,8 +166,8 @@ const DashboardPage = () => {
 				<Portal>
 					<FAB.Group color='white' fabStyle={{ bottom: 5, backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
 						actions={[
-							{ icon: 'bullhorn', label: 'New Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Report' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
-							{ icon: 'eye', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+							{ icon: 'file-document', label: 'New Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Report' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+							{ icon: 'magnify', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
 						]} />
 				</Portal>
 

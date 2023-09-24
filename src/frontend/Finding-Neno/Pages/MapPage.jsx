@@ -166,8 +166,8 @@ export default function MapPage() {
 								marginTop: 5, width: '98%', backgroundColor: 'transparent', }}
 							theme={{ colors: { border: 'transparent', secondaryContainer: 'white', onSecondaryContainer: Color.NENO_BLUE }}} 
 							buttons={[
-								{ label: 'Reports', icon: 'bullhorn', value: 'reports' },
-								{ label: 'Sightings', icon: 'eye', value: 'sightings' },
+								{ label: 'Reports', icon: 'file-document', value: 'reports' },
+								{ label: 'Sightings', icon: 'magnify', value: 'sightings' },
 							]}
 						/>
 
