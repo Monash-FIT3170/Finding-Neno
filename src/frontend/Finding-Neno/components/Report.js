@@ -27,6 +27,9 @@ const Report = ({ report, userId }) => {
 
     const [showModal, setShowModal] = useState(false);
     const [suburb, setSuburb] = useState("");
+    const [enlargeImage, setEnlargeImage] = useState(false);
+    const [smallImageLoading, setSmallImageLoading] = useState(false);
+    const [suburbIsLoaded, setSuburbIsLoaded] = useState(true);
 
     // Set font size of pet name depending on length of name
     const [petNameFontSize, setPetNameFontSize] = useState(30);
@@ -43,9 +46,6 @@ const Report = ({ report, userId }) => {
         }
     }, [petName]);
 
-    const [enlargeImage, setEnlargeImage] = useState(false);
-    const [smallImageLoading, setSmallImageLoading] = useState(false);
-    const [suburbIsLoaded, setSuburbIsLoaded] = useState(true);
 
     const closeImageModal = () => {
         setEnlargeImage(false);

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { View } from 'react-native'
+import React, { useEffect, useRef, useState } from 'react';
+import { Animated, View } from 'react-native'
 import { Dimensions } from 'react-native';
 import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 import { Ionicons } from '@expo/vector-icons'; 
@@ -15,9 +15,6 @@ const Sighting = ({ sighting, userId }) => {
 
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
     const { IP, PORT } = useSelector((state) => state.api)
-
-    console.log(sighting)
-    console.log(sighting[3])
 
     const id = sighting[0];
     const missingReportId = sighting[1];
@@ -36,6 +33,11 @@ const Sighting = ({ sighting, userId }) => {
 
     const [sightingSaved, setSightingSaved] = useState(savedByUser==USER_ID); // true if the sighting is saved by this user
     const [saveSightingEndpoint, setSaveSightingEndpoint] = useState('save_sighting');
+
+    const [suburb, setSuburb] = useState("");
+    const [enlargeImage, setEnlargeImage] = useState(false);
+    const [smallImageLoading, setSmallImageLoading] = useState(false);
+    const [suburbIsLoaded, setSuburbIsLoaded] = useState(true);
 
     useEffect(() => {
         if (sightingSaved) {
@@ -73,12 +75,10 @@ const Sighting = ({ sighting, userId }) => {
         .catch((error) => alert(error));
     }
 
-  const [suburb, setSuburb] = useState("");
 
-
-  useEffect(() => {
-    getSuburb();
-  }, [])
+  // useEffect(() => {
+  //   getSuburb();
+  // }, [])
 
   // Retrieve suburb info from OpenStreetMap API by reverse geocoding
   const getSuburb = async () => {
@@ -104,9 +104,23 @@ const Sighting = ({ sighting, userId }) => {
       setSuburb("Location information unavailable");
     }
   };
+
+  const fadeAnim = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+      fadeIn();
+  }, [suburbIsLoaded])
+
+  const fadeIn = () => {
+      Animated.timing(fadeAnim, {
+          toValue: 1,
+          duration: 700,
+          useNativeDriver: true,
+      }).start();
+  }
     
   return (
-    <View justifyContent = "center" alignItems = "center" padding={4}>
+    <Animated.View style={{opacity: fadeAnim}} justifyContent = "center" alignItems = "center" padding={4}>
         {/* TODO: unhard code the heights, widths etc later */}
     <Box width={windowWidth - 20} height={sightingImage ? 400 : 250} bg="#F9FDFF" borderRadius={15} paddingLeft={5} paddingTop={2} paddingRight={5}>
       
@@ -157,7 +171,7 @@ const Sighting = ({ sighting, userId }) => {
       </Box>
 
     </Box>
-  </View>
+  </Animated.View>
 );
 };
 

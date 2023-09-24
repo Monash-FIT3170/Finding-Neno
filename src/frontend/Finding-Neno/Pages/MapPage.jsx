@@ -161,9 +161,8 @@ export default function MapPage() {
 
 					{/* Switch and label */}
 					<View style={{ position: 'absolute', top: '1%', width: '100%' }} alignItems='center'>
-
 						<SegmentedButtons value={tabValue} onValueChange={setTabValue} 
-							style={{ shadowOpacity: 0.4, shadowOffset: { width: 2, height: 2 }, 
+							style={{ shadowOpacity: 0.3, shadowOffset: { width: 2, height: 2 }, 
 								marginTop: 5, width: '98%', backgroundColor: 'transparent', }}
 							theme={{ colors: { border: 'transparent', secondaryContainer: 'white', onSecondaryContainer: Color.NENO_BLUE }}} 
 							buttons={[
@@ -172,9 +171,11 @@ export default function MapPage() {
 							]}
 						/>
 
-						{
-							tabValue == "reports" ? <Text style={styles.boldText}> {reports.length} reports in area</Text> : <Text style={styles.boldText}> {sightings.length} sightings in area</Text>
-						}
+						<View style={{ marginTop: 10 }}>
+							{
+								tabValue == "reports" ? <Text style={styles.boldText}> {reports.length} reports in area</Text> : <Text style={styles.boldText}> {sightings.length} sightings in area</Text>
+							}
+						</View>
 
 						<Button mode='elevated' style={{ backgroundColor: 'white', opacity: 0.9, marginTop: '1%' }} onPress={onPressSearch}>
 							<Text style={{ color: Color.NENO_BLUE, fontWeight: 'bold' }}>Search this area</Text>

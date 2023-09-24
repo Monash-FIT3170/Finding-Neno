@@ -6,5 +6,5 @@ export const Color =  {
     LIGHT_GREEN: '#c4f3ca',
     NENO_BLUE: '#2a9d8f',
     LIGHTER_NENO_BLUE: '#32c2b0',
-    FAINT_NENO_BLUE: '#A5EBE2'
+    FAINT_NENO_BLUE: '#E1FFFB'
   }

@@ -12,8 +12,6 @@ function SightingsList({sightings, onRefresh, columns}) {
         setRefreshing(false);
     }
 
-    console.log(sightings)
-
     return (
         <FlatList paddingY='3%' width='100%' numColumns={columns} style={{ backgroundColor: 'transparent' }} contentContainerStyle={{ alignItems: 'center' }}
             data={sightings}

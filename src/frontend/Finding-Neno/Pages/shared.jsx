@@ -30,19 +30,22 @@ export function formatDateTimeDisplay(datetime) {
     const day = datetime.getDate().toString().padStart(2, '0');
     const time = `${hours}:${minutes}`;
 
+    var date = null;
+
     if (diffDays === 0) {
-        return `Today ${time}`;
-    }
-    else if (diffDays === 1) {
-        return `Yesterday ${time}`;
+        date = "Today";
+    } else if (diffDays === 1) {
+        date = "Yesterday";
     } else if (diffDays < 4) {
-        return `${diffDays} days ago ${time}`;
+        date = `${diffDays} days ago`;
     } else {
         const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', "Oct", "Nov", "Dec"];
 
         const monthIndex = datetime.getMonth();
         const year = datetime.getFullYear().toString();
 
-        return `${day} ${months[monthIndex]} ${year} ${time}`;
+        date = `${day} ${months[monthIndex]} ${year}`;
     }
+
+    return `${date} at ${time}`
 }

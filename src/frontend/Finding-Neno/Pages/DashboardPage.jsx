@@ -136,11 +136,16 @@ const DashboardPage = () => {
 				<StatusBar style="auto" />
 				{/* TABS */}
 				<TabView lazy
+					ren
+					renderTabBar={props => <TabBar {...props} renderLabel={({ route, focused, color }) => (
+						// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
+						<IconText iconName={route.icon} text={route.title} textColor={route.color} iconColor={route.color} iconSize={24} fontWeight='bold' />
+						)} style={{ backgroundColor: 'white' }} indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, borderRadius: 1.5, width: '15%', left: '17.5%' }} />}
 					navigationState={{ index, routes }}
 					renderScene={({ route }) => {
 						switch (route.key) {
 							case 'reports':
-								return <ReportsList reports={reports} onRefresh={onRefresh} columns={1}/>;
+								return <ReportsList reports={reports} onRefresh={onRefresh} columns={1} />;
 							case 'sightings':
 								return <SightingsList sightings={allSightings} onRefresh={onRefresh} />;
 							default:
@@ -149,22 +154,17 @@ const DashboardPage = () => {
 					}}
 					onIndexChange={setIndex}
 					initialLayout={{ width: windowWidth }}
-          renderTabBar={props => <TabBar {...props} renderLabel={({ route, focused, color }) => (
-            // <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
-            <IconText iconName={route.icon} text={route.title} textColor={route.color} iconColor={route.color} iconSize={24} fontWeight='bold' />
-          )} style={{ backgroundColor: 'white' }} indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, width: '15%', left: '19%' }} />
-        }
+					
 				/>
 
-				{/* TODO: fix this - it is not scrolling all the way */}
-
-				<Portal height='100%'>
-					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
+				<Portal>
+					<FAB.Group color='white' fabStyle={{ bottom: 5, backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
 						actions={[
-							{ icon: 'bullhorn', label: 'New Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Report' }), color: Color.NENO_BLUE },
-							{ icon: 'eye', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }), color: Color.NENO_BLUE },
+							{ icon: 'bullhorn', label: 'New Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Report' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+							{ icon: 'eye', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
 						]} />
 				</Portal>
+
 			</SafeAreaView>
 		</Provider>
 	);
