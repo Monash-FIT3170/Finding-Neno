@@ -80,7 +80,8 @@ export default function SightingsPage({navigation: {navigate}}) {
                 }
     
                 const data = await response.json();
-                setSightingOfMyPetCards(generateSightingsOfMyPets(data[0]));
+                // filters out sightings that are linked to reports where isActive == False i.e pet has been found
+                setSightingOfMyPetCards(generateSightingsOfMyPets(data[0].filter(sighting => sighting[15] !== false)));
             } catch (error) {
                 console.error(error);
             }
@@ -103,7 +104,8 @@ export default function SightingsPage({navigation: {navigate}}) {
                 }
     
                 const data = await response.json(); 
-                setSavedSightingCards(generateSavedSightingsCards(data[0]));
+                // filters out sightings that are linked to reports where isActive == False i.e pet has been found
+                setSavedSightingCards(generateSavedSightingsCards(data[0].filter(sighting => sighting[15] !== false)));
             } catch (error) {
                 console.error(error);
             }
