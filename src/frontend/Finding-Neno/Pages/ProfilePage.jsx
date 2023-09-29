@@ -339,8 +339,13 @@ export default function ProfilePage({ navigation: { navigate } }) {
           </Box>
 					<Box h="2"></Box>
 
-					<Button onPress={() => setLogoutModalVisible(true)} backgroundColor={"#FA8072"}>
+					<Button onPress={() => setLogoutModalVisible(true)} backgroundColor={"#FA8072"} marginBottom={2}>
 						Logout
+					</Button>
+
+
+          <Button onPress={() => navigate("Settings Page")} backgroundColor={"#B8B8B8"}>
+						Settings
 					</Button>
 
 					<LogoutModal logoutModalVisible={logoutModalVisible} setLogoutModalVisible={setLogoutModalVisible} />
