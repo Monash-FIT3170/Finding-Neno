@@ -274,6 +274,18 @@ def put_archive_missing_report():
 def post_insert_sighting():
     return insert_sighting(g.db)
 
+@app.route("/retrieve_saved_sightings", methods=["GET"]) # Requires Access_token and user ID for authorization
+def get_saved_sighting():
+    return jsonify(retrieve_saved_sightings(g.db))
+
+@app.route("/save_sighting", methods=["POST"]) # Requires Access_token and user ID for authorization
+def post_saved_sighting():
+    return save_user_sighting(g.db)
+
+@app.route("/unsave_sighting", methods=["POST"]) # Requires Access_token and user ID for authorization
+def post_unsaved_sighting():
+    return unsave_user_sighting(g.db)
+
 
 if __name__ == "__main__": 
     if len(sys.argv) >= 2:
