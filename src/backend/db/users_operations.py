@@ -336,6 +336,7 @@ def archive_missing_report_in_database(connection: psycopg2.extensions.connectio
     except Exception as e:
         print(f"Error while executing query: {e}")
 
+
     # Close the cursor
     cur.close()
     return result
@@ -410,6 +411,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
         result = missing_reports
     except Exception as e:
         print(f"Error with retrieving missing reports: {e}")
+        result = []
 
     # Close the cursor
     cur.close()
@@ -466,12 +468,13 @@ def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_i
 
     except Exception as e:
         print(f"Error with retrieving the reports: {e}")
+        result = []
 
     # Close the cursor
     cur.close()
     return result
 
-def retrieve_sightings_from_database(connection: psycopg2.extensions.connection, missing_report_id: int, user_id: int, access_token: str):
+def retrieve_sightings_from_database(connection: psycopg2.extensions.connection, missing_report_id: int, expiry_time, user_id: int, access_token: str):
     """
     This function returns all pet sightings or pet sightings for a missing report if missing_report_id is provided.
 
@@ -485,64 +488,61 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
 
     # Open cursor to access the connection.
     cur = connection.cursor()
+
+    # Iniltialise list of parameters for query
+    params = []
+
+    # Query returns all sightings in the database
+    query = """
+                SELECT
+                    s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
+                    u.name, u.email_address, u.phone_number, p.name as pet_name
+                FROM
+                    sightings AS s
+                LEFT JOIN
+                    missing_reports AS mr ON s.missing_report_id = mr.id
+                LEFT JOIN 
+                    pets AS p ON p.id = mr.pet_id
+                JOIN
+                    users AS u ON s.author_id = u.id
+                WHERE
+                    TRUE
+            """
+        
+    if missing_report_id != None:
+        query += """
+                    AND s.missing_report_id = %s
+                """
+        
+        params.append(missing_report_id)
     
-    if missing_report_id == None:
-        # Query returns all sightings in the database
-        query = """
-                    SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
-                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name
-                    FROM
-                        sightings AS s
-                    LEFT JOIN
-                        missing_reports AS mr ON s.missing_report_id = mr.id
-                    LEFT JOIN 
-		                pets AS p ON p.id = mr.pet_id
-                    JOIN
-                        users AS u ON s.author_id = u.id
-                    LEFT JOIN 
-	                    (SELECT * FROM users_saved_sightings WHERE user_id = %s) as ss ON ss.sighting_id = s.id
-                    ORDER BY
-                        s.date_time DESC;
+    if expiry_time != None:
+        query += """
+                    AND s.date_time_of_creation > CURRENT_DATE - %s
                 """
-    else:
-        # Query returns all sightings of a missing report
-        query = """
-                    SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
-                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name
-                    FROM
-                        sightings AS s
-                    LEFT JOIN
-                        missing_reports AS mr ON s.missing_report_id = mr.id
-                    LEFT JOIN 
-		                pets AS p ON p.id = mr.pet_id
-                    JOIN
-                        users AS u ON s.author_id = u.id
-                    LEFT JOIN 
-	                    (SELECT * FROM users_saved_sightings WHERE user_id = %s) as ss ON ss.sighting_id = s.id
-                    WHERE s.missing_report_id = %s
-                    ORDER BY
-                        s.date_time DESC;
-                """
-        
-        
-        
-    # Result is the object returned or True if no errors encountered, False if there is an error
+        params.append(int(expiry_time));
+            
+    query += """
+                ORDER BY
+                s.date_time DESC;
+            """
     result = False
 
     try:
-        if missing_report_id == None:
-            cur.execute(query, (user_id, ))
-        else:
-            cur.execute(query, (user_id, missing_report_id, ))
+        cur.execute(query, params)
 
         # Retrieve rows as an array
         sightings = cur.fetchall()
 
         print(f"Sightings successfully retrieved")
 
-        result = sightings
+        if sightings is not None:
+            result = sightings
+        else:
+            result = []
     except Exception as e:
         print(f"Error with retrieving sightings: {e}")
+        result = []
 
     # Close the cursor
     cur.close()
@@ -588,9 +588,16 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
         # Retrieve rows as an array
         sightings = cur.fetchall()
 
-        result = sightings
+        print(f"Sightings for user reports successfully retrieved")
+
+        if sightings is not None:
+            result = sightings
+        else:
+            result = []
+
     except Exception as e:
         print(f"Error with retrieving sightings: {e}")
+        result = []
 
     # Close the cursor
     cur.close()
@@ -679,9 +686,13 @@ def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensio
 
         print(f"Missing reports in area successfully retrieved")
 
-        result = missing_reports
+        if missing_reports is not None:
+            result = missing_reports
+        else:
+            result = []
     except Exception as e:
         print(f"Error with retrieving missing reports in area: {e}")
+        result = []
 
     cur.close()
     return result
@@ -772,9 +783,13 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
 
         print(f"{len(sightings)} retrieved")
 
-        result = sightings
+        if sightings is not None:
+            result = sightings
+        else:
+            result = []
     except Exception as e:
         print(f"Error with retrieving sightings in area: {e}")
+        result = []
 
     cur.close()
     return result

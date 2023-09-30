@@ -110,7 +110,9 @@ const DashboardPage = () => {
 
   const fetchAllSightings = async () => {
     try {
-			const url = `${API_URL}/get_sightings`;
+      // Retrieve sightings that are less than 30 days old
+      const expiryTime = 30;
+			const url = `${API_URL}/get_sightings?expiry_time=${expiryTime}`;
 			const response = await fetch(url, {
 				method: "GET",
 				headers: {
