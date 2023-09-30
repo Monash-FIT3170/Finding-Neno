@@ -67,11 +67,10 @@ const Report = ({ report, userId }) => {
           Last seen {lastSeen}
         </Text>
 
-        <Heading size="sm" paddingLeft={5} paddingTop={2}>
-          {/* Insert "Suburb, State" here */}
-          {/* Clayton, VIC */}
-          {suburb}
-        </Heading>
+      <Heading size = "sm" paddingLeft={5} paddingTop={2}>
+        {/* Insert "Suburb, State" here */}
+        {suburb}
+      </Heading>
 
         <Text paddingLeft={5}>
           {reportDesc}

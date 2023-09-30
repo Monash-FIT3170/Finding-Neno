@@ -26,7 +26,7 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
     const [sightingImage, setSightingImage] = useState(null);
     const [showPicker, setShowPicker] = useState(false);
     const [isUploading, setIsUploading] = useState(false);
-    const { IP, PORT } = useSelector((state) => state.api)
+    const { API_URL } = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
     const toast = useToast();
@@ -207,7 +207,7 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
             }
 
 			setReportSightingBtnDisabled(true);
-			const url = `${IP}:${PORT}/insert_sighting`;
+			const url = `${API_URL}/insert_sighting`;
 
 			setSightingData({ ...sightingData, image_url: sightingImage })
 
