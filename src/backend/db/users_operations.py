@@ -506,8 +506,7 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
                     users AS u ON s.author_id = u.id
                 LEFT JOIN 
                     (SELECT * FROM users_saved_sightings WHERE user_id = %s) as ss ON ss.sighting_id = s.id
-                WHERE
-                    TRUE
+                WHERE mr.isactive IS NOT FALSE
             """
         
     if missing_report_id != None:
@@ -576,7 +575,7 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
                     LEFT JOIN 
                     	(SELECT * FROM users_saved_sightings WHERE user_id = %s) as ss ON ss.sighting_id = s.id
                 WHERE 
-                    mr.author_id = %s 
+                    mr.author_id = %s AND mr.isactive IS NOT FALSE
                 ORDER BY
                 s.date_time DESC;
             """
@@ -819,7 +818,7 @@ def retrieve_user_saved_sightings(connection: psycopg2.extensions.connection, us
             users AS u ON s.author_id = u.id
         LEFT JOIN 
             users_saved_sightings AS ss ON ss.sighting_id = s.id
-        WHERE ss.user_id = %s
+        WHERE ss.user_id = %s AND mr.isactive IS NOT FALSE
         ORDER BY
             s.date_time DESC;   
     """

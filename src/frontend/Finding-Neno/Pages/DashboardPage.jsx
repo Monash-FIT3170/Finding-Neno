@@ -131,7 +131,7 @@ const DashboardPage = () => {
 				setInitialSightingsLoaded(true);
 
 				// filters out sightings that are linked to reports where isActive == False i.e pet has been found
-				setSightingCards(generateSightingCards(data[0].filter(sighting => sighting[15] !== false)));
+				setSightingCards(generateSightingCards(data[0]));
 			});
 			
 		} catch (error) {
