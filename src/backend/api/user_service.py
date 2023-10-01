@@ -546,7 +546,7 @@ def generate_email_body(owner, pet, sighter, sighting_data):
                                                                 <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Date and Time: {sighting_data['dateTime']}</p>
                                                             </li>
                                                             <li>
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Location: {location_latitude + ', ' + location_longitude}</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Location:<a href="https://maps.google.com/?q={location_latitude},{location_longitude}">{location_latitude + ', ' + location_longitude}</a></p>
                                                             </li>
                                                             <li>
                                                                 <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Description: {sighting_data['description']}&nbsp;</p>
@@ -561,7 +561,20 @@ def generate_email_body(owner, pet, sighter, sighting_data):
                                                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"><strong>Here's what you can do:&nbsp;&nbsp;</strong></p>
                                                         <ol>
                                                             <li>
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"> <strong>Contact the Poster:</strong>&nbsp; Send a private message to the member who reported the sighting. They may have more information to share or could assist you further. Their contact details are: Name: {sighter['name']} Email address: <a href="mailto:{sighter['email_address']}">{sighter['email_address']}</a> Phone number: <a href="tel:{sighter['phone_number']}">{sighter['phone_number']}</a>. Please be in touch with them as soon as possible to see if they can help.&nbsp;&nbsp; </p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"> <strong>Contact the Poster:</strong>&nbsp; Send a private message to the member who reported the sighting. They may have more information to share or could assist you further. Their contact details are: 
+                                                                    <ul style="list-style-type:circle">
+                                                                        <li>
+                                                                            <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Name: {sighter['name']} </p>
+                                                                        </li>
+                                                                        <li>
+                                                                            <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Email address: <a href="mailto:{sighter['email_address']}">{sighter['email_address']}</a></p>
+                                                                        </li>
+                                                                        <li>
+                                                                            <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Phone number: <a href="tel:{sighter['phone_number']}">{sighter['phone_number']}</a>.</p>
+                                                                        </li>
+                                                                    </ul>
+                                                                  <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Please be in touch with them as soon as possible to see if they can help.&nbsp;&nbsp; </p>
+                                                                </p>
                                                             </li>
                                                             <li>
                                                                 <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"><strong>Visit the Location:</strong>&nbsp;If the sighting location is nearby, consider visiting it as soon as possible. Bring a recent photo of your pet and any identification or documentation you have.&nbsp;</p>
