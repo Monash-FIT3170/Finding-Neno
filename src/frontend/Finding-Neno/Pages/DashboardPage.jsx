@@ -129,6 +129,8 @@ const DashboardPage = () => {
 			await response.json().then(data => {
 				setAllSightings(data[0]);
 				setInitialSightingsLoaded(true);
+
+				// filters out sightings that are linked to reports where isActive == False i.e pet has been found
 				setSightingCards(generateSightingCards(data[0]));
 			});
 			
@@ -136,7 +138,7 @@ const DashboardPage = () => {
 			console.error(error);
 		}
 	};
-
+	
 	// image_url is not being set properly without this useEffect - should probs find a more robust way to fix it later 
 	useEffect(() => {
 		setSightingData({ ...sightingData, image_url: sightingImage })

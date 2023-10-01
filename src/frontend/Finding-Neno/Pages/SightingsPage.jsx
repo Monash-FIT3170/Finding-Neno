@@ -80,6 +80,7 @@ export default function SightingsPage({navigation: {navigate}}) {
                 }
     
                 const data = await response.json();
+                // filters out sightings that are linked to reports where isActive == False i.e pet has been found
                 setSightingOfMyPetCards(generateSightingsOfMyPets(data[0]));
             } catch (error) {
                 console.error(error);
@@ -103,6 +104,7 @@ export default function SightingsPage({navigation: {navigate}}) {
                 }
     
                 const data = await response.json(); 
+                // filters out sightings that are linked to reports where isActive == False i.e pet has been found
                 setSavedSightingCards(generateSavedSightingsCards(data[0]));
             } catch (error) {
                 console.error(error);
@@ -119,7 +121,7 @@ export default function SightingsPage({navigation: {navigate}}) {
 							return sightingOfMyPetCards.length 
                                 ? SightingsOfMyPetsView() 
                                 : <Text style={{fontSize: 16, alignSelf: 'center', paddingTop: '10%'}}>
-                                    No sightings of your pets yet!
+                                    No sightings of your lost pets yet!
                                 </Text>;
 						case 'mySavedSightings':
 							return savedSightingCards.length 
