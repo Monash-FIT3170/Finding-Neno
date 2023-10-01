@@ -490,13 +490,12 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
     cur = connection.cursor()
 
     # Iniltialise list of parameters for query
-    params = []
+    params = [user_id]
 
     # Query returns all sightings in the database
     query = """
-                SELECT
-                    s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
-                    u.name, u.email_address, u.phone_number, p.name as pet_name
+                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
+                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name
                 FROM
                     sightings AS s
                 LEFT JOIN
@@ -505,6 +504,8 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
                     pets AS p ON p.id = mr.pet_id
                 JOIN
                     users AS u ON s.author_id = u.id
+                LEFT JOIN 
+                    (SELECT * FROM users_saved_sightings WHERE user_id = %s) as ss ON ss.sighting_id = s.id
                 WHERE
                     TRUE
             """
