@@ -250,7 +250,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
     return (
         <KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}>
             <StatusBar style="auto" />
-            <SafeAreaView style={{ flex: 1, alignItems: 'center', marginHorizontal: "10%" }}>
+            <SafeAreaView style={{ flex: 1, marginHorizontal: "10%" }}>
                 <ImageView images={[{uri: sightingImage}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor='gray'/>
 
                 <VStack>

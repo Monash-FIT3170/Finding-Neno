@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { useToast } from "native-base";
+import { useToast, View } from "native-base";
 import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
@@ -162,9 +162,8 @@ const DashboardPage = () => {
 					initialLayout={{ width: windowWidth }}
 					
 				/>
-
 				<Portal>
-					<FAB.Group color='white' fabStyle={{ bottom: 5, backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
+					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
 						actions={[
 							{ icon: 'file-document', label: 'New Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Report' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
 							{ icon: 'magnify', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },

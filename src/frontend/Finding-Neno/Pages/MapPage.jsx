@@ -10,7 +10,7 @@ import { Dimensions } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 
 import { VStack } from 'native-base';
-import { Button, SegmentedButtons } from 'react-native-paper';
+import { Appbar, FAB, Provider, Portal, ToggleButton, Button, SegmentedButtons} from 'react-native-paper';
 import { Color } from '../components/atomic/Theme';
 
 "Make a button to toggle between reports and sightings. Then make a function "
@@ -20,6 +20,10 @@ export default function MapPage() {
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 	const navigation = useNavigation();
 	const isFocused = useIsFocused();
+	    
+	const [FABstate, setFABState] = useState({ open: false });
+	const onStateChange = ({ open }) => setFABState({ open });
+	const { open } = FABstate;
 
 	// const windowWidth = Dimensions.get('window').width; 
 	// const windowHeight = Dimensions.get('window').height;
@@ -101,6 +105,7 @@ export default function MapPage() {
 	}
 
 	return (
+		<Provider>
 		<SafeAreaView style={styles.container}>
 			<StatusBar style="auto" />
 				<View style={{ width: '100%',  height: '100%', alignItems: 'center' }}>
@@ -180,11 +185,19 @@ export default function MapPage() {
 						<Button mode='elevated' style={{ backgroundColor: 'white', opacity: 0.9, marginTop: '1%' }} onPress={onPressSearch}>
 							<Text style={{ color: Color.NENO_BLUE, fontWeight: 'bold' }}>Search this area</Text>
 						</Button>
+						<Portal>
+							<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
+								actions={[
+									{ icon: 'file-document', label: 'New Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Report' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+									{ icon: 'magnify', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+								]} />
+						</Portal>
 					</View>
 
 				</View>
 				
 		</SafeAreaView>
+		</Provider>
 	);
 }
 

@@ -209,7 +209,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	return (
 		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}>
 			<StatusBar style="auto" />
-			<SafeAreaView style={{ flex: 1, alignItems: 'center', marginHorizontal: "10%" }}>
+			<SafeAreaView style={{ flex: 1, marginHorizontal: "10%" }}>
 				<VStack>
 					<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Create a Report</Heading>
 

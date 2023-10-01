@@ -5,7 +5,7 @@ import { Dimensions, RefreshControl, SafeAreaView } from 'react-native';
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
-import { FAB } from 'react-native-paper';
+import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton } from 'react-native-paper';
 import { StatusBar } from 'expo-status-bar';
 
 import Report from "../components/Report";
@@ -21,6 +21,10 @@ export default function ReportsPage({ navigation: { navigate } }) {
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
 	const isFocused = useIsFocused();
+	const navigation = useNavigation();
+	const [FABstate, setFABState] = useState({ open: false });
+	const onStateChange = ({ open }) => setFABState({ open });
+	const { open } = FABstate;
 
 	const [reports, setReports] = useState([]);
 
@@ -54,17 +58,20 @@ export default function ReportsPage({ navigation: { navigate } }) {
 	};
 
 	return (
-		<SafeAreaView style={{height: '100%'}}>
-			<StatusBar style="auto" />
-			<View>
-				<ReportsList reports={reports} onRefresh={onRefresh} />
-			</View>
-			<FAB
-				icon={'plus'}
-				onPress={() => navigate('New Report')}
-				visible={true}
-				style={[{ position: 'absolute', bottom: 16, right: 16 }]}
-			/>
-		</SafeAreaView>
+		<Provider>
+			<SafeAreaView style={{height: '100%'}}>
+				<StatusBar style="auto" />
+				<View>
+					<ReportsList reports={reports} onRefresh={onRefresh} />
+				</View>
+				<Portal>
+					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
+						actions={[
+							{ icon: 'file-document', label: 'New Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Report' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+							{ icon: 'magnify', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+						]} />
+				</Portal>
+			</SafeAreaView>
+		</Provider>
 	)
 }
