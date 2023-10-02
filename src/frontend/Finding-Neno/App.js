@@ -44,7 +44,7 @@ export default function App() {
 	);
 }
 
-async function tryLocalCredentialLogin(IP, PORT) {
+async function tryLocalCredentialLogin(API_URL) {
 	const userId = await AsyncStorage.getItem("USER_ID");
 	const accessToken = await AsyncStorage.getItem("ACCESS_TOKEN");
 
@@ -54,7 +54,7 @@ async function tryLocalCredentialLogin(IP, PORT) {
 			ACCESS_TOKEN: accessToken,
 		}
 
-    const url = `${IP}:${PORT}/verify_token`;
+    const url = `${API_URL}/verify_token`;
     const verifyTokenRes = await fetch(url, {
       method: 'GET',
       headers: {
@@ -77,16 +77,16 @@ const FORCE_RELOGIN = false;
 
 function MainNavigator() {
 	console.log(store.getState());
-	let { IP, PORT } = useSelector((state) => state.api);
+	let { API_URL } = useSelector((state) => state.api);
 
 
 	useEffect(() => {
 		if (FORCE_RELOGIN) {
 			store.dispatch(logout())
 		} else {
-			tryLocalCredentialLogin(IP, PORT);
+			tryLocalCredentialLogin(API_URL);
 		}
-	}, [IP, PORT])
+	}, [API_URL])
 
 	const isLoggedIn = useSelector(() => store.getState().user.LOGGED_IN)
 
@@ -99,19 +99,19 @@ function MainNavigator() {
 		{isLoggedIn ? (<Stack.Screen
 			name="Tab Navigator"
 			component={TabNavigator}
-			initialParams={{ IP, PORT }}
+			initialParams={{ API_URL }}
 			options={{ headerShown: false }}
 		/>) : (<><Stack.Screen name="Login" component={LoginPage}
-			initialParams={{ IP, PORT }}
+			initialParams={{ API_URL }}
 			options={{
 				headerShown: false
 			}} />
 			<Stack.Screen name="Signup" component={SignupPage}
-				initialParams={{ IP, PORT }} />
+				initialParams={{ API_URL }} />
 			<Stack.Screen name="ForgotPassword" component={ForgotPasswordPage}
-				initialParams={{ IP, PORT }} />
+				initialParams={{ API_URL }} />
 			<Stack.Screen name="PasswordReset" component={PasswordResetPage}
-				initialParams={{ IP, PORT }} />
+				initialParams={{ API_URL }} />
 		</>)
 
 		}
@@ -140,16 +140,16 @@ function TabNavigator() {
 					),
 				}}
 			/>
-			{/* <Tab.Screen
+			<Tab.Screen
 				name="Sightings"
-				component={SightingsStackNavigator}
+				component={SightingsPage}
 				options={{
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="search" color={color} size={size} />
 					),
-					headerShown: false
+					headerShown: true
 				}}
-			/> */}
+			/>
 			<Tab.Screen
 				name="Report"
 				component={ReportStackNavigator}
@@ -187,6 +187,7 @@ function DashboardStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="DashboardPage">
 			<Stack.Screen name="Dashboard Page" component={DashboardPage} />
+			<Stack.Screen name="New Report Page" component={NewReportPage} />
 			<Stack.Screen name="New Sighting Page" component={NewSightingPage} />
 		</Stack.Navigator>
 	)

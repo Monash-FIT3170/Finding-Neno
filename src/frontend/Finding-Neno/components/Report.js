@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { View } from 'react-native'
 import { Dimensions } from 'react-native';
 import ReportSightingModal from '../components/ReportSightingModal';
@@ -10,18 +10,20 @@ const Report = ({ report, userId }) => {
 	// Pet Data
 	const windowWidth = Dimensions.get('window').width;
 
-	const lastSeen = report[1];
-	const reportDesc = report[2];
-	const location = report[3];
-	const authorId = report[14]
-
-	const petName = report[6][0].toUpperCase() + report[6].substring(1);
-	const petSpecies = report[7][0].toUpperCase() + report[7].substring(1);;
-	const petBreed = report[8][0].toUpperCase() + report[8].substring(1);;
-	const petImage = report[9];
-	const distance = report[15] ? Math.round(parseFloat(report[15] * 100)) / 100 : null;
+    const lastSeen = report[1];
+    const reportDesc = report[2];
+    const locationLongitude = report[3];
+    const locationLatitude = report[4];
+    const authorId = report[14]
+    
+    const petName = report[6][0].toUpperCase() +report[6].substring(1);
+    const petSpecies = report[7][0].toUpperCase() +report[7].substring(1);;
+    const petBreed = report[8][0].toUpperCase() +report[8].substring(1);;
+    const petImage = report[9];
+	const distance = report[15] != null ? Math.round(parseFloat(report[15] * 100)) / 100 : null;
 
 	const [showModal, setShowModal] = useState(false);
+    const [suburb, setSuburb] = useState("");
 
 	const closeModal = () => {
 		setShowModal(false);
@@ -34,15 +36,16 @@ const Report = ({ report, userId }) => {
 	// console.log("SHOW MODAL")
 	// console.log(showModal)
 
-	return (
-		<View justifyContent="center" alignItems="center" padding={4}>
-			<Box width={windowWidth - 20} height={400} bg="#F9FDFF" borderRadius={15}>
-				<Heading size="xl" paddingLeft={5} paddingTop={2}>
-					{petName}
-				</Heading>
-				<Text paddingLeft={5}>
-					Last seen {lastSeen}
-				</Text>
+    
+  return (
+    <View justifyContent = "center" alignItems = "center" padding={4}>
+    <Box width={windowWidth - 20} height={400} bg="#F9FDFF" borderRadius={15}>
+      <Heading size = "xl" paddingLeft={5} paddingTop={2}>
+      {petName}
+      </Heading>
+      <Text paddingLeft={5}>
+        Last seen {lastSeen}
+      </Text>
 
 				<Heading size="sm" paddingLeft={5} paddingTop={2}>
 					Clayton, VIC
@@ -73,7 +76,7 @@ const Report = ({ report, userId }) => {
 
 					<>
 						{
-							distance &&
+							distance != null &&
 							<VStack>
 								<Heading size="sm" paddingLeft={5} paddingTop={2}>
 									Distance
