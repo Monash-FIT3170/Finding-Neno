@@ -30,7 +30,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
    * It takes in the pet object as a parameter, it will edit the existing pet, and call the PUT method '/update_pet' to update the pet.
    */
 
-  const { IP, PORT } = useSelector((state) => state.api);
+  const { API_URL } = useSelector((state) => state.api);
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
   const pet = useSelector((state) => state.pet);
   const dispatch = useDispatch();
@@ -68,7 +68,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
     let url;
     let method;
 
-    url = `${IP}:${PORT}/update_pet`;
+    url = `${API_URL}/update_pet`;
     method = "PUT";
 
     let isValid = validateDetails(formData);
