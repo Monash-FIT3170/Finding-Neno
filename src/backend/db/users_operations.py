@@ -222,6 +222,23 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     cur.close()
     return result
 
+def insert_user_settings_to_database(connection, user_id, isEnabled, location_longitude, location_latitude, radius):
+    cur = connection.cursor()
+
+    # Construct an INSERT query to insert this user into the DB
+    query = """INSERT INTO user_settings (user_id, isEnabled, location_longitude, location_latitude, radius) VALUES (%s, %s, %s, %s, %s);"""
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id, isEnabled, location_longitude, location_latitude, radius))
+        print(f"Query executed successfully: {query}")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    connection.commit()
+    cur.close()
+
 def update_missing_report_in_database(connection: psycopg2.extensions.connection, report_id: int,  pet_id: int, author_id: int,
                                       last_seen, location_longitude, location_latitude, description, isActive, access_token):
     """
@@ -281,6 +298,42 @@ def update_report_active_status(connection: psycopg2.extensions.connection, repo
         print(f"Error updating status: {e}")
         connection.rollback()
         return False
+
+def update_user_settings_in_database(connection, user_id, isEnabled, location_longitude, location_latitude, radius, access_token):
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    # UPDATE query to update missing report
+    query = """
+                UPDATE 
+                    user_settings 
+                SET 
+                    isEnabled = %s, location_longitude = %s, location_latitude = %s, radius = %s 
+                WHERE 
+                    id = %s;
+                """
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (isEnabled, location_longitude, location_latitude, radius, user_id))
+        print(f"Query executed successfully: {query}")
+
+        # Commit the change
+        connection.commit()
+
+        result = True
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
 
 def archive_missing_report_in_database(connection: psycopg2.extensions.connection, reportId, isActive, user_id, access_token):
     """
@@ -751,6 +804,35 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
     cur.close()
     return result
 
+def retrieve_user_settings_from_database(connection, user_id, access_token):
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    query = """SELECT isEnabled, location_longitude, location_latitude, radius FROM user_settings WHERE id = %s """
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id,))
+        user_settings = cur.fetchall()
+
+        if len(user_settings) == 0:
+            print("No user found with the provided id and access token.")
+        else: 
+            result = user_settings[0]  
+
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
 def delete_missing_reports_of_pet(connection: psycopg2.extensions.connection, pet_id: int):
     """
     This function deletes all missing reports associated with pet.
@@ -811,7 +893,6 @@ def change_password_in_database(connection: psycopg2.extensions.connection, emai
     cur.close()
     return result
 
-
 def get_user_details(connection: psycopg2.extensions.connection, user_id: int):
     """
     Retrieves a user from the database using its id.
@@ -859,7 +940,6 @@ def get_user_details(connection: psycopg2.extensions.connection, user_id: int):
 
     return user_details
         
-
 def get_missing_report(connection: psycopg2.extensions.connection, missing_report_id: int):
     """
     Retrieves a missing report from the database using its id.
@@ -911,7 +991,6 @@ def get_missing_report(connection: psycopg2.extensions.connection, missing_repor
     }
 
     return mr
-
 
 def send_notification(
     email_address: str,

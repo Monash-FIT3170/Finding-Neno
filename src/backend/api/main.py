@@ -131,6 +131,25 @@ def delete_pet_api():
     pet_id = request.args.get("pet_id")
     return delete_pet_operation(g.db, pet_id)
 
+@app.route("/insert_user_settings", methods=["POST"])
+def post_insert_user_settings():
+    return insert_user_settings(g.db)
+
+@app.route("/get_user_settings", methods=["GET"])
+def get_user_settings():
+    """
+    Returns an array of user settings for a specific user_id, of the following format.
+
+    [
+        isEnabled, location_longitude, location_latitude, radius
+    ]
+    """
+    user_id = request.args.get("user_id")
+    return jsonify(retrieve_user_settings(g.db, user_id))
+
+@app.route("/update_user_settings", methods=["PUT"])
+def update_user_settings_api():
+    return update_user_settings(g.db)
 
 @app.route("/insert_missing_report", methods=["POST"]) # Requires Access_token and user ID for authorization
 def post_insert_missing_report():
@@ -159,8 +178,6 @@ def get_reports_by_pet():
     pet_id = request.args.get("pet_id")
     return jsonify(retrieve_reports_by_pet(g.db, pet_id))  # Updated function name
 
-
-
 @app.route("/get_sightings", methods=["GET"])
 def get_sightings():
     """
@@ -173,7 +190,6 @@ def get_sightings():
     """
     missing_report_id = request.args.get("missing_report_id")
     return jsonify(retrieve_sightings(g.db, missing_report_id))
-
 
 @app.route("/get_missing_reports_in_area", methods=["GET"])
 def get_missing_reports_in_area():
@@ -191,7 +207,6 @@ def get_missing_reports_in_area():
     latitude = request.args.get("lat")
     latitude_delta = request.args.get("lat_delta")
     return jsonify(retrieve_missing_reports_in_area(g.db, longitude, longitude_delta, latitude, latitude_delta))
-
 
 @app.route("/get_sightings_in_area", methods=["GET"])
 def get_sightings_in_area():
@@ -222,8 +237,6 @@ def get_my_report_sightings():
     """
     return jsonify(retrieve_my_report_sightings(g.db))
 
-
-
 @app.route("/update_missing_report", methods=["PUT"])
 def put_update_missing_report():
     return update_missing_report(g.db)
@@ -239,7 +252,6 @@ def put_archive_missing_report():
 @app.route("/insert_sighting", methods=["POST"]) # Requires Access_token and user ID for authorization
 def post_insert_sighting():
     return insert_sighting(g.db)
-
 
 if __name__ == "__main__": 
     # Get environment file path from command line arguments

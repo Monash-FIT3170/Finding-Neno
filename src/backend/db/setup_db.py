@@ -41,7 +41,8 @@ def create_tables(connection: psycopg2.extensions.connection):
         """CREATE TABLE "users" (id SERIAL PRIMARY KEY, email_address VARCHAR(255) NOT NULL, phone_number VARCHAR(
         255), name VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL,access_token VARCHAR(255) NOT NULL);""",
         # Create user settings table
-        """CREATE TABLE "user_settings" (user_id INTEGER PRIMARY KEY REFERENCES "users"(id));""",
+        """CREATE TABLE "user_settings" (user_id INTEGER PRIMARY KEY REFERENCES "users"(id), , isEnabled BOOLEAN NOT NULL, location_longitude FLOAT, location_latitude 
+        FLOAT, radius FLOAT);""",
         # Create pets table
         """CREATE TABLE "pets" (id SERIAL PRIMARY KEY, name VARCHAR(255), animal VARCHAR(255), breed VARCHAR(255), 
         description VARCHAR(255), image_url VARCHAR(1000), isMissing BOOLEAN NOT NULL,  owner_id INTEGER REFERENCES "users"(id));""",

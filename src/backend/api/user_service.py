@@ -13,7 +13,6 @@ from db.authentication import verify_access_token
 from db.users_operations import *
 from db.pets import get_pet
 
-
 def check_access_token(connection) -> bool:
     # json_data = request.get_json(force=True)
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
@@ -23,8 +22,6 @@ def check_access_token(connection) -> bool:
         return "Success", 200
     else:
         return "User does not have access", 401
-
-
 
 def insert_user(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
@@ -103,6 +100,18 @@ def insert_missing_report(connection) -> Tuple[str, int]:
         update_pet_missing_status(connection, pet_id, True)
         return "Success", 201
 
+def insert_user_settings(connection)  -> Tuple[str, int]:
+    json_data = request.get_json(force=True)
+
+    user_id = request.headers["User-ID"]
+    isEnabled = False
+    location_longitude = json_data["long"]
+    location_latitude = json_data["lat"]
+    radius = json_data["radius"]
+
+    insert_user_settings_to_database(connection, user_id, isEnabled, location_longitude, location_latitude, radius)
+    return "Success", 201
+
 def update_missing_report(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
 
@@ -129,7 +138,7 @@ def update_missing_report(connection) -> Tuple[str, int]:
         return "User does not have access", 401
     else:
         return "Success", 201
-    
+
 def update_report_status(conn):
     data = request.get_json()
     token = request.headers.get('Authorization').split('Bearer ')[1]
@@ -142,6 +151,18 @@ def update_report_status(conn):
     if success:
         return "", 200
     return "", 400
+
+def retrieve_user_settings(connection)  -> Tuple[str, int]:
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+    print(access_token)
+    print(user_id)
+    user_settings = retrieve_user_settings_from_database(connection, user_id, access_token)
+
+    if user_id is False:
+        return "User does not have access", 401
+    else:
+        return user_settings, 200
 
 def archive_missing_report(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
@@ -205,7 +226,6 @@ def retrieve_reports_by_pet(connection, pet_id) -> Tuple[str, int]:
     else:
         return reports, 200
 
-
 def retrieve_sightings(connection, missing_report_id) -> Tuple[str, int]:
     """
     This function calls the function that connects to the db to retrieve all sightings or sightings for a missing 
@@ -255,7 +275,6 @@ def retrieve_missing_reports_in_area(connection, longitude, longitude_delta, lat
         elif len(missing_reports) == 0:
             return [], 204
     
-
 def retrieve_sightings_in_area(connection, longitude, longitude_delta, latitude, latitude_delta) -> Tuple[str, int]:
     """
     This function calls the function that connects to the db to retrieve sightings in an area of width longitude_delta, height
@@ -270,8 +289,23 @@ def retrieve_sightings_in_area(connection, longitude, longitude_delta, latitude,
             return sightings, 200
         elif len(sightings) == 0:
             return [], 204
-    
-    
+
+def update_user_settings(connection ) -> Tuple[str, int]:
+    json_data = request.get_json(force=True)
+
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+
+    isEnabled = json_data["enabled"]
+    location_longitude = json_data["long"]
+    location_latitude = json_data["lat"]
+    radius = json_data["radius"]
+
+    result = update_user_settings_in_database(connection, user_id, isEnabled, location_longitude, location_latitude, radius, access_token)
+    if result is False:
+        return "User does not have access", 401
+    else:
+        return "Success", 201
 
 def login(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
@@ -286,7 +320,6 @@ def login(connection) -> Tuple[str, int]:
     else:
         return "Fail", 401
 
-
 def retrieve_profile(connection, profile_user_id) -> Tuple[str, int, str, str, str]:
 
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
@@ -298,7 +331,6 @@ def retrieve_profile(connection, profile_user_id) -> Tuple[str, int, str, str, s
         return user_info, 200 # Return profile information
     else:
         return "The user does not have access", 401
-
 
 def change_password(connection, account_user_id: int) -> Tuple[str, int]:
     """
@@ -317,7 +349,6 @@ def change_password(connection, account_user_id: int) -> Tuple[str, int]:
     else:
         return "", 200
 
-
 def validate_password_reset(username, reset_token, new_password):
     if not verify_username(username):
         return False
@@ -332,20 +363,17 @@ def validate_password_reset(username, reset_token, new_password):
     reset_password(username, new_password)
     return True
 
-
 def verify_username(username):
     # Check if username exists in the database
     # Perform necessary validations (e.g., username format, uniqueness, etc.)
     # Return True if the username is valid; otherwise, return False
     return True  # Placeholder, replace with actual validation logic
 
-
 def verify_reset_token(username, reset_token):
     # Verify if the reset token is valid for the given username
     # Perform necessary validations (e.g., token expiration, uniqueness, etc.)
     # Return True if the token is valid; otherwise, return False
     return True  # Placeholder, replace with actual validation logic
-
 
 def verify_password_requirements(password):
     # Perform password validation
@@ -359,13 +387,11 @@ def verify_password_requirements(password):
         return False
     return True
 
-
 def reset_password(username, new_password):
     # Update  user's password in database
     # Return True if the password reset was successful; otherwise, return False
     return True
     # Replace with password reset logic
-
 
 def send_notification_to_report_author(
     connection: psycopg2.extensions.connection,
@@ -406,7 +432,6 @@ def send_notification_to_report_author(
     else:
         print("Notification failed to send")
     return res
-
 
 def generate_email_body(owner, pet, sighter, sighting_data):
     """Generates and returns the body of the email to be sent to the owner of a missing pet
@@ -664,4 +689,3 @@ def generate_email_body(owner, pet, sighter, sighting_data):
     </html>
     """
     return html_code
-
