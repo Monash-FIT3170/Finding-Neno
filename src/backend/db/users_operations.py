@@ -168,7 +168,7 @@ def check_user_login_details(connection: psycopg2.extensions.connection, usernam
 
 def insert_sighting_to_database(connection: psycopg2.extensions.connection, author_id: str, date_time_of_creation: datetime,
                                     missing_report_id: int, animal: str, breed: str, date_time: datetime, location_longitude: float,
-                                        location_latitude: float, location: str, image_url: str, description: str, user_id: int, access_token: str):
+                                        location_latitude: float, location_string: str, image_url: str, description: str, user_id: int, access_token: str):
     """
     This function is used to add a new sighting to the database.
 
@@ -184,14 +184,14 @@ def insert_sighting_to_database(connection: psycopg2.extensions.connection, auth
 
     # Construct and INSERT query to insert this user into the DB
     query = """INSERT INTO sightings (missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, 
-    location_latitude, location, image_url, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+    location_latitude, location_string, image_url, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
 
     # Execute the query
     try:
-        cur.execute(query, (author_id, date_time_of_creation, missing_report_id, animal, breed, date_time, location_longitude, location_latitude, location, image_url, description))
+        cur.execute(query, (author_id, date_time_of_creation, missing_report_id, animal, breed, date_time, location_longitude, location_latitude, location_string, image_url, description))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -207,7 +207,7 @@ def insert_sighting_to_database(connection: psycopg2.extensions.connection, auth
 
 def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id: str, date_time_of_creation: datetime,
                                       pet_id: int, last_seen: datetime, location_longitude: float, location_latitude: float,
-                                          description: str, user_id: int, access_token: str):
+                                          location_string: str, description: str, user_id: int, access_token: str):
     """
     This function is used to add a new missing report to the database.
 
@@ -225,13 +225,13 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
 
     # Construct and INSERT query to insert this user into the DB
     query = """INSERT INTO missing_reports (pet_id, author_id, date_time_of_creation, date_time, location_longitude, 
-    location_latitude, description, isActive) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
+    location_latitude, location_string, description, isActive) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
     # Execute the query
     try:
         # New reports are automatically set as active
         isActive = True
-        cur.execute(query, (author_id, date_time_of_creation, pet_id, last_seen, location_longitude, location_latitude, description, isActive))
+        cur.execute(query, (author_id, date_time_of_creation, pet_id, last_seen, location_longitude, location_latitude, location_string, description, isActive))
         print(f"Query executed successfully: {query}")
 
         # Commit the change

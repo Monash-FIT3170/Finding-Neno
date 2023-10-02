@@ -90,10 +90,11 @@ def insert_missing_report(connection) -> Tuple[str, int]:
 
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
+    location_string = get_suburb(location_latitude, location_longitude)
 
     description = json_data["description"]
     
-    result = insert_missing_report_to_database(connection, pet_id, author_id, date_time_of_creation, last_seen, location_longitude, location_latitude, description, user_id, access_token)
+    result = insert_missing_report_to_database(connection, pet_id, author_id, date_time_of_creation, last_seen, location_longitude, location_latitude, location_string, description, user_id, access_token)
 
     if result is False:
         return "User does not have access", 401
