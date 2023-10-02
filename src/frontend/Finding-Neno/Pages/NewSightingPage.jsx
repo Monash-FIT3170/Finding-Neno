@@ -175,7 +175,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                 dateTime: formData.dateTime,
                 dateTimeOfCreation: formatDatetime(new Date()),
                 description: formData.description,
-				lastLocation: `${coordinates.longitude}, ${coordinates.latitude}`
+				lastLocation: formData.lastLocation
             }
 
             const url = `${API_URL}/insert_sighting`;
@@ -254,9 +254,10 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         try {
             const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
 
-            const response = await fetch(apiUrl);
-            if (response.data.length > 0) {
-                const firstResult = response.data[0];
+			const response = await fetch(apiUrl);
+			const result = await response.json();
+			if (result.length > 0) {
+				const firstResult = result[0];
                 setCoordinates({
                     latitude: parseFloat(firstResult.lat),
                     longitude: parseFloat(firstResult.lon),
@@ -272,7 +273,6 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                     latitudeDelta: 0.03,
                     longitudeDelta: 0.05,
                 });
-                console.log(firstResult);
             } else {
                 setCoordinates(null);
             }
