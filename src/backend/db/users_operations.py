@@ -311,9 +311,9 @@ def update_user_settings_in_database(connection, user_id, isEnabled, location_lo
                 UPDATE 
                     user_settings 
                 SET 
-                    isEnabled = %s, location_longitude = %s, location_latitude = %s, radius = %s 
+                     is_enabled = %s, location_longitude = %s, location_latitude = %s, radius = %s
                 WHERE 
-                    id = %s;
+                    user_id = %s;
                 """
 
     # Result is the object returned or True if no errors encountered, False if there is an error
