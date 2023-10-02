@@ -6,7 +6,7 @@ import * as ImagePicker from 'expo-image-picker';
 import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 
 
-const Report = ({userId, sighting}) => {
+const Sighting = ({userId, sighting}) => {
     // Pet Data
     const windowWidth = Dimensions.get('window').width; 
 
@@ -18,42 +18,25 @@ const Report = ({userId, sighting}) => {
     const dateTime = sighting[3];
     const locationLongitude = sighting[4];
     const locationLatitude = sighting[5];
-    const sightingImage = sighting[6];
-    const sightingDesc = sighting[7];
-    const sightingAnimal = sighting[8][0].toUpperCase() +sighting[8].substring(1);;
-    const sightingBreed = sighting[9];
-    const ownerName = sighting[10];
-    const ownerEmail = sighting[11];
-    const sightingPhoneNumber = sighting[12];
-    const petName = sighting[13]
+    const location = sighting[6];
+    const sightingImage = sighting[7];
+    const sightingDesc = sighting[8];
+    const sightingAnimal = sighting[9][0].toUpperCase() +sighting[9].substring(1);;
+    const sightingBreed = sighting[10];
+    const ownerName = sighting[11];
+    const ownerEmail = sighting[12];
+    const sightingPhoneNumber = sighting[13];
+    const petName = sighting[14];
+    console.log(location)
 
     const [suburb, setSuburb] = useState("");
-
-
-    useEffect(() => {
-      getSuburb();
-    }, [])
-
-    const getSuburb = async () => {
-      try {
-          const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${locationLatitude}&lon=${locationLongitude}&format=json`;
-
-          const response = await fetch(apiUrl);
-
-          const result = await response.json();
-          setSuburb(`${result.address.suburb}, ${result.address.state}`)
-          
-      } catch (error) {
-          console.error('Error fetching data:', error);
-      }
-  };
     
   return (
     <View justifyContent = "center" alignItems = "center" padding={4}>
         {/* TODO: unhard code the heights, widths etc later */}
     <Box width={windowWidth - 20} height={sightingImage ? 400 : 250} bg="#F9FDFF" borderRadius={15} paddingLeft={5} paddingTop={2}>
       <Heading size = "lg"  paddingTop={3}>
-        {suburb}
+        {location}
       </Heading>
       {/* <Heading size = "md"  paddingTop={2}>
         {petName ? petName : ""}
@@ -102,5 +85,5 @@ const Report = ({userId, sighting}) => {
   );
 };
 
-export default Report;
+export default Sighting;
 
