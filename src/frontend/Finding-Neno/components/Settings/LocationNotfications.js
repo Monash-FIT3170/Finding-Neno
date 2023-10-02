@@ -22,14 +22,14 @@ function LocationNotifications() {
 
   
   // Data that will be saved to the database
-  const [locationData, setLocationData] = useState(
-    {
-      enabled: false,
-      long: 144.9631,
-      lat: -37.8136,
-      radius: 4,
+  const [locationData, setLocationData] = useState();
+
+  const isFocused = useIsFocused();
+  useEffect(() => {
+    if (isFocused) {
+      fetchUserSettings();
     }
-  );
+  }, [isFocused]);
 
     const [isEnabled, setIsEnabled] = useState(false);
   const [radiusText, setRadiusText] = useState(4);
@@ -61,7 +61,7 @@ function LocationNotifications() {
             <Text fontSize="md">Radius</Text>
             <Slider 
               width={200} 
-              defaultValue={40} 
+              defaultValue={locationData['radius']*10} 
               minValue={0} 
               maxValue={100}
               onChange={(value) => updateRadius(value)}>
@@ -103,8 +103,6 @@ function LocationNotifications() {
       setBoxHeight(360);
       setLocationData({...locationData, enabled: true})
     }
-
-    console.log(locationData)
   };
 
   const updateRadius = (newRadius) => {
@@ -118,7 +116,6 @@ function LocationNotifications() {
   const handleRegionChange = (region) => {
     setMapRegion(region);
     setCoordinates({ longitude: region.longitude, latitude: region.latitude });
-    console.log(coordinates)
   }
 
   const handleSearch = async () => {
@@ -128,25 +125,20 @@ function LocationNotifications() {
 			const response = await axios.get(apiUrl);
 			if (response.data.length > 0) {
 				const firstResult = response.data[0];
-				setCoordinates({
-					latitude: parseFloat(firstResult.lat),
-					longitude: parseFloat(firstResult.lon),
+				setLocationData({ ...locationData,
+					lat: parseFloat(firstResult.lat),
+					long: parseFloat(firstResult.lon),
 				});
-        setLocationData({
-          ...locationData, 
-          longitude: parseFloat(firstResult.lon), 
-          latitude: parseFloat(firstResult.lat)})
 				mapViewRef.current.animateToRegion({
 					latitude: parseFloat(firstResult.lat),
 					longitude: parseFloat(firstResult.lon),
 					longitudeDelta: 0.0015,
 				});
 			} else {
-				setCoordinates(null);
+        // do nothing
 			}
 		} catch (error) {
 			console.error('Error fetching data:', error);
-			setCoordinates(null);
 		}
 	};
 
@@ -157,18 +149,18 @@ function LocationNotifications() {
   const saveDetails = () => {
     // Show success
     console.log(locationData)
-    updateMissingReport()
+    updateUserSettings()
     if(false){
       console.log("error")
     } else {
         toast.show({
-            description: "Location Notfification updated!",
+            description: "Location Notification updated!",
             placement: "top"
         })
     }
   }
   
-  const updateMissingReport = async () => {
+  const updateUserSettings = async () => {
     try {
       const response = await fetch(`${IP}:${PORT}/update_user_settings`, {
         method: 'PUT',
@@ -188,6 +180,42 @@ function LocationNotifications() {
     } catch (error) {
       console.error('An error occurred:', error);
     }
+  };
+
+  const fetchUserSettings = async () => {
+    try {
+      const url = `${IP}:${PORT}/get_user_settings?user_id=${USER_ID}`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${ACCESS_TOKEN}`,
+            'User-ID': USER_ID
+        }
+    });
+
+    const result = await response.json();
+    if (!response.ok) {
+        throw new Error('Request failed with status ' + response.status);
+    }
+    const user_settings = result[0];
+    const enabled = user_settings[0];
+    const long = user_settings[1];
+    const lat = user_settings[2];
+    const radius = user_settings[3];
+    setLocationData({enabled: enabled, long: long, lat: lat, radius: radius})
+    
+    if(enabled){
+      setIsEnabled(true);
+      setBoxHeight(360);
+    }
+    setRadiusText(radius)
+    setMapRegion({  latitude: lat, longitude: long, latitudeDelta: 0.03, longitudeDelta: 0.03, })
+
+    }  catch (error) {
+      console.error('An error occurred:', error);
+    }
+
   };
 
    

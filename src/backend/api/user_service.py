@@ -152,9 +152,8 @@ def update_report_status(conn):
         return "", 200
     return "", 400
 
-def retrieve_user_settings(connection)  -> Tuple[str, int]:
+def retrieve_user_settings(connection, user_id)  -> Tuple[str, int]:
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
-    user_id = request.headers["User-ID"]
     print(access_token)
     print(user_id)
     user_settings = retrieve_user_settings_from_database(connection, user_id, access_token)

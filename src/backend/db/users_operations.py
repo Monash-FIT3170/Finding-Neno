@@ -811,7 +811,7 @@ def retrieve_user_settings_from_database(connection, user_id, access_token):
 
     cur = connection.cursor()
 
-    query = """SELECT isEnabled, location_longitude, location_latitude, radius FROM user_settings WHERE id = %s """
+    query = """SELECT is_enabled, location_longitude, location_latitude, radius FROM user_settings WHERE user_id = %s """
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
