@@ -3,20 +3,21 @@ import string
 import hashlib
 import psycopg2
 import datetime
+import os
 
 from db.authentication import verify_access_token
 
 
-def get_salt(password):
-    # Convert the password to bytes
-    password_bytes = password.encode()
+def generate_salt():
+    # Generate a random salt
+    salt = os.urandom(16)  # 16 bytes is a common length for a salt
 
-    # Use SHA256 to generate the salt
-    salt = hashlib.sha256(password_bytes).hexdigest()
+    # Convert the salt to a hexadecimal representation
+    salt_hex = salt.hex()
 
-    return salt
+    return salt_hex  # Return the salt as a hexadecimal string
 
-def salt_and_hash(password):
+def hash_password(password: str, salt: str = None):
     """
     This function is responsible to salt and hash the password it receives
     :Input:
@@ -24,14 +25,18 @@ def salt_and_hash(password):
     :return: hashed password(string)
     """
 
+    if salt == None:
+        salt = generate_salt()
+        print(f"Salt generated: {salt}")
 
-    salt = get_salt(password)
     salted_password = f"{password}{salt}"
     hasher = hashlib.sha256()
     hasher.update(salted_password.encode('utf-8'))
     hashed_password = hasher.hexdigest()
+    print(f"Hashed password: {hashed_password}")
+    print(f"Salt: {salt}")
 
-    return hashed_password
+    return hashed_password, salt
 
 def generate_access_token():
     """
@@ -55,14 +60,14 @@ def insert_user_to_database(connection: psycopg2.extensions.connection, email: s
     access_token = generate_access_token()
 
     # Hash the password input
-    hashed_pass= salt_and_hash(password)
+    hashed_pass, salt = hash_password(password)
 
     # Construct an INSERT query to insert this user into the DB
-    query = """INSERT INTO users (email_address, phone_number, name, password, access_token) VALUES (%s, %s, %s, %s, %s);"""
+    query = """INSERT INTO users (email_address, phone_number, name, password, salt, access_token) VALUES (%s, %s, %s, %s, %s, %s);"""
 
     # Execute the query
     try:
-        cur.execute(query, (email, phone, name, hashed_pass, access_token))
+        cur.execute(query, (email, phone, name, hashed_pass, salt, access_token))
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
@@ -141,23 +146,34 @@ def check_user_login_details(connection: psycopg2.extensions.connection, usernam
 
     cur = connection.cursor()
 
-    # Hash the password input
-    hashed_pass= salt_and_hash(password)
+    # Retrieve the stored salt for the user
+    query_salt = """SELECT salt FROM users WHERE (email_address = %s OR phone_number = %s) """
 
-    # Check if a user with this email exists in the database
-    # Construct a SELECT query to check if the user exists in the database and if its password matches
-    query = """SELECT id, access_token FROM users WHERE (email_address = %s OR phone_number = %s) AND password = %s """
+    # Execute the query
+    try:
+        cur.execute(query_salt, (username, username))
+        salt = cur.fetchone()[0]
+    
+    except Exception as e:
+        print(f"Error while retrieving salt: {e}")
+        cur.close()
+        return False
 
-    # Result is the object returned or True if no errors encountered, False if there is an error
+    # Hash the provided password with the retrieved salt
+    hashed_pass, salt = hash_password(password, salt)
+    print(hashed_pass)
+    # Check if a user with this email exists in the database and the password matches
+    query = """SELECT id, access_token FROM users WHERE (email_address = %s OR phone_number = %s) AND password = %s"""
+
     result = False
 
     # Execute the query
     try:
         cur.execute(query, (username, username, hashed_pass))
         user = cur.fetchall()
-        if len(user) == 0:  # If a user with the provided email could not be found
+        if len(user) == 0:
             print("Invalid email/phone number or password combination.")
-        else: # If login is correct
+        else:
             result = user[0]
     except Exception as e:
         print(f"Error while executing query: {e}")
@@ -950,7 +966,7 @@ def change_password_in_database(connection: psycopg2.extensions.connection, emai
     query = """UPDATE users SET password = %s, salt = %s WHERE email_address = %s;"""
 
     # Hash and salt password
-    hashed_password, salt = salt_and_hash(new_password)
+    hashed_password, salt = hash_password(new_password)
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
