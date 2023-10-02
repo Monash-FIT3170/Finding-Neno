@@ -14,37 +14,20 @@ const Report = ({report, userId}) => {
     const reportDesc = report[2];
     const locationLongitude = report[3];
     const locationLatitude = report[4];
-    const authorId = report[14]
+    const locationString = report[5];
+    const authorId = report[15]
     
-    const petName = report[6][0].toUpperCase() +report[6].substring(1);
-    const petSpecies = report[7][0].toUpperCase() +report[7].substring(1);;
-    const petBreed = report[8][0].toUpperCase() +report[8].substring(1);;
-    const petImage = report[9];
+    const petName = report[7][0].toUpperCase() +report[7].substring(1);
+    const petSpecies = report[8][0].toUpperCase() +report[8].substring(1);;
+    const petBreed = report[9][0].toUpperCase() +report[9].substring(1);;
+    const petImage = report[10];
 
     const [showModal, setShowModal] = useState(false);
-    const [suburb, setSuburb] = useState("");
 
     const closeModal = () => {
       setShowModal(false);
     }
 
-    useEffect(() => {
-      getSuburb();
-    }, [])
-
-    const getSuburb = async () => {
-      try {
-          const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${locationLatitude}&lon=${locationLongitude}&format=json`;
-
-          const response = await fetch(apiUrl);
-
-          const result = await response.json();
-          setSuburb(`${result.address.suburb}, ${result.address.state}`)
-          
-      } catch (error) {
-          console.error('Error fetching data:', error);
-      }
-  };
     
   return (
     <View justifyContent = "center" alignItems = "center" padding={4}>
@@ -58,7 +41,7 @@ const Report = ({report, userId}) => {
 
       <Heading size = "sm" paddingLeft={5} paddingTop={2}>
         {/* Insert "Suburb, State" here */}
-        {suburb}
+        {locationString}
       </Heading>
 
       <Text paddingLeft={5}>

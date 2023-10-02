@@ -57,4 +57,3 @@ def get_suburb(latitude: float, longitude: float) -> str:
 
     return "Location not available"
     
-print(get_suburb(-35.41573783443036,149.09069001674652))
