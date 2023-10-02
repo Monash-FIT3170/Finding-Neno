@@ -17,6 +17,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Linking } from 'react-native';
+import { get } from "react-native/Libraries/TurboModule/TurboModuleRegistry";
 
 
 
@@ -160,9 +161,9 @@ export default function ProfilePage({ navigation: { navigate } }) {
     }
   };
 
-  const deletePetReport = async (petId) => {
+  const deletePetReport = async (reportId) => {
     try {
-      const url = `${IP}:${PORT}/delete_reports_by_pet?pet_id=${petId}`;
+      const url = `${IP}:${PORT}/delete_reports_by_id?report_id=${reportId}`;
       const response = await fetch(url, {
         method: "DELETE",
         headers: {
@@ -188,21 +189,130 @@ export default function ProfilePage({ navigation: { navigate } }) {
     }
   };
 
+  const unlinkSightings = async (reportId) => {
+    try {
+      const url = `${IP}:${PORT}/get_sightings_by_report?report_id=${reportId}`;
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          'User-ID': USER_ID,
+        },
+      });
 
-  const deleteSelectedPets = () => {
-    // for each pet in selectedPets, get petID and delete it
-    selectedPets.forEach((petId) => {
-      deletePetReport(petId);
-    });
+      if (!response.ok) {
+        throw new Error("Request failed with status " + response.status);
+      }
 
-    selectedPets.forEach((petId) => {
-      deletePet(petId);
-    });
+      const sightings = await response.json();
+      console.log("Sightings linked to report ID:", sightings);
 
-    // After deletion, clear the selectedPets array
-    setSelectedPets([]);
-    setEditMode(false);
+      if (sightings.length > 0) {
+        // If there are sightings linked to the report, unlink them
+        const unlinkResponse = await fetch(`${IP}:${PORT}/unlink_sightings?report_id=${reportId}`, {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${ACCESS_TOKEN}`,
+            'User-ID': USER_ID,
+          },
+        });
+  
+        if (!unlinkResponse.ok) {
+          throw new Error("Request failed with status " + unlinkResponse.status);
+        }
+  
+        console.log("Sightings unlinked successfully");
+      } else {
+        console.log("No sightings to unlink for report ID:", reportId);
+      }
+    } catch (error) {
+      console.log("Error in profile page: sighting unlinking");
+      console.log(error);
+    }
   };
+
+  const fetchCurrentMissingReport = async (pet) => {
+    try {
+      const response = await fetch(`${IP}:${PORT}/get_reports_by_pet?pet_id=${pet.id}`, 
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          'User-ID': USER_ID,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Request failed with status " + response.status);
+      }
+
+      const result = await response.json();
+      if (result[0] === null) {
+        return null;
+      } else {
+        report = result[0][0];
+        return report[0];
+      }
+
+    } catch (error) {
+      console.log("Error in profile page: fetching current missing report");
+      console.log(error);
+    }
+  };
+
+  const deleteSelectedPets = async () => {
+    try {
+      // Step 1: Fetch Missing Pet Report ID for each selected pet
+      const reportIdsPromises = selectedPets.map(async (pet) => {
+        const reportId = await fetchCurrentMissingReport(pet);
+        return reportId;
+      });
+  
+      // Wait for all report IDs to be fetched
+      const reportIds = await Promise.all(reportIdsPromises);
+
+      // Check if there are any reports
+      if (reportIds.some((reportId) => reportId !== null)) {
+  
+        // Step 2: Unlink Sightings Linked to the Report
+        const sightingsPromises = reportIds.map(async (reportId, index) => {
+          if (reportId !== null) {
+            await unlinkSightings(reportId);
+          }
+        });
+    
+        // Wait for all sightings to be deleted
+        await Promise.all(sightingsPromises);
+    
+        // Step 3: Delete Missing Pet Reports
+        const deleteReportPromises = reportIds.map(async (reportId, index) => {
+          if (reportId !== null) {
+            await deletePetReport(reportId);
+          }
+        });
+    
+        // Wait for all reports to be deleted
+        await Promise.all(deleteReportPromises);
+      }
+  
+      // Step 4: Delete Selected Pets
+      const deletePetPromises = selectedPets.map(async (pet) => {
+        //await deletePet(pet.id);
+      });
+  
+      // Wait for all selected pets to be deleted
+      await Promise.all(deletePetPromises);
+  
+      // Clear the selectedPets array
+      setSelectedPets([]);
+      setEditMode(false);
+  
+      console.log("All selected pets, reports, and sightings deleted successfully");
+    } catch (error) {
+      console.error("Error in deleteSelectedPets:", error);
+    }
+  };
+  
 
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
@@ -232,18 +342,18 @@ export default function ProfilePage({ navigation: { navigate } }) {
                     marginEnd={10}
                   >
                     <Checkbox
-                      isChecked={selectedPets.includes(pet.id)}
+                      isChecked={selectedPets.includes(pet)}
                       onChange={(isChecked) => {
                         if (isChecked) {
                           // If the checkbox is checked, add the pet to the selectedPets array
                           setSelectedPets((prevSelectedPets) => [
                             ...prevSelectedPets,
-                            pet.id,
+                            pet,
                           ]);
                         } else {
                           // If the checkbox is unchecked, remove the pet from the selectedPets array
                           setSelectedPets((prevSelectedPets) =>
-                            prevSelectedPets.filter((id) => id !== pet.id)
+                            prevSelectedPets.filter((selectedPet) => selectedPet !== pet)
                           );
                         }
                       }}
@@ -355,8 +465,8 @@ export default function ProfilePage({ navigation: { navigate } }) {
                 style={{ paddingVertical: 10, paddingHorizontal: 15 }}
                 onPress={() => {
                   toggleDropdown();
-                  // set edit mode to true
-                  setEditMode(true);
+                  if (pets.length > 0)
+                    setEditMode(true);
                 }}
               >
                 <Text>Edit</Text>
