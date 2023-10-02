@@ -21,26 +21,17 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
     const missingReportId = sighting[1];
     const authorId = sighting[2];
     const dateTime = sighting[3];
-    console.log(`dateTime ${dateTime}`)
     const locationLongitude = sighting[4];
-    console.log(`longitude ${locationLongitude}`)
     const locationLatitude = sighting[5];
-    console.log(`latitude ${locationLatitude}`)
     const sightingImage = sighting[6];
-    console.log(`sightingImage ${sightingImage}`)
     const sightingDesc = sighting[7];
-    console.log(`sightingDesc ${sightingDesc}`)
     const sightingAnimal = sighting[8][0].toUpperCase() +sighting[8].substring(1);
-    console.log(`sightingAnimal ${sightingAnimal}`)
     const sightingBreed = sighting[9];
-    console.log(`sightingBreed ${sightingBreed}`)
     const ownerName = sighting[10];
     const ownerEmail = sighting[11];
     const sightingPhoneNumber = sighting[12];
     const savedByUser = sighting[13];
-    console.log(`savedByUser ${savedByUser}`)
     const distance = sighting[16] != null ? Math.round(parseFloat(sighting[16] * 100)) / 100 : null;
-    console.log(`distance ${distance}`)
 
     const [sightingSaved, setSightingSaved] = useState(savedByUser==USER_ID); // true if the sighting is saved by this user
     const [saveSightingEndpoint, setSaveSightingEndpoint] = useState('save_sighting');
