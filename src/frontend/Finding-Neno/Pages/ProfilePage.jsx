@@ -160,8 +160,41 @@ export default function ProfilePage({ navigation: { navigate } }) {
     }
   };
 
+  const deletePetReport = async (petId) => {
+    try {
+      const url = `${IP}:${PORT}/delete_reports_by_pet?pet_id=${petId}`;
+      const response = await fetch(url, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+          'User-ID': USER_ID,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Request failed with status " + response.status);
+      }
+
+      if (response.status === 201) {
+        console.log("Pet report deleted successfully");
+      } else if (response.status === 204) {
+        console.log("Pet report deleted successfully");
+      } else {
+        console.log("Unexpected response status:", response.status);
+      }
+    } catch (error) {
+      console.log("Error in profile page: report deletion");
+      console.log(error);
+    }
+  };
+
+
   const deleteSelectedPets = () => {
     // for each pet in selectedPets, get petID and delete it
+    selectedPets.forEach((petId) => {
+      deletePetReport(petId);
+    });
+
     selectedPets.forEach((petId) => {
       deletePet(petId);
     });
@@ -322,10 +355,20 @@ export default function ProfilePage({ navigation: { navigate } }) {
                 style={{ paddingVertical: 10, paddingHorizontal: 15 }}
                 onPress={() => {
                   toggleDropdown();
-                  // set edit
+                  // set edit mode to true
+                  setEditMode(true);
                 }}
               >
                 <Text>Edit</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={{ paddingVertical: 10, paddingHorizontal: 15 }}
+                onPress={() => {
+                  // set notifications
+                }}
+              >
+                <Text>Settings</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
@@ -375,22 +418,24 @@ export default function ProfilePage({ navigation: { navigate } }) {
           style={{
             shadowColor: "#A9A9A9",
             shadowOffset: { width: 0, height: -8 },
-            shadowOpacity: 0.3,
+            shadowOpacity: 0.2,
             shadowRadius: 4,
-            elevation: 2,
+            elevation: 3,
           }}
         >
 
           {/* Circular foreground */}
           <Box
-            bg="#FFFFFF"
-            height={windowWidth *1.8}
-            width={windowWidth *1.8}
-            marginTop={windowWidth * 1.8}
-            borderRadius={windowWidth}
-            alignSelf="center"
-            alignItems="center"
-            justifyContent="center"
+            style={{
+              backgroundColor: "#FFFFFF",
+              height: windowWidth *1.8,
+              width: windowWidth *1.8,
+              marginTop: windowWidth * 1.8,
+              borderRadius: windowWidth,
+              alignSelf: "center",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
           >
 
               {/* Profile Name */}
@@ -434,24 +479,31 @@ export default function ProfilePage({ navigation: { navigate } }) {
           style={{
             width: 100,
             height: 40,
-            backgroundColor: '#FA8072',
+            backgroundColor: '#3498db',
             borderRadius: 50,
             alignItems: 'center',
             justifyContent: 'center',
             marginBottom: 15,
           }}
+          // if edit mode is true, navigate to view profilepage, otherwise navigate to edit profile page
           onPress={() => {
-            // Handle button press here
-          }}
+            navigate(editMode ? "Edit Profile Page" : "View Profile Page");
+          }
+          }
         >
-          <Text style={{ color: 'white' }}>VIEW</Text>
+          <Text style={{ color: 'white'}}>
+            {editMode ? "EDIT" : "VIEW"}
+          </Text>
         </TouchableOpacity>
 
-        <HStack mt="6" justifyContent="flex-start" alignItems="center" marginRight={windowWidth/1.8} marginBottom={2}>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <HStack mt="6" justifyContent="flex-start" alignItems="center" marginBottom={2}>
+          < HStack style={{marginRight:editMode ? 20 : windowWidth / 1.8, alignItems: 'center'}}>
           <Heading
             fontSize="sm"
             color="coolGray.600"
             _dark={{ color: "warmGray.200" }}
+            marginLeft={10}
           >
             PETS
           </Heading>
@@ -462,8 +514,9 @@ export default function ProfilePage({ navigation: { navigate } }) {
               height: 18,
               backgroundColor: 'warmGray.200',
               borderRadius: 50,
-              marginLeft: 12,
+              marginLeft: 10,
               marginBottom: 6,
+              marginRight: 15,
             }}
             onPress={() => {
               navigate("New Pet Page");
@@ -471,8 +524,39 @@ export default function ProfilePage({ navigation: { navigate } }) {
           >
             <Text style={{ color: 'black', fontSize: 18 }}>+</Text>
           </TouchableOpacity>
+          </HStack>
+        
 
-        </HStack>
+        {editMode ? (
+          <HStack alignItems="center">
+            <Button
+              size="sm"
+              marginTop={4}
+              marginLeft={35}
+              onPress={deleteSelectedPets}
+              bg="transparent" // Make the button transparent
+            >
+              <DeleteIcon color="#FF0000" />{" "}
+              {/* Change the color of DeleteIcon */}
+            </Button>
+            <Text marginLeft={-2}>{selectedPets.length}</Text>
+            <Button
+              size="sm"
+              onPress={() => {
+                deleteSelectedPets();
+              }}
+              variant="link"
+              marginLeft={5}
+            >
+              Done
+            </Button>
+          </HStack>
+        ) : (
+            <></>
+          )}
+      </HStack>
+      </View>
+
 
         {petCards()}
 

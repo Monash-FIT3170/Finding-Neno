@@ -160,6 +160,11 @@ def get_reports_by_pet():
     return jsonify(retrieve_reports_by_pet(g.db, pet_id))  # Updated function name
 
 
+@app.route("/delete_reports_by_pet", methods=["GET", "DELETE"]) # Requires Access_token and user ID for authorization
+def delete_reports_by_pet_api():
+    pet_id = request.args.get("pet_id")
+    return delete_reports_by_pet(g.db, pet_id)
+
 
 @app.route("/get_sightings", methods=["GET"])
 def get_sightings():

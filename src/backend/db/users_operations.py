@@ -471,6 +471,44 @@ def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_i
     cur.close()
     return result
 
+
+def delete_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_id: int, access_token: str, user_id: int):
+    """
+    This function deletes reports based on the provided pet_id.
+
+    Returns False if access token is invalid, True if query is executed successfully.
+    """
+
+    # add consoe log for debugging
+    print(f"pet_id: {pet_id}, access_token: {access_token}, user_id: {user_id}")
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        print("Access token is invalid")
+        return False
+
+    cur = connection.cursor()
+
+    result = False
+    try:
+
+        # Delete the pet report with author_id = user_id and pet_id = pet_id
+        query = """DELETE FROM missing_reports WHERE author_id = %s AND pet_id = %s;"""
+        
+        cur.execute(query, (user_id, pet_id))
+        result = True
+        print(f"Query executed successfully: {query}")
+
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+        return False
+    
+    cur.close()
+    connection.commit()
+
+    return result
+
+
 def retrieve_sightings_from_database(connection: psycopg2.extensions.connection, missing_report_id: int, user_id: int, access_token: str):
     """
     This function returns all pet sightings or pet sightings for a missing report if missing_report_id is provided.

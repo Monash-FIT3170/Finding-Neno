@@ -141,13 +141,28 @@ const updateMissingReport = async (report) => {
     <TouchableOpacity
     activeOpacity={editMode ? 0.6 : 1}
     onPress={editMode ? onClick : null}>
+      <View
+          style={{
+            shadowColor: "#A9A9A9",
+            backgroundColor: 'transparent',
+            shadowOffset: { width: 4, height: -6 },
+            shadowOpacity: 0.2,
+            shadowRadius: 10,
+            elevation: 2,
+          }}
+        >
       <Box
-        backgroundColor={color}
+        backgroundColor={"white"}
         borderTopLeftRadius={20}
         borderBottomRightRadius={borderRadius()}
         borderBottomLeftRadius={borderRadius()}
         height={150 + descriptionHeight}
-        style={{ opacity: editMode ? 0.8 : 1, borderRadius: 20, overflow: "hidden" }}
+        style={{ 
+          opacity: editMode ? 0.8 : 1,
+          borderRadius: 20, 
+          overflow: "hidden",
+
+      }}
       >
         <View>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -206,6 +221,7 @@ const updateMissingReport = async (report) => {
           </View>
         </View>
       </Box>
+      </View>
     </TouchableOpacity>
     {displayMissingButton()}
     <Box h="4"></Box>
