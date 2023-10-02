@@ -249,13 +249,6 @@ def put_unlink_sightings():
     report_id = request.args.get("report_id")
     return unlink_sightings_by_report(g.db, report_id)
 
-@app.route("/get_sightings_by_report", methods=["GET"])
-def get_sightings_by_report():
-    report_id = request.args.get("report_id")
-    return jsonify(retrieve_sightings_by_id(g.db, report_id))
-
-
-
 if __name__ == "__main__": 
     # Get environment file path from command line arguments
     if len(sys.argv) < 2:

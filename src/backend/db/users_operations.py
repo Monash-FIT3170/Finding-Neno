@@ -580,47 +580,6 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
     cur.close()
     return result
 
-def retrieve_sightings_by_report(connection: psycopg2.extensions.connection, missing_report_id: int, user_id: int, access_token: str):
-    """
-    This function returns all pet sightings or pet sightings for a missing report if missing_report_id is provided.
-
-    Returns False if access token is invalid, empty array if no sightings exist or an error is encountered, otherwise returns true.
-    """
-    
-    # Verify access token
-    if not verify_access_token(connection, user_id, access_token):
-        return False
-
-    # Open cursor to access the connection.
-    cur = connection.cursor()
-
-    print(f"Getting sightings with missing_report_id: {missing_report_id}")
-
-    # Query returns true if there are sightings for the missing report
-    query = """
-                SELECT EXISTS(SELECT 1 FROM sightings WHERE missing_report_id = %s);
-            """
-    
-    # Result is the object returned or True if no errors encountered, False if there is an error
-    result = False
-
-    try:
-        cur.execute(query, (missing_report_id))
-
-        # Retrieve rows as an array
-        sightings = cur.fetchall()
-
-        print(f"Sightings successfully retrieved")
-
-        result = sightings
-    except Exception as e:
-        print(f"Error with retrieving sightings: {e}")
-
-    # Close the cursor
-    cur.close()
-    return result
-
-
 def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.connection, user_id: int, access_token: str):
     """
     Returns all pet sightingss that are linked to a missing report made/owned by user_id 

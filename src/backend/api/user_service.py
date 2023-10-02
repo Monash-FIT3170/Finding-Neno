@@ -240,23 +240,6 @@ def retrieve_sightings(connection, missing_report_id) -> Tuple[str, int]:
             return sightings, 200
         elif len(sightings) == 0:
             return [], 204
-        
-def retrieve_sightings_by_id(connection, missing_report_id) -> Tuple[str, int]:
-    """
-    This function calls the function that connects to the db to retrieve all sightings or sightings for a missing 
-    report if its missing_report_id is provided.
-    """
-    access_token = request.headers.get('Authorization').split('Bearer ')[1]
-    user_id = request.headers["User-ID"]
-    sightings = retrieve_sightings_by_report(connection, missing_report_id, user_id, access_token)
-
-    if sightings is False:
-        return "User does not have access", 401
-    else:
-        if sightings == True:
-            return sightings, 200
-        else:
-            return [], 204
     
 def unlink_sightings_by_report(connection, missing_report_id) -> Tuple[str, int]: 
     """

@@ -191,7 +191,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
   const unlinkSightings = async (reportId) => {
     try {
-      const url = `${IP}:${PORT}/get_sightings_by_report?report_id=${reportId}`;
+      const url = `${IP}:${PORT}/get_sightings?report_id=${reportId}`;
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -297,7 +297,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
   
       // Step 4: Delete Selected Pets
       const deletePetPromises = selectedPets.map(async (pet) => {
-        //await deletePet(pet.id);
+        await deletePet(pet.id);
       });
   
       // Wait for all selected pets to be deleted
@@ -602,7 +602,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
           }
         >
           <Text style={{ color: 'white'}}>
-            {editMode ? "EDIT" : "VIEW"}
+            {editMode ? "SETTINGS" : "VIEW"}
           </Text>
         </TouchableOpacity>
 
