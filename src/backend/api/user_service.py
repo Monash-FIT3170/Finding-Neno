@@ -96,13 +96,33 @@ def insert_missing_report(connection) -> Tuple[str, int]:
 
     description = json_data["description"]
     
-    result = insert_missing_report_to_database(connection, pet_id, author_id, date_time_of_creation, last_seen, location_longitude, location_latitude, description, user_id, access_token)
+    missing_report_id = insert_missing_report_to_database(
+        connection=connection,
+        author_id=author_id,
+        date_time_of_creation=date_time_of_creation,
+        pet_id=pet_id,
+        last_seen=last_seen,
+        location_longitude=location_longitude,
+        location_latitude=location_latitude,
+        description=description,
+        user_id=user_id,
+        access_token=access_token,
+    )
 
-    if result is False:
+    if missing_report_id is None:
         return "User does not have access", 401
     else:
         from db.pets import update_pet_missing_status
+        # Update the status of the missing pet
         update_pet_missing_status(connection, pet_id, True)
+
+        # Send notification to users in the area
+        print("Sending notification...")
+        send_notification_to_local_users(
+            connection=connection,
+            missing_report_id=missing_report_id,
+        )
+
         return "Success", 201
 
 def update_missing_report(connection) -> Tuple[str, int]:
@@ -424,6 +444,50 @@ def send_notification_to_report_author(
     else:
         print("Notification failed to send")
     return res
+
+
+def send_notification_to_local_users(
+    connection: psycopg2.extensions.connection,
+    missing_report_id: int,
+):
+    """
+    Triggered once a missing report is created.
+    Sends a notification to users in the area who have opted in.
+
+    Arguments:
+        connection: Database connection
+        missing_report_id: ID of missing report
+    """
+    # Get missing report
+    missing_report = get_missing_report(connection=connection, missing_report_id=missing_report_id)
+
+    # Get pet
+    pet = get_pet(connection=connection, pet_id=missing_report["pet_id"])
+
+    # Get owner
+    owner = get_user_details(connection=connection, user_id=missing_report["author_id"])
+
+    # Get users in the area
+    local_user_ids = get_local_users(connection=connection, longitude=missing_report["location_longitude"], latitude=missing_report["location_latitude"])
+    print(f"IDs of local users: {local_user_ids}")
+
+    # Send notification to each user
+    for user_id in local_user_ids:
+        if user_id != owner["id"]:
+            user = get_user_details(connection=connection, user_id=user_id)
+
+            title = "Missing Pet Alert In Your Area"
+            body = f"Hi {user['name']},\n\nA {pet['animal']} named {pet['name']} has been reported missing in your area. Please keep an eye out for it.\n\nThanks,\nPetSight Team"
+            res = send_notification(
+                email_address=user["email_address"],
+                subject=title,
+                content=body,
+            )
+            if res:
+                print(f"Notification sent successfully to user ID {user_id}")
+            else:
+                print(f"Notification failed to send to user ID {user_id}")
+
 
 def generate_email_body(owner, pet, sighter, sighting_data):
     """Generates and returns the body of the email to be sent to the owner of a missing pet
