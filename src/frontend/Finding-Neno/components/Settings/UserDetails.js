@@ -4,7 +4,7 @@ import { Dimensions, TouchableOpacity, View} from 'react-native';
 import { useIsFocused } from "@react-navigation/native";
 
 import { useSelector } from "react-redux";
-import { validEmail, validPhoneNumber } from "../../Pages/validation";
+import { validPhoneNumber } from "../../Pages/validation";
 
 
 
@@ -17,7 +17,7 @@ function UserDetails() {
 
     const [user, setUser] = useState([]);
     const [errors, setErrors] = useState({});
-    const [newDetails, setNewDetails] = useState({
+    const [tempDetails, setTempDetails] = useState({
         name: user.name,
         phone: user.phone,
     });
@@ -51,48 +51,70 @@ function UserDetails() {
             const email_address = profile_info[1];
             const phone_number = profile_info[2];
             setUser({ name: name, email: email_address, phone: phone_number });
-            setNewDetails({ name: name, phone: phone_number });
+            setTempDetails({ name: name, phone: phone_number });
         } catch (error) {
             console.log("error in profile page")
             console.log(error);
         }
     }
 
+    const updateUser = async () => {
+        try {
+          const response = await fetch(`${IP}:${PORT}/update_profile`, {
+            method: 'PUT',
+            headers: {
+              Authorization: `Bearer ${ACCESS_TOKEN}`,
+              'User-ID': USER_ID,
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(tempDetails),
+          });
+      
+          if (response.ok) {
+            console.log('User Settings updated successfully');
+          } else {
+            console.log('Error while updating User Settings:', response.statusText);
+          }
+        } catch (error) {
+          console.error('An error occurred:', error);
+        }
+      };
+
     const updateName = (newName) => {
-        setNewDetails({ ...newDetails, name: newName})
+        setTempDetails({ ...tempDetails, name: newName})
     }
 
     const updatePhoneNumber = (newNumber) => {
-        setNewDetails({ ...newDetails, phone: newNumber})
+        setTempDetails({ ...tempDetails, phone: newNumber})
     }
 
-
     const saveDetails = () => {
-        console.log(newDetails)
+        console.log(tempDetails)
         console.log(validateDetails());
         // Show success
         if(!validateDetails()){
-            console.log(user.name)
+            console.log("Invalid Details")
             updateName(user.name)            
             updatePhoneNumber(user.phone)
         } else {
+            setUser({...user, name: tempDetails.name, phone: tempDetails.phone})
+            updateUser()
             toast.show({
                 description: "User details updated!",
                 placement: "top"
             })
         }
-        console.log(newDetails)
+        console.log(user)
     }
 
-    //
     const validateDetails = () => {
 		// Validates details. If details are valid, send formData object to onSignupPress.
 		foundErrors = {};
-        if(!newDetails.name || newDetails.name == ""){
+        if(!tempDetails.name || tempDetails.name == ""){
             foundErrors = { ...foundErrors, name: 'Name is required' }
         }
 
-        if (!validPhoneNumber(newDetails.phone)) {
+        if (!validPhoneNumber(tempDetails.phone)) {
 			foundErrors = { ...foundErrors, phoneNumber: 'Phone number is invalid' }
 		}
 
@@ -127,7 +149,7 @@ function UserDetails() {
         <FormControl >
 		<Input 
             placeholder={user.name}
-            onChangeText={(text) => updateName(text)} 
+            onEndEditing={(e) => updateName(e.nativeEvent.text)}
             width={textInputWidth} 
             textAlign="right" 
             variant={"unstyled"}/>
@@ -143,7 +165,7 @@ function UserDetails() {
             keyboardType="numeric" 
             maxLength={10} 
             placeholder={user.phone}
-            onChangeText={(text) => updatePhoneNumber(text)} 
+            onEndEditing={(e) => updatePhoneNumber(e.nativeEvent.text)}
             width={textInputWidth} 
             textAlign="right" 
             variant={"unstyled"}/>

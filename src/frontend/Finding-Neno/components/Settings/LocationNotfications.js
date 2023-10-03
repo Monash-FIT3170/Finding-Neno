@@ -199,7 +199,6 @@ function LocationNotifications() {
         throw new Error('Request failed with status ' + response.status);
     }
     const user_settings = result[0];
-    console.log(user_settings)
     const enabled = user_settings[0];
     const long = user_settings[1] ? user_settings[1] : mapRegion.longitude;
     const lat = user_settings[2] ? user_settings[2] : mapRegion.latitude;

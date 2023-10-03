@@ -959,7 +959,43 @@ def get_user_details(connection: psycopg2.extensions.connection, user_id: int):
     }
 
     return user_details
-        
+
+def update_user_details(connection: psycopg2.extensions.connection, user_id: int, name: str, phone: str, access_token: str):
+        # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    # UPDATE query to update missing report
+    query = """
+                UPDATE 
+                    users 
+                SET 
+                    name = %s, phone_number = %s
+                WHERE 
+                    id = %s;
+                """
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (name, phone, user_id))
+        print(f"Query executed successfully: {query}")
+
+        # Commit the change
+        connection.commit()
+
+        result = True
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
 def get_missing_report(connection: psycopg2.extensions.connection, missing_report_id: int):
     """
     Retrieves a missing report from the database using its id.

@@ -97,6 +97,10 @@ def retrieve_profile_information():
     else:
         return None
 
+@app.route("/update_profile", methods=["PUT"]) # Requires Access_token and user ID for authorization
+def update_profile_information():
+    return update_profile(g.db)
+
 @app.route("/change_password", methods=["PATCH"]) # Requires Access_token and user ID for authorization
 def post_change_password():
     return change_password(g.db)

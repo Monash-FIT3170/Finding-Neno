@@ -344,6 +344,21 @@ def retrieve_profile(connection, profile_user_id) -> Tuple[str, int, str, str, s
     else:
         return "The user does not have access", 401
 
+def update_profile(connection) -> Tuple[str, int]:
+    json_data = request.get_json(force=True)
+
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+
+    user_name = json_data["name"]
+    user_phone = json_data["phone"]
+
+    result = update_user_details(connection, user_id, user_name, user_phone, access_token)
+    if result is False:
+        return "User does not have access", 401
+    else:
+        return "Success", 201
+
 def change_password(connection, account_user_id: int) -> Tuple[str, int]:
     """
     This function receives the user inputs and calls the change_password_in_database function to change password of the user with ID account_user_id
