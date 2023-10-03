@@ -198,6 +198,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                       dispatch(selectPet(pet));
                       navigate("Edit Pet Page");
                     }}
+                    onUpdate={fetchOwnerPets}
 					editMode={editMode} 
                   />
                 </VStack>
