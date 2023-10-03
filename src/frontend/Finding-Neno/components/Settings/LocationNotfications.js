@@ -31,7 +31,7 @@ function LocationNotifications() {
     }
   }, [isFocused]);
 
-    const [isEnabled, setIsEnabled] = useState(false);
+    const [localNotificationsEnabled, setLocalNotificationsEnabled] = useState(false);
   const [radiusText, setRadiusText] = useState(4);
   // Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
   const [mapRegion, setMapRegion] = useState({
@@ -45,7 +45,7 @@ function LocationNotifications() {
   const mapViewRef = useRef(null);
 
   const renderLocationForm = () => {
-    if(isEnabled) {
+    if(localNotificationsEnabled) {
       return (
         <View>
           <HStack justifyContent="space-between"  marginBottom={2}>
@@ -95,8 +95,8 @@ function LocationNotifications() {
   }
 
   const toggleSwitch = () => {
-    setIsEnabled(previousState => !previousState)
-    if(isEnabled){
+    setLocalNotificationsEnabled(previousState => !previousState)
+    if(localNotificationsEnabled){
       setBoxHeight(150);
       setLocationData({...locationData, enabled: false})
     } else {
@@ -162,7 +162,7 @@ function LocationNotifications() {
   
   const updateUserSettings = async () => {
     try {
-      const response = await fetch(`${IP}:${PORT}/update_user_settings`, {
+      const response = await fetch(`${IP}:${PORT}/update_location_notification_settings`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${ACCESS_TOKEN}`,
@@ -184,7 +184,7 @@ function LocationNotifications() {
 
   const fetchUserSettings = async () => {
     try {
-      const url = `${IP}:${PORT}/get_user_settings?user_id=${USER_ID}`;
+      const url = `${IP}:${PORT}/get_location_notification_settings?user_id=${USER_ID}`;
       const response = await fetch(url, {
         method: "GET",
         headers: {
@@ -200,13 +200,13 @@ function LocationNotifications() {
     }
     const user_settings = result[0];
     const enabled = user_settings[0];
-    const long = user_settings[1];
-    const lat = user_settings[2];
-    const radius = user_settings[3];
+    const long = user_settings[1] ? user_settings[1] : mapRegion.longitude;
+    const lat = user_settings[2] ? user_settings[2] : mapRegion.latitude;
+    const radius = user_settings[3] ? user_settings[3] : 5;
     setLocationData({enabled: enabled, long: long, lat: lat, radius: radius})
     
     if(enabled){
-      setIsEnabled(true);
+      setLocalNotificationsEnabled(true);
       setBoxHeight(360);
     }
     setRadiusText(radius)
@@ -241,7 +241,7 @@ function LocationNotifications() {
         <Text fontSize="md" marginTop={1}>Location Notifications</Text>
         <Switch
         onToggle={toggleSwitch}
-        value={isEnabled}
+        value={localNotificationsEnabled}
         size={"sm"}
         />
         </HStack>

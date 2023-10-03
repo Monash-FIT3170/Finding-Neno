@@ -66,12 +66,26 @@ def insert_user_to_database(connection: psycopg2.extensions.connection, email: s
     try:
         cur.execute(query, (email, phone, name, hashed_pass, access_token))
         print(f"Query executed successfully: {query}")
+
+        # Get the user ID
+        query = """SELECT id FROM users WHERE email_address = %s;"""
+        cur.execute(query, (email,))
+        user_id = cur.fetchone()[0]
+        
+        # Close the cursor
+        connection.commit()
+        cur.close()
+
+        # Return the user ID
+        return user_id
+
     except Exception as e:
         print(f"Error while executing query: {e}")
+        cur.close()
+        return None
 
-    # Close the cursor
-    connection.commit()
-    cur.close()
+
+
 
 def retrieve_user(connection: psycopg2.extensions.connection, profile_user_id: int, user_id: int, access_token: str):
     """
@@ -88,7 +102,7 @@ def retrieve_user(connection: psycopg2.extensions.connection, profile_user_id: i
 
     # Check if a user with this email exists in the database
     # Construct a SELECT query to retrieve the user
-    query = """SELECT name, email_address, phone_number FROM users WHERE id = %s AND access_token = %s"""
+    query = """SELECT name, email_address, phone_number FROM users WHERE id = %s AND access_token = %s;"""
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
@@ -222,15 +236,18 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     cur.close()
     return result
 
-def insert_user_settings_to_database(connection, user_id, isEnabled, location_longitude, location_latitude, radius):
+def insert_user_settings_to_database(connection, user_id, location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, possible_sighting_notifications_enabled):
     cur = connection.cursor()
 
     # Construct an INSERT query to insert this user into the DB
-    query = """INSERT INTO user_settings (user_id, isEnabled, location_longitude, location_latitude, radius) VALUES (%s, %s, %s, %s, %s);"""
+    query = """
+    INSERT INTO user_settings
+    (user_id, location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, possible_sighting_notifications_enabled)
+    VALUES (%s, %s, %s, %s, %s, %s);"""
 
     # Execute the query
     try:
-        cur.execute(query, (user_id, isEnabled, location_longitude, location_latitude, radius))
+        cur.execute(query, (user_id, location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, possible_sighting_notifications_enabled,))
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
@@ -299,7 +316,7 @@ def update_report_active_status(connection: psycopg2.extensions.connection, repo
         connection.rollback()
         return False
 
-def update_user_settings_in_database(connection, user_id, isEnabled, location_longitude, location_latitude, radius, access_token):
+def update_location_notifications_settings_in_database(connection, user_id, location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, access_token):
     # Verify access token
     if not verify_access_token(connection, user_id, access_token):
         return False
@@ -311,7 +328,7 @@ def update_user_settings_in_database(connection, user_id, isEnabled, location_lo
                 UPDATE 
                     user_settings 
                 SET 
-                     is_enabled = %s, location_longitude = %s, location_latitude = %s, radius = %s
+                     location_notifications_enabled = %s, location_longitude = %s, location_latitude = %s, location_notification_radius = %s
                 WHERE 
                     user_id = %s;
                 """
@@ -321,7 +338,7 @@ def update_user_settings_in_database(connection, user_id, isEnabled, location_lo
 
     # Execute the query
     try:
-        cur.execute(query, (isEnabled, location_longitude, location_latitude, radius, user_id))
+        cur.execute(query, (location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, user_id))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -804,14 +821,17 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
     cur.close()
     return result
 
-def retrieve_user_settings_from_database(connection, user_id, access_token):
+def retrieve_location_notification_settings(connection, user_id, access_token):
     # Verify access token
     if not verify_access_token(connection, user_id, access_token):
         return False
 
     cur = connection.cursor()
 
-    query = """SELECT is_enabled, location_longitude, location_latitude, radius FROM user_settings WHERE user_id = %s """
+    query = """
+    SELECT location_notifications_enabled, location_longitude, location_latitude, location_notification_radius
+    FROM user_settings WHERE user_id = %s;
+    """
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False

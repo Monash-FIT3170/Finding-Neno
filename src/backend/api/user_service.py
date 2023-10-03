@@ -30,7 +30,12 @@ def insert_user(connection) -> Tuple[str, int]:
     phoneNumber = json_data["phoneNumber"]
     password = json_data["password"]
     name = json_data["name"]
-    insert_user_to_database(connection, email, phoneNumber, name, password)
+    # Insert user into database
+    user_id = insert_user_to_database(connection, email, phoneNumber, name, password)
+
+    # Insert default user settings into database
+    insert_user_settings_to_database(connection, user_id, False, None, None, None, False)
+
     return "Success", 201
 
 def insert_sighting(connection) -> Tuple[str, int]:
@@ -100,18 +105,6 @@ def insert_missing_report(connection) -> Tuple[str, int]:
         update_pet_missing_status(connection, pet_id, True)
         return "Success", 201
 
-def insert_user_settings(connection)  -> Tuple[str, int]:
-    json_data = request.get_json(force=True)
-
-    user_id = request.headers["User-ID"]
-    isEnabled = False
-    location_longitude = json_data["long"]
-    location_latitude = json_data["lat"]
-    radius = json_data["radius"]
-
-    insert_user_settings_to_database(connection, user_id, isEnabled, location_longitude, location_latitude, radius)
-    return "Success", 201
-
 def update_missing_report(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
 
@@ -152,11 +145,11 @@ def update_report_status(conn):
         return "", 200
     return "", 400
 
-def retrieve_user_settings(connection, user_id)  -> Tuple[str, int]:
+def retrieve_location_notification_user_settings(connection, user_id)  -> Tuple[str, int]:
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     print(access_token)
     print(user_id)
-    user_settings = retrieve_user_settings_from_database(connection, user_id, access_token)
+    user_settings = retrieve_location_notification_settings(connection, user_id, access_token)
 
     if user_id is False:
         return "User does not have access", 401
@@ -289,18 +282,18 @@ def retrieve_sightings_in_area(connection, longitude, longitude_delta, latitude,
         elif len(sightings) == 0:
             return [], 204
 
-def update_user_settings(connection ) -> Tuple[str, int]:
+def update_location_notification_settings_api(connection ) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
 
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
 
-    isEnabled = json_data["enabled"]
+    location_notifications_enabled = json_data["enabled"]
     location_longitude = json_data["long"]
     location_latitude = json_data["lat"]
-    radius = json_data["radius"]
+    location_notification_radius = json_data["radius"]
 
-    result = update_user_settings_in_database(connection, user_id, isEnabled, location_longitude, location_latitude, radius, access_token)
+    result = update_location_notifications_settings_in_database(connection, user_id, location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, access_token)
     if result is False:
         return "User does not have access", 401
     else:
