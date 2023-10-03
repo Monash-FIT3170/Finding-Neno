@@ -48,7 +48,7 @@ function LocationNotifications() {
     if(localNotificationsEnabled) {
       return (
         <View>
-          <HStack justifyContent="space-between"  marginBottom={2}>
+          <HStack justifyContent="space-between"  marginBottom='1%'>
             <Text fontSize="md">Location</Text>
             <Input
               onChangeText={(text) => updateLocation(text)} 
@@ -57,7 +57,7 @@ function LocationNotifications() {
               variant={"unstyled"} />
           </HStack>
     
-          <HStack justifyContent="space-between"  marginBottom={2}>
+          <HStack justifyContent="space-between"  marginBottom='1%'>
             <Text fontSize="md">Radius</Text>
             <Slider 
               width={200} 
@@ -73,7 +73,7 @@ function LocationNotifications() {
             <Text fontSize="xs" color={"#BCBCBC"}>{radiusText}km</Text>
           </HStack>
     
-          <Box height={150} marginBottom={2}>
+          <Box height={150} marginBottom='1%'>
               <MapView
                 ref={mapViewRef}
                 provider={PROVIDER_GOOGLE}
@@ -132,7 +132,7 @@ function LocationNotifications() {
 				mapViewRef.current.animateToRegion({
 					latitude: parseFloat(firstResult.lat),
 					longitude: parseFloat(firstResult.lon),
-					longitudeDelta: 0.0015,
+					longitudeDelta: 0.03,
 				});
 			} else {
         // do nothing
@@ -199,19 +199,20 @@ function LocationNotifications() {
         throw new Error('Request failed with status ' + response.status);
     }
     const user_settings = result[0];
+    console.log(user_settings)
     const enabled = user_settings[0];
     const long = user_settings[1] ? user_settings[1] : mapRegion.longitude;
     const lat = user_settings[2] ? user_settings[2] : mapRegion.latitude;
     const radius = user_settings[3] ? user_settings[3] : 5;
     setLocationData({enabled: enabled, long: long, lat: lat, radius: radius})
+
     
     if(enabled){
       setLocalNotificationsEnabled(true);
       setBoxHeight(360);
     }
     setRadiusText(radius)
-    setMapRegion({  latitude: lat, longitude: long, latitudeDelta: 0.03, longitudeDelta: 0.03, })
-
+    setMapRegion({ latitude: lat, longitude: long, latitudeDelta: 0.03, longitudeDelta: 0.03 })
     }  catch (error) {
       console.error('An error occurred:', error);
     }
@@ -221,7 +222,7 @@ function LocationNotifications() {
    
   return (
     <View>
-      <Box h={boxHeight} backgroundColor={"#FFFFFF"} borderRadius={10} marginBottom={2}>
+      <Box h={boxHeight} backgroundColor={"#FFFFFF"} borderRadius={10} marginBottom='5%'>
       <Box padding={3}>
         <HStack justifyContent="space-between" marginBottom={3}>
         <Heading
@@ -245,7 +246,7 @@ function LocationNotifications() {
         size={"sm"}
         />
         </HStack>
-        <Text fontSize="xs" color={"#BCBCBC"} marginBottom={2}>
+        <Text fontSize="xs" color={"#BCBCBC"} marginBottom='1%'>
           Recieve email notifications when a sighting is reported in your desired location
         </Text>
 

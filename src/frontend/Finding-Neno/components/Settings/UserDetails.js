@@ -104,7 +104,7 @@ function UserDetails() {
 
     return (
       <View >
-        <Box h={165} backgroundColor={"#FFFFFF"} borderRadius={10} marginBottom={2}>
+        <Box h={165} backgroundColor={"#FFFFFF"} borderRadius={10} marginBottom='5%'>
         <Box padding={3}>
         <HStack justifyContent="space-between" marginBottom={3}>
         <Heading
@@ -120,7 +120,7 @@ function UserDetails() {
         </TouchableOpacity>
         </HStack>
         
-        <HStack justifyContent="space-between"  marginBottom={2}>
+        <HStack justifyContent="space-between"  marginBottom='1%'>
 
         <Text fontSize="md">Name </Text>
         <Spacer width={5}/>
@@ -135,7 +135,7 @@ function UserDetails() {
 		</FormControl>
         </HStack>
 
-        <HStack justifyContent="space-between"  marginBottom={2}>
+        <HStack justifyContent="space-between"  marginBottom='1%'>
         <Text fontSize="md">Phone</Text>
         <Spacer width={5}/>
         <FormControl isInvalid={'phoneNumber' in errors}>
@@ -151,7 +151,7 @@ function UserDetails() {
         {'phoneNumber' in errors && <FormControl.ErrorMessage>{errors.phoneNumber}</FormControl.ErrorMessage>}
         </HStack>        
         
-        <HStack justifyContent="space-between"  marginBottom={2}>
+        <HStack justifyContent="space-between"  marginBottom='1%'>
         <Text fontSize="md">Email</Text>
         <Text width={textInputWidth} textAlign="right">{user.email} </Text>
         </HStack>
