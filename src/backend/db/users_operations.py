@@ -163,7 +163,7 @@ def insert_sighting_to_database(connection: psycopg2.extensions.connection, auth
     """
     This function is used to add a new sighting to the database.
 
-    Returns False if access tokenn is invalid, True if query is executed successfully.
+    Returns the ID of the sighting if executed successfully, None otherwise.
     """
 
     # Verify access token
@@ -177,24 +177,30 @@ def insert_sighting_to_database(connection: psycopg2.extensions.connection, auth
     query = """INSERT INTO sightings (missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, 
     location_latitude, image_url, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
-    # Result is the object returned or True if no errors encountered, False if there is an error
-    result = False
-
     # Execute the query
     try:
-        cur.execute(query, (author_id, date_time_of_creation, missing_report_id, animal, breed, date_time, location_longitude, location_latitude, image_url, description))
+        cur.execute(query, (missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, location_latitude, image_url, description))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
         connection.commit()
 
-        result = True # set to True only if it executes successfully 
-    except Exception as e:
-        print(f"Error while executing query: {e}")
+        # Get the sighting ID
+        query = """
+        SELECT id FROM sightings
+        WHERE author_id = %s AND date_time_of_creation = %s;"""
+        cur.execute(query, (author_id, date_time_of_creation,))
+        sighting_id = cur.fetchone()[0]
 
-    # Close the cursor
-    cur.close()
-    return result
+        cur.close()
+
+        return sighting_id
+
+    except Exception as e:
+        cur.close()
+        print(f"Error while executing query: {e}")
+        return None
+
 
 def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id: str, date_time_of_creation: datetime,
                                       pet_id: int, last_seen: datetime, location_longitude: float, location_latitude: float,
@@ -1095,6 +1101,64 @@ def get_local_users(
         cur.close()
         return None
 
+
+def get_possible_owners(
+    connection: psycopg2.extensions.connection,
+    longitude: float,
+    latitude: float,
+    radius: float,
+    animal: str,
+    breed: str,
+):
+    """
+    Gets possible owners who have made missing reports with similar details
+
+    Arguments:
+        connection: The connection to the database.
+        longitude: The longitude of the sighting author.
+        latitude: The latitude of the sighting author.
+        radius: The radius of the search area (in km).
+        animal: The animal of the pet.
+        breed: The breed of the pet.
+    """
+    cur = connection.cursor()
+
+    # Haversine formula: https://stackoverflow.com/a/57136609
+    query = """
+    SELECT 
+        mr.author_id
+    FROM 
+        missing_reports AS mr
+    JOIN 
+        pets AS p ON mr.pet_id = p.id
+    WHERE
+        acos(
+            sin(radians(%s)) * sin(radians(mr.location_latitude)) 
+            + cos(radians(%s)) * cos(radians(mr.location_latitude)) * cos(radians(%s) - radians(mr.location_longitude))
+        ) * 6371 <= %s
+    AND
+        p.animal = %s
+    AND
+        UPPER(p.breed) = UPPER(%s)
+    """
+    try:
+        cur.execute(query, (latitude, latitude, longitude, radius, animal, breed))
+
+        # Retrieve rows as an array
+        users = cur.fetchall()
+
+        cur.close()
+
+        if users:
+            print(f"Users successfully retrieved: {users}")
+            return users
+        else:
+            return []
+
+    except Exception as e:
+        print(f"Error with retrieving the users: {e}")
+        cur.close()
+        return None
 
 
 def send_notification(

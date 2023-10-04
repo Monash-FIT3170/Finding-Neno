@@ -65,13 +65,18 @@ def insert_sighting(connection) -> Tuple[str, int]:
     description = json_data["description"]
 
 
-    result = insert_sighting_to_database(connection, missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, location_latitude, imageUrl, description, user_id, access_token)
+    sighting_id = insert_sighting_to_database(connection, author_id=author_id, date_time_of_creation=date_time_of_creation, missing_report_id=missing_report_id, animal=animal, breed=breed, date_time=date_time, location_longitude=location_longitude, location_latitude=location_latitude, image_url=imageUrl, description=description, user_id=user_id, access_token=access_token)
 
-    if result is False:
+    if sighting_id is None:
         return "User does not have access", 401
     else:
+        # Send notification to the author of the missing report
         if missing_report_id is not None:
-            send_notification_to_report_author(connection, sighting_data=json_data)
+            send_notification_to_report_author(connection=connection, sighting_data=json_data)
+        else:
+            # Send notifications to possible nearby owners
+            send_notification_to_possible_owners(connection=connection, sighting_data=json_data)
+
         return "Success", 201
 
 def insert_missing_report(connection) -> Tuple[str, int]:
@@ -339,7 +344,6 @@ def retrieve_profile(connection, profile_user_id) -> Tuple[str, int, str, str, s
     user_id = request.headers["User-ID"]
     user_info = retrieve_user(connection, profile_user_id, user_id, access_token)
 
-    print(user_info)
     if user_info is not False:
         return user_info, 200 # Return profile information
     else:
@@ -485,7 +489,6 @@ def send_notification_to_local_users(
 
     # Get users in the area
     local_user_ids = get_local_users(connection=connection, longitude=missing_report["location_longitude"], latitude=missing_report["location_latitude"])
-    print(f"IDs of local users: {local_user_ids}")
 
     # Send notification to each user
     for user_id in local_user_ids:
@@ -504,3 +507,48 @@ def send_notification_to_local_users(
             else:
                 print(f"Notification failed to send to user ID {user_id}")
 
+
+def send_notification_to_possible_owners(
+    connection: psycopg2.extensions.connection,
+    sighting_data: Dict[str, Any],
+):
+    """
+    Triggered once a sighting is created.
+    Sends a notification to users in the area who have created a missing report with
+    similar details to the sighting.
+
+    Arguments:
+        connection: Database connection
+        sighting_data: Data in sighting
+    """
+    RADIUS = 20 # km
+    possible_owners = get_possible_owners(
+        connection=connection,
+        longitude=sighting_data["lastLocation"].split(",")[0],
+        latitude=sighting_data["lastLocation"].split(",")[1],
+        radius=RADIUS,
+        animal=sighting_data["animal"],
+        breed=sighting_data["breed"],
+    )
+
+    if possible_owners is not None:
+        for owner_id in possible_owners:
+            # Get user details
+            user = get_user_details(connection=connection, user_id=owner_id)
+
+            # Get information of the person who sighted the pet
+            sighter = get_user_details(connection=connection, user_id=sighting_data["authorId"])
+
+            # Send notification to owner
+            title = "Potential Sighting Alert for Your Lost Pet"
+            body = f"Hi {user['name']},\n\nYour pet {sighting_data['animal']}, breed {sighting_data['breed']} may have been sighted by {sighter['name']}.\n\nThanks,\nPetSight Team"
+
+            res = send_notification(
+                email_address=user["email_address"],
+                subject=title,
+                content=body,
+            )
+            if res:
+                print(f"Notification sent successfully to user ID {user['id']}")
+            else:
+                print(f"Notification failed to send to user ID {user['id']}")

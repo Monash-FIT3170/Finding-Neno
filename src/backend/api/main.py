@@ -89,7 +89,6 @@ def post_login():
 
 @app.route("/retrieve_profile", methods=["GET"]) # Requires Access_token and user ID for authorization
 def retrieve_profile_information():
-    print("retrieving current user profile, ")
     user_id = request.args.get("user_id")
     data = retrieve_profile(g.db, user_id)
     if data[1] == 200:
