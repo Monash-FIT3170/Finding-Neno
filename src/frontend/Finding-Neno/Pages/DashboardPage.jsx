@@ -146,7 +146,7 @@ const DashboardPage = () => {
 							case 'reports':
 								return <ReportsList reports={reports} onRefresh={onRefresh} columns={1} userId={USER_ID} />;
 							case 'sightings':
-								return <SightingsList sightings={allSightings} onRefresh={onRefresh} />;
+								return <SightingsList sightings={allSightings} onRefresh={onRefresh} emptyText={"There are no reported sightings."} />;
 							default:
 								return null; // TODO: make a view that says "no reports/sightings yet" etc for when theres nothing on the app yet ?
 						}

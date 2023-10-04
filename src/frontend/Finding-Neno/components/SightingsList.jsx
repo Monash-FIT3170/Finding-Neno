@@ -4,7 +4,7 @@ import { memo, useState } from "react";
 import { Text } from 'react-native-paper';
 import { formatDateTimeDisplay } from '../Pages/shared';
 
-function SightingsList({sightings, onRefresh, columns}) {
+function SightingsList({sightings, onRefresh, columns, emptyText}) {
     const [refreshing, setRefreshing] = useState(false);
     const onRefreshList = () => {
         setRefreshing(true);
@@ -19,7 +19,7 @@ function SightingsList({sightings, onRefresh, columns}) {
             keyExtractor={item => `${item[0]}`}
             onRefresh={onRefreshList}
             refreshing={refreshing}
-            ListEmptyComponent={<Text style={{ paddingVertical: '5%', fontSize: 15, fontWeight: '700' }}>There are no reported sightings.</Text>}
+            ListEmptyComponent={<Text style={{ paddingVertical: '5%', fontSize: 15, fontWeight: '700' }}>{emptyText}</Text>}
             ListFooterComponent={<Text style={{ paddingVertical: '5%', fontSize: 15, fontWeight: '700' }}>Last updated {formatDateTimeDisplay(new Date())}</Text>}
         />
     )

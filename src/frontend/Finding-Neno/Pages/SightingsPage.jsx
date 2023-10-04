@@ -98,7 +98,7 @@ export default function SightingsPage({ navigation: { navigate } }) {
 				// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
 				<IconText iconName={route.icon} text={route.title} textColor={route.color} iconColor={route.color} iconSize={24} fontWeight='bold' />)} 
 			style={{ backgroundColor: 'white' }}
-			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, borderRadius: 1.5, width: '15%', left: '17.5%' }} 
+			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, borderRadius: 1.5, width: '15%', left: '18.5%' }} 
 		/>
 	);
       
@@ -112,9 +112,9 @@ export default function SightingsPage({ navigation: { navigate } }) {
                     renderScene={({ route }) => {
                         switch (route.key) {
                             case 'sightingsOfMyPets':
-                                return <SightingsList sightings={sightingsOfMyPets} onRefresh={onRefresh} />;
+                                return <SightingsList sightings={sightingsOfMyPets} onRefresh={onRefresh} emptyText={"There are no reported sightings of your pets."} />;
                             case 'mySavedSightings':
-                                return <SightingsList sightings={mySavedSightings} onRefresh={onRefresh} />;
+                                return <SightingsList sightings={mySavedSightings} onRefresh={onRefresh} emptyText={"You have no saved sightings."}/>;
                             default:
                                 return null; 
                         }
@@ -125,8 +125,8 @@ export default function SightingsPage({ navigation: { navigate } }) {
                 <Portal>
                     <FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
                         actions={[
-                            { icon: 'file-document', label: 'New Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Report' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
-                            { icon: 'magnify', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+                            { icon: 'file-document', label: 'New Report', onPress: () => navigate('New Report'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+                            { icon: 'magnify', label: 'New Sighting', onPress: () => navigate('New Sighting'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
                         ]} />
                 </Portal>
             </SafeAreaView>

@@ -189,6 +189,7 @@ function ReportStackNavigator() {
 		<Stack.Navigator initialRouteName="ReportsPage">
 			<Stack.Screen name="Reports Page" component={ReportsPage} options={{ title: "Reports" }} />
 			<Stack.Screen name="New Report" component={NewReportPage} />
+			<Stack.Screen name="New Sighting" component={NewSightingPage} />
 		</Stack.Navigator>
 	)
 }
@@ -197,6 +198,7 @@ function SightingsStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="SightingsPage">
 			<Stack.Screen name="Sightings Page"  component={SightingsPage} options={{ title: "Sightings" }} />
+			<Stack.Screen name="New Report" component={NewReportPage} />
 			<Stack.Screen name="New Sighting" component={NewSightingPage} />
 		</Stack.Navigator>
 	)
