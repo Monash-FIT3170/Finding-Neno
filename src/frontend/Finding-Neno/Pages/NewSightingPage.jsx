@@ -16,7 +16,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import MapAddressSearch from "../components/MapAddressSearch";
 
 const NewSightingPage = ({ navigation: { navigate } }) => {
-    const { IP, PORT } = useSelector((state) => state.api)
+    const { API_URL } = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
     const navigation = useNavigation();
@@ -186,7 +186,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 				lastLocation: formData.lastLocation
             }
 
-            const url = `${IP}:${PORT}/insert_sighting`;
+            const url = `${API_URL}/insert_sighting`;
 
             await fetch(url, {
                 method: "POST",

@@ -29,7 +29,6 @@ To run this script, run the following command from the root directory:
     python src/backend/db/setup_db.py .env
 """
 
-
 def create_tables(connection: psycopg2.extensions.connection):
     """
     Sets up the database, including tables, keys and foreign key constraints
@@ -48,7 +47,7 @@ def create_tables(connection: psycopg2.extensions.connection):
         # Create missing_reports table
         """CREATE TABLE "missing_reports" (id SERIAL PRIMARY KEY, pet_id INTEGER REFERENCES pets(id), author_id 
         INTEGER REFERENCES "users"(id), date_time_of_creation TIMESTAMP NOT NULL, date_time TIMESTAMP NOT NULL, location_longitude FLOAT, location_latitude 
-        FLOAT, description VARCHAR(255), isActive BOOLEAN NOT NULL);""",
+        FLOAT, description VARCHAR(255), is_active BOOLEAN NOT NULL);""",
         # Create sightings table
         """CREATE TABLE "sightings" (id SERIAL PRIMARY KEY, missing_report_id INTEGER REFERENCES missing_reports(id), 
         author_id INTEGER REFERENCES "users"(id), date_time_of_creation TIMESTAMP NOT NULL, animal VARCHAR(255), breed VARCHAR(255), date_time TIMESTAMP NOT NULL, location_longitude FLOAT, 
@@ -139,5 +138,9 @@ if __name__ == "__main__":
 
         # Drop tables if they exist
         drop_tables(connection=conn)
+
         # Create/recreate tables
         create_tables(connection=conn)
+
+        # Close connection
+        conn.close()

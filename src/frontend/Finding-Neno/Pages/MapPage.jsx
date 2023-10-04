@@ -16,7 +16,7 @@ import { Color } from '../components/atomic/Theme';
 "Make a button to toggle between reports and sightings. Then make a function "
 
 export default function MapPage() {
-	const { IP, PORT } = useSelector((state) => state.api)
+	const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 	const navigation = useNavigation();
 	const isFocused = useIsFocused();
@@ -82,7 +82,7 @@ export default function MapPage() {
 	// Fetches all reports in map view from DB.
 	const fetchReports = async (longitude, longitude_delta, latitude, latitude_delta) => {
 		try {
-			const response = await fetch(`${IP.toString()}:${PORT.toString()}/get_missing_reports_in_area?long=${longitude}&long_delta=${longitude_delta}&lat=${latitude}&lat_delta=${latitude_delta}`);
+			const response = await fetch(`${API_URL}/get_missing_reports_in_area?long=${longitude}&long_delta=${longitude_delta}&lat=${latitude}&lat_delta=${latitude_delta}`);
 			const data = await response.json();
 			// setReports(data[0]);
 			console.log("Fetched Reports:", data); // Log fetched data
@@ -94,7 +94,7 @@ export default function MapPage() {
 
 	const fetchSightings = async (longitude, longitude_delta, latitude, latitude_delta) => {
 		try {
-			const response = await fetch(`${IP.toString()}:${PORT.toString()}/get_sightings_in_area?long=${longitude}&long_delta=${longitude_delta}&lat=${latitude}&lat_delta=${latitude_delta}`);
+			const response = await fetch(`${API_URL}/get_sightings_in_area?long=${longitude}&long_delta=${longitude_delta}&lat=${latitude}&lat_delta=${latitude_delta}`);
 			const data = await response.json();
 			// setSightings(data[0]);
 			console.log("Fetched Sightings:", data); // Log fetched data

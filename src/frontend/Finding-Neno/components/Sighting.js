@@ -8,13 +8,13 @@ import { useIsFocused } from '@react-navigation/native';
 import { formatDateTimeDisplay } from '../Pages/shared';
 import ImageView from 'react-native-image-viewing';
 
-
-const Sighting = ({ sighting, userId }) => {
+const Sighting = ({userId, sighting, refresh}) => {
     // Pet Data
     const windowWidth = Dimensions.get('window').width; 
 
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
-    const { IP, PORT } = useSelector((state) => state.api)
+    const {API_URL} = useSelector((state) => state.api)
+    const isFocused = useIsFocused();
 
     const id = sighting[0];
     const missingReportId = sighting[1];
@@ -34,29 +34,24 @@ const Sighting = ({ sighting, userId }) => {
     const [sightingSaved, setSightingSaved] = useState(savedByUser==USER_ID); // true if the sighting is saved by this user
     const [saveSightingEndpoint, setSaveSightingEndpoint] = useState('save_sighting');
 
-    const [suburb, setSuburb] = useState("");
-    const [enlargeImage, setEnlargeImage] = useState(false);
-    const [smallImageLoading, setSmallImageLoading] = useState(false);
-    const [suburbIsLoaded, setSuburbIsLoaded] = useState(true);
-
     useEffect(() => {
-        if (sightingSaved) {
+        if (savedByUser==USER_ID) {
           setSaveSightingEndpoint('unsave_sighting');
         } else {
           setSaveSightingEndpoint('save_sighting');
         }
     
-    }, [sightingSaved]);
+    }, [savedByUser]);
     
     const handlePressSaveBtn = async () => {
 
-      if (sightingSaved) {
+      if (savedByUser==USER_ID) {
         setSaveSightingEndpoint('unsave_sighting');
       } else {
         setSaveSightingEndpoint('save_sighting');
       }
 
-      const url = `${IP}:${PORT}/${saveSightingEndpoint}`;
+      const url = `${API_URL}/${saveSightingEndpoint}`;
     
       await fetch(url, {
         method: "POST",
@@ -70,46 +65,19 @@ const Sighting = ({ sighting, userId }) => {
         .then((res) => {
           if (res.status == 201) {
             setSightingSaved(!sightingSaved);
+            refresh();
           }
         })
         .catch((error) => alert(error));
     }
 
-
-  // useEffect(() => {
-  //   getSuburb();
-  // }, [])
-
-  // Retrieve suburb info from OpenStreetMap API by reverse geocoding
-  const getSuburb = async () => {
-    var suburb = null;
-    try {
-      const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${locationLatitude}&lon=${locationLongitude}&format=json`;
-
-      const response = await fetch(apiUrl);
-
-      const result = await response.json();
-
-      suburb = `${result.address.suburb ? result.address.suburb : (result.address.city ? result.address.city : "") }`
-      state = `${result.address.state ? result.address.state : ""}`;
-
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-    
-    if (suburb != null) {
-      setSuburb(`${suburb}${suburb && state ? "," : ""} ${state}`);
-    }
-    else {
-      setSuburb("Location information unavailable");
-    }
-  };
+    const [suburb, setSuburb] = useState("");
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
       fadeIn();
-  }, [suburbIsLoaded])
+  }, [])
 
   const fadeIn = () => {
       Animated.timing(fadeAnim, {
@@ -128,14 +96,12 @@ const Sighting = ({ sighting, userId }) => {
       <Heading size = "lg" >
         {suburb}
       </Heading>
-      <Ionicons name={sightingSaved ? "bookmark": "bookmark-outline"} size={20} onPress={handlePressSaveBtn}/>
-      
+      <Ionicons name={savedByUser==USER_ID ? "bookmark": "bookmark-outline"} size={24} onPress={handlePressSaveBtn}/>
       </HStack>
 
       <Heading size="sm" paddingTop={2}>
         Last seen {dateTime}
       </Heading>
-      {/* TODO: put reverse geocoded location here  */}
 
       <Text paddingTop={2}>
         {sightingDesc}

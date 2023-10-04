@@ -14,7 +14,7 @@ import SightingsList from '../components/SightingsList';
 import IconText from '../components/IconText';
 
 const DashboardPage = () => {
-	const { IP, PORT } = useSelector((state) => state.api)
+	const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
 	const windowWidth = Dimensions.get('window').width;
@@ -22,13 +22,15 @@ const DashboardPage = () => {
 	const toast = useToast();
 	const isFocused = useIsFocused();
 
-	// TODO: change report structure to be an array of dictionaries? Refer to mock data that is commented out for desired structure
 	const [reports, setReports] = useState([]);
-	//   const [modalVisible, setModalVisible] = useState(false);
-	const [sightingData, setSightingData] = useState({ authorId: USER_ID });
-	// const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
-	const [sightingImage, setSightingImage] = useState(null);
 	const [allSightings, setAllSightings] = useState([]);
+	const [reportCards, setReportCards] = useState('');
+	const [sightingCards, setSightingCards] = useState('');
+	const [sightingData, setSightingData] = useState({ authorId: USER_ID });
+	const [sightingImage, setSightingImage] = useState(null);
+	const [initialReportsLoaded, setInitialReportsLoaded] = useState(false);
+	const [initialSightingsLoaded, setInitialSightingsLoaded] = useState(false);
+	const [reloadPage, setReloadPage] = useState(false);
 
 	const [FABstate, setFABState] = useState({ open: false });
 	const onStateChange = ({ open }) => setFABState({ open });
@@ -40,13 +42,13 @@ const DashboardPage = () => {
 	])
 	const [index, setIndex] = useState(0);
 
-	// 
 	// Fetch when tab is changed or page is focused
 	useEffect(() => {
 		if (isFocused) {
+			setReloadPage(false);
 			fetchData();
 		}
-	}, [isFocused]);
+	}, [isFocused, initialReportsLoaded, initialSightingsLoaded, reloadPage]);
 
 	const onRefresh = () => {
 		fetchData();
@@ -54,31 +56,14 @@ const DashboardPage = () => {
 
 	const fetchData = () => {
 		fetchAllReports();
-		// setReportCards(generateReportCards());
 		fetchAllSightings();
-		// setSightingCards(generateSightingCards());
+		// setSightingCards(generateSightingCards(allSightings)); // moved this into fetchAllSightings
 	}
-
-	// const generateReportCards = () => {
-	// 	return (
-	// 		reports?.map((report, index) => (
-	// 			<Report userId={USER_ID} report={report} key={index} />
-	// 		))
-	// 	)
-	// }
-
-	// const generateSightingCards = () => {
-	// 	return (
-	// 		allSightings?.map((sighting, index) => (
-	// 			<Sighting userId={USER_ID} sighting={sighting} key={index} />
-	// 		))
-	// 	)
-	// }
 
 	// API calls 
 	const fetchAllReports = async () => {
 		try {
-			const url = `${IP}:${PORT}/get_missing_reports`;
+			const url = `${API_URL}/get_missing_reports`;
 			const response = await fetch(url, {
 				method: "GET",
 				headers: {
@@ -94,15 +79,18 @@ const DashboardPage = () => {
 
 			await response.json().then(data => {
 				setReports(data[0]);
+				setInitialReportsLoaded(true);
 			});
 		} catch (error) {
 			console.error(error);
 		}
 	};
 
-	const fetchAllSightings = async () => {
-		try {
-			const url = `${IP}:${PORT}/get_sightings`;
+  const fetchAllSightings = async () => {
+    try {
+      // Retrieve sightings that are less than 30 days old
+      const expiryTime = 30;
+			const url = `${API_URL}/get_sightings?expiry_time=${expiryTime}`;
 			const response = await fetch(url, {
 				method: "GET",
 				headers: {
@@ -118,12 +106,17 @@ const DashboardPage = () => {
 
 			await response.json().then(data => {
 				setAllSightings(data[0]);
+				setInitialSightingsLoaded(true);
+
+				// filters out sightings that are linked to reports where is_active == False i.e pet has been found
+				// setSightingCards(generateSightingCards(data[0]));
 			});
+			
 		} catch (error) {
 			console.error(error);
 		}
 	};
-
+	
 	// image_url is not being set properly without this useEffect - should probs find a more robust way to fix it later 
 	useEffect(() => {
 		setSightingData({ ...sightingData, image_url: sightingImage })
@@ -151,7 +144,7 @@ const DashboardPage = () => {
 					renderScene={({ route }) => {
 						switch (route.key) {
 							case 'reports':
-								return <ReportsList reports={reports} onRefresh={onRefresh} columns={1} />;
+								return <ReportsList reports={reports} onRefresh={onRefresh} columns={1} userId={USER_ID} />;
 							case 'sightings':
 								return <SightingsList sightings={allSightings} onRefresh={onRefresh} />;
 							default:
@@ -160,7 +153,6 @@ const DashboardPage = () => {
 					}}
 					onIndexChange={setIndex}
 					initialLayout={{ width: windowWidth }}
-					
 				/>
 				<Portal>
 					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}

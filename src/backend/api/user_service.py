@@ -32,10 +32,6 @@ def insert_user(connection) -> Tuple[str, int]:
     phoneNumber = json_data["phoneNumber"]
     password = json_data["password"]
     name = json_data["name"]
-
-    user_exists = check_user_exists(connection, email, phoneNumber)
-    if not user_exists:
-        return 'User already exists', 409
     insert_user_to_database(connection, email, phoneNumber, name, password)
     return "Success", 201
 
@@ -122,7 +118,7 @@ def update_missing_report(connection) -> Tuple[str, int]:
     location_longitude, location_latitude = coordinates.split(",")
 
     description = json_data["description"]
-    is_active = json_data["isActive"]
+    is_active = json_data["is_active"]
 
     result = update_missing_report_in_database(connection, report_id, pet_id, author_id, last_seen, location_longitude,
                                       location_latitude, description, is_active, access_token)
@@ -138,7 +134,7 @@ def update_report_status(conn):
     success = update_report_active_status(
         connection=conn,
         report_id=data["report_id"],
-        new_status=data["isActive"],
+        new_status=data["is_active"],
     )
     if success:
         return "", 200
@@ -147,7 +143,7 @@ def update_report_status(conn):
 def archive_missing_report(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     report_id = json_data["reportId"]
-    is_active = json_data["isActive"]
+    is_active = json_data["is_active"]
 
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
@@ -207,14 +203,14 @@ def retrieve_reports_by_pet(connection, pet_id) -> Tuple[str, int]:
         return reports, 200
 
 
-def retrieve_sightings(connection, missing_report_id) -> Tuple[str, int]:
+def retrieve_sightings(connection, missing_report_id, expiry_time) -> Tuple[str, int]:
     """
     This function calls the function that connects to the db to retrieve all sightings or sightings for a missing 
     report if its missing_report_id is provided.
     """
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
-    sightings = retrieve_sightings_from_database(connection, missing_report_id, user_id, access_token)
+    sightings = retrieve_sightings_from_database(connection, missing_report_id, expiry_time, user_id, access_token)
 
     if sightings is False:
         return "User does not have access", 401

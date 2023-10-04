@@ -19,16 +19,16 @@ import marker from '../assets/marker_icon.png';
 import { formatDatetime, formatDateTimeDisplay } from '../Pages/shared';
 import MapAddressSearch from "../components/MapAddressSearch";
 
-const ReportSightingModal = ({ report, userId, closeModal, showModal }) => {
-	const [sightingDateTime, setSightingDateTime] = useState(new Date());
-	const [reportSightingBtnDisabled, setReportSightingBtnDisabled] = useState(false);
-	const [sightingFormErrors, setSightingFormErrors] = useState({});
-	// const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
-	const [sightingImage, setSightingImage] = useState(null);
-	const [showPicker, setShowPicker] = useState(false);
-	const [isUploading, setIsUploading] = useState(false);
-	const { IP, PORT } = useSelector((state) => state.api)
-	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
+    const [sightingDateTime, setSightingDateTime] = useState(new Date());
+    const [reportSightingBtnDisabled, setReportSightingBtnDisabled] = useState(false);
+    const [sightingFormErrors, setSightingFormErrors] = useState({});
+    // const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
+    const [sightingImage, setSightingImage] = useState(null);
+    const [showPicker, setShowPicker] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const { API_URL } = useSelector((state) => state.api)
+    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
 	const toast = useToast();
 	const isFocused = useIsFocused();
@@ -208,7 +208,7 @@ const ReportSightingModal = ({ report, userId, closeModal, showModal }) => {
 			}
 
 			setReportSightingBtnDisabled(true);
-			const url = `${IP}:${PORT}/insert_sighting`;
+			const url = `${API_URL}/insert_sighting`;
 
 			setSightingData({ ...sightingData, image_url: sightingImage })
 

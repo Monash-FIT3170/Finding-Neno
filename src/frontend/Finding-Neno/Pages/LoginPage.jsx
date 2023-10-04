@@ -22,7 +22,7 @@ const LoginPage = () => {
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
 	const dispatch = useDispatch();
-	const { IP, PORT } = useSelector((state) => state.api);
+	const { API_URL } = useSelector((state) => state.api);
 
 	const navigation = useNavigation();
 
@@ -32,7 +32,7 @@ const LoginPage = () => {
 
 		let isValid = validateDetails(formData);
 		if (isValid) {
-			const url = `${IP}:${PORT}/login`;
+			const url = `${API_URL}/login`;
 			fetch(url, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },

@@ -4,7 +4,7 @@ import { memo, useState } from 'react';
 import { Text } from 'react-native-paper';
 import { formatDateTimeDisplay } from '../Pages/shared';
 
-function ReportsList({reports, onRefresh, columns}) {
+function ReportsList({reports, onRefresh, columns, userId}) {
     const [refreshing, setRefreshing] = useState(false);
     const onListRefresh = () => {
         setRefreshing(true);
@@ -16,7 +16,7 @@ function ReportsList({reports, onRefresh, columns}) {
         <FlatList width='100%' numColumns={columns} style={{ backgroundColor: 'transparent' }} 
             contentContainerStyle={{ alignItems: 'center', paddingVertical: 10 }}
             data={reports}
-            renderItem={({item}) => <Report report={item} />}
+            renderItem={({item}) => <Report report={item} userId={userId} />}
             keyExtractor={item => `${item[0]}`}
             onRefresh={onListRefresh}
             refreshing={refreshing}

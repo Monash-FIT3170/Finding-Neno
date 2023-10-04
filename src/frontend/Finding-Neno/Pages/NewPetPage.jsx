@@ -21,7 +21,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 	   */
 
 	const navigation = useNavigation();
-	const { IP, PORT } = useSelector((state) => state.api)
+	const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 	const pet = useSelector((state) => state.pet);
 
@@ -55,10 +55,10 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		let method;
 		// check if this is a new pet or an existing pet
 		if (isExistingPet) {
-			url = `${IP}:${PORT}/update_pet/pet_id=`;
+			url = `${API_URL}/update_pet/pet_id=`;
 			method = 'PUT';
 		} else {
-			url = `${IP}:${PORT}/insert_pet?owner_id=${USER_ID}`;
+			url = `${API_URL}/insert_pet?owner_id=${USER_ID}`;
 			method = 'POST';
 		}
 

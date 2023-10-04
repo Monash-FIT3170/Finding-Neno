@@ -11,8 +11,7 @@ import { StatusBar } from 'expo-status-bar';
 
 
 const ForgotPasswordPage = () => {
-	const IP = useSelector((state) => state.IP);
-	const PORT = useSelector((state) => state.PORT);
+	const { API_URL } = useSelector((state) => state.api);
 	const [formData, setFormData] = useState({});
 	const [errors, setErrors] = useState({});
 	const [buttonText, setButtonText] = useState("Send Reset Code")
