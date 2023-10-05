@@ -219,7 +219,7 @@ def update_pet_missing_status(connection: psycopg2.extensions.connection, pet_id
 
 def delete_pet(
     connection: psycopg2.extensions.connection, 
-    id: int,
+    owner_id: int,
     access_token: str, user_id: int
 ):
     """
@@ -240,14 +240,9 @@ def delete_pet(
 
     result = False
     try:
-        # Get the pet's owner's ID
-        query = """SELECT owner_id FROM pets WHERE id = %s;"""
-        cur.execute(query, (id,))
-        
-        
         # Delete the pet
-        query = """DELETE FROM pets WHERE id = %s;"""
-        cur.execute(query, (id,))
+        query = """DELETE FROM pets WHERE owner_id = %s;"""
+        cur.execute(query, (owner_id,))
         result = True
         print(f"Query executed successfully: {query}")
     except Exception as e:
