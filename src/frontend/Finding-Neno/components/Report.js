@@ -71,11 +71,10 @@ const Report = ({ report, userId }) => {
     }
 
     return (
-        <Animated.View style={{ opacity: fadeAnim, maxWidth: 380, marginTop: 10, marginBottom: 10, backgroundColor: (suburbIsLoaded ? "white" : "grey"), borderRadius: 30, shadowOpacity: 0.15, shadowOffset: {height: 8} }}>
+        <Animated.View style={{ backgroundColor: 'white', opacity: fadeAnim, maxWidth: 380, marginTop: 10, marginBottom: 10, borderRadius: 30, shadowOpacity: 0.15, shadowOffset: {height: 8} }}>
             <ImageView images={[{uri: petImage}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor='gray'/>
 
             {/* Info */}
-            {suburbIsLoaded &&
             <View style={{ margin: '4%', marginBottom: 4 }}>
                 <HStack maxWidth="100%" justifyContent='space-between'>
                     <View style={{ width: "49%", aspectRatio: 1 }} >
@@ -144,7 +143,6 @@ const Report = ({ report, userId }) => {
                     <ShareButton title={"Missing Pet - Finding Neno"} message={message} dialogTitle={"Share this missing pet report"} width={authorId == userId ? '100%' : '29%'} />
                 </HStack>
             </View>
-            }
             {/* Modal for reporting a sighting */}
             {
                 authorId != userId ?

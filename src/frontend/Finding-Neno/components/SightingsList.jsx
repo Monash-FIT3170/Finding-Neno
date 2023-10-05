@@ -13,7 +13,8 @@ function SightingsList({sightings, onRefresh, columns, emptyText}) {
     }
 
     return (
-        <FlatList paddingY='3%' width='100%' numColumns={columns} style={{ backgroundColor: 'transparent' }} contentContainerStyle={{ alignItems: 'center' }}
+        <FlatList width='100%' numColumns={columns} style={{ backgroundColor: 'transparent' }} 
+            contentContainerStyle={{ alignItems: 'center', paddingVertical: 10 }}
             data={sightings}
             renderItem={({ item }) => <Sighting sighting={item} refresh={onRefreshList}/>}
             keyExtractor={item => `${item[0]}`}
