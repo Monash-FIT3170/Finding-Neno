@@ -33,7 +33,7 @@ function LocationNotifications() {
   }, [isFocused]);
 
   const [localNotificationsEnabled, setLocalNotificationsEnabled] = useState(false);
-  const [possibleSightingsEnabled, setpossibleSightingsEnabled] = useState(false);
+  const [possibleSightingsEnabled, setPossibleSightingsEnabled] = useState(false);
   const [radiusText, setRadiusText] = useState(4);
   // Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
   const [mapRegion, setMapRegion] = useState({
@@ -108,11 +108,11 @@ function LocationNotifications() {
   };
 
   const togglePossibleNotifications = () => {
-    setpossibleSightingsEnabled(previousState => !previousState)
-    if(localNotificationsEnabled){
-      setLocationData({...locationData, possible_sightings: true})
-    } else {
+    setPossibleSightingsEnabled(previousState => !previousState)
+    if(possibleSightingsEnabled){
       setLocationData({...locationData, possible_sightings: false})
+    } else {
+      setLocationData({...locationData, possible_sightings: true})    
     }
   };
 
@@ -214,10 +214,10 @@ function LocationNotifications() {
     const long = user_settings[1] ? user_settings[1] : mapRegion.longitude;
     const lat = user_settings[2] ? user_settings[2] : mapRegion.latitude;
     const radius = user_settings[3] ? user_settings[3] : 5;
-    const possible_sightings = user_settings[4];
+    const possible_sightings = user_settings[4] ? user_settings[4] : false;
     setLocationData({enabled: enabled, long: long, lat: lat, radius: radius, possible_sightings: possible_sightings})
 
-    setpossibleSightingsEnabled(possible_sightings)
+    setPossibleSightingsEnabled(possible_sightings)
     if(enabled){
       setLocalNotificationsEnabled(true);
       setBoxHeight(410);
