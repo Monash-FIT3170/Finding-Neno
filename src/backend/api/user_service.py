@@ -542,8 +542,7 @@ def send_notification_to_possible_owners(
 
             # Send notification to owner
             title = "Potential Sighting Alert for Your Lost Pet"
-            body = f"Hi {user['name']},\n\nYour pet {sighting_data['animal']}, breed {sighting_data['breed']} may have been sighted by {sighter['name']}.\n\nThanks,\nPetSight Team"
-
+            body = generate_email_potential_sighting(sighting_data, sighter, user)
             res = send_notification(
                 email_address=user["email_address"],
                 subject=title,

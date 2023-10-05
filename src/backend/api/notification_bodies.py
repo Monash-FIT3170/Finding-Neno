@@ -491,7 +491,7 @@ def generate_email_potential_sighting(sighting_data, sighter, owner):
         owner: Data containing the owner information
     """
     
-
+    location_longitude, location_latitude = sighting_data['lastLocation'].split(",")
     html_code = f"""
     <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
     <html xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office">
@@ -600,7 +600,7 @@ def generate_email_potential_sighting(sighting_data, sighter, owner):
                                                     </tr>
                                                     <tr>
                                                     <td align="left" style="padding:0;Margin:0">
-                                                        <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Dear ,</p>
+                                                        <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Dear {owner['name']},</p>
                                                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">We hope this message finds you well during your search for your beloved pet. At Finding Neno, our mission is to reunite lost pets with their loving owners, and today, we have important information to share with you.</p>
                                                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">We understand the rollercoaster of emotions that come with the uncertainty of searching for a lost pet, and we're committed to keeping you informed every step of the way.</p>
                                                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">We want to inform you that a fellow user of our community has reported a sighting of a pet. This notification has been sent to you because you meet specific criteria for receiving notifications related to this sighting. While we cannot guarantee that this is your pet, we want to ensure you have all the information you need to investigate further.</p>
@@ -608,28 +608,41 @@ def generate_email_potential_sighting(sighting_data, sighter, owner):
                                                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"><strong>Potential Sighting Details:</strong></p>
                                                         <ul style="font-family:arial, 'helvetica neue', helvetica, sans-serif;padding:0px 0px 0px 40px;margin:15px 0px">
                                                             <li style="color:#333333;margin:0px 0px 15px;font-size:14px">
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Pet Type:</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Pet Type: {sighting_data['animal']}</p>
                                                             </li>
                                                             <li style="color:#333333;margin:0px 0px 15px;font-size:14px">
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Breed:</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Breed: {sighting_data['breed']}</p>
                                                             </li>
                                                             <li style="color:#333333;margin:0px 0px 15px;font-size:14px">
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Description:</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Description: {sighting_data['description']}</p>
                                                             </li>
                                                             <li style="color:#333333;margin:0px 0px 15px;font-size:14px">
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Image:</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Picture: See the following <a href="{sighting_data['imageUrl']}">link</a>&nbsp;for picture.</p>
                                                             </li>
                                                             <li style="color:#333333;margin:0px 0px 15px;font-size:14px">
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Date and Time</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Date and Time: {sighting_data['dateTime']}</p>
                                                             </li>
                                                             <li style="color:#333333;margin:0px 0px 15px;font-size:14px">
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Location</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Location:<a href="https://maps.google.com/?q={location_latitude},{location_longitude}">{location_latitude + ', ' + location_longitude}</a></p>
                                                             </li>
                                                         </ul>
                                                         <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">We Encourage you to take the following steps:</p>
                                                         <ol style="font-family:arial, 'helvetica neue', helvetica, sans-serif;padding:0px 0px 0px 40px;margin:15px 0px">
                                                             <li style="color:#333333;margin:0px 0px 15px;font-size:14px">
-                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"><strong>Contact the Poster:</strong>&nbsp;Reach out to the user who reported the sighting. They may have additional information or could help you confirm whether it's your pet.</p>
+                                                                <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"> <strong>Contact the Poster:</strong>&nbsp; Reach out to the user who reported the sighting. They may have additional information or could help you confirm whether it's your pet. Their contact details are: 
+                                                                    <ul style="list-style-type:circle">
+                                                                        <li>
+                                                                            <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Name: {sighter['name']} </p>
+                                                                        </li>
+                                                                        <li>
+                                                                            <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Email address: <a href="mailto:{sighter['email_address']}">{sighter['email_address']}</a></p>
+                                                                        </li>
+                                                                        <li>
+                                                                            <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Phone number: <a href="tel:{sighter['phone_number']}">{sighter['phone_number']}</a>.</p>
+                                                                        </li>
+                                                                    </ul>
+                                                                  <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px">Please be in touch with them as soon as possible to see if they can help.&nbsp;&nbsp; </p>
+                                                                </p>
                                                             </li>
                                                             <li style="color:#333333;margin:0px 0px 15px;font-size:14px">
                                                                 <p style="Margin:0;mso-line-height-rule:exactly;font-family:arial, 'helvetica neue', helvetica, sans-serif;line-height:21px;letter-spacing:0;color:#333333;font-size:14px"><strong>Review the Details:</strong>&nbsp;Carefully examine the information provided in the sighting notification. Compare it with the details of your missing pet to see if there's a potential match.</p>
