@@ -134,6 +134,42 @@ def check_user_exists(connection: psycopg2.extensions.connection, email: str, ph
     cur.close()
     return result
 
+def check_user_password(connection: psycopg2.extensions.connection, to_check_id: int, password: str, user_id: int, access_token: str):
+    """
+    This function is used to check if a user exists in the database and if the password match
+    """
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    # Hash the password input
+    hashed_pass= salt_and_hash(password)
+
+    # Check if a user with this email exists in the database
+    # Construct a SELECT query to check if the user exists in the database and if its password matches
+    query = """SELECT id, access_token FROM users WHERE id = %s AND password = %s """
+
+    # Execute the query
+    try:
+        cur.execute(query, (to_check_id, hashed_pass))
+        user = cur.fetchone()
+        
+        # If password is correct
+        if user != None:
+            return [True]
+        else:
+            return [False]
+        
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return False
+
 def check_user_login_details(connection: psycopg2.extensions.connection, username: str, password: str):
     """
     This function is used to check if a user exists in the database and if the password match
@@ -980,6 +1016,8 @@ def delete_all_user_data_from_database(connection: psycopg2.extensions.connectio
     Returns False if access token is invalid, True if query is executed successfully.
     """
 
+    print(to_delete_id)
+
     # Verify access token
     if not verify_access_token(connection, user_id, access_token):
         return False
@@ -1020,11 +1058,13 @@ def delete_all_user_sightings(connection: psycopg2.extensions.connection, user_i
         # Commit the change
         connection.commit()
         print(f"Sightings successfully deleted")
+        return True
 
     except Exception as e:
         print(f"Error with deleting user: {e}")
     
     cur.close()
+    return False
 
 def unlink_sightings_from_user_missing_reports(connection: psycopg2.extensions.connection, user_id: int):
     """
@@ -1043,11 +1083,13 @@ def unlink_sightings_from_user_missing_reports(connection: psycopg2.extensions.c
         # Commit the change
         connection.commit()
         print(f"Sightings successfully unlinked")
+        return True
 
     except Exception as e:
         print(f"Error with deleting user: {e}")
     
     cur.close()
+    return False
 
 def delete_all_user_missing_reports(connection: psycopg2.extensions.connection, user_id: int):
     """
@@ -1066,11 +1108,13 @@ def delete_all_user_missing_reports(connection: psycopg2.extensions.connection, 
         # Commit the change
         connection.commit()
         print(f"Missing reports successfully deleted")
+        return True
 
     except Exception as e:
         print(f"Error with deleting user: {e}")
     
     cur.close()
+    return False
 
 def delete_all_user_pets(connection: psycopg2.extensions.connection, user_id: int):
     """
@@ -1089,11 +1133,13 @@ def delete_all_user_pets(connection: psycopg2.extensions.connection, user_id: in
         # Commit the change
         connection.commit()
         print(f"Pets successfully deleted")
+        return True
 
     except Exception as e:
         print(f"Error with deleting user: {e}")
     
     cur.close()
+    return False
 
 def delete_user(connection: psycopg2.extensions.connection, user_id: int):
     """
@@ -1112,8 +1158,10 @@ def delete_user(connection: psycopg2.extensions.connection, user_id: int):
         # Commit the change
         connection.commit()
         print(f"User successfully deleted")
+        return True
 
     except Exception as e:
         print(f"Error with deleting user: {e}")
     
     cur.close()
+    return False

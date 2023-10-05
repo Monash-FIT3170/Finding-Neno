@@ -103,7 +103,7 @@ def post_insert_user():
 @app.route("/delete_user", methods=["DELETE"])
 def delete_user():
     to_delete_id = request.args.get("user_id")
-    return delete_all_user_data(g.db, to_delete_id=to_delete_id)
+    return jsonify(delete_all_user_data(g.db, to_delete_id=to_delete_id))
 
 @app.route("/verify_token", methods=["GET"])
 def get_verify_token():
@@ -135,6 +135,10 @@ def retrieve_profile_information():
         return jsonify(data)
     else:
         return None
+    
+@app.route("/validate_password", methods=["POST"]) # Requires Access_token and user ID for authorization
+def validate_password():
+    return validate_password_operation(g.db)
 
 @app.route("/change_password", methods=["PATCH"]) # Requires Access_token and user ID for authorization
 def post_change_password():

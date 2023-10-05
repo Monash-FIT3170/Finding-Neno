@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
 import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link, Modal, View} from "native-base";
-import { Dimensions } from "react-native";
+import { Dimensions, SafeAreaView } from "react-native";
 import { Color } from "../components/atomic/Theme";
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
@@ -239,6 +239,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
   return (
 
     <PaperProvider>
+      <SafeAreaView style={{ height: "100%" }}>
       <ScrollView>
         <Box alignItems="center" justifyContent="center">
           <Box
@@ -350,9 +351,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
               Delete Account
             </Button>
             
-            <View style={{ width: '100%', alignItems: 'center' }}>
-              <DeleteUserModal visible={deleteModalVisible} setVisible={setDeleteModalVisible} />
-            </View>
+            <DeleteUserModal visible={deleteModalVisible} setVisible={setDeleteModalVisible} />
 
             <Button onPress={() => setLogoutModalVisible(true)} backgroundColor={"#FA8072"}>
               Logout
@@ -425,6 +424,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
 
       </ScrollView>
+      </SafeAreaView>
     </PaperProvider>
   );
 }
