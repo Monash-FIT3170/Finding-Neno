@@ -17,7 +17,7 @@ import ReportsList from '../components/ReportsList';
 
 export default function ReportsPage({ navigation: { navigate } }) {
 
-	const { IP, PORT } = useSelector((state) => state.api)
+    const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
 	const isFocused = useIsFocused();
@@ -41,7 +41,7 @@ export default function ReportsPage({ navigation: { navigate } }) {
 
 	const fetchUserReports = async () => {
 		try {
-			const url = `${IP}:${PORT}/get_missing_reports?author_id=${USER_ID}`;
+			const url = `${API_URL}/get_missing_reports?author_id=${USER_ID}`;
 			const response = await fetch(url, {
 				method: "GET",
 				headers: {
