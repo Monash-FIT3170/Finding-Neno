@@ -100,6 +100,11 @@ def close_connection():
 def post_insert_user():
     return insert_user(g.db)
 
+@app.route("/delete_user", methods=["DELETE"])
+def delete_user():
+    to_delete_id = request.args.get("user_id")
+    return delete_all_user_data(g.db, to_delete_id=to_delete_id)
+
 @app.route("/verify_token", methods=["GET"])
 def get_verify_token():
     return check_access_token(g.db)

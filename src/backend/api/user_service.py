@@ -416,3 +416,11 @@ def reset_password(username, new_password):
     return True
     # Replace with password reset logic
 
+def delete_all_user_data(connection, to_delete_id):
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+    result = delete_all_user_data_from_database(connection=connection, to_delete_id=to_delete_id, user_id=user_id, access_token=access_token)
+    if result is False:
+        return "User does not have access", 401
+    else:
+        return "", 200
