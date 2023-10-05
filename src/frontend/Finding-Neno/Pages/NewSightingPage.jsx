@@ -4,7 +4,7 @@ import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import React, { useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
 import { StatusBar } from 'expo-status-bar';
-import { Button } from 'react-native-paper';
+import { Button, Subheading, Text } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSelector } from "react-redux";
 import { formatDatetime, formatDateTimeDisplay, petTypeOptions } from "./shared";
@@ -132,19 +132,18 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         setShowPicker(false);
     }
 
-
-
-
     return (
         <KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}>
             <StatusBar style="auto" />
             <SafeAreaView style={{ flex: 1, marginHorizontal: "10%" }}>
-            <ImageHandler image={sightingImage} setImage={setSightingImage} setIsButtonDisabled={setIsButtonDisabled} />
 
                 <VStack>
                     <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Report a Pet Sighting</Heading>
+                    <Subheading>Found a lost pet? Report your sighting here</Subheading>
+                    <Subheading>Sighting will automatically expire after 30 days</Subheading>
 
                     <VStack space={3} mt="5"> 
+                        <ImageHandler image={sightingImage} setImage={setSightingImage} setIsButtonDisabled={setIsButtonDisabled} />
 
                         <FormControl isRequired isInvalid={'petType' in errors}>
                             <FormControl.Label>Pet Type</FormControl.Label>

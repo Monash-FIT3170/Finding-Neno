@@ -37,7 +37,7 @@ const Sighting = ({userId, sighting, refresh}) => {
     const [saveSightingEndpoint, setSaveSightingEndpoint] = useState('save_sighting');
 
     const message = 
-    `Check this pet sighting. \n\nSpecie: ${sightingAnimal} ${sightingBreed ? "\nBreed: " + sightingBreed : ""} \nSeen ${dateTime} around ${suburb} ${sightingImage ? "\nImage: " + sightingImage : ""} ${sightingDesc ? "\nDescription: " + sightingDesc : ""} \n\nSee more on the Finding Neno app.`
+    `Check this pet sighting. \n\nSpecies: ${sightingAnimal} ${sightingBreed ? "\nBreed: " + sightingBreed : ""} \nSeen ${dateTime} around ${suburb} ${sightingImage ? "\nImage: " + sightingImage : ""} ${sightingDesc ? "\nDescription: " + sightingDesc : ""} \n\nSee more on the Finding Neno app.`
 
     useEffect(() => {
         if (savedByUser==USER_ID) {

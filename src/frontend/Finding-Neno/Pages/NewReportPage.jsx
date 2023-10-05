@@ -6,7 +6,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
 import { Image, StyleSheet, View } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
-import { Button } from 'react-native-paper';
+import { Button, Subheading } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useSelector, useDispatch } from "react-redux";
 
@@ -212,6 +212,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			<SafeAreaView style={{ flex: 1, marginHorizontal: "10%" }}>
 				<VStack>
 					<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Report Your Missing Pet</Heading>
+					<Subheading>Lost your pet? Report your missing pet here so others can help</Subheading>
 
 					<VStack space={3} mt="5">
 
