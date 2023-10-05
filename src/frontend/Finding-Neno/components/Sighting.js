@@ -7,22 +7,15 @@ import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 import { Ionicons } from '@expo/vector-icons'; 
 import { useSelector } from "react-redux";
 import { useIsFocused } from '@react-navigation/native';
-import { Ionicons } from '@expo/vector-icons'; 
-import { useSelector } from "react-redux";
-import { useIsFocused } from '@react-navigation/native';
 
 
 const Sighting = ({userId, sighting, setReloadParent}) => {
-const Sighting = ({userId, sighting, setReloadParent}) => {
-    // Pet Data
-    const windowWidth = Dimensions.get('window').width; 
+  // Pet Data
+  const windowWidth = Dimensions.get('window').width; 
 
-    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
-    const {API_URL} = useSelector((state) => state.api)
-    const isFocused = useIsFocused();
-    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
-    const {API_URL} = useSelector((state) => state.api)
-    const isFocused = useIsFocused();
+  const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+  const {API_URL} = useSelector((state) => state.api)
+  const isFocused = useIsFocused();
 
   const id = sighting[0];
   const missingReportId = sighting[1];
