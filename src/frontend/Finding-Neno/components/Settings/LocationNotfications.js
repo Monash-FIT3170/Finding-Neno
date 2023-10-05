@@ -17,7 +17,7 @@ function LocationNotifications() {
   // Component for Location Notifications
   const windowWidth = Dimensions.get('window').width; 
   const textInputWidth = windowWidth*0.7;
-  const [boxHeight, setBoxHeight] = useState(150);
+  const [boxHeight, setBoxHeight] = useState(200);
   const toast = useToast();
 
   
@@ -26,12 +26,14 @@ function LocationNotifications() {
 
   const isFocused = useIsFocused();
   useEffect(() => {
+    console.log("Settings Page Opened")
     if (isFocused) {
       fetchUserSettings();
     }
   }, [isFocused]);
 
-    const [localNotificationsEnabled, setLocalNotificationsEnabled] = useState(false);
+  const [localNotificationsEnabled, setLocalNotificationsEnabled] = useState(false);
+  const [possibleSightingsEnabled, setpossibleSightingsEnabled] = useState(false);
   const [radiusText, setRadiusText] = useState(4);
   // Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
   const [mapRegion, setMapRegion] = useState({
@@ -73,7 +75,7 @@ function LocationNotifications() {
             <Text fontSize="xs" color={"#BCBCBC"}>{radiusText}km</Text>
           </HStack>
     
-          <Box height={150} marginBottom='1%'>
+          <Box height={150} marginBottom='1%' >
               <MapView
                 ref={mapViewRef}
                 provider={PROVIDER_GOOGLE}
@@ -94,15 +96,19 @@ function LocationNotifications() {
     }
   }
 
-  const toggleSwitch = () => {
+  const toggleLocationNotifications = () => {
     setLocalNotificationsEnabled(previousState => !previousState)
     if(localNotificationsEnabled){
-      setBoxHeight(150);
+      setBoxHeight(200);
       setLocationData({...locationData, enabled: false})
     } else {
-      setBoxHeight(360);
+      setBoxHeight(410);
       setLocationData({...locationData, enabled: true})
     }
+  };
+
+  const togglePossibleNotifications = () => {
+    setpossibleSightingsEnabled(previousState => !previousState)
   };
 
   const updateRadius = (newRadius) => {
@@ -208,10 +214,12 @@ function LocationNotifications() {
     
     if(enabled){
       setLocalNotificationsEnabled(true);
-      setBoxHeight(360);
+      setBoxHeight(410);
     }
     setRadiusText(radius)
     setMapRegion({ latitude: lat, longitude: long, latitudeDelta: 0.03, longitudeDelta: 0.03 })
+
+    console.log(locationData)
     }  catch (error) {
       console.error('An error occurred:', error);
     }
@@ -237,10 +245,21 @@ function LocationNotifications() {
         </TouchableOpacity>
         </HStack>
 
+        <HStack justifyContent="space-between" marginBottom='-5%'>
+        <Text fontSize="md" marginTop={1}>Possible Sightings Alert</Text>
+        <Switch
+        onToggle={togglePossibleNotifications}
+        value={possibleSightingsEnabled}
+        size={"sm"}
+        />
+        </HStack>
+
+        <Input variant="underlined" isDisabled borderBottomWidth="3%" marginBottom='3%'/>
+
         <HStack justifyContent="space-between" marginBottom={1}>
         <Text fontSize="md" marginTop={1}>Location Notifications</Text>
         <Switch
-        onToggle={toggleSwitch}
+        onToggle={toggleLocationNotifications}
         value={localNotificationsEnabled}
         size={"sm"}
         />
