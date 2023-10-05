@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Center, Heading, VStack, useToast, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
+import { Box, Center, Heading, VStack, useToast, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView, WarningOutlineIcon } from "native-base";
 import { View, Image, FlatList } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useNavigation } from '@react-navigation/native';
@@ -264,8 +264,8 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
 										<FormControl isInvalid={'petName' in errors}>
 											<FormControl.Label>Pet Name</FormControl.Label>
-											<Input onChangeText={value => setFormData({ ...formData, petName: value })} />
-											{'petName' in errors && <FormControl.ErrorMessage>{errors.petName}</FormControl.ErrorMessage>}
+											<Input size="lg" onChangeText={value => setFormData({ ...formData, petName: value })} />
+											{'petName' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petName}</FormControl.ErrorMessage>}
 										</FormControl>
 
 										<FormControl isInvalid={'petImage' in errors}>
@@ -284,7 +284,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 											</Button>
 
 										
-											{'petImage' in errors && <FormControl.ErrorMessage>{errors.petImage}</FormControl.ErrorMessage>}
+											{'petImage' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petImage}</FormControl.ErrorMessage>}
 										</FormControl>
 
 										<FormControl isInvalid={'petType' in errors}>
@@ -297,13 +297,13 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 													<Select.Item key={index} label={option.label} value={option.value} />
 												))}
 											</Select>
-											{'petType' in errors && <FormControl.ErrorMessage>{errors.petType}</FormControl.ErrorMessage>}
+											{'petType' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petType}</FormControl.ErrorMessage>}
 										</FormControl>
 
 										<FormControl isInvalid={'petBreed' in errors}>
 											<FormControl.Label>Pet Breed</FormControl.Label>
-											<Input onChangeText={value => setFormData({ ...formData, petBreed: value })} placeholder="Enter pet breed" />
-											{'petBreed' in errors && <FormControl.ErrorMessage>{errors.petBreed}</FormControl.ErrorMessage>}
+											<Input size="lg" onChangeText={value => setFormData({ ...formData, petBreed: value })} placeholder="Enter pet breed" />
+											{'petBreed' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petBreed}</FormControl.ErrorMessage>}
 										</FormControl>
 
 										<FormControl isInvalid={'petDescription' in errors}>
@@ -313,7 +313,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 												placeholder="Please describe more about your pet"
 											/>
 											{'petDescription' in errors && (
-												<FormControl.ErrorMessage>{errors.petDescription}</FormControl.ErrorMessage>
+												<FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petDescription}</FormControl.ErrorMessage>
 											)}
 										</FormControl>
 

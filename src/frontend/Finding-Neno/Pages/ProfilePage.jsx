@@ -197,7 +197,8 @@ export default function ProfilePage({ navigation: { navigate } }) {
                     pet={pet}
                     onClick={() => {
                       dispatch(selectPet(pet));
-                      navigate("Edit Pet Page");
+                      navigate("Edit Pet");
+
                     }}
                     onUpdate={fetchOwnerPets}
 					editMode={editMode} 

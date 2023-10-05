@@ -179,7 +179,7 @@ function DashboardStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="DashboardPage">
 			<Stack.Screen name="Dashboard Page" component={DashboardPage} options={{ title: "Dashboard" }} />
-			<Stack.Screen name="New Report" component={NewReportPage} />
+			<Stack.Screen name="New Missing Report" component={NewReportPage} />
 			<Stack.Screen name="New Sighting" component={NewSightingPage} />
 		</Stack.Navigator>
 	)
@@ -189,7 +189,7 @@ function MapStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="MapPage">
 			<Stack.Screen name="Map Page" component={MapPage} options={{ title: "Map" }} />
-			<Stack.Screen name="New Report" component={NewReportPage} />
+			<Stack.Screen name="New Missing Report" component={NewReportPage} />
 			<Stack.Screen name="New Sighting" component={NewSightingPage} />
 		</Stack.Navigator>
 	)

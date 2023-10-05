@@ -120,14 +120,16 @@ const Sighting = ({userId, sighting, refresh}) => {
           </Text>
         </VStack>
 
-        <VStack>
-          <Heading size = "sm" paddingTop={2}>
+        { sightingBreed &&
+          <VStack>
+            <Heading size = "sm" paddingTop={2}>
               Breed
-          </Heading>
-          <Text>
+            </Heading>
+            <Text>
               {sightingBreed}
-          </Text>
-        </VStack>
+            </Text>
+          </VStack>
+        }
       </HStack>
 
       <Box width={windowWidth - 40} height={180} paddingTop={5} paddingBottom={1} paddingRight={5}>

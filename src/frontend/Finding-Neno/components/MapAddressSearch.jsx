@@ -85,7 +85,7 @@ const MapAddressSearch = ({ setFormData, formData }) => {
                 </View>
 
             </View>
-            <Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
+            <Input size="lg" onChangeText={text => setAddress(text)} placeholder="Enter an address" />
 
             <Button style={{ marginTop: 5, borderColor: Color.NENO_BLUE }} textColor={Color.NENO_BLUE} col mode="outlined" title="Search Address" onPress={handleSearch}>Search Address</Button>
         </View>

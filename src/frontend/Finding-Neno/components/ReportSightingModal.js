@@ -1,23 +1,18 @@
 import { useNavigation } from '@react-navigation/native';
-import { Menu, Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView } from "native-base";
-import { ActivityIndicator, Dimensions } from 'react-native';
+import { Modal, useToast, FormControl, Input, HStack, VStack, WarningOutlineIcon } from "native-base";
 import { Color } from "../components/atomic/Theme";
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import * as ImagePicker from 'expo-image-picker';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import { StyleSheet } from 'react-native';
+import { Button } from 'react-native-paper';
 
-
-
-import store from '../store/store';
-import { validDateTime, validateCoordinates } from "../Pages/validation"
-import { useSelector, useDispatch } from "react-redux";
-import marker from '../assets/marker_icon.png';
+import { useSelector } from "react-redux";
 
 import { formatDatetime, formatDateTimeDisplay } from '../Pages/shared';
 import MapAddressSearch from "../components/MapAddressSearch";
+import ImageHandler from './ImageHandler';
 
 const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
     const [sightingDateTime, setSightingDateTime] = useState(new Date());
@@ -26,13 +21,10 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
     // const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
     const [sightingImage, setSightingImage] = useState(null);
     const [showPicker, setShowPicker] = useState(false);
-    const [isUploading, setIsUploading] = useState(false);
     const { API_URL } = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
 	const toast = useToast();
-	const isFocused = useIsFocused();
-	const navigation = useNavigation();
 	// console.log(showModal);
 
 	const [sightingData, setSightingData] = useState({
@@ -68,16 +60,8 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 
 	const onClose = () => {
 		resetForm(report);
-		setIsUploading(false);
 		closeModal();
 	}
-
-
-	// setSightingImage(null);
-	// setSightingDateTime(new Date());
-	// setSightingFormErrors({});
-	// setReportSightingBtnDisabled(false)
-
 
 
 	const handleDatetimeConfirm = (datetime) => {
@@ -94,81 +78,6 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 	const closePicker = () => {
 		setShowPicker(false);
 	}
-	const uploadImage = async (base64Img, setSightingImage) => {
-		// Set loading image while the chosen image is being uploaded
-		setIsUploading(true);
-		setReportSightingBtnDisabled(true);
-
-		const formData = new FormData();
-		formData.append("image", base64Img);
-
-		await fetch("https://api.imgur.com/3/image", {
-			method: "POST",
-			headers: {
-				"Authorization": "Client-ID 736cd8c6daf1a6e",
-			},
-			body: formData,
-		})
-			.then(res => res.json())
-			.then(res => {
-				if (res.success === true) {
-					console.log(`Image successfully uploaded: ${res.data.link}}`);
-					setSightingImage(res.data.link);
-				} else {
-					console.log("Image failed to upload - setting default image");
-					setSightingImage(null);
-				}
-			})
-			.catch(err => {
-				console.log("Image failed to upload:", err);
-				setSightingImage(null);
-			});
-
-		setIsUploading(false);
-		setReportSightingBtnDisabled(false);
-	}
-
-	const handleTakePhoto = async () => {
-		const { status } = await ImagePicker.requestCameraPermissionsAsync();
-		if (status === 'granted') {
-			let result = await ImagePicker.launchCameraAsync({
-				allowsEditing: true,
-				aspect: [4, 3],
-				quality: 1,
-				base64: true,
-			});
-			if (!result.canceled) {
-				// Upload to Imgur
-				let base64Img = result.assets[0].base64;
-				uploadImage(base64Img, setSightingImage);
-			}
-		}
-	};
-
-	const handleChoosePhoto = async () => {
-		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-		if (status === 'granted') {
-			let result = await ImagePicker.launchImageLibraryAsync({
-				mediaTypes: ImagePicker.MediaTypeOptions.Images,
-				allowsEditing: true,
-				aspect: [4, 3],
-				quality: 1,
-				base64: true,
-			});
-			if (!result.canceled) {
-				if (result.assets[0].uri.startsWith("http")) {
-					// Image is a URL, so leave it as is
-					setSightingImage(result.assets[0].uri);
-					setSightingData({ ...sightingData, image_url: result.assets[0].uri })
-				} else {
-					// Image is a local file path, so upload to Imgur
-					let base64Img = result.assets[0].base64;
-
-					uploadImage(base64Img, setSightingImage);
-				}
-			}
-		}
-	};
 
 	const validateDetails = (formData) => {
 		// Validates details. If details are valid, send formData object to onCreateReportPress.
@@ -244,56 +153,36 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 						<Modal.CloseButton />
 						<Modal.Header>Sighting details</Modal.Header>
 						<Modal.Body>
-							<FormControl.Label>Photo</FormControl.Label>
-							<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-								{
-									isUploading ? <ActivityIndicator /> :
-										sightingImage && <Image source={{ uri: sightingImage }} style={{ width: 100, height: 100 }} alt='pet sighting image' />
-								}
-							</View>
+							<VStack space={3}>
+								<ImageHandler image={sightingImage} setImage={setSightingImage} setIsButtonDisabled={setReportSightingBtnDisabled} />
 
-							<Button variant="ghost" onPress={handleChoosePhoto}>
-								Choose From Library
-							</Button>
-							<Button variant="ghost" onPress={handleTakePhoto}>
-								Take Photo
-							</Button>
-							<ScrollView>
-								{/* form details */}
-								<FormControl >
+								<FormControl isRequired>
 									<FormControl.Label>Date and Time of Sighting</FormControl.Label>
-									<Button onPress={openPicker}>{`${sightingDateTime.toDateString()} ${sightingDateTime.getHours().toString().padStart(2, '0')}:${sightingDateTime.getMinutes().toString().padStart(2, '0')}`}</Button>
+									<Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{formatDateTimeDisplay(sightingDateTime)}</Button>
 									<DateTimePickerModal date={sightingDateTime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
 										onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 								</FormControl>
 
-							<FormControl>
-								<FormControl.Label>Last Known Location</FormControl.Label>
-								<MapAddressSearch formData={sightingData} setFormData={setSightingData} />
-								{<FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
-							</FormControl>
+								<FormControl>
+									<FormControl.Label>Last Known Location</FormControl.Label>
+									<MapAddressSearch formData={sightingData} setFormData={setSightingData} />
+									{<FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>No address found.</FormControl.ErrorMessage>}
+								</FormControl>
 
-							<FormControl isInvalid={'description' in sightingFormErrors}>
-								<FormControl.Label>Description (Additional Info)</FormControl.Label>
-								<Input value={sightingData.description} onChangeText={value => setSightingData({ ...sightingData, description: value })} />
-								{'description' in sightingFormErrors && <FormControl.ErrorMessage>{sightingFormErrors.description}</FormControl.ErrorMessage>}
-							</FormControl>
-
-							</ScrollView>
+								<FormControl isInvalid={'description' in sightingFormErrors}>
+									<FormControl.Label>Description</FormControl.Label>
+									<Input size="lg" value={sightingData.description} placeholder='Additional info' onChangeText={value => setSightingData({ ...sightingData, description: value })} />
+									{'description' in sightingFormErrors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{sightingFormErrors.description}</FormControl.ErrorMessage>}
+								</FormControl>
+							</VStack>
 						</Modal.Body>
 						<Modal.Footer>
-							<Button.Group space={2}>
 								{/* TODO: onPress */}
-								<Button variant="ghost" colorScheme="blueGray" onPress={onClose} >
-									Cancel
-								</Button>
-								<Button bgColor={Color.NENO_BLUE}
-									disabled={reportSightingBtnDisabled} opacity={!reportSightingBtnDisabled ? 1 : 0.6}
-									onPress={() => handleSubmitSighting()}
-								>
-									Report sighting
-								</Button>
-							</Button.Group>
+							<HStack space={2}>
+								<Button mode='outlined' textColor={Color.NENO_BLUE} style={{borderColor: Color.NENO_BLUE}} onPress={onClose} >Cancel</Button>
+								<Button buttonColor={Color.NENO_BLUE} disabled={reportSightingBtnDisabled} textColor='white' 
+									style={{ opacity: !reportSightingBtnDisabled ? 1 : 0.6}} onPress={() => handleSubmitSighting()}>Report Sighting</Button>
+							</HStack> 
 						</Modal.Footer>
 					</Modal.Content>
 				</Modal>

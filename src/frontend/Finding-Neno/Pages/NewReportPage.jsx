@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { Box, Center, Heading, VStack, useToast, FormControl, Input, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
+import { Box, Center, Heading, VStack, useToast, FormControl, Input, Select, Alert, Text, KeyboardAvoidingView, WarningOutlineIcon } from "native-base";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -211,7 +211,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			<StatusBar style="auto" />
 			<SafeAreaView style={{ flex: 1, marginHorizontal: "10%" }}>
 				<VStack>
-					<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Create a Report</Heading>
+					<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Report Your Missing Pet</Heading>
 
 					<VStack space={3} mt="5">
 
@@ -225,7 +225,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 									<Select.Item key={index} label={option[0]} value={option[1]} />
 								))}
 							</Select>
-							{'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPetId}</FormControl.ErrorMessage>}
+							{'missingPetId' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.missingPetId}</FormControl.ErrorMessage>}
 						</FormControl>
 
 						<FormControl isRequired>
@@ -238,13 +238,13 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 						<FormControl isRequired>
 							<FormControl.Label>Last Known Location</FormControl.Label>
 							<MapAddressSearch formData={formData} setFormData={setFormData} />
-							{<FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
+							{<FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>No address found.</FormControl.ErrorMessage>}
 						</FormControl>
 
 						<FormControl isInvalid={'description' in errors}>
 							<FormControl.Label>Additional Info</FormControl.Label>
-							<Input onChangeText={value => setFormData({ ...formData, description: value })} />
-							{'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
+							<Input size="lg" onChangeText={value => setFormData({ ...formData, description: value })} />
+							{'description' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.description}</FormControl.ErrorMessage>}
 						</FormControl>
 
                         <Button buttonColor={Color.NENO_BLUE} mode="contained" disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onCreateReportPress}>

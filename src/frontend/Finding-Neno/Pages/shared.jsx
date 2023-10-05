@@ -45,7 +45,6 @@ export function formatDateTimeDisplay(datetime) {
 
         date = `${day} ${months[monthIndex]} ${year}`;
     }
-
-    console.log(`${date} ${time}`)
+    
     return `${date} at ${time}`
 }

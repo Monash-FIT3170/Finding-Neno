@@ -15,6 +15,7 @@ import {
   Alert,
   Text,
   KeyboardAvoidingView,
+  WarningOutlineIcon,
 } from "native-base";
 import { View, Image, FlatList } from "react-native";
 import { Color } from "../components/atomic/Theme";
@@ -261,7 +262,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
                         value={petName} // Set the input value to the current petName
                       />
                       {"petName" in errors && (
-                        <FormControl.ErrorMessage>
+                        <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                           {errors.petName}
                         </FormControl.ErrorMessage>
                       )}
@@ -289,7 +290,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
                         Take Photo
                       </Button>
                       {"petImage" in errors && (
-                        <FormControl.ErrorMessage>
+                        <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                           {errors.petImage}
                         </FormControl.ErrorMessage>
                       )}
@@ -316,7 +317,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
                         ))}
                       </Select>
                       {"petType" in errors && (
-                        <FormControl.ErrorMessage>
+                        <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                           {errors.petType}
                         </FormControl.ErrorMessage>
                       )}
@@ -329,7 +330,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
                         placeholder="Enter pet breed"
                       />
                       {"petBreed" in errors && (
-                        <FormControl.ErrorMessage>
+                        <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                           {errors.petBreed}
                         </FormControl.ErrorMessage>
                       )}
@@ -342,7 +343,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
                         placeholder="Please describe more about your pet"
                       />
                       {"petDescription" in errors && (
-                        <FormControl.ErrorMessage>
+                        <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>
                           {errors.petDescription}
                         </FormControl.ErrorMessage>
                       )}

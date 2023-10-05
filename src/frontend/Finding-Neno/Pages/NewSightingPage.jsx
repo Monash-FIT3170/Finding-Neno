@@ -1,19 +1,16 @@
 import { useNavigation } from '@react-navigation/native';
-import { View, Heading, VStack, useToast, Image, FormControl, Input, Select, FlatList, HStack, WarningOutlineIcon } from "native-base";
-import { Picker } from '@react-native-picker/picker';
+import { Heading, VStack, useToast, FormControl, Input, Select, WarningOutlineIcon } from "native-base";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import * as ImagePicker from 'expo-image-picker';
 import React, { useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { ActivityIndicator, TouchableHighlight } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { Button } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import ImageView from 'react-native-image-viewing';
 import { useSelector } from "react-redux";
 import { formatDatetime, formatDateTimeDisplay, petTypeOptions } from "./shared";
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapAddressSearch from "../components/MapAddressSearch";
+import ImageHandler from "../components/ImageHandler";
 
 const NewSightingPage = ({ navigation: { navigate } }) => {
     const { API_URL } = useSelector((state) => state.api)
@@ -27,7 +24,6 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
     const [selectedDatetime, setSelectedDatetime] = useState(new Date());
     const [showPicker, setShowPicker] = useState(false);
-    const [image, setImage] = useState(null);
     const toast = useToast();
 
     // default form values
@@ -39,61 +35,6 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         petType: ''
     });
     const [sightingImage, setSightingImage] = useState(null);
-    const [isUploading, setIsUploading] = useState(false);
-
-    const handleTakePhoto = async () => {
-        /**
-         * This function is used to take a photo from the user's camera.
-         * It will call the ImagePicker API to open the camera and allow the user to take a photo.
-         * It will then set the petImage state to the taken photo.
-         */
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status === 'granted') {
-            let result = await ImagePicker.launchCameraAsync({
-                allowsEditing: true,
-                aspect: [4, 3],
-                quality: 1,
-                base64: true,
-            });
-            if (!result.canceled) {
-                // Upload to Imgur
-                let base64Img = result.assets[0].base64;
-                uploadImage(base64Img, setSightingImage);
-            }
-        }
-    };
-
-    const handleChoosePhoto = async () => {
-        /**
-         * This function is used to choose a photo from the user's photo library.
-         * It will call the ImagePicker API to open the photo library and allow the user to choose a photo.
-         * It will then set the petImage state to the chosen photo.
-         */
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status === 'granted') {
-            let result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [4, 3],
-                quality: 1,
-                base64: true,
-            });
-            if (!result.canceled) {
-                if (result.assets[0].uri.startsWith("http")) {
-                    // Image is a URL, so leave it as is
-                    setSightingImage(result.assets[0].uri);
-                } else {
-                    // Image is a local file path, so upload to Imgur
-                    let base64Img = result.assets[0].base64;
-                    uploadImage(base64Img, setSightingImage);
-                }
-            }
-        }
-    };
-
-    const handleRemovePhoto = () => {
-        setSightingImage(null);
-    }
 
     const validateDetails = (formData) => {
         // Validates details. If details are valid, send formData object to onCreateReportPress.
@@ -116,55 +57,6 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
         // true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
         return Object.keys(foundErrors).length === 0;
-    }
-
-
-    const uploadImage = async (base64Img, setSightingImage) => {
-        setIsButtonDisabled(true);
-        setIsUploading(true);
-        // Uploads an image to Imgur and sets the petImage state to the uploaded image URL
-        // const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
-
-        // Set loading image while the chosen image is being uploaded
-        // setSightingImage(LOADING_IMAGE);
-
-        const formData = new FormData();
-        formData.append("image", base64Img);
-
-        await fetch("https://api.imgur.com/3/image", {
-            method: "POST",
-            headers: {
-                "Authorization": "Client-ID 736cd8c6daf1a6e",
-            },
-            body: formData,
-        })
-            .then(res => res.json())
-            .then(res => {
-                if (res.success === true) {
-                    console.log(`Image successfully uploaded: ${res.data.link}}`);
-                    setSightingImage(res.data.link.toString());
-                } else {
-                    toast.show({
-                        description: "Image failed to upload. Please try again.",
-                        placement: "top"
-                    })
-                    console.log("Image failed to upload")
-                    // console.log("Image failed to upload - setting default image");
-                    // setSightingImage(DEFAULT_IMAGE);
-                }
-            })
-            .catch(err => {
-                toast.show({
-                    description: "Image failed to upload. Please try again.",
-                    placement: "top"
-                })
-                console.log("Image failed to upload:", err);
-                // setSightingImage(DEFAULT_IMAGE);
-            });
-
-
-        setIsUploading(false);
-        setIsButtonDisabled(false);
     }
 
     const onPress = async () => {
@@ -241,49 +133,18 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
     }
 
 
-    const [enlargeImage, setEnlargeImage] = useState(false);
-    const closeImageModal = () => {
-        setEnlargeImage(false);
-    }
 
 
     return (
         <KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}>
             <StatusBar style="auto" />
             <SafeAreaView style={{ flex: 1, marginHorizontal: "10%" }}>
-                <ImageView images={[{uri: sightingImage}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor='gray'/>
+            <ImageHandler image={sightingImage} setImage={setSightingImage} setIsButtonDisabled={setIsButtonDisabled} />
 
                 <VStack>
-                    <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Add a New Sighting</Heading>
+                    <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Report a Pet Sighting</Heading>
 
-                    <VStack space={3} mt="5">
-                        <FormControl.Label>Photo</FormControl.Label>
-                            {
-                                isUploading ? <ActivityIndicator /> :
-                                    sightingImage && 
-                                    <View borderRadius={"10%"} alignItems={"center"}>
-                                        <TouchableHighlight onPress={() => setEnlargeImage(true)} underlayColor="#DDDDDD" style={{ borderRadius: 20 }}>
-                                            <Image source={{ uri: sightingImage }} style={{ width: "70%", aspectRatio: "1", borderRadius: 20 }} alt='pet sighting image' />
-                                        </TouchableHighlight>
-                                    </View>
-                            }
-                        <HStack alignItems={"center"} justifyContent={"space-between"}>
-                            <Button style={{ width: "48%" }} buttonColor={Color.NENO_BLUE} compact={true} icon="camera" mode="contained" onPress={handleTakePhoto}>
-                                Take Photo
-                            </Button>
-                            <Button style={{ width: "48%" }} buttonColor={Color.NENO_BLUE} compact={true} icon="image" mode="contained" onPress={handleChoosePhoto}>
-                                Choose Photo
-                            </Button>
-                        </HStack>
-
-                        {
-                            sightingImage ?
-                                <View alignItems={"center"}>
-                                    <Button style={{ borderColor: Color.NENO_BLUE, width: "48%" }} textColor={Color.NENO_BLUE} icon="trash-can-outline" mode="outlined" onPress={handleRemovePhoto} >
-                                        Remove Photo
-                                    </Button>
-                                </View> : ""
-                        }
+                    <VStack space={3} mt="5"> 
 
                         <FormControl isRequired isInvalid={'petType' in errors}>
                             <FormControl.Label>Pet Type</FormControl.Label>
@@ -316,13 +177,13 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                         <FormControl>
                             <FormControl.Label>Last Known Location</FormControl.Label>
                             <MapAddressSearch formData={formData} setFormData={setFormData} />
-                            {<FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
+                            {<FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>No address found.</FormControl.ErrorMessage>}
                         </FormControl>
 
                         <FormControl isInvalid={'description' in errors}>
                             <FormControl.Label>Description</FormControl.Label>
-                            <Input placeholder="Additional info" onChangeText={value => setFormData({ ...formData, description: value })} />
-                            {'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
+                            <Input size="lg" placeholder="Additional info" onChangeText={value => setFormData({ ...formData, description: value })} />
+                            {'description' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.description}</FormControl.ErrorMessage>}
                         </FormControl>
 
                         <Button buttonColor={Color.NENO_BLUE} mode="contained" disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onPress}>

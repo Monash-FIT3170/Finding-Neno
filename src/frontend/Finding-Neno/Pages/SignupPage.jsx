@@ -159,36 +159,36 @@ const SignupPage = () => {
 
 									<FormControl isRequired isInvalid={'name' in errors}>
 										<FormControl.Label>Name</FormControl.Label>
-										<Input onChangeText={value => setFormData({ ...formData, name: value })} />
-										{'name' in errors && <FormControl.ErrorMessage>{errors.name}</FormControl.ErrorMessage>}
+										<Input size="lg" onChangeText={value => setFormData({ ...formData, name: value })} />
+										{'name' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.name}</FormControl.ErrorMessage>}
 									</FormControl>
 
 									<FormControl isRequired isInvalid={'email' in errors}>
 										<FormControl.Label>Email</FormControl.Label>
-										<Input autoCapitalize="none" onChangeText={value => setFormData({ ...formData, email: value })} />
-										{'email' in errors && <FormControl.ErrorMessage>{errors.email}</FormControl.ErrorMessage>}
+										<Input size="lg" autoCapitalize="none" onChangeText={value => setFormData({ ...formData, email: value })} />
+										{'email' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.email}</FormControl.ErrorMessage>}
 									</FormControl>
 
 									<FormControl isRequired isInvalid={'phoneNumber' in errors}>
 										<FormControl.Label>Phone Number</FormControl.Label>
-										<Input keyboardType="numeric" maxLength={10} onChangeText={value => setFormData({ ...formData, phoneNumber: value })} />
-										{'phoneNumber' in errors && <FormControl.ErrorMessage>{errors.phoneNumber}</FormControl.ErrorMessage>}
+										<Input size="lg" keyboardType="numeric" maxLength={10} onChangeText={value => setFormData({ ...formData, phoneNumber: value })} />
+										{'phoneNumber' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.phoneNumber}</FormControl.ErrorMessage>}
 									</FormControl>
 
 									<FormControl isRequired isInvalid={'password' in errors}>
 										<FormControl.Label>Password</FormControl.Label>
-										<Input type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
+										<Input size="lg" type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
 											<Icon as={<MaterialIcons name={showPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
 										</Pressable>} onChangeText={value => setFormData({ ...formData, password: value })} />
-										{'password' in errors && <FormControl.ErrorMessage>{errors.password}</FormControl.ErrorMessage>}
+										{'password' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.password}</FormControl.ErrorMessage>}
 									</FormControl>
 
 									<FormControl isRequired isInvalid={'confirmPassword' in errors}>
 										<FormControl.Label>Confirm Password</FormControl.Label>
-										<Input type={showConfirmPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+										<Input size="lg" type={showConfirmPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
 											<Icon as={<MaterialIcons name={showConfirmPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
 										</Pressable>} onChangeText={value => setFormData({ ...formData, confirmPassword: value })} />
-										{'confirmPassword' in errors && <FormControl.ErrorMessage>{errors.confirmPassword}</FormControl.ErrorMessage>}
+										{'confirmPassword' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.confirmPassword}</FormControl.ErrorMessage>}
 									</FormControl>
 
 									<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onSignupPress}>

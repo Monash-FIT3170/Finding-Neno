@@ -1,11 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, TouchableHighlight, View } from 'react-native'
-import ReportSightingModal from '../components/ReportSightingModal';
-import * as ImagePicker from 'expo-image-picker';
+import ReportSightingModal from './ReportSightingModal';
 import { HStack, Heading, Image, VStack, Text } from 'native-base';
 import { Button } from 'react-native-paper';
 import { Color } from './atomic/Theme';
-import { ScaleText } from 'react-scale-text';
 import { formatDateTimeDisplay } from '../Pages/shared';
 import ImageView from 'react-native-image-viewing';
 import IconText from './IconText';

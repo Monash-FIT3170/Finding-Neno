@@ -76,8 +76,8 @@ const ForgotPasswordPage = () => {
 
 							<FormControl isInvalid={'email' in errors}>
 								<FormControl.Label>Email</FormControl.Label>
-								<Input onChangeText={value => setFormData({ ...formData, email: value })} />
-								{'email' in errors && <FormControl.ErrorMessage>{errors.email}</FormControl.ErrorMessage>}
+								<Input size="lg" onChangeText={value => setFormData({ ...formData, email: value })} />
+								{'email' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.email}</FormControl.ErrorMessage>}
 							</FormControl>
 
 							<Button mt="2" bgColor={Color.NENO_BLUE}
