@@ -125,7 +125,32 @@ def retrieve_user(connection: psycopg2.extensions.connection, profile_user_id: i
     cur.close()
     return result
 
-def check_user_exists_in_database(connection: psycopg2.extensions.connection, email: str, password: str):
+
+def check_user_exists(connection: psycopg2.extensions.connection, email: str, phoneNumber: str):
+    """
+    This function is used to check if a user exists with the same email or phone number
+    """
+
+    cur = connection.cursor()
+
+    # Check if a user with this email or phone numer exists in the database
+    query = """SELECT id, access_token FROM users WHERE (email_address = %s OR phone_number = %s)"""
+
+    result = None
+
+    # Execute the query
+    try:
+        cur.execute(query, (email, phoneNumber))
+        user = cur.fetchall()
+        result = (len(user) == 0)
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
+def check_user_login_details(connection: psycopg2.extensions.connection, username: str, password: str):
     """
     This function is used to check if a user exists in the database and if the password match
     """
@@ -137,17 +162,17 @@ def check_user_exists_in_database(connection: psycopg2.extensions.connection, em
 
     # Check if a user with this email exists in the database
     # Construct a SELECT query to check if the user exists in the database and if its password matches
-    query = """SELECT id, access_token FROM users WHERE email_address = %s AND password = %s """
+    query = """SELECT id, access_token FROM users WHERE (email_address = %s OR phone_number = %s) AND password = %s """
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
 
     # Execute the query
     try:
-        cur.execute(query, (email, hashed_pass))
+        cur.execute(query, (username, username, hashed_pass))
         user = cur.fetchall()
         if len(user) == 0:  # If a user with the provided email could not be found
-            print("Invalid email or password combination.")
+            print("Invalid email/phone number or password combination.")
         else: # If login is correct
             result = user[0]
     except Exception as e:
@@ -389,6 +414,7 @@ def archive_missing_report_in_database(connection: psycopg2.extensions.connectio
     except Exception as e:
         print(f"Error while executing query: {e}")
 
+
     # Close the cursor
     cur.close()
     return result
@@ -463,6 +489,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
         result = missing_reports
     except Exception as e:
         print(f"Error with retrieving missing reports: {e}")
+        result = []
 
     # Close the cursor
     cur.close()
@@ -519,12 +546,13 @@ def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_i
 
     except Exception as e:
         print(f"Error with retrieving the reports: {e}")
+        result = []
 
     # Close the cursor
     cur.close()
     return result
 
-def retrieve_sightings_from_database(connection: psycopg2.extensions.connection, missing_report_id: int, user_id: int, access_token: str):
+def retrieve_sightings_from_database(connection: psycopg2.extensions.connection, missing_report_id: int, expiry_time, user_id: int, access_token: str):
     """
     This function returns all pet sightings or pet sightings for a missing report if missing_report_id is provided.
 
@@ -539,58 +567,60 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
     # Open cursor to access the connection.
     cur = connection.cursor()
 
-    if missing_report_id == None:
-        # Query returns all sightings in the database
-        query = """
-                    SELECT
-                        s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
-                        u.name, u.email_address, u.phone_number, p.name as pet_name
-                    FROM
-                        sightings AS s
-                    LEFT JOIN
-                        missing_reports AS mr ON s.missing_report_id = mr.id
-                    JOIN 
-		                pets AS p ON p.id = mr.pet_id
-                    JOIN
-                        users AS u ON s.author_id = u.id
-                    ORDER BY
-                        s.date_time DESC;
-                """
-    else:
-        # Query returns all sightings of a missing report
-        query = """
-                    SELECT
-                        s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description,
-                        u.name, u.email_address, u.phone_number
-                    FROM
-                        sightings AS s
-                    JOIN
-                        missing_reports AS mr ON s.missing_report_id = mr.id
-                    JOIN
-                        users AS u ON s.author_id = u.id
-                    WHERE 
-                        s.missing_report_id = %s
-                    ORDER BY
-                        s.date_time DESC;
+    # Iniltialise list of parameters for query
+    params = [user_id]
+
+    # Query returns all sightings in the database
+    query = """
+                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
+                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.isactive
+                FROM
+                    sightings AS s
+                LEFT JOIN
+                    missing_reports AS mr ON s.missing_report_id = mr.id
+                LEFT JOIN 
+                    pets AS p ON p.id = mr.pet_id
+                JOIN
+                    users AS u ON s.author_id = u.id
+                LEFT JOIN 
+                    (SELECT * FROM users_saved_sightings WHERE user_id = %s) as ss ON ss.sighting_id = s.id
+                WHERE mr.isactive IS NOT FALSE
+            """
+        
+    if missing_report_id != None:
+        query += """
+                    AND s.missing_report_id = %s
                 """
         
-    # Result is the object returned or True if no errors encountered, False if there is an error
+        params.append(missing_report_id)
+    
+    if expiry_time != None:
+        query += """
+                    AND s.date_time_of_creation > CURRENT_DATE - %s
+                """
+        params.append(int(expiry_time))
+            
+    query += """
+                ORDER BY
+                s.date_time DESC;
+            """
     result = False
 
     try:
-        if missing_report_id == None:
-            cur.execute(query)
-        else:
-            cur.execute(query, (missing_report_id, ))
+        cur.execute(query, params)
 
         # Retrieve rows as an array
         sightings = cur.fetchall()
 
         print(f"Sightings successfully retrieved")
 
-        result = sightings
+        if sightings is not None:
+            result = sightings
+        else:
+            result = []
     except Exception as e:
         print(f"Error with retrieving sightings: {e}")
+        result = []
 
     # Close the cursor
     cur.close()
@@ -605,14 +635,14 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
     """
     # Verify access token
     if not verify_access_token(connection, user_id, access_token):
+        print("problem with access token")
         return False
 
     # Open cursor to access the connection.
     cur = connection.cursor()
 
     query = """
-                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, 
-                    s.breed, u.name, u.email_address, u.phone_number, p.name as pet_name
+                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed, u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.isactive
                 FROM sightings AS s
                     JOIN 
                         missing_reports AS mr ON s.missing_report_id = mr.id
@@ -620,8 +650,10 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
 		                pets AS p ON p.id = mr.pet_id
                     JOIN
                         users AS u ON s.author_id = u.id
+                    LEFT JOIN 
+                    	(SELECT * FROM users_saved_sightings WHERE user_id = %s) as ss ON ss.sighting_id = s.id
                 WHERE 
-                    mr.author_id = %s
+                    mr.author_id = %s AND mr.isactive IS NOT FALSE
                 ORDER BY
                 s.date_time DESC;
             """
@@ -629,16 +661,21 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
     result = False
 
     try:
-        cur.execute(query, (user_id,))
+        cur.execute(query, (user_id, user_id))
 
         # Retrieve rows as an array
         sightings = cur.fetchall()
 
         print(f"Sightings for user reports successfully retrieved")
 
-        result = sightings
+        if sightings is not None:
+            result = sightings
+        else:
+            result = []
+
     except Exception as e:
         print(f"Error with retrieving sightings: {e}")
+        result = []
 
     # Close the cursor
     cur.close()
@@ -727,9 +764,13 @@ def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensio
 
         print(f"Missing reports in area successfully retrieved")
 
-        result = missing_reports
+        if missing_reports is not None:
+            result = missing_reports
+        else:
+            result = []
     except Exception as e:
         print(f"Error with retrieving missing reports in area: {e}")
+        result = []
 
     cur.close()
     return result
@@ -820,10 +861,131 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
 
         print(f"{len(sightings)} retrieved")
 
-        result = sightings
+        if sightings is not None:
+            result = sightings
+        else:
+            result = []
     except Exception as e:
         print(f"Error with retrieving sightings in area: {e}")
+        result = []
 
+    cur.close()
+    return result
+
+def retrieve_user_saved_sightings(connection: psycopg2.extensions.connection, user_id: int, access_token: str ):
+    """
+    This function retrieves the sightings a user has saved
+    """
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    # same as retrieve_sightings_from_database but also has filter for saved_by
+    query = """
+        SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed, u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.isactive
+        FROM
+            sightings AS s
+        LEFT JOIN
+            missing_reports AS mr ON s.missing_report_id = mr.id
+        LEFT JOIN 
+            pets AS p ON p.id = mr.pet_id
+        JOIN
+            users AS u ON s.author_id = u.id
+        LEFT JOIN 
+            users_saved_sightings AS ss ON ss.sighting_id = s.id
+        WHERE ss.user_id = %s AND mr.isactive IS NOT FALSE
+        ORDER BY
+            s.date_time DESC;   
+    """
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id,))
+        sightings = cur.fetchall()
+
+        result = sightings
+
+        print(f"User saved sightings successfully retrieved")
+
+        print(f"{len(sightings)} retrieved")
+
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
+
+def save_sighting_for_user(connection: psycopg2.extensions.connection, user_id: int, access_token: str, sighting_id: int):
+    """
+    This function records a user saving a sighting
+    """
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    # Construct and INSERT query to insert this user into the DB
+    query = """INSERT INTO users_saved_sightings (user_id, sighting_id) VALUES (%s, %s);"""
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id, sighting_id))
+        print(f"Query executed successfully: {query}")
+
+        # Commit the change
+        connection.commit()
+
+        result = True  # set to True only if it executes successfully
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
+def unsave_sighting_for_user(connection: psycopg2.extensions.connection, user_id: int, access_token: str, sighting_id: int):
+    """
+    This function records a user unsaving a sighting
+    """
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    # Construct and INSERT query to insert this user into the DB
+    query = """DELETE FROM users_saved_sightings WHERE user_id = %s AND sighting_id = %s;"""
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id, sighting_id))
+        print(f"Query executed successfully: {query}")
+
+        # Commit the change
+        connection.commit()
+
+        result = True  # set to True only if it executes successfully
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
     cur.close()
     return result
 

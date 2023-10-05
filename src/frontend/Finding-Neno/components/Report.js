@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import { View } from 'react-native'
 import {Dimensions} from 'react-native';
 import ReportSightingModal from '../components/ReportSightingModal';
@@ -12,7 +12,8 @@ const Report = ({report, userId}) => {
 
     const lastSeen = report[1];
     const reportDesc = report[2];
-    const location = report[3];
+    const locationLongitude = report[3];
+    const locationLatitude = report[4];
     const authorId = report[14]
     
     const petName = report[6][0].toUpperCase() +report[6].substring(1);
@@ -21,17 +22,29 @@ const Report = ({report, userId}) => {
     const petImage = report[9];
 
     const [showModal, setShowModal] = useState(false);
+    const [suburb, setSuburb] = useState("");
 
     const closeModal = () => {
       setShowModal(false);
     }
 
-    const handleOpenSightingModal = (report) => {
-      // console.log('hancling open sighting modal');
-      setShowModal(true);
-    };
-    // console.log("SHOW MODAL")
-    // console.log(showModal)
+    useEffect(() => {
+      getSuburb();
+    }, [])
+
+    const getSuburb = async () => {
+      try {
+          const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${locationLatitude}&lon=${locationLongitude}&format=json`;
+
+          const response = await fetch(apiUrl);
+
+          const result = await response.json();
+          setSuburb(`${result.address.suburb}, ${result.address.state}`)
+          
+      } catch (error) {
+          console.error('Error fetching data:', error);
+      }
+  };
     
   return (
     <View justifyContent = "center" alignItems = "center" padding={4}>
@@ -45,7 +58,7 @@ const Report = ({report, userId}) => {
 
       <Heading size = "sm" paddingLeft={5} paddingTop={2}>
         {/* Insert "Suburb, State" here */}
-        {/* Clayton, VIC */}
+        {suburb}
       </Heading>
 
       <Text paddingLeft={5}>

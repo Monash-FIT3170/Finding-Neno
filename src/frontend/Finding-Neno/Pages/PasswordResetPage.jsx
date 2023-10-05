@@ -13,8 +13,7 @@ import store from "../store/store";
 
 const PasswordResetPage = () => {
 
-	const IP = useSelector((state) => state.IP);
-	const PORT = useSelector((state) => state.PORT);
+	const { API_URL } = useSelector((state) => state.api);
 	
     const [formData, setFormData] = useState({});
     const [errors, setErrors] = useState({});
@@ -37,7 +36,7 @@ const PasswordResetPage = () => {
 
 		let isValid = validateDetails(formData);
 		if (isValid) {
-			const url = `${IP}:${PORT}/reset_password`
+			const url = `${API_URL}/reset_password`
 			fetch(url, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },

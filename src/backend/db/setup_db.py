@@ -29,7 +29,6 @@ To run this script, run the following command from the root directory:
     python src/backend/db/setup_db.py .env
 """
 
-
 def create_tables(connection: psycopg2.extensions.connection):
     """
     Sets up the database, including tables, keys and foreign key constraints
@@ -53,6 +52,9 @@ def create_tables(connection: psycopg2.extensions.connection):
         """CREATE TABLE "sightings" (id SERIAL PRIMARY KEY, missing_report_id INTEGER REFERENCES missing_reports(id), 
         author_id INTEGER REFERENCES "users"(id), date_time_of_creation TIMESTAMP NOT NULL, animal VARCHAR(255), breed VARCHAR(255), date_time TIMESTAMP NOT NULL, location_longitude FLOAT, 
         location_latitude FLOAT, image_url VARCHAR(255), description VARCHAR(255));""",
+        # Create users_saved_sightings
+        """CREATE TABLE "users_saved_sightings" (saved_id SERIAL PRIMARY KEY, user_id INTEGER REFERENCES "users"(id),
+        sighting_id INTEGER REFERENCES "sightings"(id));""",
     ]
 
     for query in queries:
@@ -73,6 +75,8 @@ def drop_tables(connection: psycopg2.extensions.connection):
     cur = connection.cursor()
 
     queries = [
+        # Drop users_saved_sightings table
+        """DROP TABLE IF EXISTS users_saved_sightings;""",
         # Drop users_notification_logs table
         """DROP TABLE IF EXISTS users_notification_logs;""",
         # Drop notification_logs table
@@ -124,5 +128,9 @@ if __name__ == "__main__":
 
         # Drop tables if they exist
         drop_tables(connection=conn)
+
         # Create/recreate tables
         create_tables(connection=conn)
+
+        # Close connection
+        conn.close()

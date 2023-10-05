@@ -15,8 +15,8 @@ export const userSlice = createSlice({
             state.USER_ID = payload.USER_ID;
             state.ACCESS_TOKEN = payload.ACCESS_TOKEN;
             state.LOGGED_IN = true;
-            AsyncStorage.setItem("USER_ID", payload.USER_ID)
-            AsyncStorage.setItem("ACCESS_TOKEN", payload.ACCESS_TOKEN)
+            AsyncStorage.setItem("USER_ID", payload.USER_ID);
+            AsyncStorage.setItem("ACCESS_TOKEN", payload.ACCESS_TOKEN);
         },
         logout: (state) => {
             state.USER_ID = undefined;

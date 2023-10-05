@@ -6,7 +6,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
 import { validDateTime, validateCoordinates } from "./validation"
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import axios from 'axios';
 import { Image, StyleSheet, View } from 'react-native';
 
 import { useSelector, useDispatch } from "react-redux";
@@ -18,7 +17,7 @@ import { formatDatetime } from "./shared"
 const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
 
-	const { IP, PORT } = useSelector((state) => state.api)
+	const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
 	const [dropdownOptions, setDropdownOptions] = useState([]);
@@ -37,7 +36,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		// ownerId = 2
 		const fetchOwnerPets = async () => {
 			try {
-				const url = `${IP}:${PORT}/get_owner_pets?owner_id=${USER_ID}`;
+				const url = `${API_URL}/get_owner_pets?owner_id=${USER_ID}`;
 				const response = await fetch(url, {
 					method: "GET",
 					headers: {
@@ -74,7 +73,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		let isValid = await validateDetails(formData);
 
 		if (isValid) {
-			const url = `${IP}:${PORT}/insert_missing_report`;
+			const url = `${API_URL}/insert_missing_report`;
 
 			const missingReport = {
 				authorId: USER_ID,
@@ -162,7 +161,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	const missingReportExists = async (pet_id) => {
 		try {
 			const petId = pet_id; // Replace with the actual pet ID you want to retrieve reports for
-			const response = await fetch(`${IP}:${PORT}/get_reports_by_pet?pet_id=${petId}`, {
+			const response = await fetch(`${API_URL}/get_reports_by_pet?pet_id=${petId}`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${ACCESS_TOKEN}`,
@@ -241,7 +240,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		try {
 			const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
 
-			const response = await axios.get(apiUrl);
+			const response = await fetch(apiUrl);
 			if (response.data.length > 0) {
 				const firstResult = response.data[0];
 				setCoordinates({
