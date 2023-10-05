@@ -10,7 +10,7 @@ import { Button } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useSelector, useDispatch } from "react-redux";
 
-import { formatDatetime } from "./shared";
+import { formatDateTimeDisplay, formatDatetime } from "./shared";
 
 import MapAddressSearch from "../components/MapAddressSearch";
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -230,7 +230,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 						<FormControl isRequired>
 							<FormControl.Label>Date and Time of Sighting</FormControl.Label>
-							<Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{`${selectedDatetime.toDateString()} ${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')}`}</Button>
+							<Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
 							<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
 								onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 						</FormControl>

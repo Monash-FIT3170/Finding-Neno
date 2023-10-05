@@ -138,6 +138,7 @@ function TabNavigator() {
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="location" color={color} size={size} />
 					),
+					headerShown: false
 				}}
 			/>
 			<Tab.Screen

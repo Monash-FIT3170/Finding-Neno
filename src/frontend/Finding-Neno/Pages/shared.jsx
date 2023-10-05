@@ -23,7 +23,7 @@ export function formatDatetime(datetime) {
 export function formatDateTimeDisplay(datetime) {
     const now = new Date();
     const diffTime = Math.abs(now - datetime);
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
     const hours = datetime.getHours().toString().padStart(2, '0');
     const minutes = datetime.getMinutes().toString().padStart(2, '0');
@@ -31,7 +31,6 @@ export function formatDateTimeDisplay(datetime) {
     const time = `${hours}:${minutes}`;
 
     var date = null;
-
     if (diffDays === 0) {
         date = "Today";
     } else if (diffDays === 1) {
@@ -47,5 +46,6 @@ export function formatDateTimeDisplay(datetime) {
         date = `${day} ${months[monthIndex]} ${year}`;
     }
 
+    console.log(`${date} ${time}`)
     return `${date} at ${time}`
 }
