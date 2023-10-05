@@ -9,6 +9,7 @@ import { ScaleText } from 'react-scale-text';
 import { formatDateTimeDisplay } from '../Pages/shared';
 import ImageView from 'react-native-image-viewing';
 import IconText from './IconText';
+import ShareButton from './ShareButton';
 
 
 
@@ -46,6 +47,8 @@ const Report = ({ report, userId }) => {
         }
     }, [petName]);
 
+    const message = 
+    `Have you seen this missing pet? \n\nName: ${petName} \nSpecie: ${petSpecies} \nBreed: ${petBreed} \nLast seen ${lastSeen} around ${suburb} \nPet Image: ${petImage} ${reportDesc ? "Additional description: " + reportDesc : ""} \n\nIf you have seen this pet, please report a sighting on the Finding Neno app.`
 
     const closeImageModal = () => {
         setEnlargeImage(false);
@@ -54,36 +57,6 @@ const Report = ({ report, userId }) => {
     const closeModal = () => {
         setShowModal(false);
     }
-
-    // useEffect(() => {
-    //     getSuburb();
-    // }, [])
-
-    // Retrieve suburb info from OpenStreetMap API by reverse geocoding
-    const getSuburb = async () => {
-        var suburb = null;
-        try {
-            const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${locationLatitude}&lon=${locationLongitude}&format=json`;
-
-            const response = await fetch(apiUrl);
-
-            const result = await response.json();
-
-            suburb = `${result.address.suburb ? result.address.suburb : (result.address.city ? result.address.city : "")}`
-            state = `${result.address.state ? result.address.state : ""}`;
-
-        } catch (error) {
-            console.error('Error fetching data:', error);
-        }
-
-        if (suburb != null) {
-            setSuburb(`${suburb}${suburb && state ? "," : ""} ${state}`);
-        }
-        else {
-            setSuburb("Location unavailable");
-        }
-        setSuburbIsLoaded(true);
-    };
 
     const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -170,8 +143,7 @@ const Report = ({ report, userId }) => {
 
                             : ""
                     }
-                    <Button style={{ width: authorId == userId ? '100%' : '29%' }} labelStyle={{ fontWeight: 'bold' }} textColor={Color.NENO_BLUE} 
-                        buttonColor='white' compact={true} icon="export-variant" mode="elevated">Share</Button>
+                    <ShareButton title={"Missing Pet - Finding Neno"} message={message} dialogTitle={"Share this missing pet report"} width={authorId == userId ? '100%' : '29%'} />
                 </HStack>
             </View>
             }

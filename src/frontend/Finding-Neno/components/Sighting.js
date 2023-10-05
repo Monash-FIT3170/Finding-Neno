@@ -7,6 +7,7 @@ import { useSelector } from "react-redux";
 import { useIsFocused } from '@react-navigation/native';
 import { formatDateTimeDisplay } from '../Pages/shared';
 import ImageView from 'react-native-image-viewing';
+import ShareButton from './ShareButton';
 
 const Sighting = ({userId, sighting, refresh}) => {
     // Pet Data
@@ -22,6 +23,7 @@ const Sighting = ({userId, sighting, refresh}) => {
     const dateTime = formatDateTimeDisplay(new Date(sighting[3]));
     const locationLongitude = sighting[4];
     const locationLatitude = sighting[5];
+    const suburb = 'Suburb';
     const sightingImage = sighting[6];
     const sightingDesc = sighting[7];
     const sightingAnimal = sighting[8][0].toUpperCase() +sighting[8].substring(1);
@@ -33,6 +35,9 @@ const Sighting = ({userId, sighting, refresh}) => {
 
     const [sightingSaved, setSightingSaved] = useState(savedByUser==USER_ID); // true if the sighting is saved by this user
     const [saveSightingEndpoint, setSaveSightingEndpoint] = useState('save_sighting');
+
+    const message = 
+    `Check this pet sighting. \n\nSpecie: ${sightingAnimal} ${sightingBreed ? "\nBreed: " + sightingBreed : ""} \nSeen ${dateTime} around ${suburb} ${sightingImage ? "\nImage: " + sightingImage : ""} ${sightingDesc ? "\nDescription: " + sightingDesc : ""} \n\nSee more on the Finding Neno app.`
 
     useEffect(() => {
         if (savedByUser==USER_ID) {
@@ -70,8 +75,6 @@ const Sighting = ({userId, sighting, refresh}) => {
         })
         .catch((error) => alert(error));
     }
-
-    const [suburb, setSuburb] = useState("");
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -130,9 +133,11 @@ const Sighting = ({userId, sighting, refresh}) => {
       <Box width={windowWidth - 40} height={180} paddingTop={5} paddingBottom={1} paddingRight={5}>
         {sightingImage && <Image source={{ uri: sightingImage }} style={{ width: '100%', height: '100%', borderRadius: 10, marginBottom: 8 }} alt="pet" />}
 
-        <Button width={'100%'} borderRadius={10} paddingTop={3}>
+        {/* <Button width={'100%'} borderRadius={10} paddingTop={3}>
           Share
-        </Button>
+        </Button> */}
+        <ShareButton title={"Pet Sighting - Finding Neno"} message={message} dialogTitle={"Share this pet sighting"} width={'100%'} />
+
 
       </Box>
 
