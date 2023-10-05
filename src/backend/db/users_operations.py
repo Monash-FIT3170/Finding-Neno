@@ -148,13 +148,27 @@ def check_user_password(connection: psycopg2.extensions.connection, to_check_id:
     if not verify_access_token(connection, user_id, access_token):
         return False
 
+
     cur = connection.cursor()
 
-    # Hash the password input
-    hashed_pass= salt_and_hash(password)
 
-    # Check if a user with this email exists in the database
-    # Construct a SELECT query to check if the user exists in the database and if its password matches
+    # Retrieve the stored salt for the user
+    query_salt = """SELECT salt FROM users WHERE id = %s"""
+
+    # Execute the query
+    try:
+        cur.execute(query_salt, (to_check_id, ))
+        salt = cur.fetchone()[0]
+    
+    except Exception as e:
+        print(f"Error while retrieving salt: {e}")
+        cur.close()
+        return False
+
+    # Hash the provided password with the retrieved salt
+    hashed_pass, salt = hash_password(password, salt)
+
+    # Construct a SELECT query to check if password is correct
     query = """SELECT id, access_token FROM users WHERE id = %s AND password = %s """
 
     # Execute the query
