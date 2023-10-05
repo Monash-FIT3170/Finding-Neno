@@ -318,8 +318,9 @@ def update_location_notification_settings_api(connection ) -> Tuple[str, int]:
     location_longitude = json_data["long"]
     location_latitude = json_data["lat"]
     location_notification_radius = json_data["radius"]
+    possible_sightings_enabled = json_data["possible_sightings"]
 
-    result = update_location_notifications_settings_in_database(connection, user_id, location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, access_token)
+    result = update_location_notifications_settings_in_database(connection, user_id, location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, possible_sightings_enabled, access_token)
     if result is False:
         return "User does not have access", 401
     else:

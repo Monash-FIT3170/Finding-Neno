@@ -322,7 +322,7 @@ def update_report_active_status(connection: psycopg2.extensions.connection, repo
         connection.rollback()
         return False
 
-def update_location_notifications_settings_in_database(connection, user_id, location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, access_token):
+def update_location_notifications_settings_in_database(connection, user_id, location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, possible_sightings_enabled, access_token):
     # Verify access token
     if not verify_access_token(connection, user_id, access_token):
         return False
@@ -334,7 +334,7 @@ def update_location_notifications_settings_in_database(connection, user_id, loca
                 UPDATE 
                     user_settings 
                 SET 
-                     location_notifications_enabled = %s, location_longitude = %s, location_latitude = %s, location_notification_radius = %s
+                     location_notifications_enabled = %s, location_longitude = %s, location_latitude = %s, location_notification_radius = %s, possible_sighting_notifications_enabled = %s
                 WHERE 
                     user_id = %s;
                 """
@@ -344,7 +344,7 @@ def update_location_notifications_settings_in_database(connection, user_id, loca
 
     # Execute the query
     try:
-        cur.execute(query, (location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, user_id))
+        cur.execute(query, (location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, possible_sightings_enabled, user_id))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -835,7 +835,7 @@ def retrieve_location_notification_settings(connection, user_id, access_token):
     cur = connection.cursor()
 
     query = """
-    SELECT location_notifications_enabled, location_longitude, location_latitude, location_notification_radius
+    SELECT location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, possible_sighting_notifications_enabled
     FROM user_settings WHERE user_id = %s;
     """
 

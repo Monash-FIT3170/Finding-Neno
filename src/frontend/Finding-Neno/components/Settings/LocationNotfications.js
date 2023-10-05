@@ -109,6 +109,11 @@ function LocationNotifications() {
 
   const togglePossibleNotifications = () => {
     setpossibleSightingsEnabled(previousState => !previousState)
+    if(localNotificationsEnabled){
+      setLocationData({...locationData, possible_sightings: true})
+    } else {
+      setLocationData({...locationData, possible_sightings: false})
+    }
   };
 
   const updateRadius = (newRadius) => {
@@ -209,7 +214,8 @@ function LocationNotifications() {
     const long = user_settings[1] ? user_settings[1] : mapRegion.longitude;
     const lat = user_settings[2] ? user_settings[2] : mapRegion.latitude;
     const radius = user_settings[3] ? user_settings[3] : 5;
-    setLocationData({enabled: enabled, long: long, lat: lat, radius: radius})
+    const possible_sightings = user_settings[4];
+    setLocationData({enabled: enabled, long: long, lat: lat, radius: radius, possible_sightings: possible_sightings})
 
     
     if(enabled){
