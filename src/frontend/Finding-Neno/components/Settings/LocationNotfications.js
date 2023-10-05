@@ -217,7 +217,7 @@ function LocationNotifications() {
     const possible_sightings = user_settings[4];
     setLocationData({enabled: enabled, long: long, lat: lat, radius: radius, possible_sightings: possible_sightings})
 
-    
+    setpossibleSightingsEnabled(possible_sightings)
     if(enabled){
       setLocalNotificationsEnabled(true);
       setBoxHeight(410);
