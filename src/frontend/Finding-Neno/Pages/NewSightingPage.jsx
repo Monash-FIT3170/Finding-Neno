@@ -129,6 +129,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
     }
 
     const closePicker = () => {
+        console.log(selectedDatetime)
         setShowPicker(false);
     }
 
@@ -147,7 +148,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
                         <FormControl isRequired isInvalid={'petType' in errors}>
                             <FormControl.Label>Pet Type</FormControl.Label>
-                            <Select placeholder="Select a pet type"
+                            <Select size="lg" placeholder="Select a pet type"
                                 selectedValue={formData.petType}
                                 onValueChange={(value) => setFormData({ ...formData, petType: value })}>
                                 <Select.Item label="Select a pet" value="" disabled hidden />
@@ -169,7 +170,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                         <FormControl isRequired>
                             <FormControl.Label>Date and Time of Sighting</FormControl.Label>
                             <Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
-                            <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
+                            <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" maximumDate={new Date()} themeVariant="light" display="inline"
                                 onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
                         </FormControl>
 

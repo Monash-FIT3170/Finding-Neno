@@ -187,7 +187,7 @@ export default function MapPage({ navigation: { navigate } }) {
 						<Portal>
 							<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
 								actions={[
-									{ icon: 'file-document', label: 'New Report', onPress: () => navigate('New Report'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+									{ icon: 'file-document', label: 'New Missing Report', onPress: () => navigate('New Missing Report'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
 									{ icon: 'magnify', label: 'New Sighting', onPress: () => navigate('New Sighting'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
 								]} />
 						</Portal>

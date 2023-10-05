@@ -289,7 +289,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
 										<FormControl isInvalid={'petType' in errors}>
 											<FormControl.Label>Choose Pet Type</FormControl.Label>
-											<Select placeholder="Select a pet type"
+											<Select size="lg" placeholder="Select a pet type"
 												selectedValue={formData.petType}
 												onValueChange={(value) => setFormData({ ...formData, petType: value })}>
 												<Select.Item label="Select a pet" value="" disabled hidden />

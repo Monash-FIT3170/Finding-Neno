@@ -195,6 +195,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	}
 
 	const closePicker = () => {
+		console.log(selectedDatetime)
 		setShowPicker(false);
 	}
 
@@ -218,7 +219,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 						<FormControl isRequired isInvalid={'missingPetId' in errors}>
 							<FormControl.Label>Your Pet</FormControl.Label>
-							<Select placeholder="Select a pet"
+							<Select size="lg" placeholder="Select a pet"
 								selectedValue={formData.missingPetId}
 								onValueChange={(value) => setFormData({ ...formData, missingPetId: value })}>
 								<Select.Item label="Select a pet" value="" disabled hidden />
@@ -232,7 +233,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 						<FormControl isRequired>
 							<FormControl.Label>Date and Time of Sighting</FormControl.Label>
 							<Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
-							<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
+							<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" maximumDate={new Date()} themeVariant="light" display="inline"
 								onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 						</FormControl>
 
