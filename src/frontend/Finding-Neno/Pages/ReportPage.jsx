@@ -79,17 +79,3 @@ export default function ReportPage({ navigation: { navigate}}) {
     )
 }
 
-/*<ScrollView>
-            <Box alignItems="center" bg="#FFFFFF">
-                {/* ... other components *///}
-                
-                {/* Now use the report data to display the details */}
-                //<Text>{report.title}</Text>
-                //<Text>{report.description}</Text>
-                {/* Add more fields as per your report structure */}
-                
-                {/* ... rest of your existing code */}
-            //</Box>
-        //</ScrollView>
-    //);
-//}*/

@@ -21,6 +21,22 @@ export default function MapPage() {
 
 	// const windowWidth = Dimensions.get('window').width; 
 	// const windowHeight = Dimensions.get('window').height;
+	const navigateToReport = (reportId) => {
+		navigation.navigate('ReportPage', { reportId });
+	  };
+
+	const onMarkerPress = (report) => {
+		this.mapView.animateToRegion({
+		  longitude: report[3],
+		  latitude: report[4],
+		  longitudeDelta: 0.0015,
+		});
+		navigateToReport('Report Page', { reportId: report[0] });
+	  };
+	  
+	const navigateToSighting = (sightingId) => {
+		navigation.navigate('SightingsPage', { sightingId }); 
+	  };
 
 	// Image URL for custom marker iconrts
 	const imageURL = '';
@@ -131,12 +147,8 @@ export default function MapPage() {
 							key={`${report[0]}_${report[3]}_${report[4]}`}
 							title={report[6]}
 							coordinate={{ longitude: report[3], latitude: report[4] }}
-							onPress={() =>
-								this.mapView.animateToRegion({
-									longitude: report[3],
-									latitude: report[4],
-									longitudeDelta: 0.0015,
-								})
+							onPress={() => onMarkerPress(report[0])
+								
 							}
 						></Marker>
 					))
@@ -149,12 +161,7 @@ export default function MapPage() {
 							key={`${sighting[0]}_${sighting[2]}_${sighting[3]}`}
 							title={sighting[10]}
 							coordinate={{ longitude: sighting[2], latitude: sighting[3] }}
-							onPress={() =>
-								this.mapView.animateToRegion({
-									longitude: sighting[2],
-									latitude: sighting[3],
-									longitudeDelta: 0.0015,
-								})
+							onPress={() => onMarkerPress(report[0])
 							}
 						></Marker>
 					))
@@ -235,19 +242,3 @@ const styles = StyleSheet.create({
 
 
 });
-/*<MapView
-            style={{ flex: 1 }}
-            // ... other MapView props
-        >
-            {reports.map((report, index) => (
-                <Marker
-                    key={report.id} // Assuming report has an id property, replace with appropriate key
-                    coordinate={{ latitude: report.latitude, longitude: report.longitude }} // replace with actual report latitude and longitude properties
-                    title={report.title}
-                    description={report.description}
-                    onPress={() => navigation.navigate('ReportPage', { report })}
-                />
-            ))}
-        </MapView>
-    );
-}*/
