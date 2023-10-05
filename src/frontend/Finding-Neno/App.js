@@ -31,6 +31,7 @@ import { useState, useEffect } from "react";
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
+// const MapReportStack = createStackNavigator();
 
 export default function App() {
 	return (
@@ -54,19 +55,19 @@ async function tryLocalCredentialLogin(IP, PORT) {
 			ACCESS_TOKEN: accessToken,
 		}
 
-    const url = `${IP}:${PORT}/verify_token`;
-    const verifyTokenRes = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${accessToken}`,
-        'User-ID': userId
-      },
-    });
-    if (verifyTokenRes.status == 200) {
-      store.dispatch(login(payload));
-    } else {
-      store.dispatch(logout());
-    }
+		const url = `${IP}:${PORT}/verify_token`;
+		const verifyTokenRes = await fetch(url, {
+			method: 'GET',
+			headers: {
+				'Authorization': `Bearer ${accessToken}`,
+				'User-ID': userId
+			},
+		});
+		if (verifyTokenRes.status == 200) {
+			store.dispatch(login(payload));
+		} else {
+			store.dispatch(logout());
+		}
 	} else {
 		store.dispatch(logout());
 	}
@@ -133,7 +134,7 @@ function TabNavigator() {
 			/>
 			<Tab.Screen
 				name="Map"
-				component={MapPage}
+				component={MapReportStackNavigator}
 				options={{
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="location" color={color} size={size} />
@@ -150,6 +151,7 @@ function TabNavigator() {
 					headerShown: true
 				}}
 			/>
+
 			<Tab.Screen
 				name="Report"
 				component={ReportStackNavigator}
@@ -203,11 +205,20 @@ function ReportStackNavigator() {
 }
 
 function ProfileStackNavigator() {
-  return (
-    <Stack.Navigator initialRouteName="ProfilePage">
-      <Stack.Screen name="Profile Page" component={ProfilePage} />
-      <Stack.Screen name="New Pet Page" component={NewPetPage} />
-      <Stack.Screen name="Edit Pet Page" component={EditPetPage} />
-    </Stack.Navigator>
-  )
+	return (
+		<Stack.Navigator initialRouteName="ProfilePage">
+			<Stack.Screen name="Profile Page" component={ProfilePage} />
+			<Stack.Screen name="New Pet Page" component={NewPetPage} />
+			<Stack.Screen name="Edit Pet Page" component={EditPetPage} />
+		</Stack.Navigator>
+	)
 }
+
+function MapReportStackNavigator() {
+	return (
+	  <Stack.Navigator initialRouteName="MapPage">
+		<Stack.Screen name="Map Page" component={MapPage} />
+		<Stack.Screen name="Report Page" component={ReportPage} />
+	  </Stack.Navigator>
+	);
+  }
