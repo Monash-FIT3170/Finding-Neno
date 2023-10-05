@@ -12,7 +12,7 @@ function UserDetails() {
     const windowWidth = Dimensions.get('window').width; 
     const textInputWidth = windowWidth*0.7;
 
-    const {IP, PORT} = useSelector((state) => state.api)
+    const { API_URL } = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
     const [user, setUser] = useState([]);
@@ -32,7 +32,7 @@ function UserDetails() {
 
     const fetchProfileInfo = async () => {
         try {
-            const url = `${IP}:${PORT}/retrieve_profile?user_id=${USER_ID}`;
+            const url = `${API_URL}/retrieve_profile?user_id=${USER_ID}`;
             const response = await fetch(url, {
                 method: "GET",
                 headers: {
@@ -60,7 +60,7 @@ function UserDetails() {
 
     const updateUser = async () => {
         try {
-          const response = await fetch(`${IP}:${PORT}/update_profile`, {
+          const response = await fetch(`${API_URL}/update_profile`, {
             method: 'PUT',
             headers: {
               Authorization: `Bearer ${ACCESS_TOKEN}`,

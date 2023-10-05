@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 
 
 function LocationNotifications() {
-  const {IP, PORT} = useSelector((state) => state.api)
+  const { API_URL } = useSelector((state) => state.api)
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
   // Component for Location Notifications
@@ -173,7 +173,7 @@ function LocationNotifications() {
   
   const updateUserSettings = async () => {
     try {
-      const response = await fetch(`${IP}:${PORT}/update_location_notification_settings`, {
+      const response = await fetch(`${API_URL}/update_location_notification_settings`, {
         method: 'PUT',
         headers: {
           Authorization: `Bearer ${ACCESS_TOKEN}`,
@@ -195,7 +195,7 @@ function LocationNotifications() {
 
   const fetchUserSettings = async () => {
     try {
-      const url = `${IP}:${PORT}/get_location_notification_settings?user_id=${USER_ID}`;
+      const url = `${API_URL}/get_location_notification_settings?user_id=${USER_ID}`;
       const response = await fetch(url, {
         method: "GET",
         headers: {

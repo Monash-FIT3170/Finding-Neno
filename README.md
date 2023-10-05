@@ -13,7 +13,7 @@ Finding Neno currently has the following features:
 
 Detailed documentation can be found in the team's [Google Drive](https://drive.google.com/drive/u/1/folders/1URib5DxULDa4vhqCTlcQM6K4CIRcmrmG).
 
-## Getting Started
+## Getting Started (for running on your local machine)
 
 ### Hardware Requirements 
 * A Windows or Mac machine
@@ -21,15 +21,13 @@ Detailed documentation can be found in the team's [Google Drive](https://drive.g
 
 ### Software Requirements and Dependencies
 
-* Python
-* pip
+* Python (including pip)
 * Node: https://nodejs.org/en/download
 * Expo CLI
   ```
   npm install -g expo-cli
   ```
 * Expo Go on your phone: https://expo.dev/client
-* Flask: https://flask.palletsprojects.com/en/2.2.x/installation/
 * PostgreSQL: https://www.postgresql.org/download/ (add a new server once installed)
 * TablePlus (optional, used to visualise database): https://tableplus.com/  (Create a connection to the database using the details of the PostgreSQL server created in the previous step)
 
@@ -48,28 +46,17 @@ Create a .env file in the root directory. Add the following to the .env file (en
    DATABASE_HOST=localhost  
    DATABASE_PORT=5432  
   ``` 
-Create a .env file within the src/frontend/Finding-Neno directory. Add the following to this .env file:  
+Create a .env file within the `src/frontend/Finding-Neno` directory. Add the following to this .env file:  
   ```
-  IP=your device’s IP address 
-  PORT=5000
+  API_URL=the URL outputted when the back-end API is run
   ``` 
-Run the following command from the root directory: 
-* Mac users:
-  ```
-  src/backend/install_dependencies_mac.sh
-  ```
-* Windows users:
-  ```
-  src/backend/install_dependencies_windows.bat
-  ```
-If this does not work, run the following commands instead: 
-  ```
-  pip3 install psycopg2
-  pip3 install python-dotenv
-  pip3 install pytest
-  pip3 install pytest-mock
-  ```
-Run the following command from the root directory: 
+Install backend dependencies: 
+
+```
+pip3 install -r src/backend/requirements.txt
+```
+
+Set up the database structure: 
   ```
   python3 src/backend/db/setup_db.py .env
   ```
@@ -81,10 +68,10 @@ Run the following command from the root directory:
   python3 src/backend/api/main.py .env
   ```
 
-3. In a new terminal, run the following commands from the src/frontend/Finding-Neno directory: 
+3. In a new terminal, run the following commands from the `src/frontend/Finding-Neno` directory: 
   ```
   npm install
-  npx expo start
+  npm start
   ```
 
 4. Scan the QR code to start using Finding Neno!
@@ -92,22 +79,15 @@ Run the following command from the root directory:
 ## Notes and Common Issues
 * Network error:
   * Stop the server
-  * Reset cache by running this command from the src/frontend/Finding-Neno directory
-    ```
-    npm cache clean --force
-    ```
-    or 
-    ```
-    npx expo start -c
-    ```
-    or
+  * Reset cache by running this command from the `src/frontend/Finding-Neno` directory:
     ```
     npx react-native start --reset-cache
-  * Ensure that the IP and PORT on the src/frontend/Finding-Neno/.env are correct
-  * Ensure that your device is on the same IP/network as the server
+    ```
+  * Ensure that the API_URL in `src/frontend/Finding-Neno/.env` is correct
+  * Ensure that your phone/tablet device is on the same LAN as the server
   * Run the app again 
-* psycopg2 module not found:
+* *Blah* module not found:
   * Run the command:
     ```
-    pip3 install psycopg2-binary
+    pip3 install -r src/backend/requirements.txt
     ```
