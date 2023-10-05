@@ -100,14 +100,13 @@ const Sighting = ({ userId, sighting, refresh }) => {
     }
 
     const imagelessSighting = (
-
-        <View style={{ width: "100%", justifyContent: 'center', alignItems: 'center' }} bg="#F9FDFF">
-            <VStack>
+        <View style={{ width: "100%", alignItems: 'center', justifyContent: 'center', }} bg="#F9FDFF">
+            <VStack alignItems='center' width='100%'>
                 <View>
                     {/* TODO: Replace with a proper header */}
                     <Heading textAlign='center' >Sighting Header</Heading>
                 </View>
-                <HStack marginTop='2%' justifyContent='space-between'>
+                <HStack width='50%' marginTop='2%' alignItems='center' justifyContent='space-between'>
                     <VStack alignItems='center' marginX='2'>
                         <Heading size="sm" >Species</Heading>
                         {
@@ -118,10 +117,13 @@ const Sighting = ({ userId, sighting, refresh }) => {
                         }
                     </VStack>
 
-                    <VStack alignItems='center' marginX='2'>
-                        <Heading size="sm">Breed</Heading>
-                        <Text>{sightingBreed}</Text>
-                    </VStack>
+                    {
+                        sightingBreed &&
+                        <VStack alignItems='center' marginX='2'>
+                            <Heading size="sm">Breed</Heading>
+                            <Text>{sightingBreed}</Text>
+                        </VStack>
+                    }
                 </HStack>
 
                 <View style={{ alignItems: 'center' }}>
@@ -177,10 +179,13 @@ const Sighting = ({ userId, sighting, refresh }) => {
                                 }
                             </VStack>
 
-                            <VStack alignItems='center' marginX='2'>
-                                <Heading size="sm">Breed</Heading>
-                                <Text>{sightingBreed}</Text>
-                            </VStack>
+                            {
+                                sightingBreed &&
+                                <VStack alignItems='center' marginX='2'>
+                                    <Heading size="sm">Breed</Heading>
+                                    <Text>{sightingBreed}</Text>
+                                </VStack>
+                            }
                         </HStack>
 
                         <View style={{ alignItems: 'center' }}>
@@ -188,7 +193,6 @@ const Sighting = ({ userId, sighting, refresh }) => {
                             <Text>{dateTime}</Text>
                             <Heading size="sm" maxWidth='100%' paddingTop='1%'>{suburb}</Heading>
                         </View>
-
                     </VStack>
                 </View>
             </HStack>
