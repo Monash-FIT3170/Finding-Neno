@@ -12,7 +12,7 @@ sys.path.append(str(package_root_directory))
 from db.authentication import verify_access_token
 from db.users_operations import *
 from db.pets import get_pet
-from api.notification_bodies import generate_email_body_sighting
+from api.notification_bodies import generate_email_body_sighting, generate_email_missing_report, generate_email_potential_sighting
 
 def check_access_token(connection) -> bool:
     # json_data = request.get_json(force=True)
@@ -496,7 +496,7 @@ def send_notification_to_local_users(
             user = get_user_details(connection=connection, user_id=user_id)
 
             title = "Missing Pet Alert In Your Area"
-            body = f"Hi {user['name']},\n\nA {pet['animal']} named {pet['name']} has been reported missing in your area. Please keep an eye out for it.\n\nThanks,\nPetSight Team"
+            body = generate_email_missing_report(pet, missing_report, user)
             res = send_notification(
                 email_address=user["email_address"],
                 subject=title,
