@@ -1,6 +1,6 @@
 import { useNavigation } from "@react-navigation/native";
-import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link, Modal} from "native-base";
-import { Dimensions } from "react-native";
+import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link, Modal, View} from "native-base";
+import { Dimensions, SafeAreaView } from "react-native";
 import { Color } from "../components/atomic/Theme";
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
@@ -13,6 +13,8 @@ import store from "../store/store";
 import pet, { selectPet } from "../store/pet";
 import LogoutButton from '../components/LogoutButton';
 import { logout } from '../store/user';
+import DeleteUserModal from "../components/DeleteUserModal";
+import { PaperProvider } from "react-native-paper";
 
 export default function ProfilePage({ navigation: { navigate } }) {
   const navigation = useNavigation();
@@ -198,6 +200,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                       dispatch(selectPet(pet));
                       navigate("Edit Pet Page");
                     }}
+                    onUpdate={fetchOwnerPets}
 					editMode={editMode} 
                   />
                 </VStack>
@@ -231,185 +234,198 @@ export default function ProfilePage({ navigation: { navigate } }) {
     }
   };
 
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+
   return (
-    <ScrollView>
-      <Box alignItems="center" justifyContent="center">
-        <Box
-          alignSelf="center"
-          _text={{
-            alignSelf: "center",
-            justifyContent: "center",
-            fontSize: "lg",
-            fontWeight: "medium",
-            color: "warmGray.50",
-            letterSpacing: "lg",
-          }}
-          bg={Color.NENO_BLUE}
-          width={windowWidth}
-          height={windowHeight / 8}
-        >
-          <Box height={3} />
-          <HStack>
-            <Box width={8} />
-            <Box
-              bg="#FFFFFF"
-              height={76}
-              width={76}
-              borderRadius={38}
-              alignSelf="center"
-              alignItems="center"
-              justifyContent="center"
-            >
-              <Image
-                alignSelf="center"
-                size={70}
-                borderRadius={35}
-                source={{
-                  uri: "https://wallpaperaccess.com/full/317501.jpg",
-                }}
-                alt="Alternate Text"
-              />
-            </Box>
-            <Box width={9} />
-            <Heading
-              alignSelf="center"
-              size="lg"
-              fontWeight="600"
-              color="warmGray.200"
-              _dark={{ color: "coolGray.600" }}
-            >
-              {name}
-            </Heading>
-          </HStack>
-        </Box>
 
-        <VStack>
-          <HStack mt="6" justifyContent="space-between">
-            <Heading
-              fontSize="sm"
-              color="coolGray.600"
-              _dark={{ color: "warmGray.200" }}
-              pr={windowWidth / 3.5}
-            >
-              USER DETAILS
-            </Heading>
-            <Text pl={windowWidth / 3.5}></Text>
-          </HStack>
-
-          <Box h="2"></Box>
-
-          <Box bg="gray.200" px="2" py="1" borderRadius="md">
-            <HStack mt="2" justifyContent="space-between">
-              <Heading
-                fontSize="sm"
-                color="coolGray.600"
-                _dark={{ color: "warmGray.200" }}
-              >
-                Email
-              </Heading>
-              <Text
-                fontSize="sm"
-                color="coolGray.600"
-                _dark={{ color: "warmGray.200" }}
-              >
-                {email}
-              </Text>
-            </HStack>
-          </Box>
-
-          <Box h="2"></Box>
-
-          <Box bg="gray.200" px="2" py="1" borderRadius="md">
-            <HStack mt="2" justifyContent="space-between">
-              <Heading
-                fontSize="sm"
-                color="coolGray.600"
-                _dark={{ color: "warmGray.200" }}
-              >
-                Phone
-              </Heading>
-              <Text
-                fontSize="sm"
-                color="coolGray.600"
-                _dark={{ color: "warmGray.200" }}
-              >
-                {phone}
-              </Text>
-            </HStack>
-          </Box>
-					<Box h="2"></Box>
-
-					<Button onPress={() => setLogoutModalVisible(true)} backgroundColor={"#FA8072"}>
-						Logout
-					</Button>
-
-					<LogoutModal logoutModalVisible={logoutModalVisible} setLogoutModalVisible={setLogoutModalVisible} />
-
-        </VStack>
-
-        <Box height={1} />
-
-        <VStack>
-          <HStack mt="6" justifyContent="space-between" alignItems="center">
-            <Heading
-              fontSize="sm"
-              color="coolGray.600"
-              _dark={{ color: "warmGray.200" }}
-              pr={windowWidth / 3.5}
-            >
-              PETS
-            </Heading>
-
-            {editMode ? (
-              <HStack alignItems="center">
-                <Button
-                  size="sm"
-                  marginTop={4}
-                  onPress={deleteSelectedPets}
-                  bg="transparent" // Make the button transparent
-                >
-                  <DeleteIcon color="#FF0000" />{" "}
-                  {/* Change the color of DeleteIcon */}
-                </Button>
-                <Text marginLeft={-2}>{selectedPets.length}</Text>
-                <Button
-                  size="sm"
-                  onPress={() => {
-                    deleteSelectedPets();
-                  }}
-                  variant="link"
-                  paddingLeft={6}
-                >
-                  Done
-                </Button>
-              </HStack>
-            ) : (
-              <Button
-                pl={windowWidth / 3}
-                variant="link"
-                onPress={() => setEditMode(true)}
-              >
-                Edit
-              </Button>
-            )}
-          </HStack>
-
-          <Button
-            onPress={() => {
-              navigate("New Pet Page");
+    <PaperProvider>
+      <SafeAreaView style={{ height: "100%" }}>
+      <ScrollView>
+        <Box alignItems="center" justifyContent="center">
+          <Box
+            alignSelf="center"
+            _text={{
+              alignSelf: "center",
+              justifyContent: "center",
+              fontSize: "lg",
+              fontWeight: "medium",
+              color: "warmGray.50",
+              letterSpacing: "lg",
             }}
-            width={windowWidth - 80}
-            height="40px"
+            bg={Color.NENO_BLUE}
+            width={windowWidth}
+            height={windowHeight / 8}
           >
-            Add New Pet
-          </Button>
-          <Box h="4"></Box>
-        </VStack>
+            <Box height={3} />
+            <HStack>
+              <Box width={8} />
+              <Box
+                bg="#FFFFFF"
+                height={76}
+                width={76}
+                borderRadius={38}
+                alignSelf="center"
+                alignItems="center"
+                justifyContent="center"
+              >
+                <Image
+                  alignSelf="center"
+                  size={70}
+                  borderRadius={35}
+                  source={{
+                    uri: "https://wallpaperaccess.com/full/317501.jpg",
+                  }}
+                  alt="Alternate Text"
+                />
+              </Box>
+              <Box width={9} />
+              <Heading
+                alignSelf="center"
+                size="lg"
+                fontWeight="600"
+                color="warmGray.200"
+                _dark={{ color: "coolGray.600" }}
+              >
+                {name}
+              </Heading>
+            </HStack>
+          </Box>
 
-        {petCards()}      </Box>
+          <VStack>
+            <HStack mt="6" justifyContent="space-between">
+              <Heading
+                fontSize="sm"
+                color="coolGray.600"
+                _dark={{ color: "warmGray.200" }}
+                pr={windowWidth / 3.5}
+              >
+                USER DETAILS
+              </Heading>
+              <Text pl={windowWidth / 3.5}></Text>
+            </HStack>
+
+            <Box h="2"></Box>
+
+            <Box bg="gray.200" px="2" py="1" borderRadius="md">
+              <HStack mt="2" justifyContent="space-between">
+                <Heading
+                  fontSize="sm"
+                  color="coolGray.600"
+                  _dark={{ color: "warmGray.200" }}
+                >
+                  Email
+                </Heading>
+                <Text
+                  fontSize="sm"
+                  color="coolGray.600"
+                  _dark={{ color: "warmGray.200" }}
+                >
+                  {email}
+                </Text>
+              </HStack>
+            </Box>
+
+            <Box h="2"></Box>
+
+            <Box bg="gray.200" px="2" py="1" borderRadius="md">
+              <HStack mt="2" justifyContent="space-between">
+                <Heading
+                  fontSize="sm"
+                  color="coolGray.600"
+                  _dark={{ color: "warmGray.200" }}
+                >
+                  Phone
+                </Heading>
+                <Text
+                  fontSize="sm"
+                  color="coolGray.600"
+                  _dark={{ color: "warmGray.200" }}
+                >
+                  {phone}
+                </Text>
+              </HStack>
+            </Box>
+            <Box h="2"></Box>
+
+            <Button mb={3} onPress={() => setDeleteModalVisible(true)} backgroundColor={"red.600"}>
+              Delete Account
+            </Button>
+            
+            <DeleteUserModal visible={deleteModalVisible} setVisible={setDeleteModalVisible} />
+
+            <Button onPress={() => setLogoutModalVisible(true)} backgroundColor={"#FA8072"}>
+              Logout
+            </Button>
+
+            <LogoutModal logoutModalVisible={logoutModalVisible} setLogoutModalVisible={setLogoutModalVisible} />
+
+          </VStack>
+
+          <Box height={1} />
+
+          <VStack>
+            <HStack mt="6" justifyContent="space-between" alignItems="center">
+              <Heading
+                fontSize="sm"
+                color="coolGray.600"
+                _dark={{ color: "warmGray.200" }}
+                pr={windowWidth / 3.5}
+              >
+                PETS
+              </Heading>
+
+              {editMode ? (
+                <HStack alignItems="center">
+                  <Button
+                    size="sm"
+                    marginTop={4}
+                    onPress={deleteSelectedPets}
+                    bg="transparent" // Make the button transparent
+                  >
+                    <DeleteIcon color="#FF0000" />{" "}
+                    {/* Change the color of DeleteIcon */}
+                  </Button>
+                  <Text marginLeft={-2}>{selectedPets.length}</Text>
+                  <Button
+                    size="sm"
+                    onPress={() => {
+                      deleteSelectedPets();
+                    }}
+                    variant="link"
+                    paddingLeft={6}
+                  >
+                    Done
+                  </Button>
+                </HStack>
+              ) : (
+                <Button
+                  pl={windowWidth / 3}
+                  variant="link"
+                  onPress={() => setEditMode(true)}
+                >
+                  Edit
+                </Button>
+              )}
+            </HStack>
+
+            <Button
+              onPress={() => {
+                navigate("New Pet Page");
+              }}
+              width={windowWidth - 80}
+              height="40px"
+            >
+              Add New Pet
+            </Button>
+            <Box h="4"></Box>
+          </VStack>
+
+          {petCards()}      </Box>
 
 
-    </ScrollView>
+      </ScrollView>
+      </SafeAreaView>
+    </PaperProvider>
   );
 }
 

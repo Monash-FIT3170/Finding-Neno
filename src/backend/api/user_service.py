@@ -35,6 +35,20 @@ def insert_user(connection) -> Tuple[str, int]:
     insert_user_to_database(connection, email, phoneNumber, name, password)
     return "Success", 201
 
+def validate_password_operation(connection):
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+
+    json_data = request.get_json(force=True)
+    to_check_id = json_data["toCheckId"]
+    password = json_data["password"]
+
+    result = check_user_password(connection=connection, to_check_id=to_check_id, password=password, user_id=user_id, access_token=access_token)
+    if result is False:
+        return "User does not have access", 401
+    else:
+        return jsonify(result), 200
+
 def insert_sighting(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("inserting pet sighting: ", json_data)
@@ -118,7 +132,7 @@ def update_missing_report(connection) -> Tuple[str, int]:
     location_longitude, location_latitude = coordinates.split(",")
 
     description = json_data["description"]
-    is_active = json_data["isActive"]
+    is_active = json_data["is_active"]
 
     result = update_missing_report_in_database(connection, report_id, pet_id, author_id, last_seen, location_longitude,
                                       location_latitude, description, is_active, access_token)
@@ -134,7 +148,7 @@ def update_report_status(conn):
     success = update_report_active_status(
         connection=conn,
         report_id=data["report_id"],
-        new_status=data["isActive"],
+        new_status=data["is_active"],
     )
     if success:
         return "", 200
@@ -143,7 +157,7 @@ def update_report_status(conn):
 def archive_missing_report(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     report_id = json_data["reportId"]
-    is_active = json_data["isActive"]
+    is_active = json_data["is_active"]
 
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
@@ -416,3 +430,15 @@ def reset_password(username, new_password):
     return True
     # Replace with password reset logic
 
+def delete_all_user_data(connection, to_delete_id):
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+    
+    json_data = request.get_json(force=True)
+    to_delete_id = json_data["toDeleteId"]
+
+    result = delete_all_user_data_from_database(connection=connection, to_delete_id=to_delete_id, user_id=user_id, access_token=access_token)
+    if result is False:
+        return "User does not have access", 401
+    else:
+        return "Success", 200

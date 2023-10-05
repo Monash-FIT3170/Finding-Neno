@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import { View, TouchableOpacity, Modal } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
+import { Modal } from 'native-base';
 import { Image, Text, Box, Button } from 'native-base';
 import { useSelector, useDispatch } from 'react-redux';
 
-const PetCard = ({color, pet, onClick, editMode}) => {
+const PetCard = ({color, pet, onClick, editMode, onUpdate}) => {
   const {API_URL} = useSelector((state) => state.api)
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
@@ -19,13 +20,13 @@ const PetCard = ({color, pet, onClick, editMode}) => {
   pet.description.length > 50
     ? pet.description.substring(0, 50) + "..."
     : pet.description;
-  const [missing, setMissing] = useState(pet.is_missing);
+  const [showConfirmFoundModal, setShowConfirmFoundModal] = useState(false);
   const descriptionHeight =
   pet.description.length > 50 && !editMode ? petDescription.length * 0.5 : 0;
 
   // Button to confirm if user has found pet
   const borderRadius = () => {
-    if (missing) {
+    if (pet.is_missing) {
       return 0;
     } else {
       return 20;
@@ -33,13 +34,13 @@ const PetCard = ({color, pet, onClick, editMode}) => {
   };
 
   const displayMissingButton = () => {
-    if (missing) {
+    if (pet.is_missing) {
       return (
         <Button
           title="Missing"
           bg="#454545"
           style={{ borderRadius: 0, borderBottomRightRadius: 20, borderBottomLeftRadius: 20 }}
-          onPress={toggleMissingStatus} // Attach the onPress handler
+          onPress={() => setShowConfirmFoundModal(true)} // Attach the onPress handler
         >
           Found Me!
         </Button>
@@ -68,7 +69,7 @@ const PetCard = ({color, pet, onClick, editMode}) => {
         if (response.ok) {
             await fetchMissingReport();
             // Perform any necessary updates on the frontend
-            setMissing(!missing);
+            onUpdate();
           } else {
             console.log('Error while toggling status:', response.statusText);
         }
@@ -208,10 +209,36 @@ const updateMissingReport = async (report) => {
       </Box>
     </TouchableOpacity>
     {displayMissingButton()}
+      {showConfirmFoundModal && <ConfirmFoundModal isVisible={showConfirmFoundModal} setIsVisible={setShowConfirmFoundModal} onRemove={() => toggleMissingStatus()}/>}
     <Box h="4"></Box>
     </View>
   );
 };
+
+function ConfirmFoundModal({ isVisible, setIsVisible, onRemove }) {
+  return <Modal isOpen={isVisible} onClose={() => setIsVisible(false)} size={"md"}>
+    <Modal.Content >
+      <Modal.CloseButton />
+      <Modal.Header>Remove missing pet report?</Modal.Header>
+      <Modal.Body>
+        <Text>Are you sure you want remove this missing pet report?</Text>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button.Group space={2}>
+          <Button variant="ghost" colorScheme="blueGray" onPress={() => setIsVisible(false)} >
+            Cancel
+          </Button>
+          <Button onPress={() => {
+            onRemove()
+            setIsVisible(false)
+          }} backgroundColor={"#FA8072"}>
+            Remove
+          </Button>
+        </Button.Group>
+      </Modal.Footer>
+    </Modal.Content>
+  </Modal>
+}
 
 
 export default PetCard;

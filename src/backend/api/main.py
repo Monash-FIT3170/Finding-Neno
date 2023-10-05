@@ -100,6 +100,11 @@ def close_connection():
 def post_insert_user():
     return insert_user(g.db)
 
+@app.route("/delete_user", methods=["DELETE"])
+def delete_user():
+    to_delete_id = request.args.get("user_id")
+    return jsonify(delete_all_user_data(g.db, to_delete_id=to_delete_id))
+
 @app.route("/verify_token", methods=["GET"])
 def get_verify_token():
     return check_access_token(g.db)
@@ -130,6 +135,10 @@ def retrieve_profile_information():
         return jsonify(data)
     else:
         return None
+    
+@app.route("/validate_password", methods=["POST"]) # Requires Access_token and user ID for authorization
+def validate_password():
+    return validate_password_operation(g.db)
 
 @app.route("/change_password", methods=["PATCH"]) # Requires Access_token and user ID for authorization
 def post_change_password():
@@ -252,7 +261,7 @@ def get_my_report_sightings():
 
     [
         sighting_id, missing_report_id, author_id (author of sighting), date_time (date time sighting was made), 
-        sighting longitude , sighting latitude, sighting image_url, sighting description, animal, breed, author's name, author's email, author's phone number, pet_name, isactive
+        sighting longitude , sighting latitude, sighting image_url, sighting description, animal, breed, author's name, author's email, author's phone number, pet_name, is_active
     ]
     """
     return jsonify(retrieve_my_report_sightings(g.db))

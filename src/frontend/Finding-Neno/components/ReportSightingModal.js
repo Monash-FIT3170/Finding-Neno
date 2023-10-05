@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
-import { Menu, Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView } from "native-base";
-import { ActivityIndicator, Dimensions } from 'react-native';
+import { Box, Modal, Image, useToast, ScrollView, View,  FormControl, Input, Button,  } from "native-base";
+import { ActivityIndicator } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState, useRef } from 'react';
 import { useIsFocused } from '@react-navigation/native';
