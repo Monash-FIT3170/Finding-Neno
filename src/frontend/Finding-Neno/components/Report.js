@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { View } from 'react-native'
 import { Dimensions } from 'react-native';
 import ReportSightingModal from '../components/ReportSightingModal';

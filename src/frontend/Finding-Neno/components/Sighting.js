@@ -23,7 +23,7 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
   const dateTime = sighting[3];
   const locationLongitude = sighting[4];
   const locationLatitude = sighting[5];
-    const locationString = sighting[6];
+  const locationString = sighting[6];
   const sightingImage = sighting[7];
   const sightingDesc = sighting[8];
   const sightingAnimal = sighting[9][0].toUpperCase() + sighting[9].substring(1);
