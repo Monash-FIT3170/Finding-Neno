@@ -370,7 +370,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
                     JOIN 
                         users AS u ON mr.author_id = u.id
                     WHERE
-                        mr.isactive = true -- Condition to filter out only active missing reports
+                        mr.is_active = true -- Condition to filter out only active missing reports
                     ORDER BY 
                         mr.date_time DESC;
                 """
@@ -389,7 +389,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
                     JOIN 
                         users AS u ON mr.author_id = u.id
                     WHERE 
-                        u.id = %s AND mr.isactive = true
+                        u.id = %s AND mr.is_active = true
                     ORDER BY 
                         mr.date_time DESC;
                 """
@@ -444,7 +444,7 @@ def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_i
         JOIN 
             users AS u ON mr.author_id = u.id
         WHERE 
-            mr.isactive = true -- Condition to filter out only active missing reports
+            mr.is_active = true -- Condition to filter out only active missing reports
         AND
             p.id = %s;
 
@@ -741,7 +741,7 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
                         users AS u ON s.author_id = u.id
                     WHERE 
                         (s.location_longitude BETWEEN %s AND %s AND s.location_latitude BETWEEN %s AND %s)
-                        AND (mr.isactive IS TRUE OR s.missing_report_id IS NULL)
+                        AND (mr.is_active IS TRUE OR s.missing_report_id IS NULL)
                     ORDER BY 
                         s.date_time DESC;"""
     else:
@@ -762,7 +762,7 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
                         users AS u ON s.author_id = u.id
                     WHERE 
                         (s.location_longitude BETWEEN %s AND %s OR s.location_longitude BETWEEN %s AND %s) AND s.location_latitude BETWEEN %s AND %s
-                        AND (mr.isactive IS TRUE OR s.missing_report_id IS NULL)
+                        AND (mr.is_active IS TRUE OR s.missing_report_id IS NULL)
                         
                     ORDER BY 
                         s.date_time DESC;"""
