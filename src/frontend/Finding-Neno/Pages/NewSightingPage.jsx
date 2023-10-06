@@ -100,6 +100,10 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         //     foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
         // }
 
+        if (!formData.animal || formData.animal == "") {
+            foundErrors = { ...foundErrors, animal: 'Pet is required.' }
+        }
+
         if (formData.description.length > 500) {
             foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
         }
@@ -258,17 +262,17 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                                             Take Photo
                                         </Button>
 
-                                        <FormControl isInvalid={'petType' in errors}>
+                                        <FormControl isInvalid={'animal' in errors}>
                                             <FormControl.Label>Choose Pet Type</FormControl.Label>
                                             <Select placeholder="Select a pet type"
-                                                selectedValue={formData.petType}
+                                                selectedValue={formData.animal}
                                                 onValueChange={(value) => setFormData({ ...formData, animal: value })}>
                                                 <Select.Item label="Select a pet" value="" disabled hidden />
                                                 {petTypeOptions.map((option, index) => (
                                                     <Select.Item key={index} label={option.label} value={option.value} />
                                                 ))}
                                             </Select>
-                                            {'petType' in errors && <FormControl.ErrorMessage>{errors.petType}</FormControl.ErrorMessage>}
+                                            {'animal' in errors && <FormControl.ErrorMessage>{errors.animal}</FormControl.ErrorMessage>}
                                         </FormControl>
 
                                         <FormControl>

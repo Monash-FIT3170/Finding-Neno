@@ -234,7 +234,7 @@ def check_user_login_details(connection: psycopg2.extensions.connection, usernam
 
 def insert_sighting_to_database(connection: psycopg2.extensions.connection, author_id: str,
                                     missing_report_id: int, animal: str, breed: str, date_time: datetime, location_longitude: float,
-                                        location_latitude: float, image_url: str, description: str, user_id: int, access_token: str):
+                                        location_latitude: float, location_string: str, image_url: str, description: str, user_id: int, access_token: str):
     """
     This function is used to add a new sighting to the database.
 
@@ -250,14 +250,14 @@ def insert_sighting_to_database(connection: psycopg2.extensions.connection, auth
 
     # Construct and INSERT query to insert this user into the DB
     query = """INSERT INTO sightings (missing_report_id, author_id, animal, breed, date_time, location_longitude, 
-    location_latitude, image_url, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+    location_latitude, location_string, image_url, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
 
     # Execute the query
     try:
-        cur.execute(query, (author_id, missing_report_id, animal, breed, date_time, location_longitude, location_latitude, image_url, description))
+        cur.execute(query, (author_id, missing_report_id, animal, breed, date_time, location_longitude, location_latitude, location_string, image_url, description))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -273,7 +273,7 @@ def insert_sighting_to_database(connection: psycopg2.extensions.connection, auth
 
 def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id: str,
                                       pet_id: int, last_seen: datetime, location_longitude: float, location_latitude: float,
-                                          description: str, user_id: int, access_token: str):
+                                          location_string: str, description: str, user_id: int, access_token: str):
     """
     This function is used to add a new missing report to the database.
 
@@ -291,13 +291,13 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
 
     # Construct and INSERT query to insert this user into the DB
     query = """INSERT INTO missing_reports (pet_id, author_id, date_time, location_longitude, 
-    location_latitude, description) VALUES (%s, %s, %s, %s, %s, %s);"""
+    location_latitude, location_string, description) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
 
     # Execute the query
     try:
         # New reports are automatically set as active
         is_active = True
-        cur.execute(query, (author_id, pet_id, last_seen, location_longitude, location_latitude, description))
+        cur.execute(query, (author_id, pet_id, last_seen, location_longitude, location_latitude, location_string, description))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -425,7 +425,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
     if author_id == None:
         query = """
                     SELECT 
-                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, 
+                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, mr.location_string,
                         p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
                         u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number,
                         mr.author_id
@@ -444,7 +444,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
     else:
         query = """
                     SELECT 
-                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
+                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, mr.location_string,
                         p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
                         u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number,
                         mr.author_id
@@ -560,7 +560,7 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
 
     # Query returns all sightings in the database
     query = """
-                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
+                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.location_string, s.image_url, s.description, s.animal, s.breed,
                         u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.is_active
                 FROM
                     sightings AS s
@@ -630,7 +630,7 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
     cur = connection.cursor()
 
     query = """
-                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed, u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.is_active
+                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.location_string, s.image_url, s.description, s.animal, s.breed, u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.is_active
                 FROM sightings AS s
                     JOIN 
                         missing_reports AS mr ON s.missing_report_id = mr.id
@@ -873,7 +873,7 @@ def retrieve_user_saved_sightings(connection: psycopg2.extensions.connection, us
 
     # same as retrieve_sightings_from_database but also has filter for saved_by
     query = """
-        SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed, u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.is_active
+        SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.location_string, s.image_url, s.description, s.animal, s.breed, u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.is_active
         FROM
             sightings AS s
         LEFT JOIN
@@ -1036,162 +1036,3 @@ def change_password_in_database(connection: psycopg2.extensions.connection, emai
     # Close the cursor
     cur.close()
     return result
-
-def delete_all_user_data_from_database(connection: psycopg2.extensions.connection, to_delete_id: int, user_id: int, access_token: str):
-    """
-    This function deletes the user with the provided id from the database. It first deletes all sightings the user created, unlinks any sightings made
-    by other users on this user's missing reports, and then deletes the user's missing reports before deleting the user's pets. 
-    Finally, it deletes the user from the database.
-
-    Returns False if access token is invalid, True if query is executed successfully.
-    """
-
-    print(to_delete_id)
-
-    # Verify access token
-    if not verify_access_token(connection, user_id, access_token):
-        return False
-
-    # Delete user's sightings
-    if not delete_all_user_sightings(connection=connection, user_id=to_delete_id):
-        return False
-
-    # Unlink sightings made by other users on this user's missing reports
-    if not unlink_sightings_from_user_missing_reports(connection=connection, user_id=user_id):
-        return False
-
-    # Delete user's missing reports
-    if not delete_all_user_missing_reports(connection=connection, user_id=to_delete_id):
-        return False
-
-    # Delete user's pets
-    if not delete_all_user_pets(connection=connection, user_id=to_delete_id):
-        return False
-    
-    # Delete user
-    if not delete_user(connection=connection, user_id=to_delete_id):
-        return False
-
-    return True
-
-def delete_all_user_sightings(connection: psycopg2.extensions.connection, user_id: int):
-
-    cur = connection.cursor()
-
-    query = """
-        DELETE FROM sightings WHERE author_id = %s;
-    """
-
-    try:
-        cur.execute(query, (user_id, ))
-
-        # Commit the change
-        connection.commit()
-        print(f"Sightings successfully deleted")
-        return True
-
-    except Exception as e:
-        print(f"Error with deleting user: {e}")
-    
-    cur.close()
-    return False
-
-def unlink_sightings_from_user_missing_reports(connection: psycopg2.extensions.connection, user_id: int):
-    """
-    This function unlinks sightings made by other users on this user's missing reports.
-    """
-
-    cur = connection.cursor()
-
-    query = """
-        UPDATE sightings SET missing_report_id = NULL WHERE missing_report_id IN (SELECT id FROM missing_reports WHERE author_id = %s);
-    """
-
-    try:
-        cur.execute(query, (user_id, ))
-
-        # Commit the change
-        connection.commit()
-        print(f"Sightings successfully unlinked")
-        return True
-
-    except Exception as e:
-        print(f"Error with deleting user: {e}")
-    
-    cur.close()
-    return False
-
-def delete_all_user_missing_reports(connection: psycopg2.extensions.connection, user_id: int):
-    """
-    This function deletes all missing reports created by the user.
-    """
-
-    cur = connection.cursor()
-
-    query = """
-        DELETE FROM missing_reports WHERE author_id = %s;
-    """
-
-    try:
-        cur.execute(query, (user_id, ))
-
-        # Commit the change
-        connection.commit()
-        print(f"Missing reports successfully deleted")
-        return True
-
-    except Exception as e:
-        print(f"Error with deleting user: {e}")
-    
-    cur.close()
-    return False
-
-def delete_all_user_pets(connection: psycopg2.extensions.connection, user_id: int):
-    """
-    This function deletes all pets owned by the user.
-    """
-
-    cur = connection.cursor()
-
-    query = """
-        DELETE FROM pets WHERE owner_id = %s;
-    """
-
-    try:
-        cur.execute(query, (user_id, ))
-
-        # Commit the change
-        connection.commit()
-        print(f"Pets successfully deleted")
-        return True
-
-    except Exception as e:
-        print(f"Error with deleting user: {e}")
-    
-    cur.close()
-    return False
-
-def delete_user(connection: psycopg2.extensions.connection, user_id: int):
-    """
-    This function deletes the user with the provided id from the database.
-    """
-
-    cur = connection.cursor()
-
-    query = """
-        DELETE FROM users WHERE id = %s;
-    """
-
-    try:
-        cur.execute(query, (user_id, ))
-
-        # Commit the change
-        connection.commit()
-        print(f"User successfully deleted")
-        return True
-
-    except Exception as e:
-        print(f"Error with deleting user: {e}")
-    
-    cur.close()
-    return False

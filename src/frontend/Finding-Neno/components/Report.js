@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { View } from 'react-native'
 import { Dimensions } from 'react-native';
 import ReportSightingModal from '../components/ReportSightingModal';
@@ -10,53 +10,25 @@ const Report = ({ report, userId }) => {
   // Pet Data
   const windowWidth = Dimensions.get('window').width;
 
-  const lastSeen = report[1];
-  const reportDesc = report[2];
-  const locationLongitude = report[3];
-  const locationLatitude = report[4];
-  const authorId = report[14]
+    const lastSeen = report[1];
+    const reportDesc = report[2];
+    const locationLongitude = report[3];
+    const locationLatitude = report[4];
+    const locationString = report[5];
+    const authorId = report[15]
+    
+    const petName = report[7][0].toUpperCase() +report[7].substring(1);
+    const petSpecies = report[8][0].toUpperCase() +report[8].substring(1);;
+    const petBreed = report[9][0].toUpperCase() +report[9].substring(1);;
+    const petImage = report[10];
 
-  const petName = report[6][0].toUpperCase() + report[6].substring(1);
-  const petSpecies = report[7][0].toUpperCase() + report[7].substring(1);;
-  const petBreed = report[8][0].toUpperCase() + report[8].substring(1);;
-  const petImage = report[9];
-
-  const [showModal, setShowModal] = useState(false);
-  const [suburb, setSuburb] = useState("");
+    const [showModal, setShowModal] = useState(false);
 
   const closeModal = () => {
     setShowModal(false);
   }
 
-  useEffect(() => {
-    getSuburb();
-  }, [])
-
-  // Retrieve suburb info from OpenStreetMap API by reverse geocoding
-   const getSuburb = async () => {
-    var suburb = null;
-    try {
-      const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${locationLatitude}&lon=${locationLongitude}&format=json`;
-
-      const response = await fetch(apiUrl);
-
-      const result = await response.json();
-
-      suburb = `${result.address.suburb ? result.address.suburb : (result.address.city ? result.address.city : "") }`
-      state = `${result.address.state ? result.address.state : ""}`;
-
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-
-    if (suburb != null) {
-      setSuburb(`${suburb}${suburb && state ? "," : ""} ${state}`);
-    } 
-    else {
-      setSuburb("Location information unavailable");
-    }
-  };
-
+    
   return (
     <View justifyContent="center" alignItems="center" padding={4}>
       <Box width={windowWidth - 20} height={400} bg="#F9FDFF" borderRadius={15}>
@@ -69,7 +41,7 @@ const Report = ({ report, userId }) => {
 
       <Heading size = "sm" paddingLeft={5} paddingTop={2}>
         {/* Insert "Suburb, State" here */}
-        {suburb}
+        {locationString}
       </Heading>
 
         <Text paddingLeft={5}>
