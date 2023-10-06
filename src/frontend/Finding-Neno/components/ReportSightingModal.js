@@ -16,6 +16,7 @@ import { validDateTime, validateCoordinates } from "../Pages/validation"
 import { useSelector, useDispatch } from "react-redux";
 
 import { formatDatetime } from '../Pages/shared';
+import MapAddressSearch from "../components/MapAddressSearch";
 
 const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
     const [sightingDateTime, setSightingDateTime] = useState(new Date());
@@ -40,7 +41,6 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
         breed: report[8],
         imageUrl: null,
         dateTime: formatDatetime(new Date()),
-        dateTimeOfCreation: formatDatetime(new Date()),
         lastLocation: '',
         description: ''
     });
@@ -54,7 +54,6 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 			breed: report[8],
 			imageUrl: null,
 			dateTime: formatDatetime(new Date()),
-			dateTimeOfCreation: formatDatetime(new Date()),
 			lastLocation: '',
 			description: ''
 		});
@@ -200,7 +199,6 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
                 breed: report[8],
                 imageUrl: sightingImage,
                 dateTime: sightingData.dateTime,
-                dateTimeOfCreation: formatDatetime(new Date()),
                 description: sightingData.description,
                 lastLocation: sightingData.lastLocation
             }
@@ -234,55 +232,6 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 		setReportSightingBtnDisabled(false);
 	}
 
-	    //map box for last known location
-	// Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
-	const [mapRegion, setMapRegion] = useState({
-		latitude: -37.8136,
-		longitude: 144.9631,
-		latitudeDelta: 0.6,
-		longitudeDelta: 0.6,
-	})
-
-// Retrieves coordinates of current centre of map when map is moved around
-const handleRegionChange = (region) => {
-	setMapRegion(region);
-}	
-
-const [address, setAddress] = useState('');
-const [coordinates, setCoordinates] = useState(null);
-const mapViewRef = useRef(null);
-
-const handleSearch = async () => {
-	try {
-	  const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
-
-	  const response = await fetch(apiUrl);
-	  if (response.data.length > 0) {
-		const firstResult = response.data[0];
-		setCoordinates({
-		  latitude: parseFloat(firstResult.lat),
-		  longitude: parseFloat(firstResult.lon),
-		});
-		setSightingData({
-			...sightingData,
-			lastLocation: `${parseFloat(firstResult.lon)}, ${parseFloat(firstResult.lat)}`,		});
-		// You can animate to the new coordinates here if you want
-		mapViewRef.current.animateToRegion({
-		  latitude: parseFloat(firstResult.lat),
-		  longitude: parseFloat(firstResult.lon),
-		  latitudeDelta: 0.03,
-		  longitudeDelta: 0.05,
-		});
-		console.log(firstResult);
-	  } else {
-		setCoordinates(null);
-	  }
-	} catch (error) {
-	  console.error('Error fetching data:', error);
-	  setCoordinates(null);
-	}
-  };
-
     return (
         <>
         {showModal &&
@@ -315,23 +264,10 @@ const handleSearch = async () => {
 							</FormControl>
 
 							<FormControl>
-									<FormControl.Label>Last Known Location</FormControl.Label>
-									<Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
-									{coordinates === null && <FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
-								</FormControl> 
-
-								<Button title="Search" onPress={handleSearch}>Search</Button>
-
-								<Box height={150}>
-								<MapView
-									ref={mapViewRef}
-									provider={PROVIDER_GOOGLE}
-									style={styles.map}
-									initialRegion={mapRegion}
-								>
-									{coordinates !== null && <Marker coordinate={coordinates} />}
-								</MapView>
-								</Box>
+								<FormControl.Label>Last Known Location</FormControl.Label>
+								<MapAddressSearch formData={sightingData} setFormData={setSightingData} />
+								{<FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
+							</FormControl>
 
 							<FormControl isInvalid={'description' in sightingFormErrors}>
 								<FormControl.Label>Description (Additional Info)</FormControl.Label>

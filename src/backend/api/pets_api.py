@@ -45,7 +45,6 @@ def insert_pet_operation(conn, owner_id):
         breed=data["breed"],
         description=data["description"],
         image_url=data["image_url"],
-        is_missing = data["is_missing"],
         owner_id=owner_id,
         access_token=token
     )

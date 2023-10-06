@@ -65,17 +65,13 @@ def insert_sighting(connection) -> Tuple[str, int]:
     hour, minute, day, month, year = separate_datetime(date_time_input)
     date_time = datetime.datetime(year, month, day, hour, minute)
 
-    date_time_of_creation_input = json_data["dateTimeOfCreation"]
-    hour, minute, day, month, year = separate_datetime(date_time_of_creation_input)
-    date_time_of_creation = datetime.datetime(year, month, day, hour, minute)
-
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
     imageUrl = json_data["imageUrl"]
     description = json_data["description"]
 
 
-    result = insert_sighting_to_database(connection, missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, location_latitude, imageUrl, description, user_id, access_token)
+    result = insert_sighting_to_database(connection, missing_report_id, author_id, animal, breed, date_time, location_longitude, location_latitude, imageUrl, description, user_id, access_token)
 
     if result is False:
         return "User does not have access", 401
@@ -96,16 +92,12 @@ def insert_missing_report(connection) -> Tuple[str, int]:
     hour, minute, day, month, year = separate_datetime(last_seen_input)
     last_seen = datetime.datetime(year, month, day, hour, minute)
 
-    date_time_of_creation_input = json_data["dateTimeOfCreation"]
-    hour, minute, day, month, year = separate_datetime(date_time_of_creation_input)
-    date_time_of_creation = datetime.datetime(year, month, day, hour, minute)
-
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
 
     description = json_data["description"]
     
-    result = insert_missing_report_to_database(connection, pet_id, author_id, date_time_of_creation, last_seen, location_longitude, location_latitude, description, user_id, access_token)
+    result = insert_missing_report_to_database(connection, pet_id, author_id, last_seen, location_longitude, location_latitude, description, user_id, access_token)
 
     if result is False:
         return "User does not have access", 401
