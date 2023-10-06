@@ -1,6 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState } from 'react';
 import { View } from 'react-native'
-import {Dimensions} from 'react-native';
+import { Dimensions } from 'react-native';
+import ReportSightingModal from '../components/ReportSightingModal';
+import * as ImagePicker from 'expo-image-picker';
 import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 import { Ionicons } from '@expo/vector-icons'; 
 import { useSelector } from "react-redux";
@@ -8,27 +10,28 @@ import { useIsFocused } from '@react-navigation/native';
 
 
 const Sighting = ({userId, sighting, setReloadParent}) => {
-    // Pet Data
-    const windowWidth = Dimensions.get('window').width; 
+  // Pet Data
+  const windowWidth = Dimensions.get('window').width; 
 
-    const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
-    const {API_URL} = useSelector((state) => state.api)
-    const isFocused = useIsFocused();
+  const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+  const {API_URL} = useSelector((state) => state.api)
+  const isFocused = useIsFocused();
 
-    const id = sighting[0];
-    const missingReportId = sighting[1];
-    const authorId = sighting[2];
-    const dateTime = sighting[3];
-    const locationLongitude = sighting[4];
-    const locationLatitude = sighting[5];
-    const sightingImage = sighting[6];
-    const sightingDesc = sighting[7];
-    const sightingAnimal = sighting[8][0].toUpperCase() +sighting[8].substring(1);
-    const sightingBreed = sighting[9];
-    const ownerName = sighting[10];
-    const ownerEmail = sighting[11];
-    const sightingPhoneNumber = sighting[12];
-    const savedByUser = sighting[13];
+  const id = sighting[0];
+  const missingReportId = sighting[1];
+  const authorId = sighting[2];
+  const dateTime = sighting[3];
+  const locationLongitude = sighting[4];
+  const locationLatitude = sighting[5];
+  const sightingImage = sighting[6];
+  const sightingDesc = sighting[7];
+  const sightingAnimal = sighting[8][0].toUpperCase() + sighting[8].substring(1);
+  const sightingBreed = sighting[9];
+  const ownerName = sighting[10];
+  const ownerEmail = sighting[11];
+  const sightingPhoneNumber = sighting[12];
+  const savedByUser = sighting[13];
+  const petName = sighting[14];
 
     const [sightingSaved, setSightingSaved] = useState(savedByUser==USER_ID); // true if the sighting is saved by this user
     const [saveSightingEndpoint, setSaveSightingEndpoint] = useState('save_sighting');
@@ -70,25 +73,36 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
         .catch((error) => alert(error));
     }
 
-    const [suburb, setSuburb] = useState("");
+  const [suburb, setSuburb] = useState("");
 
 
-    useEffect(() => {
-      getSuburb();
-    }, [])
+  useEffect(() => {
+    getSuburb();
+  }, [])
 
-    const getSuburb = async () => {
-      try {
-          const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${locationLatitude}&lon=${locationLongitude}&format=json`;
+  // Retrieve suburb info from OpenStreetMap API by reverse geocoding
+  const getSuburb = async () => {
+    var suburb = null;
+    try {
+      const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${locationLatitude}&lon=${locationLongitude}&format=json`;
 
-          const response = await fetch(apiUrl);
+      const response = await fetch(apiUrl);
 
-          const result = await response.json();
-          setSuburb(`${result.address.suburb}, ${result.address.state}`);
-          
-      } catch (error) {
-          console.error('Error fetching data:', error);
-      }
+      const result = await response.json();
+
+      suburb = `${result.address.suburb ? result.address.suburb : (result.address.city ? result.address.city : "") }`
+      state = `${result.address.state ? result.address.state : ""}`;
+
+    } catch (error) {
+      console.error('Error fetching data:', error);
+    }
+    
+    if (suburb != null) {
+      setSuburb(`${suburb}${suburb && state ? "," : ""} ${state}`);
+    }
+    else {
+      setSuburb("Location information unavailable");
+    }
   };
     
   return (
@@ -103,8 +117,8 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
       <Ionicons name={savedByUser==USER_ID ? "bookmark": "bookmark-outline"} size={24} onPress={handlePressSaveBtn}/>
       </HStack>
 
-      <Heading size = "sm"  paddingTop={2}>
-        Last seen { dateTime} 
+      <Heading size="sm" paddingTop={2}>
+        Last seen {dateTime}
       </Heading>
 
       <Text paddingTop={2}>
@@ -113,7 +127,7 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
 
       <HStack space={8}>
         <VStack>
-          <Heading size = "sm"  paddingTop={2}>
+          <Heading size="sm" paddingTop={2}>
             {sightingAnimal}
           </Heading>
           <Text >
@@ -122,27 +136,27 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
         </VStack>
 
         <VStack>
-          <Heading size = "sm" paddingTop={2}>
-              {sightingBreed}
+          <Heading size="sm" paddingTop={2}>
+            {sightingBreed}
           </Heading>
           <Text >
-              Breed
+            Breed
           </Text>
         </VStack>
       </HStack>
 
-      <Box width={windowWidth - 40} height={180}  paddingTop={5} paddingBottom={1} paddingRight={5}>
-        {sightingImage && <Image source={{ uri: sightingImage }} style={{ width: '100%', height: '100%', borderRadius: 10, marginBottom: 8 }} alt="pet"/>}
-      
+      <Box width={windowWidth - 40} height={180} paddingTop={5} paddingBottom={1} paddingRight={5}>
+        {sightingImage && <Image source={{ uri: sightingImage }} style={{ width: '100%', height: '100%', borderRadius: 10, marginBottom: 8 }} alt="pet" />}
+
         <Button width={'100%'} borderRadius={10} paddingTop={3}>
           Share
         </Button>
-    
+
       </Box>
 
     </Box>
-    </View>
-  );
+  </View>
+);
 };
 
 export default Sighting;

@@ -15,6 +15,7 @@ import store from "../store/store";
 import marker from '../assets/marker_icon.png';
 
 import { formatDatetime, petTypeOptions } from "./shared";
+import MapAddressSearch from "../components/MapAddressSearch";
 
 const NewSightingPage = ({ navigation: { navigate } }) => {
     const { API_URL } = useSelector((state) => state.api)
@@ -175,7 +176,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                 dateTime: formData.dateTime,
                 dateTimeOfCreation: formatDatetime(new Date()),
                 description: formData.description,
-				lastLocation: `${coordinates.longitude}, ${coordinates.latitude}`
+				lastLocation: formData.lastLocation
             }
 
             const url = `${API_URL}/insert_sighting`;
@@ -230,57 +231,6 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
     const closePicker = () => {
         setShowPicker(false);
     }
-
-    //map box for last known location
-    // Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
-    const [mapRegion, setMapRegion] = useState({
-        latitude: -37.8136,
-        longitude: 144.9631,
-        latitudeDelta: 0.03,
-        longitudeDelta: 0.03,
-    })
-
-    // Retrieves coordinates of current centre of map when map is moved around
-    const handleRegionChange = (region) => {
-        setMapRegion(region);
-        setCoordinates({ longitude: region.longitude, latitude: region.latitude });
-    }
-
-    const [address, setAddress] = useState('');
-    const [coordinates, setCoordinates] = useState({longitude: mapRegion.longitude, latitude: mapRegion.latitude});
-    const mapViewRef = useRef(null);
-
-    const handleSearch = async () => {
-        try {
-            const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
-
-            const response = await fetch(apiUrl);
-            if (response.data.length > 0) {
-                const firstResult = response.data[0];
-                setCoordinates({
-                    latitude: parseFloat(firstResult.lat),
-                    longitude: parseFloat(firstResult.lon),
-                });
-                setFormData({
-                    ...formData,
-                    lastLocation: `${parseFloat(firstResult.lon)}, ${parseFloat(firstResult.lat)}`,
-                });
-                // You can animate to the new coordinates here if you want
-                mapViewRef.current.animateToRegion({
-                    latitude: parseFloat(firstResult.lat),
-                    longitude: parseFloat(firstResult.lon),
-                    latitudeDelta: 0.03,
-                    longitudeDelta: 0.05,
-                });
-                console.log(firstResult);
-            } else {
-                setCoordinates(null);
-            }
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            setCoordinates(null);
-        }
-    };
 
 
     return (
@@ -339,26 +289,9 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
                                         <FormControl>
                                             <FormControl.Label>Last Known Location</FormControl.Label>
-
-                                            <Box height={150} marginBottom={2}>
-                                                <MapView
-                                                    ref={mapViewRef}
-                                                    provider={PROVIDER_GOOGLE}
-                                                    style={styles.map}
-                                                    initialRegion={mapRegion}
-                                                    onRegionChange={handleRegionChange}
-                                                >
-                                                </MapView>
-                                                <View style={styles.markerView}>
-                                                    <Image source={marker} style={styles.marker}></Image>
-                                                </View>
-                                            </Box>
-                                            <Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
-                                            {coordinates === null && <FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
+                                            <MapAddressSearch formData={formData} setFormData={setFormData} />
+                                            {<FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
                                         </FormControl>
-
-                                        <Button title="Search" onPress={handleSearch}>Search Address</Button>
-
 
                                         <FormControl isInvalid={'description' in errors}>
                                             <FormControl.Label>Description (Additional Info)</FormControl.Label>
