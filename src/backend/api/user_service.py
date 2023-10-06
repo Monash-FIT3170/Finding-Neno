@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import datetime
 from typing import Tuple
+from get_suburb import get_suburb
 
 file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
@@ -57,11 +58,12 @@ def insert_sighting(connection) -> Tuple[str, int]:
 
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
+    location = get_suburb(location_latitude, location_longitude)
     imageUrl = json_data["imageUrl"]
     description = json_data["description"]
 
 
-    result = insert_sighting_to_database(connection, missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, location_latitude, imageUrl, description, user_id, access_token)
+    result = insert_sighting_to_database(connection, missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, location_latitude, location, imageUrl, description, user_id, access_token)
 
     if result is False:
         return "User does not have access", 401
@@ -88,10 +90,11 @@ def insert_missing_report(connection) -> Tuple[str, int]:
 
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
+    location_string = get_suburb(location_latitude, location_longitude)
 
     description = json_data["description"]
     
-    result = insert_missing_report_to_database(connection, pet_id, author_id, date_time_of_creation, last_seen, location_longitude, location_latitude, description, user_id, access_token)
+    result = insert_missing_report_to_database(connection, pet_id, author_id, date_time_of_creation, last_seen, location_longitude, location_latitude, location_string, description, user_id, access_token)
 
     if result is False:
         return "User does not have access", 401

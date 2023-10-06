@@ -23,15 +23,16 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
   const dateTime = sighting[3];
   const locationLongitude = sighting[4];
   const locationLatitude = sighting[5];
-  const sightingImage = sighting[6];
-  const sightingDesc = sighting[7];
-  const sightingAnimal = sighting[8][0].toUpperCase() + sighting[8].substring(1);
-  const sightingBreed = sighting[9];
-  const ownerName = sighting[10];
-  const ownerEmail = sighting[11];
-  const sightingPhoneNumber = sighting[12];
-  const savedByUser = sighting[13];
-  const petName = sighting[14];
+  const locationString = sighting[6];
+  const sightingImage = sighting[7];
+  const sightingDesc = sighting[8];
+  const sightingAnimal = sighting[9][0].toUpperCase() + sighting[9].substring(1);
+  const sightingBreed = sighting[10];
+  const ownerName = sighting[11];
+  const ownerEmail = sighting[12];
+  const sightingPhoneNumber = sighting[13];
+  const savedByUser = sighting[14];
+  const petName = sighting[15];
 
     const [sightingSaved, setSightingSaved] = useState(savedByUser==USER_ID); // true if the sighting is saved by this user
     const [saveSightingEndpoint, setSaveSightingEndpoint] = useState('save_sighting');
@@ -73,38 +74,6 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
         .catch((error) => alert(error));
     }
 
-  const [suburb, setSuburb] = useState("");
-
-
-  useEffect(() => {
-    getSuburb();
-  }, [])
-
-  // Retrieve suburb info from OpenStreetMap API by reverse geocoding
-  const getSuburb = async () => {
-    var suburb = null;
-    try {
-      const apiUrl = `https://nominatim.openstreetmap.org/reverse?lat=${locationLatitude}&lon=${locationLongitude}&format=json`;
-
-      const response = await fetch(apiUrl);
-
-      const result = await response.json();
-
-      suburb = `${result.address.suburb ? result.address.suburb : (result.address.city ? result.address.city : "") }`
-      state = `${result.address.state ? result.address.state : ""}`;
-
-    } catch (error) {
-      console.error('Error fetching data:', error);
-    }
-    
-    if (suburb != null) {
-      setSuburb(`${suburb}${suburb && state ? "," : ""} ${state}`);
-    }
-    else {
-      setSuburb("Location information unavailable");
-    }
-  };
-    
   return (
     <View justifyContent = "center" alignItems = "center" padding={4}>
         {/* TODO: unhard code the heights, widths etc later */}
@@ -112,7 +81,7 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
       
       <HStack paddingTop={3} alignItems={"center"} justifyContent={"space-between"}>
       <Heading size = "lg" >
-        {suburb}
+        {locationString}
       </Heading>
       <Ionicons name={savedByUser==USER_ID ? "bookmark": "bookmark-outline"} size={24} onPress={handlePressSaveBtn}/>
       </HStack>
@@ -160,3 +129,4 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
 };
 
 export default Sighting;
+

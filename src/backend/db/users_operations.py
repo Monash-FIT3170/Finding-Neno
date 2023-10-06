@@ -168,7 +168,7 @@ def check_user_login_details(connection: psycopg2.extensions.connection, usernam
 
 def insert_sighting_to_database(connection: psycopg2.extensions.connection, author_id: str, date_time_of_creation: datetime,
                                     missing_report_id: int, animal: str, breed: str, date_time: datetime, location_longitude: float,
-                                        location_latitude: float, image_url: str, description: str, user_id: int, access_token: str):
+                                        location_latitude: float, location_string: str, image_url: str, description: str, user_id: int, access_token: str):
     """
     This function is used to add a new sighting to the database.
 
@@ -184,14 +184,14 @@ def insert_sighting_to_database(connection: psycopg2.extensions.connection, auth
 
     # Construct and INSERT query to insert this user into the DB
     query = """INSERT INTO sightings (missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, 
-    location_latitude, image_url, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+    location_latitude, location_string, image_url, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
 
     # Execute the query
     try:
-        cur.execute(query, (author_id, date_time_of_creation, missing_report_id, animal, breed, date_time, location_longitude, location_latitude, image_url, description))
+        cur.execute(query, (author_id, date_time_of_creation, missing_report_id, animal, breed, date_time, location_longitude, location_latitude, location_string, image_url, description))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -207,7 +207,7 @@ def insert_sighting_to_database(connection: psycopg2.extensions.connection, auth
 
 def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id: str, date_time_of_creation: datetime,
                                       pet_id: int, last_seen: datetime, location_longitude: float, location_latitude: float,
-                                          description: str, user_id: int, access_token: str):
+                                          location_string: str, description: str, user_id: int, access_token: str):
     """
     This function is used to add a new missing report to the database.
 
@@ -225,13 +225,13 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
 
     # Construct and INSERT query to insert this user into the DB
     query = """INSERT INTO missing_reports (pet_id, author_id, date_time_of_creation, date_time, location_longitude, 
-    location_latitude, description, is_active) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
+    location_latitude, location_string, description, is_active) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
     # Execute the query
     try:
         # New reports are automatically set as active
         is_active = True
-        cur.execute(query, (author_id, date_time_of_creation, pet_id, last_seen, location_longitude, location_latitude, description, is_active))
+        cur.execute(query, (author_id, date_time_of_creation, pet_id, last_seen, location_longitude, location_latitude, location_string, description, is_active))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -359,7 +359,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
     if author_id == None:
         query = """
                     SELECT 
-                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, 
+                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, mr.location_string,
                         p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
                         u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number,
                         mr.author_id
@@ -378,7 +378,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
     else:
         query = """
                     SELECT 
-                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
+                        mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude, mr.location_string,
                         p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
                         u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number,
                         mr.author_id
@@ -494,8 +494,9 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
 
     # Query returns all sightings in the database
     query = """
-                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
-                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.isactive
+                SELECT 
+                    s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.location_string, s.image_url, s.description, s.animal, s.breed,
+                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.is_active
                 FROM
                     sightings AS s
                 LEFT JOIN
@@ -506,7 +507,7 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
                     users AS u ON s.author_id = u.id
                 LEFT JOIN 
                     (SELECT * FROM users_saved_sightings WHERE user_id = %s) as ss ON ss.sighting_id = s.id
-                WHERE mr.isactive IS NOT FALSE
+                WHERE mr.is_active IS NOT FALSE
             """
         
     if missing_report_id != None:
@@ -564,7 +565,7 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
     cur = connection.cursor()
 
     query = """
-                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed, u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.isactive
+                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.location_string, s.image_url, s.description, s.animal, s.breed, u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.is_active
                 FROM sightings AS s
                     JOIN 
                         missing_reports AS mr ON s.missing_report_id = mr.id
@@ -575,7 +576,7 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
                     LEFT JOIN 
                     	(SELECT * FROM users_saved_sightings WHERE user_id = %s) as ss ON ss.sighting_id = s.id
                 WHERE 
-                    mr.author_id = %s AND mr.isactive IS NOT FALSE
+                    mr.author_id = %s AND mr.is_active IS NOT FALSE
                 ORDER BY
                 s.date_time DESC;
             """
@@ -807,7 +808,7 @@ def retrieve_user_saved_sightings(connection: psycopg2.extensions.connection, us
 
     # same as retrieve_sightings_from_database but also has filter for saved_by
     query = """
-        SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed, u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.isactive
+        SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.location_string, s.image_url, s.description, s.animal, s.breed, u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.is_active
         FROM
             sightings AS s
         LEFT JOIN
@@ -818,7 +819,7 @@ def retrieve_user_saved_sightings(connection: psycopg2.extensions.connection, us
             users AS u ON s.author_id = u.id
         LEFT JOIN 
             users_saved_sightings AS ss ON ss.sighting_id = s.id
-        WHERE ss.user_id = %s AND mr.isactive IS NOT FALSE
+        WHERE ss.user_id = %s AND mr.is_active IS NOT FALSE
         ORDER BY
             s.date_time DESC;   
     """
