@@ -121,7 +121,7 @@ def update_missing_report(connection) -> Tuple[str, int]:
     location_longitude, location_latitude = coordinates.split(",")
 
     description = json_data["description"]
-    is_active = json_data["isActive"]
+    is_active = json_data["is_active"]
 
     result = update_missing_report_in_database(connection, report_id, pet_id, author_id, last_seen, location_longitude,
                                       location_latitude, description, is_active, access_token)
@@ -137,7 +137,7 @@ def update_report_status(conn):
     success = update_report_active_status(
         connection=conn,
         report_id=data["report_id"],
-        new_status=data["isActive"],
+        new_status=data["is_active"],
     )
     if success:
         return "", 200
@@ -146,7 +146,7 @@ def update_report_status(conn):
 def archive_missing_report(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     report_id = json_data["reportId"]
-    is_active = json_data["isActive"]
+    is_active = json_data["is_active"]
 
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
