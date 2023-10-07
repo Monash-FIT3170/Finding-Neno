@@ -73,7 +73,6 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 				breed: formData.petBreed,
 				description: formData.petDescription,
 				image_url: petImage.toString(),
-				is_missing: false,
 				owner_id: USER_ID
 			};
 			
@@ -308,7 +307,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
 										<FormControl isInvalid={'petDescription' in errors}>
 											<FormControl.Label>Pet Description</FormControl.Label>
-											<Input
+											<Input size="lg"
 												onChangeText={(value) => setFormData({ ...formData, petDescription: value })}
 												placeholder="Please describe more about your pet"
 											/>

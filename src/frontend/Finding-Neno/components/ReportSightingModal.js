@@ -24,20 +24,21 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
     const { API_URL } = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
-	const toast = useToast();
-	// console.log(showModal);
-
-	const [sightingData, setSightingData] = useState({
-		authorId: userId,
-		missingReportId: report[0],
-		animal: report[7],
-		breed: report[8],
-		imageUrl: null,
-		dateTime: formatDatetime(new Date()),
-		dateTimeOfCreation: formatDatetime(new Date()),
-		lastLocation: '',
-		description: ''
-	});
+    const toast = useToast();
+	const isFocused = useIsFocused();
+    const navigation = useNavigation();
+    // console.log(showModal);
+    
+    const [sightingData, setSightingData] = useState({
+        authorId: userId,
+        missingReportId: report[0],
+        animal: report[7],
+        breed: report[8],
+        imageUrl: null,
+        dateTime: formatDatetime(new Date()),
+        lastLocation: '',
+        description: ''
+    });
 
 	const resetForm = (report) => {
 		// clears the form to default values
@@ -48,7 +49,6 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 			breed: report[8],
 			imageUrl: null,
 			dateTime: formatDatetime(new Date()),
-			dateTimeOfCreation: formatDatetime(new Date()),
 			lastLocation: '',
 			description: ''
 		});
@@ -104,17 +104,16 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 		let isValid = validateDetails(sightingData);
 
 		if (isValid) {
-			const sighting = {
-				authorId: USER_ID,
-				missingReportId: report[0],
-				animal: report[7],
-				breed: report[8],
-				imageUrl: sightingImage,
-				dateTime: sightingData.dateTime,
-				dateTimeOfCreation: formatDatetime(new Date()),
-				description: sightingData.description,
-				lastLocation: sightingData.lastLocation
-			}
+            const sighting = {
+                authorId: USER_ID,
+                missingReportId: report[0],
+                animal: report[7],
+                breed: report[8],
+                imageUrl: sightingImage,
+                dateTime: sightingData.dateTime,
+                description: sightingData.description,
+                lastLocation: sightingData.lastLocation
+            }
 
 			setReportSightingBtnDisabled(true);
 			const url = `${API_URL}/insert_sighting`;

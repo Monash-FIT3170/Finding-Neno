@@ -32,7 +32,6 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         imageUrl: '',
         dateTime: formatDatetime(selectedDatetime),
         description: '',
-        petType: ''
     });
     const [sightingImage, setSightingImage] = useState(null);
 
@@ -44,8 +43,8 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         //     foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
         // }
 
-        if (formData.petType == "") {
-            foundErrors = { ...foundErrors, petType: 'Pet type is required' }
+        if (!formData.animal || formData.animal == "") {
+            foundErrors = { ...foundErrors, animal: 'Pet is required.' }
         }
 
         if (formData.description.length > 500) {
@@ -69,11 +68,10 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
             const sighting = {
                 authorId: USER_ID,
                 missingReportId: null,
-                animal: formData.petType,
+                animal: formData.animal,
                 breed: formData.breed,
                 imageUrl: sightingImage,
                 dateTime: formData.dateTime,
-                dateTimeOfCreation: formatDatetime(new Date()),
                 description: formData.description,
 				lastLocation: formData.lastLocation
             }
@@ -146,22 +144,22 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                     <VStack space={3} mt="5"> 
                         <ImageHandler image={sightingImage} setImage={setSightingImage} setIsButtonDisabled={setIsButtonDisabled} />
 
-                        <FormControl isRequired isInvalid={'petType' in errors}>
+                        <FormControl isRequired isInvalid={'animal' in errors}>
                             <FormControl.Label>Pet Type</FormControl.Label>
                             <Select size="lg" placeholder="Select a pet type"
-                                selectedValue={formData.petType}
-                                onValueChange={(value) => setFormData({ ...formData, petType: value })}>
+                                selectedValue={formData.animal}
+                                onValueChange={(value) => setFormData({ ...formData, animal: value })}>
                                 <Select.Item label="Select a pet" value="" disabled hidden />
                                 {petTypeOptions.map((option, index) => (
                                     <Select.Item key={index} label={option.label} value={option.value} />
                                 ))}
                             </Select>
-                            {'petType' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petType}</FormControl.ErrorMessage>}
+                            {'animal' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.animal}</FormControl.ErrorMessage>}
                         </FormControl>
 
                         <FormControl>
                             <FormControl.Label>Breed</FormControl.Label>
-                            <Input
+                            <Input size="lg"
                                 placeholder="Pet breed"
                                 onChangeText={value => setFormData({ ...formData, breed: value })}
                             />

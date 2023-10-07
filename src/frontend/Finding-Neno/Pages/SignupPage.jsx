@@ -1,10 +1,10 @@
-import { Box, Button, Center, FormControl, Heading, HStack, Icon, Input, KeyboardAvoidingView, Link, VStack, Pressable, Text, Alert, Modal } from "native-base";
+import { Box, Button, Center, FormControl, Heading, HStack, Icon, Input, KeyboardAvoidingView, Link, VStack, Pressable, Text, Alert, Modal, WarningOutlineIcon } from "native-base";
 import { StyleSheet, TouchableWithoutFeedback } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons'
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
 import { Color } from "../components/atomic/Theme";
-import { validEmail, validPhoneNumber } from "./validation";
+import { validEmail, validPhoneNumber, validatePassword } from "./validation";
 import { useState } from "react";
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
@@ -75,6 +75,12 @@ const SignupPage = () => {
 
 		if (!formData.password || formData.password == "") {
 			foundErrors = { ...foundErrors, password: 'Password is required' }
+		}
+		else {
+			const passwordError = validatePassword(formData.password);
+			if (passwordError) {
+				foundErrors = { ...foundErrors, password: passwordError }
+			}
 		}
 
 		if (!formData.confirmPassword || formData.confirmPassword == "") {
@@ -165,13 +171,13 @@ const SignupPage = () => {
 
 									<FormControl isRequired isInvalid={'email' in errors}>
 										<FormControl.Label>Email</FormControl.Label>
-										<Input size="lg" autoCapitalize="none" onChangeText={value => setFormData({ ...formData, email: value })} />
+										<Input size="lg" autoCapitalize="none" keyboardType="email-address" onChangeText={value => setFormData({ ...formData, email: value })} />
 										{'email' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.email}</FormControl.ErrorMessage>}
 									</FormControl>
 
 									<FormControl isRequired isInvalid={'phoneNumber' in errors}>
 										<FormControl.Label>Phone Number</FormControl.Label>
-										<Input size="lg" keyboardType="numeric" maxLength={10} onChangeText={value => setFormData({ ...formData, phoneNumber: value })} />
+										<Input size="lg" keyboardType="phone-pad" maxLength={10} onChangeText={value => setFormData({ ...formData, phoneNumber: value })} />
 										{'phoneNumber' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.phoneNumber}</FormControl.ErrorMessage>}
 									</FormControl>
 

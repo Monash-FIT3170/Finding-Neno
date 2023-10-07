@@ -17,12 +17,13 @@ const Report = ({ report, userId }) => {
     const reportDesc = report[2];
     const locationLongitude = report[3];
     const locationLatitude = report[4];
-    const authorId = report[14]
-
-    const petName = report[6][0].toUpperCase() + report[6].substring(1);
-    const petSpecies = report[7][0].toUpperCase() + report[7].substring(1);;
-    const petBreed = report[8][0].toUpperCase() + report[8].substring(1);;
-    const petImage = report[9];
+    const locationString = report[5];
+    const authorId = report[15]
+    
+    const petName = report[7][0].toUpperCase() +report[7].substring(1);
+    const petSpecies = report[8][0].toUpperCase() +report[8].substring(1);
+    const petBreed = report[9].split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+    const petImage = report[10];
 
     const [showModal, setShowModal] = useState(false);
     const [suburb, setSuburb] = useState("");
@@ -99,7 +100,7 @@ const Report = ({ report, userId }) => {
                                     <Heading size="sm" >Species</Heading>
                                     {
                                         petSpecies == 'Other' ? 
-                                        <Text>{petSpecies}</Text> :
+                                        <Text textAlign='center'>{petSpecies}</Text> :
                                         <IconText iconName={petSpecies.toLowerCase()} text={petSpecies} 
                                             iconColor={ Color.NENO_BLUE } textColor={ 'black' } iconSize={19} fontWeight='normal' />
                                     }
@@ -107,7 +108,7 @@ const Report = ({ report, userId }) => {
 
                                 <VStack alignItems='center' marginX='2'>
                                     <Heading size="sm">Breed</Heading>
-                                    <Text>{petBreed}</Text>
+                                    <Text textAlign='center'>{petBreed}</Text>
                                 </VStack>
                             </HStack>
 

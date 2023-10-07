@@ -67,10 +67,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		setIsButtonDisabled(true);
 		setButtonText("Creating report...");
 
-		console.log(formData)
-
-		console.log(formData)
-
 		let isValid = await validateDetails(formData);
 
 		if (isValid) {
@@ -129,6 +125,11 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		if (!formData.missingPetId || formData.missingPetId == "") {
 			foundErrors = { ...foundErrors, missingPetId: 'Please select a pet' }
 		}
+		else {
+			if (exists) {
+				foundErrors = { ...foundErrors, missingPetId: 'Pet Report already exists' }
+			}
+		}
 
 		if (formData.description.length > 500) {
 			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
@@ -136,9 +137,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 		const exists = await missingReportExists(formData.missingPetId);
 
-		if (exists) {
-			foundErrors = { ...foundErrors, missingPetId: 'Pet Report already exists' }
-		}
 
 		setErrors(foundErrors);
 		console.log(foundErrors)
@@ -204,7 +202,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		authorId: USER_ID,
 		description: '',
 		lastSeenDateTime: formatDatetime(selectedDatetime),
-		dateTimeOfCreation: formatDatetime(new Date())
 	});
 
 	return (
