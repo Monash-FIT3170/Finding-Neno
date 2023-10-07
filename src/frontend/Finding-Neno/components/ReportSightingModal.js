@@ -1,6 +1,6 @@
 import { useNavigation } from '@react-navigation/native';
-import { Menu, Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView } from "native-base";
-import { ActivityIndicator, Dimensions } from 'react-native';
+import { Box, Modal, Image, useToast, ScrollView, View,  FormControl, Input, Button,  } from "native-base";
+import { ActivityIndicator } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState, useRef } from 'react';
 import { useIsFocused } from '@react-navigation/native';
@@ -41,7 +41,6 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
         breed: report[8],
         imageUrl: null,
         dateTime: formatDatetime(new Date()),
-        dateTimeOfCreation: formatDatetime(new Date()),
         lastLocation: '',
         description: ''
     });
@@ -55,7 +54,6 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 			breed: report[8],
 			imageUrl: null,
 			dateTime: formatDatetime(new Date()),
-			dateTimeOfCreation: formatDatetime(new Date()),
 			lastLocation: '',
 			description: ''
 		});
@@ -201,7 +199,6 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
                 breed: report[8],
                 imageUrl: sightingImage,
                 dateTime: sightingData.dateTime,
-                dateTimeOfCreation: formatDatetime(new Date()),
                 description: sightingData.description,
                 lastLocation: sightingData.lastLocation
             }
