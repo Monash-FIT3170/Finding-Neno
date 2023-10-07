@@ -96,7 +96,7 @@ const Report = ({ report, userId }) => {
 
                         <VStack>
                             <HStack marginTop='2%' justifyContent='space-between'>
-                                <VStack alignItems='center' marginX='2'>
+                                <VStack width={petBreed ? '50%' : '100%'} alignItems='center'>
                                     <Heading size="sm" >Species</Heading>
                                     {
                                         petSpecies == 'Other' ? 
@@ -106,7 +106,7 @@ const Report = ({ report, userId }) => {
                                     }
                                 </VStack>
 
-                                <VStack alignItems='center' marginX='2'>
+                                <VStack width='50%' alignItems='center'>
                                     <Heading size="sm">Breed</Heading>
                                     <Text textAlign='center'>{petBreed}</Text>
                                 </VStack>
