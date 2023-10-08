@@ -1,34 +1,71 @@
-import { NavigationContainer, useNavigation  } from '@react-navigation/native';
-import { Text, Dimensions } from 'react-native';
-import { Box, Center, View, Heading, VStack, useToast, Image, FormControl, Input, Button, ScrollView, Alert, KeyboardAvoidingView } from "native-base";
+import { Text, Dimensions, SafeAreaView, RefreshControl } from 'react-native';
+import { ScrollView } from "native-base";
 import { useIsFocused } from '@react-navigation/native';
-import { useSelector, useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import { useEffect, useState } from 'react';
-import store from "../store/store";
+import { TabBar, TabView } from 'react-native-tab-view';
 import Sighting from '../components/Sighting';
+import { Color } from "../components/atomic/Theme";
 
 export default function SightingsPage({navigation: {navigate}}) {
 
-    const navigation = useNavigation();
     const windowWidth = Dimensions.get('window').width; 
-    const windowHeight = Dimensions.get('window').height;
     const isFocused = useIsFocused();
+    const [sightingOfMyPetCards, setSightingOfMyPetCards] = useState('');
+    const [savedSightingCards, setSavedSightingCards] = useState('');
 
-	const {IP, PORT} = useSelector((state) => state.api)
+	const {API_URL} = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
-    const [myReportSightings, setMyReportSightings] = useState([]);
+    const [reloadPage, setReloadPage] = useState(false);
+    const [routes] = useState([
+		{ key: 'sightingsOfMyPets', title: 'Sightings Of Your Pets' },
+		{ key: 'mySavedSightings', title: 'Saved Sightings' },
+	])
+	const [index, setIndex] = useState(0);
 
     useEffect(() => {
-		if (isFocused) {
-			fetchMyReportSightings();
-		}
-	}, [isFocused]);
+        fetchSightingsOfMyPets();
+        fetchMySavedSightings();
+        setReloadPage(false);
+	}, [isFocused, reloadPage]);
 
+    const onRefresh = () => {
+        fetchSightingsOfMyPets();
+        fetchMySavedSightings();
+    }
 
-    const fetchMyReportSightings = async () => {
+    const generateSavedSightingsCards = (data) => {
+		return (
+			data?.map((sighting, index) => (
+				<Sighting userId={USER_ID} sighting={sighting} key={index} setReloadParent={setReloadPage}/>
+			))
+		)
+	}
+
+    const generateSightingsOfMyPets = (data) => {
+		return (
+			data?.map((sighting, index) => (
+				<Sighting userId={USER_ID} sighting={sighting} key={index} setReloadParent={setReloadPage}/>
+			))
+		)
+	}
+
+    const SavedSightingsView = () => (
+		<ScrollView style={{ backgroundColor: '#EDEDED' }} refreshControl={<RefreshControl onRefresh={onRefresh} />}>
+			{savedSightingCards}
+		</ScrollView>
+	)
+
+    const SightingsOfMyPetsView = () => (
+		<ScrollView style={{ backgroundColor: '#EDEDED' }} refreshControl={<RefreshControl onRefresh={onRefresh} />}>
+			{sightingOfMyPetCards}
+		</ScrollView>
+	)
+
+    const fetchSightingsOfMyPets = async () => {
         try {
-                const url = `${IP}:${PORT}/get_my_report_sightings`;
+                const url = `${API_URL}/get_my_report_sightings`;
                 const response = await fetch(url, {
                     method: "GET",
                     headers: {
@@ -43,25 +80,64 @@ export default function SightingsPage({navigation: {navigate}}) {
                 }
     
                 const data = await response.json();
-                setMyReportSightings(data[0]);
+                // filters out sightings that are linked to reports where is_active == False i.e pet has been found
+                setSightingOfMyPetCards(generateSightingsOfMyPets(data[0]));
             } catch (error) {
                 console.error(error);
             }
       };
+
+      const fetchMySavedSightings = async () => {
+        try {
+                const url = `${API_URL}/retrieve_saved_sightings`;
+                const response = await fetch(url, {
+                    method: "GET",
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${ACCESS_TOKEN}`,
+                        'User-ID': USER_ID,
+                    },
+                });
     
-
-    // TODO: display saved sightings here too (if any)
-  
+                if (!response.ok) {
+                    throw new Error(`Request failed with status: ${response.status}`);
+                }
+    
+                const data = await response.json(); 
+                // filters out sightings that are linked to reports where is_active == False i.e pet has been found
+                setSavedSightingCards(generateSavedSightingsCards(data[0]));
+            } catch (error) {
+                console.error(error);
+            }
+      };
+      
     return (
-        <ScrollView style={{backgroundColor: '#EDEDED'}}>
+        <SafeAreaView style={{height: "100%"}}>
+			<TabView
+				navigationState={{ index, routes }}
+				renderScene={({ route }) => {
+					switch (route.key) {
+						case 'sightingsOfMyPets':
+							return sightingOfMyPetCards.length 
+                                ? SightingsOfMyPetsView() 
+                                : <Text style={{fontSize: 16, alignSelf: 'center', paddingTop: '10%'}}>
+                                    No sightings of your lost pets yet!
+                                </Text>;
+						case 'mySavedSightings':
+							return savedSightingCards.length 
+                                ? SavedSightingsView() 
+                                : <Text style={{fontSize: 16, alignSelf: 'center', paddingTop: '10%'}}>
+                                    No saved sightings yet!
+                                </Text>;
+						default:
+							return null; 
+					}
+				}}
+				onIndexChange={setIndex}
+				initialLayout={{ width: windowWidth }}
+				renderTabBar={props => <TabBar {...props} style={{backgroundColor: Color.NENO_BLUE}}/>}
+			/>
 
-            {myReportSightings 
-            ? 
-                myReportSightings.map((sighting, index) => (
-                    <Sighting userId={USER_ID} sighting={sighting} key={index}/>
-                ))
-            : 
-                <Text>No sightings yet!</Text>}
-        </ScrollView>
+		</SafeAreaView>
     )
 }

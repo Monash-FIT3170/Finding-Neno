@@ -4,7 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
 import { Color } from "../components/atomic/Theme";
-import { validEmail, validPhoneNumber } from "./validation";
+import { validEmail, validPhoneNumber, validatePassword } from "./validation";
 import { useState } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -20,7 +20,7 @@ const SignupPage = () => {
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 	const [showAccountExistsModal,setShowAccountExistsModal] = useState(false);
 
-	const {IP, PORT} = useSelector((state) => state.api)
+	const {API_URL} = useSelector((state) => state.api)
 
 	const navigation = useNavigation();
 
@@ -32,7 +32,7 @@ const SignupPage = () => {
 
 		let isValid = validateDetails(formData);
 		if (isValid) {
-			const url = `${IP}:${PORT}/insert_user`;
+			const url = `${API_URL}/insert_user`;
 
 			const res = await fetch(url, {
 				method: "POST",
@@ -73,6 +73,12 @@ const SignupPage = () => {
 
 		if (!formData.password || formData.password == "") {
 			foundErrors = { ...foundErrors, password: 'Password is required' }
+		}
+		else {
+			const passwordError = validatePassword(formData.password);
+			if (passwordError) {
+				foundErrors = { ...foundErrors, password: passwordError }
+			}
 		}
 
 		if (!formData.confirmPassword || formData.confirmPassword == "") {

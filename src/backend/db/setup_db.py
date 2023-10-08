@@ -29,7 +29,6 @@ To run this script, run the following command from the root directory:
     python src/backend/db/setup_db.py .env
 """
 
-
 def create_tables(connection: psycopg2.extensions.connection):
     """
     Sets up the database, including tables, keys and foreign key constraints
@@ -39,20 +38,20 @@ def create_tables(connection: psycopg2.extensions.connection):
     queries = [
         # Create users table
         """CREATE TABLE "users" (id SERIAL PRIMARY KEY, email_address VARCHAR(255) NOT NULL, phone_number VARCHAR(
-        255), name VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL,access_token VARCHAR(255) NOT NULL);""",
+        255), name VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, salt VARCHAR(255), access_token VARCHAR(255) NOT NULL);""",
         # Create user settings table
         """CREATE TABLE "user_settings" (user_id INTEGER PRIMARY KEY REFERENCES "users"(id));""",
         # Create pets table
         """CREATE TABLE "pets" (id SERIAL PRIMARY KEY, name VARCHAR(255), animal VARCHAR(255), breed VARCHAR(255), 
-        description VARCHAR(255), image_url VARCHAR(1000), isMissing BOOLEAN NOT NULL,  owner_id INTEGER REFERENCES "users"(id));""",
+        description VARCHAR(255), image_url VARCHAR(1000), isMissing BOOLEAN DEFAULT FALSE,  owner_id INTEGER REFERENCES "users"(id));""",
         # Create missing_reports table
         """CREATE TABLE "missing_reports" (id SERIAL PRIMARY KEY, pet_id INTEGER REFERENCES pets(id), author_id 
-        INTEGER REFERENCES "users"(id), date_time_of_creation TIMESTAMP NOT NULL, date_time TIMESTAMP NOT NULL, location_longitude FLOAT, location_latitude 
-        FLOAT, description VARCHAR(255), isActive BOOLEAN NOT NULL);""",
+        INTEGER REFERENCES "users"(id), date_time_of_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP, date_time TIMESTAMP NOT NULL, location_longitude FLOAT, location_latitude 
+        FLOAT, location_string VARCHAR(255), description VARCHAR(255), is_active BOOLEAN DEFAULT TRUE);""",
         # Create sightings table
         """CREATE TABLE "sightings" (id SERIAL PRIMARY KEY, missing_report_id INTEGER REFERENCES missing_reports(id), 
-        author_id INTEGER REFERENCES "users"(id), date_time_of_creation TIMESTAMP NOT NULL, animal VARCHAR(255), breed VARCHAR(255), date_time TIMESTAMP NOT NULL, location_longitude FLOAT, 
-        location_latitude FLOAT, image_url VARCHAR(255), description VARCHAR(255));""",
+        author_id INTEGER REFERENCES "users"(id), date_time_of_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP, animal VARCHAR(255), breed VARCHAR(255), date_time TIMESTAMP NOT NULL, location_longitude FLOAT, 
+        location_latitude FLOAT, location_string VARCHAR(255), image_url VARCHAR(255), description VARCHAR(255));""",
         # Create notification_type ENUM
         # TODO: add more notification types?
         """CREATE TYPE "notification_type" AS ENUM ('sighting', 'missing_report');""",
@@ -63,6 +62,9 @@ def create_tables(connection: psycopg2.extensions.connection):
         # Create users_notification_logs table
         """CREATE TABLE "users_notification_logs" (user_id INTEGER REFERENCES "users"(id), notification_id INTEGER 
         REFERENCES "notification_logs"(id));""",
+        # Create users_saved_sightings
+        """CREATE TABLE "users_saved_sightings" (saved_id SERIAL PRIMARY KEY, user_id INTEGER REFERENCES "users"(id),
+        sighting_id INTEGER REFERENCES "sightings"(id));""",
     ]
 
     for query in queries:
@@ -83,6 +85,8 @@ def drop_tables(connection: psycopg2.extensions.connection):
     cur = connection.cursor()
 
     queries = [
+        # Drop users_saved_sightings table
+        """DROP TABLE IF EXISTS users_saved_sightings;""",
         # Drop users_notification_logs table
         """DROP TABLE IF EXISTS users_notification_logs;""",
         # Drop notification_logs table
@@ -134,5 +138,9 @@ if __name__ == "__main__":
 
         # Drop tables if they exist
         drop_tables(connection=conn)
+
         # Create/recreate tables
         create_tables(connection=conn)
+
+        # Close connection
+        conn.close()

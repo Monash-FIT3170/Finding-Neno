@@ -107,7 +107,6 @@ def add_pet(
     breed: str, 
     description: str, 
     image_url: str, 
-    is_missing: bool,
     owner_id: int, 
     access_token: str,
 ):
@@ -132,11 +131,11 @@ def add_pet(
 
     cur = connection.cursor()
 
-    query = """INSERT INTO pets (name, animal, breed, description, image_url, ismissing, owner_id) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
+    query = """INSERT INTO pets (name, animal, breed, description, image_url, owner_id) VALUES (%s, %s, %s, %s, %s, %s);"""
 
     try:
         # Execute query
-        cur.execute(query, (name, animal, breed, description, image_url, is_missing, owner_id,))
+        cur.execute(query, (name, animal, breed, description, image_url, owner_id,))
         print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
