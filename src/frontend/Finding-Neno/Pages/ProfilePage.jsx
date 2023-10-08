@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import PetCard from "../components/PetCard";
 import { Checkbox } from "native-base";
 import { DeleteIcon } from "native-base";
-
+import DeleteUserModal from "../components/DeleteUserModal";
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 import pet, { selectPet } from "../store/pet";
@@ -608,6 +608,12 @@ export default function ProfilePage({ navigation: { navigate } }) {
               {editMode ? "SETTINGS" : "VIEW"}
             </Text>
           </TouchableOpacity>
+
+          <Button mb={3} onPress={() => setDeleteModalVisible(true)} backgroundColor={"red.600"}>
+              Delete Account
+          </Button>
+            
+          <DeleteUserModal visible={deleteModalVisible} setVisible={setDeleteModalVisible} />
 
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <HStack mt="6" justifyContent="flex-start" alignItems="center" marginBottom={2}>
