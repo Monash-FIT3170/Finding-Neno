@@ -63,8 +63,8 @@ def insert_sighting(connection) -> Tuple[str, int]:
     animal = json_data["animal"]
     breed = json_data["breed"]
     date_time_input = json_data["dateTime"]
-    hour, minute, day, month, year = separate_datetime(date_time_input)
-    date_time = datetime.datetime(year, month, day, hour, minute)
+    stripped_datetime = date_time_input[:-1] # strip the last character from the UTC string
+    date_obj = datetime.datetime.strptime(stripped_datetime, "%Y-%m-%dT%H:%M:%S.%f")
 
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
@@ -73,7 +73,7 @@ def insert_sighting(connection) -> Tuple[str, int]:
     description = json_data["description"]
 
 
-    result = insert_sighting_to_database(connection, missing_report_id, author_id, animal, breed, date_time, location_longitude, location_latitude, location_string, imageUrl, description, user_id, access_token)
+    result = insert_sighting_to_database(connection, missing_report_id, author_id, animal, breed, date_obj, location_longitude, location_latitude, location_string, imageUrl, description, user_id, access_token)
 
     if result is False:
         return "User does not have access", 401
@@ -91,8 +91,8 @@ def insert_missing_report(connection) -> Tuple[str, int]:
     user_id = request.headers["User-ID"]
 
     last_seen_input = json_data["lastSeenDateTime"]
-    hour, minute, day, month, year = separate_datetime(last_seen_input)
-    last_seen = datetime.datetime(year, month, day, hour, minute)
+    stripped_datetime = last_seen_input[:-1] # strip the last character from the UTC string
+    last_seen = datetime.datetime.strptime(stripped_datetime, "%Y-%m-%dT%H:%M:%S.%f")
 
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
@@ -120,8 +120,8 @@ def update_missing_report(connection) -> Tuple[str, int]:
     user_id = request.headers["User-ID"]
 
     last_seen_input = json_data["lastSeen"]
-    hour, minute, day, month, year = separate_datetime(last_seen_input)
-    last_seen = datetime.datetime(year, month, day, hour, minute)
+    stripped_datetime = last_seen_input[:-1] # strip the last character from the UTC string
+    last_seen = datetime.datetime.strptime(stripped_datetime, "%Y-%m-%dT%H:%M:%S.%f")
 
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
@@ -164,17 +164,6 @@ def archive_missing_report(connection) -> Tuple[str, int]:
     else:
         return "Success", 201
 
-def separate_datetime(datetime: str) -> Tuple[int, int, int, int, int]:
-    """
-    This function takes a datetime (HH:MM dd/mm/yyyy) string and separates the hour, minute, day, month,
-    and year into individual components. 
-    """
-    time, date = datetime.split(" ")
-
-    hour, minute = time.split(":")
-    day, month, year = date.split("/")
-
-    return int(hour), int(minute), int(day), int(month), int(year)
 
 def retrieve_missing_reports(connection, author_id) -> Tuple[str, int]:
     """
