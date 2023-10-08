@@ -8,6 +8,7 @@ import marker from '../../assets/marker_icon.png';
 import axios from 'axios';
 
 import { useSelector } from "react-redux";
+import { Divider } from 'native-base';
 
 
 function LocationNotifications() {
@@ -251,7 +252,7 @@ function LocationNotifications() {
         </TouchableOpacity>
         </HStack>
 
-        <HStack justifyContent="space-between" marginBottom='-5%'>
+        <HStack justifyContent="space-between" marginBottom='4%'>
         <Text fontSize="md" marginTop={1}>Possible Sightings Alert</Text>
         <Switch
         onToggle={togglePossibleNotifications}
@@ -260,8 +261,8 @@ function LocationNotifications() {
         />
         </HStack>
 
-        <Input variant="underlined" isDisabled borderBottomWidth="3%" marginBottom='3%'/>
-
+      <Divider marginBottom="4%"/>
+      
         <HStack justifyContent="space-between" marginBottom={1}>
         <Text fontSize="md" marginTop={1}>Location Notifications</Text>
         <Switch
