@@ -14,14 +14,13 @@ function SightingsList({sightings, onRefresh, columns, emptyText}) {
 
     return (
         <FlatList width='100%' numColumns={columns} style={{ backgroundColor: 'transparent' }} 
-            contentContainerStyle={{ alignItems: 'center', paddingVertical: 10 }}
             data={sightings}
             renderItem={({ item }) => <Sighting sighting={item} refresh={onRefreshList}/>}
             keyExtractor={item => `${item[0]}`}
             onRefresh={onRefreshList}
             refreshing={refreshing}
-            ListEmptyComponent={<Text style={{ paddingVertical: '5%', fontSize: 15, fontWeight: '700' }}>{emptyText}</Text>}
-            ListFooterComponent={<Text style={{ paddingVertical: '5%', fontSize: 15, fontWeight: '700' }}>Last updated {formatDateTimeDisplay(new Date())}</Text>}
+            ListEmptyComponent={<Text style={{ paddingVertical: '5%', fontSize: 15, fontWeight: '700', alignSelf: 'center'}}>{emptyText}</Text>}
+            ListFooterComponent={<Text style={{ paddingVertical: '5%', fontSize: 15, fontWeight: '700' , alignSelf: 'center'}}>Last updated {formatDateTimeDisplay(new Date())}</Text>}
         />
     )
 }
