@@ -6,18 +6,19 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
 import { validDateTime, validateCoordinates } from "./validation"
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import axios from 'axios';
 import { Image, StyleSheet, View } from 'react-native';
+
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
-import marker from '../assets/marker_icon.png';
 
 import { formatDatetime } from "./shared"
 
 const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
 
-	const { API_URL } = useSelector((state) => state.api)
+	const { IP, PORT } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
 	const [dropdownOptions, setDropdownOptions] = useState([]);
@@ -29,14 +30,12 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	const [showPicker, setShowPicker] = useState(false);
 	const toast = useToast();
 
-
-
 	useEffect(() => {
 		// Simulating asynchronous data fetching
 		// ownerId = 2
 		const fetchOwnerPets = async () => {
 			try {
-				const url = `${API_URL}/get_owner_pets?owner_id=${USER_ID}`;
+				const url = `${IP}:${PORT}/get_owner_pets?owner_id=${USER_ID}`;
 				const response = await fetch(url, {
 					method: "GET",
 					headers: {
@@ -73,16 +72,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		let isValid = await validateDetails(formData);
 
 		if (isValid) {
-			const url = `${API_URL}/insert_missing_report`;
-
-			const missingReport = {
-				authorId: USER_ID,
-				missingPetId: formData.missingPetId,
-				description: formData.description,
-				lastSeenDateTime: formatDatetime(selectedDatetime),
-				dateTimeOfCreation: formatDatetime(new Date()),
-				lastLocation: `${coordinates.longitude}, ${coordinates.latitude}`,
-			}
+			const url = `${IP}:${PORT}/insert_missing_report`;
 
 			await fetch(url, {
 				method: "POST",
@@ -91,7 +81,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 					'Authorization': `Bearer ${ACCESS_TOKEN}`,
 					'User-ID': USER_ID
 				},
-				body: JSON.stringify(missingReport),
+				body: JSON.stringify(formData),
 			})
 				.then((res) => {
 					if (res.status == 201) {
@@ -100,7 +90,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 							description: "Your report has been added!",
 							placement: "top"
 						})
-
+						
 						// navigation.navigate("DashboardPage");
 
 						// Pop to previous screen
@@ -119,11 +109,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 					setIsButtonDisabled(false);
 					alert(error)
 				});
-		}
-		else {
-			setButtonText("Create report")
-			setIsButtonDisabled(false);
-		}
+		};
 	}
 
 	const validateDetails = async (formData) => {
@@ -134,9 +120,9 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			foundErrors = { ...foundErrors, missingPetId: 'Please select a pet' }
 		}
 
-		// if (!formData.lastLocation || formData.lastLocation == "") {
-		// 	foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
-		// }
+		if (!formData.lastLocation || formData.lastLocation == "") {
+			foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
+		} 
 
 		if (formData.description.length > 500) {
 			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
@@ -145,7 +131,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		const exists = await missingReportExists(formData.missingPetId);
 		console.log("does the pet report exists " + exists)
 
-		if (exists) {
+		if(exists){
 			console.log("pet report exists")
 			foundErrors = { ...foundErrors, missingPetId: 'Pet Report already exists' }
 		}
@@ -161,7 +147,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	const missingReportExists = async (pet_id) => {
 		try {
 			const petId = pet_id; // Replace with the actual pet ID you want to retrieve reports for
-			const response = await fetch(`${API_URL}/get_reports_by_pet?pet_id=${petId}`, {
+			const response = await fetch(`${IP}:${PORT}/get_reports_by_pet?pet_id=${petId}`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${ACCESS_TOKEN}`,
@@ -169,14 +155,14 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 					'Content-Type': 'application/json',
 				},
 			});
-
+	
 			if (response.ok) {
 				const data = await response.json();
 				console.log('Reports for pet:', data);
 
 				outcome = data[0]
-
-				if (outcome.length === 0) {
+	
+				if (outcome === null) {
 					console.log('Pet Report doesnt exist');
 					return false;
 				} else {
@@ -218,53 +204,52 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 	//map box for last known location
 	// Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
-	const [mapRegion, setMapRegion] = useState({
-		latitude: -37.8136,
-		longitude: 144.9631,
-		latitudeDelta: 0.03,
-		longitudeDelta: 0.03,
-	})
+		const [mapRegion, setMapRegion] = useState({
+			latitude: -37.8136,
+			longitude: 144.9631,
+			latitudeDelta: 0.6,
+			longitudeDelta: 0.6,
+		})
 
-	// Retrieves coordinates of current centre of map when map is moved around
-	const handleRegionChange = (region) => {
-		setMapRegion(region);
-        setCoordinates({ longitude: region.longitude, latitude: region.latitude });
-		console.log(coordinates)
-    }
+    // Retrieves coordinates of current centre of map when map is moved around
+    const handleRegionChange = (region) => {
+        setMapRegion(region);
+    }	
 
-    const [address, setAddress] = useState('');
-    const [coordinates, setCoordinates] = useState({longitude: mapRegion.longitude, latitude: mapRegion.latitude});
+	const [address, setAddress] = useState('');
+	const [coordinates, setCoordinates] = useState(null);
 	const mapViewRef = useRef(null);
 
 	const handleSearch = async () => {
 		try {
-			const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
-
-			const response = await fetch(apiUrl);
-			if (response.data.length > 0) {
-				const firstResult = response.data[0];
-				setCoordinates({
-					latitude: parseFloat(firstResult.lat),
-					longitude: parseFloat(firstResult.lon),
-				});
-				setFormData({
-					...formData,
-					lastLocation: `${parseFloat(firstResult.lon)}, ${parseFloat(firstResult.lat)}`,
-				});
-				// You can animate to the new coordinates here if you want
-				mapViewRef.current.animateToRegion({
-					latitude: parseFloat(firstResult.lat),
-					longitude: parseFloat(firstResult.lon),
-					longitudeDelta: 0.0015,
-				});
-			} else {
-				setCoordinates(null);
-			}
-		} catch (error) {
-			console.error('Error fetching data:', error);
+		  const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
+	
+		  const response = await axios.get(apiUrl);
+		  if (response.data.length > 0) {
+			const firstResult = response.data[0];
+			setCoordinates({
+			  latitude: parseFloat(firstResult.lat),
+			  longitude: parseFloat(firstResult.lon),
+			});
+			setFormData({
+                ...formData,
+                lastLocation: `${parseFloat(firstResult.lon)}, ${parseFloat(firstResult.lat)}`,
+            });
+			// You can animate to the new coordinates here if you want
+			mapViewRef.current.animateToRegion({
+			  latitude: parseFloat(firstResult.lat),
+			  longitude: parseFloat(firstResult.lon),
+			  latitudeDelta: 0.03,
+			  longitudeDelta: 0.05,
+			});
+		  } else {
 			setCoordinates(null);
+		  }
+		} catch (error) {
+		  console.error('Error fetching data:', error);
+		  setCoordinates(null);
 		}
-	};
+	  };
 
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
@@ -292,32 +277,29 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 								<FormControl>
 									<FormControl.Label>Last Seen</FormControl.Label>
-									<Button onPress={openPicker}>{`${selectedDatetime.toDateString()} ${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')}`}</Button>
+									<Button onPress={openPicker}>{`${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')} ${selectedDatetime.toDateString()}`}</Button>
 									<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
 										onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 								</FormControl>
 
 								<FormControl>
 									<FormControl.Label>Last Known Location</FormControl.Label>
-									<Box height={150} marginBottom={2}>
-										<MapView
-											ref={mapViewRef}
-											provider={PROVIDER_GOOGLE}
-											style={styles.map}
-											initialRegion={mapRegion}
-											onRegionChange={handleRegionChange}
-										>
-										</MapView>
-
-										<View style={styles.markerView}>
-											<Image source={marker} style={styles.marker}></Image>
-										</View>
-									</Box>
 									<Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
 									{coordinates === null && <FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
-								</FormControl>
+								</FormControl> 
 
-								<Button title="Search" onPress={handleSearch}>Set Adress</Button>
+								<Button title="Search" onPress={handleSearch}>Search</Button>
+
+								<Box height={150}>
+								<MapView
+									ref={mapViewRef}
+									provider={PROVIDER_GOOGLE}
+									style={styles.map}
+									initialRegion={mapRegion}
+								>
+									{coordinates !== null && <Marker coordinate={coordinates} />}
+								</MapView>
+								</Box>
 
 								<FormControl isInvalid={'description' in errors}>
 									<FormControl.Label>Additional Info</FormControl.Label>
@@ -339,32 +321,21 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 };
 
 const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'flex-end',
-		alignItems: 'center'
-	},
-	map: {
-		...StyleSheet.absoluteFillObject,
-	},
-	text: {
-		fontSize: 20
-	},
-	button: {
-		borderRadius: 20,
-		backgroundColor: 'blue',
-	},
-	markerView: {
-		top: '50%',
-		left: '50%',
-		marginLeft: -24,
-		marginTop: -44,
-		position: 'absolute',
-	},
-	marker: {
-		height: 48,
-		width: 48
-	}
+    container: {
+        flex: 1,
+        justifyContent: 'flex-end',
+        alignItems: 'center'
+    },
+    map: {
+        ...StyleSheet.absoluteFillObject,
+    },
+    text: {
+        fontSize: 20
+    },
+    button: {
+        borderRadius: 20,
+        backgroundColor: 'blue',
+    }
 });
 
 

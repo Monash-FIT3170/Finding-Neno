@@ -4,7 +4,7 @@ import { Image, Text, Box, Button } from 'native-base';
 import { useSelector, useDispatch } from 'react-redux';
 
 const PetCard = ({color, pet, onClick, editMode}) => {
-  const {API_URL} = useSelector((state) => state.api)
+  const {IP, PORT} = useSelector((state) => state.api)
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
   const Color = {
@@ -53,7 +53,7 @@ const PetCard = ({color, pet, onClick, editMode}) => {
     console.log("Updating the pet status")
     try {
         petId = pet.id;
-        const response = await fetch(`${API_URL}/update_missing_status`, {
+        const response = await fetch(`${IP}:${PORT}/update_missing_status`, {
             method: 'PUT',
             headers: {
                 Authorization: `Bearer ${ACCESS_TOKEN}`,
@@ -80,7 +80,7 @@ const PetCard = ({color, pet, onClick, editMode}) => {
 const fetchMissingReport = async () => {
   try {
     petId = pet.id;
-    const response = await fetch(`${API_URL}/get_reports_by_pet?pet_id=${pet.id}`, {
+    const response = await fetch(`${IP}:${PORT}/get_reports_by_pet?pet_id=${pet.id}`, {
       method: 'GET',
       headers: {
           Authorization: `Bearer ${ACCESS_TOKEN}`,
@@ -111,7 +111,7 @@ const updateMissingReport = async (report) => {
   report_id = report[0];
   console.log(report_id)
   try {
-    const response = await fetch(`${API_URL}/update_report_active_status`, {
+    const response = await fetch(`${IP}:${PORT}/update_report_active_status`, {
       method: 'PUT',
       headers: {
         Authorization: `Bearer ${ACCESS_TOKEN}`,

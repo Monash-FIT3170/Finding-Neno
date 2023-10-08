@@ -10,7 +10,8 @@ import store from "../store/store";
 
 
 const ForgotPasswordPage = () => {
-	const { API_URL } = useSelector((state) => state.api);
+	const IP = useSelector((state) => state.IP);
+	const PORT = useSelector((state) => state.PORT);
 	const [formData, setFormData] = useState({});
 	const [errors, setErrors] = useState({});
 	const [buttonText, setButtonText] = useState("Send Reset Code")

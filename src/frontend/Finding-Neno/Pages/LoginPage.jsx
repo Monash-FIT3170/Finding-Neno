@@ -4,12 +4,13 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 
 import { Color } from "../components/atomic/Theme";
-import {validEmail, validPhoneNumber} from "./validation"
+import {validEmail} from "./validation"
 import { useState } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 import { login } from "../store/user";
+
 
 const LoginPage = () => {
 	const [formData, setFormData] = useState({});
@@ -19,7 +20,7 @@ const LoginPage = () => {
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
 	const dispatch = useDispatch();
-	const { API_URL } = useSelector((state) => state.api);
+	const { IP, PORT } = useSelector((state) => state.api);
 
 	const navigation = useNavigation();
 	
@@ -29,7 +30,7 @@ const LoginPage = () => {
 
 		let isValid = validateDetails(formData);
 		if (isValid) {
-			const url = `${API_URL}/login`;
+			const url = `${IP}:${PORT}/login`;
 			fetch(url, {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
@@ -46,8 +47,8 @@ const LoginPage = () => {
 					
 				} else {
 					setErrors({
-						username: 'Email / phone number or password is invalid',
-						password: 'Email / phone number or password is invalid'
+						email: 'Email or password is invalid',
+						password: 'Email or password is invalid'
 					});
 				}
 			})
@@ -62,10 +63,10 @@ const LoginPage = () => {
 		// Validates details. If details are valid, send formData object to onLoginPress.
 		foundErrors = {};
 	
-		if (!formData.username) {
-			foundErrors = {...foundErrors, username: 'Email or phone number is required'}
-		} else if (!validEmail(formData.username) && !validPhoneNumber(formData.username)) {
-			foundErrors = {...foundErrors, username: 'Email or phone number is invalid'}
+		if (!formData.email) {
+			foundErrors = {...foundErrors, email: 'Email is required'}
+		} else if (!validEmail(formData.email)) {
+			foundErrors = {...foundErrors, email: 'Email is invalid'}
 		}
 		
 		if (!formData.password || formData.password == "") {
@@ -87,10 +88,10 @@ const LoginPage = () => {
 						Welcome to Finding Neno!
 						</Heading>
 						<VStack space={3} mt="5">
-							<FormControl isInvalid={'username' in errors}>
-								<FormControl.Label>Email / Phone Number</FormControl.Label>
-								<Input onChangeText={value => setFormData({...formData, username: value})} />
-								{'username' in errors && <FormControl.ErrorMessage>{errors.username}</FormControl.ErrorMessage>}
+							<FormControl isInvalid={'email' in errors}>
+								<FormControl.Label>Email</FormControl.Label>
+								<Input onChangeText={value => setFormData({...formData, email: value})} />
+								{'email' in errors && <FormControl.ErrorMessage>{errors.email}</FormControl.ErrorMessage>}
 							</FormControl>
 						
 							<FormControl isInvalid={'password' in errors}>

@@ -1,6 +1,13 @@
 # Ignore all files containing environment variables
 .env*
-.idea*
+/.idea/
+.idea/Finding-Neno.iml
+.idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/workspace.xml
+package-lock.json
+package.json
 **/.DS_Store
 __pycache__/
 

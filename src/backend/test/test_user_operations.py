@@ -1,7 +1,7 @@
 import subprocess
 import pytest
 
-from db.users_operations import insert_user_to_database, check_user_login_details
+from db.users_operations import insert_user_to_database, check_user_exists_in_database
 
 setup_db_path = "../db/setup_db.py"
 
@@ -39,9 +39,9 @@ def test_finding_user():
 
     conn = get_connection()
 
-    assert check_user_login_details(conn, "jonathanbanks@example.com", "password1") is True  # Email and pass match
-    assert check_user_login_details(conn, "jonathanbanks@example.com", "password2") is False  # Email match, pass doesn't
-    assert check_user_login_details(conn, "cenajohn@example.com", "password2") is False  # Email doesn't match
+    assert check_user_exists_in_database(conn, "jonathanbanks@example.com", "password1") is True  # Email and pass match
+    assert check_user_exists_in_database(conn, "jonathanbanks@example.com", "password2") is False  # Email match, pass doesn't
+    assert check_user_exists_in_database(conn, "cenajohn@example.com", "password2") is False  # Email doesn't match
 
 
 # TODO: Something I stole from chatgpt, please remove if using something else

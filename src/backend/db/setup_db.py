@@ -29,6 +29,7 @@ To run this script, run the following command from the root directory:
     python src/backend/db/setup_db.py .env
 """
 
+
 def create_tables(connection: psycopg2.extensions.connection):
     """
     Sets up the database, including tables, keys and foreign key constraints
@@ -62,9 +63,6 @@ def create_tables(connection: psycopg2.extensions.connection):
         # Create users_notification_logs table
         """CREATE TABLE "users_notification_logs" (user_id INTEGER REFERENCES "users"(id), notification_id INTEGER 
         REFERENCES "notification_logs"(id));""",
-        # Create users_saved_sightings
-        """CREATE TABLE "users_saved_sightings" (saved_id SERIAL PRIMARY KEY, user_id INTEGER REFERENCES "users"(id),
-        sighting_id INTEGER REFERENCES "sightings"(id));""",
     ]
 
     for query in queries:
@@ -85,8 +83,6 @@ def drop_tables(connection: psycopg2.extensions.connection):
     cur = connection.cursor()
 
     queries = [
-        # Drop users_saved_sightings table
-        """DROP TABLE IF EXISTS users_saved_sightings;""",
         # Drop users_notification_logs table
         """DROP TABLE IF EXISTS users_notification_logs;""",
         # Drop notification_logs table
@@ -152,10 +148,6 @@ if __name__ == "__main__":
 
         # Drop tables if they exist
         drop_tables(connection=conn)
-
         # Create/recreate tables
         create_tables(connection=conn)
         setup_postGIS(connection=conn)
-
-        # Close connection
-        conn.close()

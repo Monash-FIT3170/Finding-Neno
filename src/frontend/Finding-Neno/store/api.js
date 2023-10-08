@@ -1,15 +1,21 @@
 import { createSlice } from "@reduxjs/toolkit";
+import {IP, PORT} from '@env'
 
 const initialState = {
-    API_URL: process.env.API_URL,
+    IP: IP,
+    PORT: PORT,
 }
+
+console.log("IP: ", IP);
 
 export const apiSlice = createSlice({
     name: "api",
     initialState,
     reducers: {
         updateConnection: (state, {payload}) => {
-            state.API_URL = payload.API_URL;
+            state.IP = payload.IP;
+            state.PORT = payload.PORT;
+        
         },
     },
 });
