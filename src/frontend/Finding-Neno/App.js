@@ -197,6 +197,7 @@ function ReportStackNavigator() {
 		<Stack.Navigator initialRouteName="ReportPage">
 			<Stack.Screen name="Report Page" component={ReportPage} />
 			<Stack.Screen name="New Report Page" component={NewReportPage} />
+			<Stack.Screen name="New Pet Page" component={NewPetPage} />
 		</Stack.Navigator>
 	)
 }

@@ -267,6 +267,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 										selectedValue={formData.missingPetId}
 										onValueChange={(value) => setFormData({ ...formData, missingPetId: value })}>
 										<Select.Item label="Select a pet" value="" disabled hidden />
+										<Select.Item label="Add a pet" value="" onPress={() => {navigate("New Pet Page"); closePicker();}}/>
 										{dropdownOptions.map((option, index) => (
 											<Select.Item key={index} label={option[0]} value={option[1]} />
 										))}
