@@ -22,7 +22,7 @@ export default function MapPage() {
 	// const windowWidth = Dimensions.get('window').width; 
 	// const windowHeight = Dimensions.get('window').height;
 	const navigateToReport = (reportId) => {
-		navigation.navigate('Report Page', { reportId });
+		navigation.navigate('ReportPage', { reportId });
 	  };
 
 	const onMarkerPress = (report) => {
