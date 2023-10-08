@@ -32,8 +32,8 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
     const [sightingData, setSightingData] = useState({
         authorId: userId,
         missingReportId: report[0],
-        animal: report[7],
-        breed: report[8],
+        animal: report[8],
+        breed: report[9],
         imageUrl: null,
         dateTime: formatDatetime(new Date()),
         lastLocation: '',
@@ -107,8 +107,8 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
             const sighting = {
                 authorId: USER_ID,
                 missingReportId: report[0],
-                animal: report[7],
-                breed: report[8],
+                animal: report[8],
+                breed: report[9],
                 imageUrl: sightingImage,
                 dateTime: sightingData.dateTime,
                 description: sightingData.description,

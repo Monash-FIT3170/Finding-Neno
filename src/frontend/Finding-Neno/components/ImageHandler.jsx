@@ -88,29 +88,29 @@ const ImageHandler = ({ image, setImage, setIsButtonDisabled }) => {
             },
             body: formData,
         })
-            .then(res => res.json())
-            .then(res => {
-                if (res.success === true) {
-                    console.log(`Image successfully uploaded: ${res.data.link}}`);
-                    setImage(res.data.link.toString());
-                } else {
-                    toast.show({
-                        description: "Image failed to upload. Please try again.",
-                        placement: "top"
-                    })
-                    console.log("Image failed to upload")
-                    // console.log("Image failed to upload - setting default image");
-                    // setImage(DEFAULT_IMAGE);
-                }
-            })
-            .catch(err => {
+        .then(res => res.json())
+        .then(res => {
+            if (res.success === true) {
+                console.log(`Image successfully uploaded: ${res.data.link}}`);
+                setImage(res.data.link.toString());
+            } else {
                 toast.show({
                     description: "Image failed to upload. Please try again.",
                     placement: "top"
                 })
-                console.log("Image failed to upload:", err);
+                console.log("Image failed to upload")
+                // console.log("Image failed to upload - setting default image");
                 // setImage(DEFAULT_IMAGE);
-            });
+            }
+        })
+        .catch(err => {
+            toast.show({
+                description: "Image failed to upload. Please try again.",
+                placement: "top"
+            })
+            console.log("Image failed to upload:", err);
+            // setImage(DEFAULT_IMAGE);
+        });
 
 
         setIsUploading(false);

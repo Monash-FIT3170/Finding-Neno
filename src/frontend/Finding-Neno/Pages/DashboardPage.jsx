@@ -1,5 +1,5 @@
 import { useNavigation } from '@react-navigation/native';
-import { useToast, View } from "native-base";
+import { useTheme, useToast, View } from "native-base";
 import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
@@ -21,11 +21,10 @@ const DashboardPage = () => {
 	const navigation = useNavigation();
 	const toast = useToast();
 	const isFocused = useIsFocused();
+	const { colors } = useTheme();
 
 	const [reports, setReports] = useState([]);
 	const [allSightings, setAllSightings] = useState([]);
-	const [reportCards, setReportCards] = useState('');
-	const [sightingCards, setSightingCards] = useState('');
 	const [sightingData, setSightingData] = useState({ authorId: USER_ID });
 	const [sightingImage, setSightingImage] = useState(null);
 	const [initialReportsLoaded, setInitialReportsLoaded] = useState(false);
@@ -122,14 +121,12 @@ const DashboardPage = () => {
 		setSightingData({ ...sightingData, image_url: sightingImage })
 	}, [sightingImage]);
 
-	const [tabBarRendered, setTabBarRendered] = useState(false);
-
 	const renderTabBar = (props) => (
 		<TabBar {...props} 
 			renderLabel={({ route, focused, color }) => (
 				// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
 				<IconText iconName={route.icon} text={route.title} textColor={route.color} iconColor={route.color} iconSize={24} fontWeight='bold' />)} 
-			style={{ backgroundColor: 'white' }}
+			style={{ backgroundColor: colors.background }}
 			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, borderRadius: 1.5, width: '15%', left: '17.5%' }} 
 		/>
 	);

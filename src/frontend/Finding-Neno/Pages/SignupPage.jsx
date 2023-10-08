@@ -1,7 +1,8 @@
-import { Box, Button, Center, FormControl, Heading, HStack, Icon, Input, KeyboardAvoidingView, Link, VStack, Pressable, Text, Alert, Modal, WarningOutlineIcon } from "native-base";
-import { StyleSheet, TouchableWithoutFeedback } from "react-native"
+import { Box, Center, FormControl, Heading, HStack, Icon, Input, KeyboardAvoidingView, Link, VStack, Pressable, Text, Alert, Modal, WarningOutlineIcon, useToast } from "native-base";
+import { SafeAreaView, StyleSheet } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons'
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { useNavigation } from '@react-navigation/native';
+import { Button } from "react-native-paper";
 
 import { Color } from "../components/atomic/Theme";
 import { validEmail, validPhoneNumber, validatePassword } from "./validation";
@@ -22,11 +23,11 @@ const SignupPage = () => {
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 	const [showAccountExistsModal,setShowAccountExistsModal] = useState(false);
 
+	const toast = useToast();
+
 	const {API_URL} = useSelector((state) => state.api)
 
 	const navigation = useNavigation();
-
-	console.log("SignupPage");
 
 	const onSignupPress = async () => {
 		setIsButtonDisabled(true);
@@ -43,9 +44,14 @@ const SignupPage = () => {
 			})
 
 			if (res.status == 201) {
-				setIsRegistered(true);
-			} else if (res.status == 409) {
-				setShowAccountExistsModal(true)
+				toast.show({
+					title: "Account Created",
+					description: "Your account has been created successfully!",
+					placement: "top",
+					alignItems: "center"
+				})
+				
+				navigation.navigate("Login");
 			}
 		}
 
@@ -99,57 +105,14 @@ const SignupPage = () => {
 
 	const redirectToLogin = () => {
 		setShowAccountExistsModal(false);
-		navigation.navigate("Login");
 	}
-
-	const keyboardVerticalOffset = Platform.OS === 'ios' ? 170 : 0
 
 	return (
 		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}
             resetScrollToCoords={{ x: 0, y: 0 }}
-            scrollEnabled={true}
-            bounces={false}>
+            scrollEnabled={true} enableAutomaticScroll={true} extraScrollHeight={30}>
 			<StatusBar style="auto" /><Center w="100%">
-				<Box safeArea p="2" py="8" w="90%" maxW="290">
-					{
-						isRegistered ? (
-							// TODO: Make this into a component called MyAlert, with headerText, bodyText, link, onLinkPress as props 
-							// this will make this file a little less messy 
-							<Alert w="100%" status="success">
-								<VStack space={1} flexShrink={1} w="100%" alignItems="center">
-									<Alert.Icon size="md" />
-									<Text fontSize="md" fontWeight="medium" _dark={{
-										color: "coolGray.800"
-									}}>
-										Thanks for signing up!
-									</Text>
-
-									<HStack>
-										<Link
-											_text={{
-												color: Color.NENO_BLUE,
-												fontWeight: "medium",
-												fontSize: "sm",
-											}}
-											onPress={() => {
-												navigation.navigate("Login");
-											}}
-										>
-											Log In
-										</Link>
-										<Text
-											fontSize="sm"
-											color="coolGray.600"
-											_dark={{
-												color: "warmGray.200",
-											}}
-										>
-											{" "}to begin using Finding Neno!
-										</Text>
-									</HStack>
-								</VStack>
-							</Alert>
-						) : (
+				<Box safeArea p="2" py="8" w="90%" maxW="350">
 							<VStack>
 								<Heading
 									size="lg"
@@ -197,7 +160,7 @@ const SignupPage = () => {
 										{'confirmPassword' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.confirmPassword}</FormControl.ErrorMessage>}
 									</FormControl>
 
-									<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onSignupPress}>
+									<Button buttonColor={Color.NENO_BLUE} mode="contained" style={{marginTop: 15}} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onSignupPress}>
 										{buttonText}
 									</Button>
 
@@ -222,9 +185,8 @@ const SignupPage = () => {
 									</HStack>
 								</VStack>
 							</VStack>
-						)}
 				</Box>
-			</Center>
+				</Center>
 		</KeyboardAwareScrollView>
 		// </>
 		// </TouchableWithoutFeedback>

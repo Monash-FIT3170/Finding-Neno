@@ -1,10 +1,10 @@
 import { NativeBaseProvider, Box } from "native-base";
 
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { NavigationContainer, useNavigation, DefaultTheme, DarkTheme } from '@react-navigation/native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { Text } from 'react-native';
+import { Text, useColorScheme } from 'react-native';
 
 import { Provider, connect, useSelector, useDispatch } from "react-redux";
 import store from "./store/store";
@@ -27,16 +27,46 @@ import NewReportPage from "./Pages/NewReportPage";
 import { Ionicons } from '@expo/vector-icons'; // Import the desired icon library
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from "react";
+import { Color } from "./components/atomic/Theme";
 
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
 
+
+const FindingNenoLightTheme = {
+	dark: false,
+	colors: {
+		...DefaultTheme.colors,
+		background: 'white',
+		primary: Color.NENO_BLUE,
+		secondary: Color.FAINT_NENO_BLUE,
+		card: 'white',
+		text: 'black',
+		border: 'black',
+	},
+}
+
+const FindingNenoDarkTheme = {
+	dark: true,
+	colors: {
+		...DarkTheme.colors,
+		background: 'black',
+		primary: Color.NENO_BLUE,
+		secondary: Color.FAINT_NENO_BLUE,
+		card: 'black',
+		text: 'white',
+		border: 'white',
+	},
+}
+
 export default function App() {
+	const scheme = useColorScheme();
+	console.log(scheme)
 	return (
 		<NativeBaseProvider>
 			<Provider store={store}>
-				<NavigationContainer>
+				<NavigationContainer theme={scheme === 'dark' ? FindingNenoDarkTheme : FindingNenoLightTheme}>
 					<MainNavigator />
 				</NavigationContainer>
 			</Provider>
@@ -107,7 +137,7 @@ function MainNavigator() {
 				headerShown: false
 			}} />
 			<Stack.Screen name="Signup" component={SignupPage}
-				initialParams={{ API_URL }} />
+				initialParams={{ API_URL }} options={{ title: "" }}/>
 			<Stack.Screen name="ForgotPassword" component={ForgotPasswordPage}
 				initialParams={{ API_URL }} />
 			<Stack.Screen name="PasswordReset" component={PasswordResetPage}
@@ -179,8 +209,8 @@ function DashboardStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="DashboardPage">
 			<Stack.Screen name="Dashboard Page" component={DashboardPage} options={{ title: "Dashboard" }} />
-			<Stack.Screen name="New Missing Report" component={NewReportPage} />
-			<Stack.Screen name="New Sighting" component={NewSightingPage} />
+			<Stack.Screen name="New Missing Report" component={NewReportPage} options={{ title: "" }}/>
+			<Stack.Screen name="New Sighting" component={NewSightingPage} options={{ title: "" }}/>
 		</Stack.Navigator>
 	)
 }
@@ -189,8 +219,8 @@ function MapStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="MapPage">
 			<Stack.Screen name="Map Page" component={MapPage} options={{ title: "Map" }} />
-			<Stack.Screen name="New Missing Report" component={NewReportPage} />
-			<Stack.Screen name="New Sighting" component={NewSightingPage} />
+			<Stack.Screen name="New Missing Report" component={NewReportPage} options={{ title: "" }}/>
+			<Stack.Screen name="New Sighting" component={NewSightingPage} options={{ title: "" }}/>
 		</Stack.Navigator>
 	)
 }
@@ -199,8 +229,8 @@ function ReportStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="ReportsPage">
 			<Stack.Screen name="Reports Page" component={ReportsPage} options={{ title: "Reports" }} />
-			<Stack.Screen name="New Missing Report" component={NewReportPage} />
-			<Stack.Screen name="New Sighting" component={NewSightingPage} />
+			<Stack.Screen name="New Missing Report" component={NewReportPage} options={{ title: "" }}/>
+			<Stack.Screen name="New Sighting" component={NewSightingPage} options={{ title: "" }}/>
 		</Stack.Navigator>
 	)
 }
@@ -209,8 +239,8 @@ function SightingsStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="SightingsPage">
 			<Stack.Screen name="Sightings Page"  component={SightingsPage} options={{ title: "Sightings" }} />
-			<Stack.Screen name="New Missing Report" component={NewReportPage} />
-			<Stack.Screen name="New Sighting" component={NewSightingPage} />
+			<Stack.Screen name="New Missing Report" component={NewReportPage} options={{ title: "" }}/>
+			<Stack.Screen name="New Sighting" component={NewSightingPage} options={{ title: "" }}/>
 		</Stack.Navigator>
 	)
 }

@@ -205,7 +205,9 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	});
 
 	return (
-		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}>
+		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}
+            resetScrollToCoords={{ x: 0, y: 0 }}
+            scrollEnabled={true} enableAutomaticScroll={true} extraScrollHeight={30}>
 			<StatusBar style="auto" />
 			<SafeAreaView style={{ flex: 1, marginHorizontal: "10%" }}>
 				<VStack>
@@ -241,8 +243,8 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 						</FormControl>
 
 						<FormControl isInvalid={'description' in errors}>
-							<FormControl.Label>Additional Info</FormControl.Label>
-							<Input size="lg" onChangeText={value => setFormData({ ...formData, description: value })} />
+							<FormControl.Label>Description</FormControl.Label>
+							<Input size="lg" placeholder='Additional info' onChangeText={value => setFormData({ ...formData, description: value })} />
 							{'description' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.description}</FormControl.ErrorMessage>}
 						</FormControl>
 
