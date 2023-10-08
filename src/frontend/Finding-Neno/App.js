@@ -38,7 +38,7 @@ const FindingNenoLightTheme = {
 	dark: false,
 	colors: {
 		...DefaultTheme.colors,
-		background: 'white',
+		background: 'lightgray',
 		primary: Color.NENO_BLUE,
 		secondary: Color.FAINT_NENO_BLUE,
 		card: 'white',
