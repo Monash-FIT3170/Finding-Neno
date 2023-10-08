@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import datetime
 from typing import Tuple, Dict, Any
+from get_suburb import get_suburb
 
 file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
@@ -11,6 +12,7 @@ sys.path.append(str(package_root_directory))
 
 from db.authentication import verify_access_token
 from db.users_operations import *
+from db.delete_user import delete_all_user_data_from_database
 from db.pets import get_pet
 from api.notification_bodies import generate_email_body_sighting, generate_email_missing_report, generate_email_potential_sighting
 
@@ -39,6 +41,20 @@ def insert_user(connection) -> Tuple[str, int]:
 
     return "Success", 201
 
+def validate_password_operation(connection):
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+
+    json_data = request.get_json(force=True)
+    to_check_id = json_data["toCheckId"]
+    password = json_data["password"]
+
+    result = check_user_password(connection=connection, to_check_id=to_check_id, password=password, user_id=user_id, access_token=access_token)
+    if result is False:
+        return "User does not have access", 401
+    else:
+        return jsonify(result), 200
+
 def insert_sighting(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("inserting pet sighting: ", json_data)
@@ -55,17 +71,14 @@ def insert_sighting(connection) -> Tuple[str, int]:
     hour, minute, day, month, year = separate_datetime(date_time_input)
     date_time = datetime.datetime(year, month, day, hour, minute)
 
-    date_time_of_creation_input = json_data["dateTimeOfCreation"]
-    hour, minute, day, month, year = separate_datetime(date_time_of_creation_input)
-    date_time_of_creation = datetime.datetime(year, month, day, hour, minute)
-
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
+    location_string = get_suburb(location_latitude, location_longitude)
     imageUrl = json_data["imageUrl"]
     description = json_data["description"]
 
 
-    sighting_id = insert_sighting_to_database(connection, author_id=author_id, date_time_of_creation=date_time_of_creation, missing_report_id=missing_report_id, animal=animal, breed=breed, date_time=date_time, location_longitude=location_longitude, location_latitude=location_latitude, image_url=imageUrl, description=description, user_id=user_id, access_token=access_token)
+    sighting_id = insert_sighting_to_database(connection, author_id=author_id, missing_report_id=missing_report_id, animal=animal, breed=breed, date_time=date_time, location_longitude=location_longitude, location_latitude=location_latitude, location_string=location_string, image_url=imageUrl, description=description, user_id=user_id, access_token=access_token)
 
     if sighting_id is None:
         return "User does not have access", 401
@@ -93,23 +106,20 @@ def insert_missing_report(connection) -> Tuple[str, int]:
     hour, minute, day, month, year = separate_datetime(last_seen_input)
     last_seen = datetime.datetime(year, month, day, hour, minute)
 
-    date_time_of_creation_input = json_data["dateTimeOfCreation"]
-    hour, minute, day, month, year = separate_datetime(date_time_of_creation_input)
-    date_time_of_creation = datetime.datetime(year, month, day, hour, minute)
-
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
+    location_string = get_suburb(location_latitude, location_longitude)
 
     description = json_data["description"]
     
     missing_report_id = insert_missing_report_to_database(
         connection=connection,
         author_id=author_id,
-        date_time_of_creation=date_time_of_creation,
         pet_id=pet_id,
         last_seen=last_seen,
         location_longitude=location_longitude,
         location_latitude=location_latitude,
+        location_string=location_string,
         description=description,
         user_id=user_id,
         access_token=access_token,
@@ -149,7 +159,7 @@ def update_missing_report(connection) -> Tuple[str, int]:
     location_longitude, location_latitude = coordinates.split(",")
 
     description = json_data["description"]
-    is_active = json_data["isActive"]
+    is_active = json_data["is_active"]
 
     result = update_missing_report_in_database(connection, report_id, pet_id, author_id, last_seen, location_longitude,
                                       location_latitude, description, is_active, access_token)
@@ -165,7 +175,7 @@ def update_report_status(conn):
     success = update_report_active_status(
         connection=conn,
         report_id=data["report_id"],
-        new_status=data["isActive"],
+        new_status=data["is_active"],
     )
     if success:
         return "", 200
@@ -185,7 +195,7 @@ def retrieve_location_notification_user_settings(connection, user_id)  -> Tuple[
 def archive_missing_report(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     report_id = json_data["reportId"]
-    is_active = json_data["isActive"]
+    is_active = json_data["is_active"]
 
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
@@ -481,6 +491,20 @@ def reset_password(username, new_password):
     # Return True if the password reset was successful; otherwise, return False
     return True
     # Replace with password reset logic
+
+def delete_all_user_data(connection, to_delete_id):
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+    
+    json_data = request.get_json(force=True)
+    to_delete_id = json_data["toDeleteId"]
+
+    result = delete_all_user_data_from_database(connection=connection, to_delete_id=to_delete_id, user_id=user_id, access_token=access_token)
+    if result is False:
+        return "User does not have access", 401
+    else:
+        return "Success", 200
+
 
 def send_notification_to_report_author(
     connection: psycopg2.extensions.connection,

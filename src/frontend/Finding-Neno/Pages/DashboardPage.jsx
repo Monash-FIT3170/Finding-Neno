@@ -130,7 +130,7 @@ const DashboardPage = () => {
 				setAllSightings(data[0]);
 				setInitialSightingsLoaded(true);
 
-				// filters out sightings that are linked to reports where isActive == False i.e pet has been found
+				// filters out sightings that are linked to reports where is_active == False i.e pet has been found
 				setSightingCards(generateSightingCards(data[0]));
 			});
 			
@@ -154,7 +154,7 @@ const DashboardPage = () => {
 						</View>
 					</Pressable>
 				)}>
-					<Menu.Item onPress={() => navigation.navigate('Report', { screen: 'New Report Page' })}>Report</Menu.Item>
+					<Menu.Item onPress={() => navigation.navigate('Dashboard', { screen: 'New Report Page' })}>Report</Menu.Item>
 					<Menu.Item onPress={() => navigation.navigate('Dashboard', { screen: 'New Sighting Page' })}>Sighting</Menu.Item>
 				</Menu>
 			</View>

@@ -4,7 +4,7 @@ import { MaterialIcons } from '@expo/vector-icons'
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 
 import { Color } from "../components/atomic/Theme";
-import { validEmail, validPhoneNumber } from "./validation";
+import { validEmail, validPhoneNumber, validatePassword } from "./validation";
 import { useState } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
@@ -71,6 +71,12 @@ const SignupPage = () => {
 
 		if (!formData.password || formData.password == "") {
 			foundErrors = { ...foundErrors, password: 'Password is required' }
+		}
+		else {
+			const passwordError = validatePassword(formData.password);
+			if (passwordError) {
+				foundErrors = { ...foundErrors, password: passwordError }
+			}
 		}
 
 		if (!formData.confirmPassword || formData.confirmPassword == "") {
