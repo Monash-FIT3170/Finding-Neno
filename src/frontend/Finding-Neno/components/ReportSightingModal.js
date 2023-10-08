@@ -45,8 +45,8 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 		setSightingData({
 			...sightingData,
 			missingReportId: report[0],
-			animal: report[7],
-			breed: report[8],
+			animal: report[8],
+			breed: report[9],
 			imageUrl: null,
 			dateTime: formatDatetime(new Date()),
 			lastLocation: '',
