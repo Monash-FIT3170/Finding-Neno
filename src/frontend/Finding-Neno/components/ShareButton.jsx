@@ -2,7 +2,7 @@ import { Share } from "react-native";
 import { Button } from "react-native-paper";
 import { Color } from "./atomic/Theme";
 
-const ShareButton = ({ title, message, dialogTitle, url, width }) => {
+const ShareButton = ({ title, message, dialogTitle, textColor, url, width }) => {
     const onShare = async () => {
         try {
             const result = await Share.share({
@@ -22,7 +22,7 @@ const ShareButton = ({ title, message, dialogTitle, url, width }) => {
     }
 
     return (
-        <Button onPress={onShare} style={{ width: width, borderRadius:10 }} labelStyle={{ fontWeight: 'bold'}} textColor='black' 
+        <Button onPress={onShare} style={{ width: width, borderRadius:10 }} labelStyle={{ fontWeight: 'bold'}} textColor={'white'} 
             buttonColor={Color.LIGHTER_NENO_BLUE} compact={true} icon="export-variant" mode="contained">Share</Button>
 
     )

@@ -38,12 +38,12 @@ const FindingNenoLightTheme = {
 	dark: false,
 	colors: {
 		...DefaultTheme.colors,
-		background: 'lightgray',
+		background: 'white',
 		primary: Color.NENO_BLUE,
 		secondary: Color.FAINT_NENO_BLUE,
 		card: 'white',
 		text: 'black',
-		border: 'black',
+		border: 'lightgray',
 	},
 }
 
@@ -51,12 +51,12 @@ const FindingNenoDarkTheme = {
 	dark: true,
 	colors: {
 		...DarkTheme.colors,
-		background: 'black',
+		background: '#202124',
 		primary: Color.NENO_BLUE,
 		secondary: Color.FAINT_NENO_BLUE,
-		card: 'black',
+		card: '#202124',
 		text: 'white',
-		border: 'white',
+		border: 'black',
 	},
 }
 

@@ -122,18 +122,19 @@ const DashboardPage = () => {
 	}, [sightingImage]);
 
 	const renderTabBar = (props) => (
-		<TabBar {...props} 
+		<TabBar {...props}
 			renderLabel={({ route, focused, color }) => (
 				// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
-				<IconText iconName={route.icon} text={route.title} textColor={route.color} iconColor={route.color} iconSize={24} fontWeight='bold' />)} 
-			style={{ backgroundColor: 'white' }}
+				<IconText iconName={route.icon} text={route.title} textColor={focused ? route.color : colors.text} iconColor={focused ? route.color : colors.text} iconSize={24} fontWeight='bold' />)} 
+			style={{ backgroundColor: 'transparent' }}
+			contentContainerStyle={{ backgroundColor: 'transparent' }}
 			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, borderRadius: 1.5, width: '15%', left: '17.5%' }} 
 		/>
 	);
 	
 	return (
 		<Provider>
-			<SafeAreaView style={{ flex: 1, height: '100%' }}>
+			<SafeAreaView style={{ flex: 1, height: '100%', backgroundColor: colors.cardsBackground }}>
 				<StatusBar style="auto" />
 				{/* TABS */}
 				<TabView renderTabBar={renderTabBar}

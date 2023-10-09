@@ -19,6 +19,7 @@
     "@reduxjs/toolkit": "^1.9.5",
     "axios": "^1.4.0",
     "expo": "^48.0.0",
+    "expo-blur": "^12.6.0",
     "expo-constants": "~14.2.1",
     "expo-dev-client": "~2.2.1",
     "expo-image-picker": "~14.1.1",

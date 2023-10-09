@@ -10,7 +10,7 @@ const IconText = ({ iconName, text, textColor, iconColor, iconSize, fontWeight }
 
   return (
     <>
-    <HStack alignItems='center' justifyContent='center'>
+    <HStack alignItems='center'>
         <Icon name={iconName} size={iconSize} color={iconColor} />
         <Text style={{ color: textColor, fontWeight: fontWeight, marginLeft: 5 }}>{text}</Text>
       </HStack>

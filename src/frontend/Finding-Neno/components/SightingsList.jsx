@@ -19,6 +19,7 @@ function SightingsList({sightings, onRefresh, columns, emptyText}) {
             keyExtractor={item => `${item[0]}`}
             onRefresh={onRefreshList}
             refreshing={refreshing}
+            
             ListEmptyComponent={<Text style={{ paddingVertical: '5%', fontSize: 15, fontWeight: '700', alignSelf: 'center'}}>{emptyText}</Text>}
             ListFooterComponent={<Text style={{ paddingVertical: '5%', fontSize: 15, fontWeight: '700' , alignSelf: 'center'}}>Last updated {formatDateTimeDisplay(new Date())}</Text>}
         />

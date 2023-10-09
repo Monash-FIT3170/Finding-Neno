@@ -4,7 +4,7 @@ import { Dimensions } from 'react-native';
 import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector } from "react-redux";
-import { useIsFocused } from '@react-navigation/native';
+import { useIsFocused, useTheme } from '@react-navigation/native';
 import { formatDateTimeDisplay } from '../Pages/shared';
 import ImageView from 'react-native-image-viewing';
 import ShareButton from './ShareButton';
@@ -18,6 +18,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
   const { API_URL } = useSelector((state) => state.api)
   const isFocused = useIsFocused();
+  const { colors } = useTheme();
 
   const id = sighting[0];
   const missingReportId = sighting[1];
@@ -102,33 +103,35 @@ const Sighting = ({ userId, sighting, refresh }) => {
 
   const imagelessSighting = (
     <View style={{ width: "100%"}} bg="#F9FDFF">
-      <VStack alignItems='left' width='100%'>
+      <VStack alignItems='left'>
         <View>
-          <Heading size="md" marginBottom={2}>{locationString}</Heading>
+          <Heading color={colors.text} size="md" marginBottom={2}>{locationString}</Heading>
         </View>
         <HStack marginTop='2%' justifyContent='space-between'>
-          <VStack width='30%' >
-            <Heading size="sm" >Species</Heading>
+          <VStack backgroundColor='green'>
+            <Heading color={colors.text} size="sm">Species</Heading>
             {
               sightingAnimal == 'Other' ?
-                <Text >{sightingAnimal}</Text> :
-                <IconText iconName={sightingAnimal.toLowerCase()} text={sightingAnimal}
-                  iconColor={Color.NENO_BLUE} textColor={'black'} iconSize={19} fontWeight='normal' />
+                <Text color={colors.text}>{sightingAnimal}</Text> :
+                <View style={{ width: '100%' }}>
+                  <IconText iconName={sightingAnimal.toLowerCase()} text={sightingAnimal}
+                    iconColor={Color.NENO_BLUE} textColor={colors.text} iconSize={19} fontWeight='normal' />
+                </View>
             }
           </VStack>
 
           {
             sightingBreed &&
-            <VStack  width='30%' marginX={5}>
-              <Heading size="sm">Breed</Heading>
-              <Text >{sightingBreed}</Text>
+            <VStack width='30%' marginX={5}>
+              <Heading color={colors.text} size="sm">Breed</Heading>
+              <Text color={colors.text}>{sightingBreed}</Text>
             </VStack>
           }
         </HStack>
 
         <View >
-          <Heading size="sm" marginTop={3}>Last seen</Heading>
-          <Text>{dateTime}</Text>
+          <Heading color={colors.text} size="sm" marginTop={3}>Last seen</Heading>
+          <Text color={colors.text}>{dateTime}</Text>
         </View>
 
       </VStack>
@@ -160,18 +163,18 @@ const Sighting = ({ userId, sighting, refresh }) => {
           </View>
         }
 
-        <View style={{ width: "48%"}} bg="#F9FDFF">
+        <View style={{ width: "48%", marginHorizontal: 20}} bg="#F9FDFF">
           <View>
-            <Heading size="md" marginX={5} marginBottom={3}>{locationString} </Heading>
+            <Heading color={colors.text} size="md" marginBottom={3}>{locationString} </Heading>
           </View>
 
           <VStack>
             <HStack marginTop='2%' justifyContent='space-between'>
-              <VStack width={sightingBreed ? '60%' : '100%'} >
-                <Heading size="sm" marginX={5}>Species</Heading>
+              <VStack> 
+                <Heading color={colors.text} size="sm">Species</Heading>
                 {
                   sightingAnimal == 'Other' ?
-                    <Text marginX={5}>{sightingAnimal}</Text> :
+                    <Text color={colors.text}>{sightingAnimal}</Text> :
                     <IconText iconName={sightingAnimal.toLowerCase()} text={sightingAnimal}
                       iconColor={Color.NENO_BLUE} textColor={'black'} iconSize={19} fontWeight='normal' />
                 }
@@ -180,15 +183,15 @@ const Sighting = ({ userId, sighting, refresh }) => {
               {
                 sightingBreed &&
                 <VStack width='50%' marginX={2}>
-                  <Heading size="sm">Breed</Heading>
-                  <Text >{sightingBreed}</Text>
+                  <Heading color={colors.text} size="sm">Breed</Heading>
+                  <Text color={colors.text}>{sightingBreed}</Text>
                 </VStack>
               }
             </HStack>
 
             <View >
-              <Heading size="sm" paddingTop='1%' marginX={5} marginTop={3}>Seen at</Heading>
-              <Text marginX={5}>{dateTime}</Text>
+              <Heading color={colors.text} size="sm" paddingTop='1%' marginTop={3}>Seen at</Heading>
+              <Text color={colors.text}>{dateTime}</Text>
             </View>
           </VStack>
         </View>
@@ -196,8 +199,8 @@ const Sighting = ({ userId, sighting, refresh }) => {
       {
         sightingDesc &&
         <VStack marginTop='3%'>
-          <Heading size="sm">Description</Heading>
-          <Text>{sightingDesc}</Text>
+          <Heading color={colors.text} size="sm">Description</Heading>
+          <Text color={colors.text}>{sightingDesc}</Text>
         </VStack>
       }
     </View>
@@ -205,7 +208,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
 
 
   return (
-    <Animated.View style={{ backgroundColor: 'white', opacity: fadeAnim, marginTop: 8, marginBottom: 0 }}>
+    <Animated.View style={{ backgroundColor: colors.background, opacity: fadeAnim, borderBottomWidth: 6, borderColor: colors.border}}>
 
       {/* Info */}
       <View style={{ margin: '4%', marginBottom: 4 }}>
@@ -214,7 +217,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
         }
 
         <View style={{ maxWidth: '100%', marginTop: '4%', marginBottom: '3%' }}>
-          <ShareButton title={"Pet Sighting - Finding Neno"} message={message} dialogTitle={"Share this pet sighting"} width={'100%'}/>
+          <ShareButton title={"Pet Sighting - Finding Neno"} message={message} textColor={colors.background} dialogTitle={"Share this pet sighting"} width={'100%'}/>
         </View>
         <Ionicons name={savedByUser == USER_ID ? "bookmark" : "bookmark-outline"} size={24} style={{ padding: 3, position: "absolute", top: 0, right: 0 }} onPress={handlePressSaveBtn} />
       </View>

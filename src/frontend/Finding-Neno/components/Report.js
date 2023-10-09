@@ -8,10 +8,13 @@ import { formatDateTimeDisplay } from '../Pages/shared';
 import ImageView from 'react-native-image-viewing';
 import IconText from './IconText';
 import ShareButton from './ShareButton';
+import { useTheme } from '@react-navigation/native';
 
 
 
 const Report = ({ report, userId }) => {
+    const { colors } = useTheme();
+
     // Pet Data
     const lastSeen = formatDateTimeDisplay(new Date(report[1]));
     const reportDesc = report[2];
@@ -72,12 +75,12 @@ const Report = ({ report, userId }) => {
     }
 
     return (
-        <Animated.View style={{ backgroundColor: 'white', opacity: fadeAnim, marginTop: 10, marginBottom: 10 }}>
+        <Animated.View style={{ backgroundColor: colors.card, opacity: fadeAnim, borderBottomWidth: 6, borderColor: colors.border}}>
             <ImageView images={[{uri: petImage}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor='gray'/>
 
             {/* Info */}
             <View style={{ margin: '4%', marginBottom: 4 }}>
-                <HStack maxWidth="100%" >
+                <HStack width="100%" >
                     <View style={{ width: "49%", aspectRatio: 1 }} >
                         {
                             smallImageLoading && <ActivityIndicator style={{ top: '50%', left: '50%', position: 'absolute' }} />
@@ -89,33 +92,33 @@ const Report = ({ report, userId }) => {
                         </TouchableHighlight>
                     </View>
 
-                    <View style={{ width: "48%" }} bg="#F9FDFF">
+                    <View style={{ width: "48%", marginHorizontal: 20 }}>
                         <View>
-                            <Heading size="md" marginX={5} marginBottom={3}>{petName} </Heading>
+                            <Heading color={colors.text} size="lg" marginBottom={3}>{petName} </Heading>
                         </View>
 
                         <VStack>
                             <HStack marginTop='2%' justifyContent='space-between'>
-                                <VStack width={petBreed ? '60%' : '100%'}>
-                                    <Heading size="sm" marginX={5} >Species</Heading>
+                                <VStack>
+                                    <Heading color={colors.text} size="sm" >Species</Heading>
                                     {
                                         petSpecies == 'Other' ? 
-                                        <Text marginX={5}>{petSpecies}</Text> :
+                                        <Text color={colors.text}>{petSpecies}</Text> :
                                         <IconText iconName={petSpecies.toLowerCase()} text={petSpecies} 
-                                            iconColor={ Color.NENO_BLUE } textColor={ 'black' } iconSize={19} fontWeight='normal' />
+                                            iconColor={ Color.NENO_BLUE } textColor={colors.text} iconSize={19} fontWeight='normal' />
                                     }
                                 </VStack>
 
-                                <VStack width='50%' marginX={2}>
-                                    <Heading size="sm">Breed</Heading>
-                                    <Text >{petBreed}</Text>
+                                <VStack width='50%' marginX={0}>
+                                    <Heading color={colors.text} size="sm">Breed</Heading>
+                                    <Text color={colors.text}>{petBreed}</Text>
                                 </VStack>
                             </HStack>
 
                             <View >
-                                <Heading size="sm" paddingTop='1%' marginX={5} marginTop={3}>Last seen</Heading>
-                                <Text marginX={5} >{lastSeen}</Text>
-                                <Text marginX={5} >{locationString}</Text>
+                                <Heading color={colors.text} size="sm" paddingTop='1%'marginTop={3}>Last seen</Heading>
+                                <Text color={colors.text}>{lastSeen}</Text>
+                                <Text color={colors.text}>{locationString}</Text>
                             </View>
 
                         </VStack>
@@ -141,7 +144,7 @@ const Report = ({ report, userId }) => {
 
                             : ""
                     }
-                    <ShareButton title={"Missing Pet - Finding Neno"} message={message} dialogTitle={"Share this missing pet report"} width={authorId == userId ? '100%' : '29%'} />
+                    <ShareButton title={"Missing Pet - Finding Neno"} message={message} dialogTitle={"Share this missing pet report"} textColor={colors.background} width={authorId == userId ? '100%' : '29%'} />
                 </HStack>
             </View>
             {/* Modal for reporting a sighting */}

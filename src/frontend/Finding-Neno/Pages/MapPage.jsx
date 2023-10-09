@@ -1,8 +1,8 @@
-import { NavigationContainer, useNavigation } from '@react-navigation/native';
+import { NavigationContainer, useNavigation, useTheme } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { Switch, Image, StyleSheet, View, SafeAreaView } from 'react-native';
+import { Switch, Image, StyleSheet, View, SafeAreaView, useColorScheme } from 'react-native';
 import { Text } from 'react-native';
 import store from "../store/store";
 import { useSelector, useDispatch } from "react-redux";
@@ -24,6 +24,169 @@ export default function MapPage({ navigation: { navigate } }) {
 	const onStateChange = ({ open }) => setFABState({ open });
 	const { open } = FABstate;
 
+	const scheme = useColorScheme();
+	const { colors } = useTheme();
+	const mapStyle = [
+		{
+		  "elementType": "geometry",
+		  "stylers": [
+			{
+			  "color": "#242f3e"
+			}
+		  ]
+		},
+		{
+		  "elementType": "labels.text.fill",
+		  "stylers": [
+			{
+			  "color": "#746855"
+			}
+		  ]
+		},
+		{
+		  "elementType": "labels.text.stroke",
+		  "stylers": [
+			{
+			  "color": "#242f3e"
+			}
+		  ]
+		},
+		{
+		  "featureType": "administrative.locality",
+		  "elementType": "labels.text.fill",
+		  "stylers": [
+			{
+			  "color": "#d59563"
+			}
+		  ]
+		},
+		{
+		  "featureType": "poi",
+		  "elementType": "labels.text.fill",
+		  "stylers": [
+			{
+			  "color": "#d59563"
+			}
+		  ]
+		},
+		{
+		  "featureType": "poi.park",
+		  "elementType": "geometry",
+		  "stylers": [
+			{
+			  "color": "#263c3f"
+			}
+		  ]
+		},
+		{
+		  "featureType": "poi.park",
+		  "elementType": "labels.text.fill",
+		  "stylers": [
+			{
+			  "color": "#6b9a76"
+			}
+		  ]
+		},
+		{
+		  "featureType": "road",
+		  "elementType": "geometry",
+		  "stylers": [
+			{
+			  "color": "#38414e"
+			}
+		  ]
+		},
+		{
+		  "featureType": "road",
+		  "elementType": "geometry.stroke",
+		  "stylers": [
+			{
+			  "color": "#212a37"
+			}
+		  ]
+		},
+		{
+		  "featureType": "road",
+		  "elementType": "labels.text.fill",
+		  "stylers": [
+			{
+			  "color": "#9ca5b3"
+			}
+		  ]
+		},
+		{
+		  "featureType": "road.highway",
+		  "elementType": "geometry",
+		  "stylers": [
+			{
+			  "color": colors.primary
+			}
+		  ]
+		},
+		{
+		  "featureType": "road.highway",
+		  "elementType": "geometry.stroke",
+		  "stylers": [
+			{
+			  "color": "#1f2835"
+			}
+		  ]
+		},
+		{
+		  "featureType": "road.highway",
+		  "elementType": "labels.text.fill",
+		  "stylers": [
+			{
+			  "color": "#f3d19c"
+			}
+		  ]
+		},
+		{
+		  "featureType": "transit",
+		  "elementType": "geometry",
+		  "stylers": [
+			{
+			  "color": "#2f3948"
+			}
+		  ]
+		},
+		{
+		  "featureType": "transit.station",
+		  "elementType": "labels.text.fill",
+		  "stylers": [
+			{
+			  "color": "#d59563"
+			}
+		  ]
+		},
+		{
+		  "featureType": "water",
+		  "elementType": "geometry",
+		  "stylers": [
+			{
+			  "color": "#17263c"
+			}
+		  ]
+		},
+		{
+		  "featureType": "water",
+		  "elementType": "labels.text.fill",
+		  "stylers": [
+			{
+			  "color": "#515c6d"
+			}
+		  ]
+		},
+		{
+		  "featureType": "water",
+		  "elementType": "labels.text.stroke",
+		  "stylers": [
+			{
+			  "color": "#17263c"
+			}
+		  ]
+		}
+	  ]
 	// const windowWidth = Dimensions.get('window').width; 
 	// const windowHeight = Dimensions.get('window').height;
 
@@ -103,6 +266,40 @@ export default function MapPage({ navigation: { navigate } }) {
 		}
 	}
 
+	const styles = StyleSheet.create({
+		container: {
+			flex: 1,
+			justifyContent: 'flex-end',
+			alignItems: 'center'
+		},
+		map: {
+			...StyleSheet.absoluteFillObject,
+		},
+		text: {
+			fontSize: 20
+		},
+	
+		boldText: {
+			fontWeight: 'bold',
+			fontSize: 20,
+			color: colors.text
+		},
+		switchContainer: {
+			flexDirection: 'column',
+			alignItems: 'center',
+			position: 'absolute',
+			top: 600,  // you can adjust this value
+			left: 145  // and this one too, to place it properly
+		},
+		switchLabel: {
+			fontSize: 24,
+			fontWeight: 'bold',
+			marginRight: 10
+		}
+	
+	
+	});
+
 	return (
 		<Provider>
 		<SafeAreaView style={styles.container}>
@@ -117,7 +314,7 @@ export default function MapPage({ navigation: { navigate } }) {
 						showsIndoors={false}
 						rotateEnabled={false}
 						loadingEnabled={true}
-						mapType={"standard"}
+						customMapStyle={ scheme == 'dark' ? mapStyle : []}
 						onRegionChangeComplete={(newRegion) => handleRegionChange(newRegion)}
 					>
 						{/* Render reports markers */}
@@ -165,10 +362,10 @@ export default function MapPage({ navigation: { navigate } }) {
 
 					{/* Switch and label */}
 					<View style={{ position: 'absolute', top: '1%', width: '100%' }} alignItems='center'>
-						<SegmentedButtons value={tabValue} onValueChange={setTabValue} 
-							style={{ shadowOpacity: 0.3, shadowOffset: { width: 2, height: 2 }, 
+						<SegmentedButtons value={tabValue} onValueChange={setTabValue}
+							style={{ borderColor: colors.border, shadowOpacity: 0.3, shadowOffset: { width: 2, height: 2 }, 
 								marginTop: 5, width: '98%', backgroundColor: 'transparent', }}
-							theme={{ colors: { border: 'transparent', secondaryContainer: 'white', onSecondaryContainer: Color.NENO_BLUE }}} 
+							theme={{ colors: { onSurface: colors.text, secondaryContainer: colors.background, onSecondaryContainer: colors.primary, outline: colors.text }}} 
 							buttons={[
 								{ label: 'Reports', icon: 'file-document', value: 'reports' },
 								{ label: 'Sightings', icon: 'magnify', value: 'sightings' },
@@ -181,8 +378,8 @@ export default function MapPage({ navigation: { navigate } }) {
 							}
 						</View>
 
-						<Button mode='elevated' style={{ backgroundColor: 'white', opacity: 0.9, marginTop: '1%' }} onPress={onPressSearch}>
-							<Text style={{ color: Color.NENO_BLUE, fontWeight: 'bold' }}>Search this area</Text>
+						<Button mode='elevated' style={{ backgroundColor: colors.background, opacity: 0.9, marginTop: '1%' }} onPress={onPressSearch}>
+							<Text style={{ color: colors.primary, fontWeight: 'bold' }}>Search this area</Text>
 						</Button>
 						<Portal>
 							<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
@@ -198,37 +395,8 @@ export default function MapPage({ navigation: { navigate } }) {
 		</SafeAreaView>
 		</Provider>
 	);
+
+
+								
 }
 
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'flex-end',
-		alignItems: 'center'
-	},
-	map: {
-		...StyleSheet.absoluteFillObject,
-	},
-	text: {
-		fontSize: 20
-	},
-
-	boldText: {
-		fontWeight: 'bold',
-		fontSize: 20
-	},
-	switchContainer: {
-		flexDirection: 'column',
-		alignItems: 'center',
-		position: 'absolute',
-		top: 600,  // you can adjust this value
-		left: 145  // and this one too, to place it properly
-	},
-	switchLabel: {
-		fontSize: 24,
-		fontWeight: 'bold',
-		marginRight: 10
-	}
-
-
-});

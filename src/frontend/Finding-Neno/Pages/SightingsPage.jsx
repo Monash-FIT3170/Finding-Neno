@@ -1,4 +1,4 @@
-import { NavigationContainer, useNavigation  } from '@react-navigation/native';
+import { NavigationContainer, useNavigation, useTheme  } from '@react-navigation/native';
 import { Text, Dimensions, SafeAreaView, RefreshControl } from 'react-native';
 import { Box, Center, View, Heading, VStack, useToast, Image, FormControl, Input, Button, ScrollView, Alert, KeyboardAvoidingView } from "native-base";
 import { useIsFocused } from '@react-navigation/native';
@@ -22,6 +22,7 @@ export default function SightingsPage({ navigation: { navigate } }) {
 	const [FABstate, setFABState] = useState({ open: false });
 	const onStateChange = ({ open }) => setFABState({ open });
 	const { open } = FABstate;
+    const { colors } = useTheme();
 
     const { API_URL } = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
@@ -96,8 +97,8 @@ export default function SightingsPage({ navigation: { navigate } }) {
 		<TabBar {...props} 
 			renderLabel={({ route, focused, color }) => (
 				// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
-				<IconText iconName={route.icon} text={route.title} textColor={route.color} iconColor={route.color} iconSize={24} fontWeight='bold' />)} 
-			style={{ backgroundColor: 'white' }}
+				<IconText iconName={route.icon} text={route.title} textColor={focused ? route.color : 'white'} iconColor={focused ? route.color : 'white'} iconSize={24} fontWeight='bold' />)} 
+			style={{ backgroundColor: colors.background }}
 			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, borderRadius: 1.5, width: '15%', left: '18.5%' }} 
 		/>
 	);

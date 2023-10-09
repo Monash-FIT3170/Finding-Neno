@@ -14,7 +14,6 @@ import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 import { login } from "../store/user";
-import { LinearGradient } from "expo-linear-gradient";
 
 const LoginPage = () => {
 	const [formData, setFormData] = useState({});
