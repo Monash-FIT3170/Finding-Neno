@@ -42,7 +42,7 @@ const PetCard = ({color, pet, onClick, editMode, onUpdate}) => {
           style={{ borderRadius: 0, borderBottomRightRadius: 20, borderBottomLeftRadius: 20 }}
           onPress={() => setShowConfirmFoundModal(true)} // Attach the onPress handler
         >
-          Found Me!
+          Mark as Found
         </Button>
       );
     } else {
@@ -235,9 +235,9 @@ function ConfirmFoundModal({ isVisible, setIsVisible, onRemove }) {
   return <Modal isOpen={isVisible} onClose={() => setIsVisible(false)} size={"md"}>
     <Modal.Content >
       <Modal.CloseButton />
-      <Modal.Header>Remove missing pet report?</Modal.Header>
+      <Modal.Header>Mark pet as found?</Modal.Header>
       <Modal.Body>
-        <Text>Are you sure you want remove this missing pet report?</Text>
+        <Text>Please confirm that this pet has been found. This will remove its missing pet reports.</Text>
       </Modal.Body>
       <Modal.Footer>
         <Button.Group space={2}>
@@ -248,7 +248,7 @@ function ConfirmFoundModal({ isVisible, setIsVisible, onRemove }) {
             onRemove()
             setIsVisible(false)
           }} backgroundColor={"#FA8072"}>
-            Remove
+            Confirm
           </Button>
         </Button.Group>
       </Modal.Footer>
