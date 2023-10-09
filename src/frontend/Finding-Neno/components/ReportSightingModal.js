@@ -35,7 +35,7 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
         animal: report[8],
         breed: report[9],
         imageUrl: null,
-        dateTime: formatDatetime(new Date()),
+        dateTime: new Date(),
         lastLocation: '',
         description: ''
     });
@@ -48,7 +48,7 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 			animal: report[8],
 			breed: report[9],
 			imageUrl: null,
-			dateTime: formatDatetime(new Date()),
+			dateTime: new Date(),
 			lastLocation: '',
 			description: ''
 		});
@@ -66,7 +66,7 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 
 	const handleDatetimeConfirm = (datetime) => {
 		setSightingDateTime(datetime);
-		setSightingData({ ...sightingData, dateTime: formatDatetime(datetime) });
+		setSightingData({ ...sightingData, dateTime: datetime });
 		closePicker();
 	}
 	var maximumDate;
@@ -111,6 +111,7 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
                 breed: report[9],
                 imageUrl: sightingImage,
                 dateTime: sightingData.dateTime,
+				dateTimeOfCreation: new Date(),
                 description: sightingData.description,
                 lastLocation: sightingData.lastLocation
             }

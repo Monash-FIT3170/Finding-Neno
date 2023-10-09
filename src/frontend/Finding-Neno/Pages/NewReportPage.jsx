@@ -76,8 +76,8 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 				authorId: USER_ID,
 				missingPetId: formData.missingPetId,
 				description: formData.description,
-				lastSeenDateTime: formatDatetime(selectedDatetime),
-				dateTimeOfCreation: formatDatetime(new Date()),
+				lastSeenDateTime: selectedDatetime,
+				dateTimeOfCreation: new Date(),
 				lastLocation: formData.lastLocation,
 			}
 
@@ -188,7 +188,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 	const handleDatetimeConfirm = (datetime) => {
 		setSelectedDatetime(datetime);
-		setFormData({ ...formData, lastSeenDateTime: formatDatetime(datetime) });
+		setFormData({ ...formData, lastSeenDateTime: datetime });
 		closePicker();
 	}
 
@@ -201,7 +201,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	const [formData, setFormData] = useState({
 		authorId: USER_ID,
 		description: '',
-		lastSeenDateTime: formatDatetime(selectedDatetime),
+		lastSeenDateTime: selectedDatetime,
 	});
 
 	return (

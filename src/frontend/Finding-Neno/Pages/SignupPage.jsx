@@ -1,7 +1,7 @@
 import { Box, Center, FormControl, Heading, HStack, Icon, Input, KeyboardAvoidingView, Link, VStack, Pressable, Text, Alert, Modal, WarningOutlineIcon, useToast } from "native-base";
 import { SafeAreaView, StyleSheet } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons'
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
 import { Button } from "react-native-paper";
 
 import { Color } from "../components/atomic/Theme";
@@ -28,6 +28,7 @@ const SignupPage = () => {
 	const {API_URL} = useSelector((state) => state.api)
 
 	const navigation = useNavigation();
+	const { colors } = useTheme();
 
 	const onSignupPress = async () => {
 		setIsButtonDisabled(true);
@@ -117,10 +118,7 @@ const SignupPage = () => {
 								<Heading
 									size="lg"
 									fontWeight="600"
-									color="coolGray.800"
-									_dark={{
-										color: "warmGray.50",
-									}}
+									color={colors.primary}
 								>
 									Sign Up
 								</Heading>

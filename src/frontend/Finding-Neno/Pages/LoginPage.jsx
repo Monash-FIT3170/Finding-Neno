@@ -1,11 +1,11 @@
-import { Box, Center, FormControl, Heading, HStack, Icon, Input, KeyboardAvoidingView, Link, VStack, Pressable, Text, WarningOutlineIcon, View, useTheme } from "native-base";
+import { Box, Center, FormControl, Heading, HStack, Icon, Input, KeyboardAvoidingView, Link, VStack, Pressable, Text, WarningOutlineIcon, View } from "native-base";
 import { Dimensions, SafeAreaView, StyleSheet, TouchableWithoutFeedback } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons'
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import { StatusBar } from 'expo-status-bar';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Button } from "react-native-paper";
-
+import { useTheme } from '@react-navigation/native'
 
 import { Color } from "../components/atomic/Theme";
 import { validEmail, validPhoneNumber } from "./validation"
@@ -97,7 +97,7 @@ const LoginPage = () => {
 
 			<SafeAreaView style={{ alignItems: 'center', justifyContent: 'center' }}>
 				<VStack style={{ alignItems: 'center', maxWidth: 350 }}>
-					<Heading size="xl" fontWeight="700" color={colors.primary}>
+					<Heading size="2xl" fontWeight="700" color={colors.primary}>
 						Finding Neno
 					</Heading>
 					<VStack space={3} mt="5" width='100%'>

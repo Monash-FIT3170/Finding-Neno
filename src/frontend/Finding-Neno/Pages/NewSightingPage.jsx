@@ -30,7 +30,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
     const [formData, setFormData] = useState({
         breed: '',
         imageUrl: '',
-        dateTime: formatDatetime(selectedDatetime),
+        dateTime: selectedDatetime,
         description: '',
     });
     const [sightingImage, setSightingImage] = useState(null);
@@ -72,6 +72,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                 breed: formData.breed,
                 imageUrl: sightingImage,
                 dateTime: formData.dateTime,
+				dateTimeOfCreation: new Date(),
                 description: formData.description,
 				lastLocation: formData.lastLocation
             }
@@ -122,7 +123,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
     const handleDatetimeConfirm = (datetime) => {
         setSelectedDatetime(datetime);
-        setFormData({ ...formData, dateTime: formatDatetime(datetime) });
+        setFormData({ ...formData, dateTime: datetime });
         closePicker();
     }
 

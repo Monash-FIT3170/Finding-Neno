@@ -65,6 +65,9 @@ def insert_sighting(connection) -> Tuple[str, int]:
     date_time_input = json_data["dateTime"]
     stripped_datetime = date_time_input[:-1] # strip the last character from the UTC string
     date_obj = datetime.datetime.strptime(stripped_datetime, "%Y-%m-%dT%H:%M:%S.%f")
+    date_time_of_creation = json_data["dateTimeOfCreation"]
+    stripped_creation_datetime = date_time_of_creation[:-1] # strip the last character from the UTC string
+    date_obj_of_creation = datetime.datetime.strptime(stripped_creation_datetime, "%Y-%m-%dT%H:%M:%S.%f")
 
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
@@ -73,7 +76,7 @@ def insert_sighting(connection) -> Tuple[str, int]:
     description = json_data["description"]
 
 
-    result = insert_sighting_to_database(connection, missing_report_id, author_id, animal, breed, date_obj, location_longitude, location_latitude, location_string, imageUrl, description, user_id, access_token)
+    result = insert_sighting_to_database(connection, missing_report_id, author_id, animal, breed, date_obj, date_obj_of_creation, location_longitude, location_latitude, location_string, imageUrl, description, user_id, access_token)
 
     if result is False:
         return "User does not have access", 401
@@ -93,6 +96,9 @@ def insert_missing_report(connection) -> Tuple[str, int]:
     last_seen_input = json_data["lastSeenDateTime"]
     stripped_datetime = last_seen_input[:-1] # strip the last character from the UTC string
     last_seen = datetime.datetime.strptime(stripped_datetime, "%Y-%m-%dT%H:%M:%S.%f")
+    date_time_of_creation = json_data["dateTimeOfCreation"]
+    stripped_creation_datetime = date_time_of_creation[:-1] # strip the last character from the UTC string
+    date_time_creation = datetime.datetime.strptime(stripped_creation_datetime, "%Y-%m-%dT%H:%M:%S.%f")
 
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
@@ -100,7 +106,7 @@ def insert_missing_report(connection) -> Tuple[str, int]:
 
     description = json_data["description"]
     
-    result = insert_missing_report_to_database(connection, pet_id, author_id, last_seen, location_longitude, location_latitude, location_string, description, user_id, access_token)
+    result = insert_missing_report_to_database(connection, pet_id, author_id, last_seen, date_time_creation, location_longitude, location_latitude, location_string, description, user_id, access_token)
 
     if result is False:
         return "User does not have access", 401
