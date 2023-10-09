@@ -364,10 +364,11 @@ export default function MapPage({ navigation: { navigate } }) {
 					<View style={{ position: 'absolute', top: '1%', width: '100%' }} alignItems='center'>
 						<SegmentedButtons value={tabValue} onValueChange={setTabValue}
 							style={{ borderColor: colors.border, shadowOpacity: 0.3, shadowOffset: { width: 2, height: 2 }, 
-								marginTop: 5, width: '98%', backgroundColor: 'transparent', }}
-							theme={{ colors: { onSurface: colors.text, secondaryContainer: colors.background, onSecondaryContainer: colors.primary, outline: colors.text }}} 
+								marginTop: 0, width: '98%', backgroundColor: 'white', borderRadius: 20, }}
+							theme={{ colors: { onSurface: colors.text, secondaryContainer: Color.FAINT_NENO_BLUE, onSecondaryContainer: colors.primary, outline: colors.text }}} 
+							
 							buttons={[
-								{ label: 'Reports', icon: 'file-document', value: 'reports' },
+								{ label: 'Reports', icon: 'file-document', value: 'reports', style: backgroundColor = colors.background},
 								{ label: 'Sightings', icon: 'magnify', value: 'sightings' },
 							]}
 						/>

@@ -13,7 +13,7 @@ function SightingsList({sightings, onRefresh, columns, emptyText}) {
     }
 
     return (
-        <FlatList width='100%' numColumns={columns} style={{ backgroundColor: 'transparent' }} 
+        <FlatList width='100%' height='100%' numColumns={columns} style={{ backgroundColor: 'transparent' }} 
             data={sightings}
             renderItem={({ item }) => <Sighting sighting={item} refresh={onRefreshList}/>}
             keyExtractor={item => `${item[0]}`}

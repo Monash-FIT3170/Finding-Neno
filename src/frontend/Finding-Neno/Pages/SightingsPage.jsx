@@ -97,7 +97,7 @@ export default function SightingsPage({ navigation: { navigate } }) {
 		<TabBar {...props} 
 			renderLabel={({ route, focused, color }) => (
 				// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
-				<IconText iconName={route.icon} text={route.title} textColor={focused ? route.color : 'white'} iconColor={focused ? route.color : 'white'} iconSize={24} fontWeight='bold' />)} 
+				<IconText iconName={route.icon} text={route.title} textColor={focused ? route.color : colors.text} iconColor={focused ? route.color : colors.text} iconSize={24} fontWeight='bold' />)} 
 			style={{ backgroundColor: colors.background }}
 			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, borderRadius: 1.5, width: '15%', left: '18.5%' }} 
 		/>

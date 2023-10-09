@@ -13,7 +13,7 @@ function ReportsList({reports, onRefresh, columns, userId}) {
     }
 
     return (
-        <FlatList width='100%' numColumns={columns} style={{ backgroundColor: 'transparent' }} 
+        <FlatList width='100%' height='100%' numColumns={columns} style={{ backgroundColor: 'transparent' }} 
             data={reports}
             renderItem={({item}) => <Report report={item} userId={userId} />}
             keyExtractor={item => `${item[0]}`}
