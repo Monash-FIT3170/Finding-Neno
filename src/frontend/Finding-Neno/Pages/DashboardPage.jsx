@@ -125,17 +125,18 @@ const DashboardPage = () => {
 		<TabBar {...props}
 			renderLabel={({ route, focused, color }) => (
 				// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
-				<IconText iconName={route.icon} text={route.title} textColor={focused ? route.color : colors.text} iconColor={focused ? route.color : colors.text} iconSize={24} fontWeight='bold' />)} 
-			style={{ backgroundColor: 'transparent' }}
+				<IconText iconName={route.icon} text={route.title} textColor={focused ? route.color : colors.text} 
+					iconColor={focused ? route.color : colors.text} iconSize={24} fontWeight='bold' />)} 
+			style={{ backgroundColor: colors.background }}
 			contentContainerStyle={{ backgroundColor: 'transparent' }}
-			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, borderRadius: 1.5, width: '15%', left: '17.5%' }} 
+			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, 
+				borderRadius: 1.5, width: '15%', left: '17.5%' }} 
 		/>
 	);
 	
 	return (
 		<Provider>
-			<SafeAreaView style={{ flex: 1, height: '100%', backgroundColor: colors.cardsBackground }}>
-				<StatusBar style="auto" />
+			<SafeAreaView style={{ flex: 1, height: '100%', backgroundColor: colors.background }}>
 				{/* TABS */}
 				<TabView renderTabBar={renderTabBar}
 					navigationState={{ index, routes }}

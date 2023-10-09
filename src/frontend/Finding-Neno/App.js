@@ -4,7 +4,7 @@ import { NavigationContainer, useNavigation, DefaultTheme, DarkTheme } from '@re
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 
-import { Text, useColorScheme } from 'react-native';
+import { StatusBar, Text, useColorScheme } from 'react-native';
 
 import { Provider, connect, useSelector, useDispatch } from "react-redux";
 import store from "./store/store";
@@ -67,6 +67,7 @@ export default function App() {
 		<NativeBaseProvider>
 			<Provider store={store}>
 				<NavigationContainer theme={scheme === 'dark' ? FindingNenoDarkTheme : FindingNenoLightTheme}>
+					<StatusBar animated={true} backgroundColor='transparent' translucent />
 					<MainNavigator />
 				</NavigationContainer>
 			</Provider>
@@ -125,17 +126,13 @@ function MainNavigator() {
 		return null;
 	}
 
-	return (<Stack.Navigator>
+	return (<Stack.Navigator screenOptions={{ headerShown: false }}>
 		{isLoggedIn ? (<Stack.Screen
 			name="Tab Navigator"
 			component={TabNavigator}
 			initialParams={{ API_URL }}
-			options={{ headerShown: false }}
 		/>) : (<><Stack.Screen name="Login" component={LoginPage}
-			initialParams={{ API_URL }}
-			options={{
-				headerShown: false
-			}} />
+			initialParams={{ API_URL }} />
 			<Stack.Screen name="Signup" component={SignupPage}
 				initialParams={{ API_URL }} options={{ title: "" }}/>
 			<Stack.Screen name="ForgotPassword" component={ForgotPasswordPage}
@@ -150,7 +147,7 @@ function MainNavigator() {
 
 function TabNavigator() {
 	return (
-		<Tab.Navigator initialRouteName="Dashboard">
+		<Tab.Navigator initialRouteName="Dashboard" screenOptions={{ headerShown: false }}>
 			<Tab.Screen
 				name="Dashboard"
 				component={DashboardStackNavigator}
@@ -158,7 +155,6 @@ function TabNavigator() {
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="home" color={color} size={size} />
 					),
-					headerShown: false,
 				}}
 			/>
 			<Tab.Screen
@@ -168,7 +164,6 @@ function TabNavigator() {
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="location" color={color} size={size} />
 					),
-					headerShown: false
 				}}
 			/>
 			<Tab.Screen
@@ -178,7 +173,6 @@ function TabNavigator() {
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="document-text" color={color} size={size} />
 					),
-					headerShown: false
 				}}
 			/>
 			<Tab.Screen
@@ -188,7 +182,6 @@ function TabNavigator() {
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="search" color={color} size={size} />
 					),
-					headerShown: false
 				}}
 			/>
 			<Tab.Screen
@@ -198,7 +191,6 @@ function TabNavigator() {
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="person" color={color} size={size} />
 					),
-					headerShown: false
 				}}
 			/>
 		</Tab.Navigator>
@@ -207,8 +199,8 @@ function TabNavigator() {
 
 function DashboardStackNavigator() {
 	return (
-		<Stack.Navigator initialRouteName="DashboardPage">
-			<Stack.Screen name="Dashboard Page" component={DashboardPage} options={{ title: "Dashboard" }} />
+		<Stack.Navigator initialRouteName="DashboardPage" screenOptions={{ headerShown: false }}>
+			<Stack.Screen name="Dashboard Page" component={DashboardPage} options={{ title: "Dashboard" }}/>
 			<Stack.Screen name="New Missing Report" component={NewReportPage} options={{ title: "" }}/>
 			<Stack.Screen name="New Sighting" component={NewSightingPage} options={{ title: "" }}/>
 		</Stack.Navigator>
@@ -217,7 +209,7 @@ function DashboardStackNavigator() {
 
 function MapStackNavigator() {
 	return (
-		<Stack.Navigator initialRouteName="MapPage">
+		<Stack.Navigator initialRouteName="MapPage" screenOptions={{ headerShown: false,  }}>
 			<Stack.Screen name="Map Page" component={MapPage} options={{ title: "Map" }} />
 			<Stack.Screen name="New Missing Report" component={NewReportPage} options={{ title: "" }}/>
 			<Stack.Screen name="New Sighting" component={NewSightingPage} options={{ title: "" }}/>
@@ -227,8 +219,8 @@ function MapStackNavigator() {
 
 function ReportStackNavigator() {
 	return (
-		<Stack.Navigator initialRouteName="ReportsPage">
-			<Stack.Screen name="Reports Page" component={ReportsPage} options={{ title: "Reports" }} />
+		<Stack.Navigator initialRouteName="ReportsPage" screenOptions={{ headerShown: false }}>
+			<Stack.Screen name="Reports Page" component={ReportsPage} options={{ title: "My Reports" }} />
 			<Stack.Screen name="New Missing Report" component={NewReportPage} options={{ title: "" }}/>
 			<Stack.Screen name="New Sighting" component={NewSightingPage} options={{ title: "" }}/>
 		</Stack.Navigator>
@@ -237,7 +229,7 @@ function ReportStackNavigator() {
 
 function SightingsStackNavigator() {
 	return (
-		<Stack.Navigator initialRouteName="SightingsPage">
+		<Stack.Navigator initialRouteName="SightingsPage" screenOptions={{ headerShown: false }}>
 			<Stack.Screen name="Sightings Page"  component={SightingsPage} options={{ title: "Sightings" }} />
 			<Stack.Screen name="New Missing Report" component={NewReportPage} options={{ title: "" }}/>
 			<Stack.Screen name="New Sighting" component={NewSightingPage} options={{ title: "" }}/>
@@ -247,7 +239,7 @@ function SightingsStackNavigator() {
 
 function ProfileStackNavigator() {
   return (
-    <Stack.Navigator initialRouteName="ProfilePage">
+    <Stack.Navigator initialRouteName="ProfilePage" screenOptions={{ headerShown: false }}>
       <Stack.Screen name="Profile Page" component={ProfilePage} options={{ title: "Profile" }} />
       <Stack.Screen name="New Pet" component={NewPetPage} />
       <Stack.Screen name="Edit Pet" component={EditPetPage} />

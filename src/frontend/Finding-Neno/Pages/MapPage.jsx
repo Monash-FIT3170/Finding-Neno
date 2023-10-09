@@ -7,7 +7,7 @@ import { Text } from 'react-native';
 import store from "../store/store";
 import { useSelector, useDispatch } from "react-redux";
 import { Dimensions } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar } from 'react-native';
 
 import { VStack } from 'native-base';
 import { Appbar, FAB, Provider, Portal, ToggleButton, Button, SegmentedButtons} from 'react-native-paper';
@@ -300,10 +300,11 @@ export default function MapPage({ navigation: { navigate } }) {
 	
 	});
 
+
 	return (
 		<Provider>
+		<StatusBar  backgroundColor='transparent' translucent={true} />
 		<SafeAreaView style={styles.container}>
-			<StatusBar style="auto" />
 				<View style={{ width: '100%',  height: '100%', alignItems: 'center' }}>
 					<MapView
 						ref={(ref) => this.mapView = ref}

@@ -102,13 +102,13 @@ const LoginPage = () => {
 					<VStack space={3} mt="5" width='100%'>
 						<FormControl isRequired isInvalid={'username' in errors}>
 							<FormControl.Label>Email / Phone Number</FormControl.Label>
-							<Input size="lg" width='100%' onChangeText={value => setFormData({ ...formData, username: value })} />
+							<Input color={colors.text} size="lg" width='100%' onChangeText={value => setFormData({ ...formData, username: value })} />
 							{'username' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.username}</FormControl.ErrorMessage>}
 						</FormControl>
 
 						<FormControl isRequired isInvalid={'password' in errors}>
 							<FormControl.Label>Password</FormControl.Label>
-							<Input size="lg" width='100%' type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
+							<Input color={colors.text} size="lg" width='100%' type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
 								<Icon as={<MaterialIcons name={showPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
 							</Pressable>} onChangeText={value => setFormData({ ...formData, password: value })} />
 							{'password' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.password}</FormControl.ErrorMessage>}
@@ -122,7 +122,7 @@ const LoginPage = () => {
 							{buttonText}
 						</Button>
 						<HStack mt="6" justifyContent="center">
-							<Text fontSize="sm" color="coolGray.600" _dark={{ color: "warmGray.200", }}>New user?{" "}</Text>
+							<Text fontSize="sm" color={colors.text}>New user?{" "}</Text>
 							<Link _text={styles.actionButton} href=""
 								onPress={() => { navigation.navigate("Signup"); }}>Sign Up</Link>
 						</HStack>
