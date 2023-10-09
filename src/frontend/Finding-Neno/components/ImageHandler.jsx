@@ -1,12 +1,16 @@
 import * as ImagePicker from 'expo-image-picker';
 import ImageView from 'react-native-image-viewing';
 import { Button } from 'react-native-paper';
-import { FormControl, HStack, Image, VStack, View } from 'native-base';
-import { ActivityIndicator, TouchableHighlight } from 'react-native';
+import { FormControl, HStack, Image, VStack, View, Text } from 'native-base';
+import { ActivityIndicator, TouchableHighlight, useColorScheme } from 'react-native';
 import { useState } from 'react';
 import { Color } from './atomic/Theme';
+import { useTheme } from '@react-navigation/native';
 
-const ImageHandler = ({ image, setImage, setIsButtonDisabled }) => {
+const ImageHandler = ({ image, setImage, setIsButtonDisabled, isRequired, error }) => {
+
+    const scheme = useColorScheme();
+    const { colors } = useTheme();
 
     const [isUploading, setIsUploading] = useState(false);
 
@@ -33,6 +37,10 @@ const ImageHandler = ({ image, setImage, setIsButtonDisabled }) => {
                 // Upload to Imgur
                 let base64Img = result.assets[0].base64;
                 uploadImage(base64Img, setImage);
+            }
+            else {
+                setIsUploading(false);
+                setIsButtonDisabled(false);
             }
         }
     };
@@ -61,6 +69,10 @@ const ImageHandler = ({ image, setImage, setIsButtonDisabled }) => {
                     let base64Img = result.assets[0].base64;
                     uploadImage(base64Img, setImage);
                 }
+            }
+            else {
+                setIsUploading(false);
+                setIsButtonDisabled(false);
             }
         }
     };
@@ -95,8 +107,10 @@ const ImageHandler = ({ image, setImage, setIsButtonDisabled }) => {
                 setImage(res.data.link.toString());
             } else {
                 toast.show({
+                    title: "Image Upload Failed",
                     description: "Image failed to upload. Please try again.",
-                    placement: "top"
+                    placement: "top",
+					alignItems: "center"
                 })
                 console.log("Image failed to upload")
                 // console.log("Image failed to upload - setting default image");
@@ -117,13 +131,13 @@ const ImageHandler = ({ image, setImage, setIsButtonDisabled }) => {
         setIsButtonDisabled(false);
     }
 
-    return (
-        <View>
+    return (                        
+        <FormControl isRequired={isRequired} isInvalid={error}>
+
             <ImageView images={[{uri: image}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor='gray'/>
 
             <VStack space={2}>
-                
-                <FormControl.Label>Photo</FormControl.Label>
+                <FormControl.Label><Text fontWeight={500} color={scheme === 'dark'? 'white' : 'black'}>Photo</Text></FormControl.Label>
                     {
                         isUploading ? <ActivityIndicator /> :
                             image && 
@@ -151,7 +165,7 @@ const ImageHandler = ({ image, setImage, setIsButtonDisabled }) => {
                         </View> : ""
                 }
             </VStack>    
-        </View>
+        </FormControl>
     )
 }
 

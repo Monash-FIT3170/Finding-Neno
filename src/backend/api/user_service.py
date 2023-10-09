@@ -33,6 +33,10 @@ def insert_user(connection) -> Tuple[str, int]:
     phoneNumber = json_data["phoneNumber"]
     password = json_data["password"]
     name = json_data["name"]
+    
+    user_exists = check_user_exists(connection, email, phoneNumber)
+    if not user_exists:
+        return 'User already exists', 409
     insert_user_to_database(connection, email, phoneNumber, name, password)
     return "Success", 201
 

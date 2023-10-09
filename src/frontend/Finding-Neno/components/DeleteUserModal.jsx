@@ -7,6 +7,7 @@ import { Color } from './atomic/Theme';
 import { useSelector } from 'react-redux';
 import store from "../store/store";
 import { logout } from '../store/user';
+import { useTheme } from '@react-navigation/native';
 
 const DeleteUserModal = ({ visible, setVisible }) => {
     const { API_URL } = useSelector((state) => state.api)
@@ -18,6 +19,7 @@ const DeleteUserModal = ({ visible, setVisible }) => {
     const [errors, setErrors] = useState({});
 	const [showPassword, setShowPassword] = useState(false);
     const toast = useToast();
+    const { colors } = useTheme();
 
     const closeModal = () => {
         setVisible(false);
@@ -120,7 +122,7 @@ const DeleteUserModal = ({ visible, setVisible }) => {
                 <Text style={{ marginTop: 4 }}>Are you sure you want to delete your account? You cannot undo this action.</Text>
 
                 <FormControl isInvalid={'password' in errors}>
-                    <FormControl.Label>Confirm this is you</FormControl.Label>
+                    <FormControl.Label><Text fontWeight={500} color={colors.text}>Confirm this is you</Text></FormControl.Label>
                     <Input placeholder='Password' type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
                     <Icon as={<MaterialIcons name={showPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
                     </Pressable>} onChangeText={value => setFormData({...formData, password: value})} autoComplete='false' autoCorrect='false' />

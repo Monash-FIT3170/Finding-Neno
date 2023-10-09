@@ -147,7 +147,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
 
   const sightingWithImage = (
     <View>
-      <ImageView images={[{ uri: sightingImage }]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor='gray' />
+      <ImageView images={[{ uri: sightingImage }]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor={colors.background} />
       <HStack width="100%" >
         {
           sightingImage &&
@@ -176,7 +176,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
                   sightingAnimal == 'Other' ?
                     <Text color={colors.text}>{sightingAnimal}</Text> :
                     <IconText iconName={sightingAnimal.toLowerCase()} text={sightingAnimal}
-                      iconColor={Color.NENO_BLUE} textColor={'black'} iconSize={19} fontWeight='normal' />
+                      iconColor={Color.NENO_BLUE} textColor={colors.text} iconSize={19} fontWeight='normal' />
                 }
               </VStack>
 
@@ -208,7 +208,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
 
 
   return (
-    <Animated.View style={{ backgroundColor: colors.background, opacity: fadeAnim, borderBottomWidth: 6, borderColor: colors.border}}>
+    <Animated.View style={{ backgroundColor: colors.cardColor, opacity: fadeAnim, borderBottomWidth: 6, borderColor: colors.border}}>
 
       {/* Info */}
       <View style={{ margin: '4%', marginBottom: 4 }}>

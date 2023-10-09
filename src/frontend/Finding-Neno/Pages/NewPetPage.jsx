@@ -1,16 +1,16 @@
 import React, { useState } from 'react';
-import { Box, Center, Heading, VStack, useToast, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView, WarningOutlineIcon } from "native-base";
-import { View, Image, FlatList } from 'react-native';
+import { Box, Center, Heading, VStack, useToast, FormControl, Input, Select, Alert, Text, KeyboardAvoidingView, WarningOutlineIcon } from "native-base";
 import { Color } from "../components/atomic/Theme";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
 import * as ImagePicker from 'expo-image-picker';
-import { ActivityIndicator } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
+import { Button } from 'react-native-paper';
 
 import { useSelector, useDispatch } from "react-redux";
-import store from "../store/store";
 
 import { formatDatetime, petTypeOptions } from "./shared";
+import ImageHandler from '../components/ImageHandler';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 const NewPetPage = ({ navigation: { navigate }, route }) => {
 	/**
@@ -21,6 +21,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 	   */
 
 	const navigation = useNavigation();
+	const { colors } = useTheme();
 	const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 	const pet = useSelector((state) => state.pet);
@@ -94,8 +95,10 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 						// Clear fields?
 
 						toast.show({
+							title: "Pet Added",
 							description: "Your pet has been added!",
-							placement: "top"
+							placement: "top",
+							alignItems: "center"
 						})
 						navigate('Profile Page')
 					}
@@ -106,11 +109,16 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 					}
 				})
 				.catch((error) => {
+					setButtonText("Add Pet")
 					setIsButtonDisabled(false);
 					alert("Error");
 					alert(error);
 				});
-		};
+		}
+		else {
+			setButtonText("Add Pet")
+			setIsButtonDisabled(false);
+		}
 	}
 
 	const validateDetails = (formData) => {
@@ -132,9 +140,16 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		} else if (formData.petBreed.length > 25) {
 			foundErrors.petBreed = "Must not exceed 25 characters";
 		}
-	  
-		if (formData.petDescription.length > 100) {
-		  foundErrors.petDescription = "Must not exceed 100 characters";
+
+		if (formData.petDescription === "") {
+			foundErrors.petDescription = "Pet description is required";	
+		}
+
+		if (formData.petDescription.length < 50) {
+			foundErrors.petDescription = "Please be more descriptive. Must be at least 50 characters";	
+		}
+		else if (formData.petDescription.length > 500) {
+		  foundErrors.petDescription = "Must not exceed 500 characters";
 		}
 	  
 		// Check that image is not the LOADING_IMAGE and not empty
@@ -148,187 +163,61 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		return Object.keys(foundErrors).length === 0;
 	};
 
-	const uploadImage = async (base64Img, setPetImage) => {
-        setIsButtonDisabled(true);
-        setIsUploading(true);
-		// Uploads an image to Imgur and sets the petImage state to the uploaded image URL
-		const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
-
-		// Set loading image while the chosen image is being uploaded
-		setPetImage(LOADING_IMAGE);
-
-		const formData = new FormData();
-		formData.append("image", base64Img);
-
-		await fetch("https://api.imgur.com/3/image", {
-			method: "POST",
-			headers: {
-				"Authorization": "Client-ID 736cd8c6daf1a6e",
-			},
-			body: formData,
-		})
-			.then(res => res.json())
-			.then(res => {
-				if (res.success === true) {
-					console.log(`Image successfully uploaded: ${res.data.link}}`);
-					setPetImage(res.data.link);
-				} else {
-                    toast.show({
-                        description: "Image failed to upload. Please try again.",
-                        placement: "top"
-                    })
-                    console.log("Image failed to upload")
-					// console.log("Image failed to upload - setting default image");
-					// setPetImage(DEFAULT_IMAGE);
-				}
-			})
-			.catch(err => {
-                toast.show({
-                    description: "Image failed to upload. Please try again.",
-                    placement: "top"
-                })
-				console.log("Image failed to upload:", err);
-				// setPetImage(DEFAULT_IMAGE);
-			});
-
-		setIsUploading(false);
-		setIsButtonDisabled(false);
-	}
-
-	const handleChoosePhoto = async () => {
-		/**
-		 * This function is used to choose a photo from the user's photo library.
-		 * It will call the ImagePicker API to open the photo library and allow the user to choose a photo.
-		 * It will then set the petImage state to the chosen photo.
-		 */
-		const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-		if (status === 'granted') {
-			let result = await ImagePicker.launchImageLibraryAsync({
-				mediaTypes: ImagePicker.MediaTypeOptions.Images,
-				allowsEditing: true,
-				aspect: [4, 3],
-				quality: 1,
-				base64: true,
-			});
-			if (!result.canceled) {
-				if (result.assets[0].uri.startsWith("http")) {
-					// Image is a URL, so leave it as is
-					setPetImage(result.assets[0].uri);
-				} else {
-					// Image is a local file path, so upload to Imgur
-					let base64Img = result.assets[0].base64;
-					uploadImage(base64Img, setPetImage);
-				}
-			}
-		}
-	};
-
-    const handleTakePhoto = async () => {
-        /**
-         * This function is used to take a photo from the user's camera.
-         * It will call the ImagePicker API to open the camera and allow the user to take a photo.
-         * It will then set the petImage state to the taken photo.
-         */
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status === 'granted') {
-          let result = await ImagePicker.launchCameraAsync({
-            allowsEditing: true,
-            aspect: [4, 3],
-            quality: 1,
-			base64: true,
-          });
-          if (!result.canceled) {
-            // Upload to Imgur
-            let base64Img = result.assets[0].base64;
-            uploadImage(base64Img, setPetImage);
-          }
-        }
-      };
-
 	  
 	return (
-		<KeyboardAvoidingView style={{ flex: 1, backgroundColor: 'white'}} behavior="height">
-			<StatusBar style="auto" />
-			<FlatList
-				data={[{ key: 'form' }]} // Use a single item array as data source
-				renderItem={() => (
-					<Box flex={1} alignItems="center" justifyContent="center">
-						<Center w="100%">
-							<Box safeArea p="2" py="8" w="90%" maxW="290">
+		<KeyboardAwareScrollView contentContainerStyle={{paddingVertical: 50}}>
+			<SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: '100%'}}>
+				<VStack width={300} justifyContent='center'>
+					<Heading size="lg" fontWeight="600" color={colors.primary}>Add a Pet</Heading>
 
-								<VStack>
-									<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Add a Pet</Heading>
+					<VStack space={3} mt="5">
 
-									<VStack space={3} mt="5">
+						<FormControl isInvalid={'petName' in errors} isRequired>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Name</Text></FormControl.Label>
+							<Input color={colors.text} size="lg" placeholder='Enter the name of your pet' onChangeText={value => setFormData({ ...formData, petName: value })} />
+							{'petName' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petName}</FormControl.ErrorMessage>}
+						</FormControl>
+						
+						<ImageHandler image={petImage} setImage={setPetImage} setIsButtonDisabled={setIsButtonDisabled} isRequired={true} error={'petImage' in errors} />
 
-										<FormControl isInvalid={'petName' in errors}>
-											<FormControl.Label>Pet Name</FormControl.Label>
-											<Input size="lg" onChangeText={value => setFormData({ ...formData, petName: value })} />
-											{'petName' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petName}</FormControl.ErrorMessage>}
-										</FormControl>
+						<FormControl isInvalid={'petType' in errors} isRequired>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Choose Pet Type</Text></FormControl.Label>
+							<Select color={colors.text} size="lg" placeholder="Select a pet type"
+								selectedValue={formData.petType}
+								onValueChange={(value) => setFormData({ ...formData, petType: value })}>
+								<Select.Item label="Select a pet" value="" disabled hidden />
+								{petTypeOptions.map((option, index) => (
+									<Select.Item key={index} label={option.label} value={option.value} />
+								))}
+							</Select>
+							{'petType' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petType}</FormControl.ErrorMessage>}
+						</FormControl>
 
-										<FormControl isInvalid={'petImage' in errors}>
-                                        	<FormControl.Label>Photo</FormControl.Label>
-											<View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-												{
-													isUploading ? <ActivityIndicator /> :
-													petImage && <Image source={{ uri: petImage }} style={{ width: 200, height: 200 }} alt='pet image' />
-												}
-											</View>
-											<Button variant="ghost" onPress={handleChoosePhoto}>
-												Choose From Library
-											</Button>
-											<Button variant="ghost" onPress={handleTakePhoto}>
-												Take Photo
-											</Button>
+						<FormControl isInvalid={'petBreed' in errors} isRequired>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Breed</Text></FormControl.Label>
+							<Input color={colors.text} size="lg" onChangeText={value => setFormData({ ...formData, petBreed: value })} placeholder="Enter pet breed" />
+							{'petBreed' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petBreed}</FormControl.ErrorMessage>}
+						</FormControl>
 
-										
-											{'petImage' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petImage}</FormControl.ErrorMessage>}
-										</FormControl>
+						<FormControl isInvalid={'petDescription' in errors} isRequired>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Description</Text></FormControl.Label>
+							<Input multiline={true} color={colors.text} size="lg"
+								onChangeText={(value) => setFormData({ ...formData, petDescription: value })}
+								placeholder="Please describe more about your pet"
+							/>
+							{'petDescription' in errors && (
+								<FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petDescription}</FormControl.ErrorMessage>
+							)}
+						</FormControl>
 
-										<FormControl isInvalid={'petType' in errors}>
-											<FormControl.Label>Choose Pet Type</FormControl.Label>
-											<Select size="lg" placeholder="Select a pet type"
-												selectedValue={formData.petType}
-												onValueChange={(value) => setFormData({ ...formData, petType: value })}>
-												<Select.Item label="Select a pet" value="" disabled hidden />
-												{petTypeOptions.map((option, index) => (
-													<Select.Item key={index} label={option.label} value={option.value} />
-												))}
-											</Select>
-											{'petType' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petType}</FormControl.ErrorMessage>}
-										</FormControl>
+                        <Button buttonColor={Color.NENO_BLUE} style={{opacity: !isButtonDisabled ? 1 : 0.4}} mode="contained" onPress={!isButtonDisabled ? onAddPetPress : () => {}}>
+                            {buttonText}
+                        </Button>
 
-										<FormControl isInvalid={'petBreed' in errors}>
-											<FormControl.Label>Pet Breed</FormControl.Label>
-											<Input size="lg" onChangeText={value => setFormData({ ...formData, petBreed: value })} placeholder="Enter pet breed" />
-											{'petBreed' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petBreed}</FormControl.ErrorMessage>}
-										</FormControl>
-
-										<FormControl isInvalid={'petDescription' in errors}>
-											<FormControl.Label>Pet Description</FormControl.Label>
-											<Input size="lg"
-												onChangeText={(value) => setFormData({ ...formData, petDescription: value })}
-												placeholder="Please describe more about your pet"
-											/>
-											{'petDescription' in errors && (
-												<FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petDescription}</FormControl.ErrorMessage>
-											)}
-										</FormControl>
-
-										<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onAddPetPress}>
-											{buttonText}
-										</Button>
-
-									</VStack>
-
-								</VStack>
-							</Box>
-						</Center>
-					</Box>
-				)}
-			/>
-		</KeyboardAvoidingView>
+					</VStack>
+                </VStack>
+            </SafeAreaView>
+        </KeyboardAwareScrollView>
 	);
 
 };

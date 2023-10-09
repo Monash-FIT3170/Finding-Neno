@@ -22,7 +22,6 @@ import { Color } from "../components/atomic/Theme";
 import { useNavigation } from "@react-navigation/native";
 import * as ImagePicker from "expo-image-picker";
 import store from "../store/store";
-import { StatusBar } from 'expo-status-bar';
 
 import { petTypeOptions } from "./shared";
 
@@ -238,7 +237,6 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
 
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
-      <StatusBar style="auto" />
       <FlatList
         data={[{ key: "form" }]}
         renderItem={() => (
@@ -256,7 +254,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
                   </Heading>
                   <VStack space={3} mt="5">
                     <FormControl isInvalid={"petName" in errors}>
-                      <FormControl.Label>Pet Name</FormControl.Label>
+                      <FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Name</Text></FormControl.Label>
                       <Input
                         onChangeText={(value) => setPetName(value)}
                         value={petName} // Set the input value to the current petName
@@ -268,7 +266,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
                       )}
                     </FormControl>
                     <FormControl isInvalid={"petImage" in errors}>
-                      <FormControl.Label>Photo</FormControl.Label>
+                      <FormControl.Label><Text fontWeight={500} color={colors.text}>Photo</Text></FormControl.Label>
                       <View
                         style={{
                           flex: 1,
@@ -296,7 +294,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
                       )}
                     </FormControl>
                     <FormControl isInvalid={"petType" in errors}>
-                      <FormControl.Label>Choose Pet Type</FormControl.Label>
+                      <FormControl.Label><Text fontWeight={500} color={colors.text}>Choose Pet Type</Text></FormControl.Label>
                       <Select
                         placeholder="Select a pet type"
                         selectedValue={petType}
@@ -323,7 +321,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
                       )}
                     </FormControl>
                     <FormControl isInvalid={"petBreed" in errors}>
-                      <FormControl.Label>Pet Breed</FormControl.Label>
+                      <FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Breed</Text></FormControl.Label>
                       <Input
                         onChangeText={(value) => setPetBreed(value)}
                         value={petBreed} // Set the input value to the current petBreed
@@ -336,7 +334,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
                       )}
                     </FormControl>
                     <FormControl isInvalid={"petDescription" in errors}>
-                      <FormControl.Label>Pet Description</FormControl.Label>
+                      <FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Description</Text></FormControl.Label>
                       <Input
                         onChangeText={(value) => setPetDescription(value)}
                         value={petDescription} // Set the input value to the current petDescription

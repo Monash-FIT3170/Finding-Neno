@@ -1,10 +1,9 @@
-import { useNavigation } from '@react-navigation/native';
-import { Heading, VStack, useToast, FormControl, Input, Select, WarningOutlineIcon } from "native-base";
+import { useNavigation, useTheme } from '@react-navigation/native';
+import { Heading, VStack, useToast, FormControl, Input, Select, Text, WarningOutlineIcon } from "native-base";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 import React, { useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { StatusBar } from 'expo-status-bar';
-import { Button, Subheading, Text } from 'react-native-paper';
+import { Button, Subheading } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSelector } from "react-redux";
 import { formatDatetime, formatDateTimeDisplay, petTypeOptions } from "./shared";
@@ -17,9 +16,10 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
     const navigation = useNavigation();
+    const { colors } = useTheme();
 
     const [errors, setErrors] = useState({});
-    const [buttonText, setButtonText] = useState("Add sighting")
+    const [buttonText, setButtonText] = useState("Add Sighting")
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     const [selectedDatetime, setSelectedDatetime] = useState(new Date());
@@ -91,25 +91,27 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                 .then((res) => {
                     if (res.status == 201) {
                         toast.show({
+                            title: "Sighting Added",
                             description: "Your sighting has been added!",
-                            placement: "top"
+                            placement: "top",
+                            alignItems: "center"
                         })
                         
                         navigation.goBack();
                     }
                     else {
-                        setButtonText("Add sighting");
+                        setButtonText("Add Sighting");
                         setIsButtonDisabled(false);
                     }
                 })
                 .catch((error) => {
-                    setButtonText("Add sighting");
+                    setButtonText("Add Sighting");
                     setIsButtonDisabled(false);
                     alert(error);
                 });
         }
         else {
-            setButtonText("Add sighting");
+            setButtonText("Add Sighting");
             setIsButtonDisabled(false);
         }
     }
@@ -133,21 +135,19 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
     }
 
     return (
-        <KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50, backgroundColor: 'white'}}>
-            <StatusBar style="auto" />
-            <SafeAreaView style={{ flex: 1, marginHorizontal: "10%" }}>
-
-                <VStack>
-                    <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Report a Pet Sighting</Heading>
-                    <Subheading>Found a lost pet? Report your sighting here</Subheading>
-                    <Subheading>Sighting will automatically expire after 30 days</Subheading>
+		<KeyboardAwareScrollView contentContainerStyle={{paddingVertical: 50}}>
+			<SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: '100%'}}>
+				<VStack width={300} justifyContent='center'>
+                    <Heading size="lg" fontWeight="600" color={colors.primary}>Report a Pet Sighting</Heading>
+                    <Subheading style={{color: colors.text}}>Found a lost pet? Report your sighting here</Subheading>
+                    <Subheading style={{color: colors.text}}>Sighting will automatically expire after 30 days</Subheading>
 
                     <VStack space={3} mt="5"> 
                         <ImageHandler image={sightingImage} setImage={setSightingImage} setIsButtonDisabled={setIsButtonDisabled} />
 
                         <FormControl isRequired isInvalid={'animal' in errors}>
-                            <FormControl.Label>Pet Type</FormControl.Label>
-                            <Select size="lg" placeholder="Select a pet type"
+                            <FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Type</Text></FormControl.Label>
+                            <Select size="lg" placeholder="Select a pet type" color={colors.text}
                                 selectedValue={formData.animal}
                                 onValueChange={(value) => setFormData({ ...formData, animal: value })}>
                                 <Select.Item label="Select a pet" value="" disabled hidden />
@@ -159,33 +159,33 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                         </FormControl>
 
                         <FormControl>
-                            <FormControl.Label>Breed</FormControl.Label>
-                            <Input size="lg"
+                            <FormControl.Label><Text fontWeight={500} color={colors.text}>Breed</Text></FormControl.Label>
+                            <Input size="lg" color={colors.text}
                                 placeholder="Pet breed"
                                 onChangeText={value => setFormData({ ...formData, breed: value })}
                             />
                         </FormControl>
 
                         <FormControl isRequired>
-                            <FormControl.Label>Date and Time of Sighting</FormControl.Label>
-                            <Button style={{ borderColor: Color.NENO_BLUE}} textColor={Color.NENO_BLUE} mode="outlined" onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
+                            <FormControl.Label><Text fontWeight={500} color={colors.text}>Date and Time of Sighting</Text></FormControl.Label>
+                            <Button style={{ borderColor: colors.primary}} textColor={colors.primary} mode="outlined" onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
                             <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" maximumDate={new Date()} themeVariant="light" display="inline"
                                 onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
                         </FormControl>
 
                         <FormControl>
-                            <FormControl.Label>Last Known Location</FormControl.Label>
+                            <FormControl.Label><Text fontWeight={500} color={colors.text}>Last Known Location</Text></FormControl.Label>
                             <MapAddressSearch formData={formData} setFormData={setFormData} />
                             {<FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>No address found.</FormControl.ErrorMessage>}
                         </FormControl>
 
                         <FormControl isInvalid={'description' in errors}>
-                            <FormControl.Label>Description</FormControl.Label>
-                            <Input size="lg" placeholder="Additional info" onChangeText={value => setFormData({ ...formData, description: value })} />
+                            <FormControl.Label><Text fontWeight={500} color={colors.text}>Description</Text></FormControl.Label>
+                            <Input multiline={true} size="lg" color={colors.text} placeholder="Additional info" onChangeText={value => setFormData({ ...formData, description: value })} />
                             {'description' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.description}</FormControl.ErrorMessage>}
                         </FormControl>
 
-                        <Button buttonColor={Color.NENO_BLUE} mode="contained" disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onPress}>
+                        <Button buttonColor={Color.NENO_BLUE} style={{opacity: !isButtonDisabled ? 1 : 0.4}} mode="contained" onPress={!isButtonDisabled ? onPress : () => {}}>
                             {buttonText}
                         </Button>
 

@@ -5,7 +5,6 @@ import { NavigationContainer, useNavigation  } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import {validEmail} from "./validation"
 import { useState } from "react";
-import { StatusBar } from 'expo-status-bar';
 
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
@@ -93,7 +92,6 @@ const PasswordResetPage = () => {
 
     return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-			<StatusBar style="auto" />
 			<Box flex={1} alignItems="center" justifyContent="center">
 				<Center w="100%">
 					<Box safeArea p="2" py="8" w="90%" maxW="290">
@@ -113,13 +111,13 @@ const PasswordResetPage = () => {
 						<VStack space={3} mt="5">
 
 							<FormControl isInvalid={'resetCode' in errors}>
-								<FormControl.Label>Reset Code</FormControl.Label>
+								<FormControl.Label><Text fontWeight={500} color={colors.text}>Reset Code</Text></FormControl.Label>
 								<Input size="lg" onChangeText={value => setFormData({...formData, resetCode: value})} />
 								{'resetCode' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.resetCode}</FormControl.ErrorMessage>}
 							</FormControl>
 
 							<FormControl isInvalid={'password' in errors}>
-								<FormControl.Label>Password</FormControl.Label>
+								<FormControl.Label><Text fontWeight={500} color={colors.text}>Password</Text></FormControl.Label>
 								<Input size="lg" type={show ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShow(!show)}> 
 								<Icon as={<MaterialIcons name={show ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
 								</Pressable>} onChangeText={value => setFormData({...formData, password: value})} />
@@ -127,7 +125,7 @@ const PasswordResetPage = () => {
 							</FormControl>
 
 							<FormControl isInvalid={'confirmPassword' in errors}>
-								<FormControl.Label>Confirm Password</FormControl.Label>
+								<FormControl.Label><Text fontWeight={500} color={colors.text}>Confirm Password</Text></FormControl.Label>
 								<Input size="lg" type={showConfirm ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowConfirm(!showConfirm)}> 
 								<Icon as={<MaterialIcons name={showConfirm ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
 								</Pressable>} onChangeText={value => setFormData({...formData, confirmPassword: value})} />

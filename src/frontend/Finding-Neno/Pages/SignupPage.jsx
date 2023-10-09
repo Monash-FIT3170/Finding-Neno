@@ -7,7 +7,6 @@ import { Button } from "react-native-paper";
 import { Color } from "../components/atomic/Theme";
 import { validEmail, validPhoneNumber, validatePassword } from "./validation";
 import { useState } from "react";
-import { StatusBar } from 'expo-status-bar';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 
 import { useSelector, useDispatch } from "react-redux";
@@ -53,6 +52,15 @@ const SignupPage = () => {
 				})
 				
 				navigation.navigate("Login");
+			}
+			else if (res.status == 409) {
+				toast.show({
+					title: "Account Already Exists",
+					description: "An account with the email address already exists.",
+					placement: "top",
+					alignItems: "center",
+					
+				})
 			}
 		}
 
@@ -108,83 +116,76 @@ const SignupPage = () => {
 		setShowAccountExistsModal(false);
 	}
 
-	return (
-		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50, justifyContent: 'center', height: '100%', backgroundColor: colors.background }}
-			resetScrollToCoords={{ x: 0, y: 0 }}
-			scrollEnabled={true}
-			bounces={false}
-			enableAutomaticScroll={true}
-			extraScrollHeight={30}>
-			<StatusBar style="auto" />			
-				<SafeAreaView style={{ alignItems: 'center', justifyContent: 'center' }}>
-					<VStack style={{ width: 300 }}>
+	return (		
+		<KeyboardAwareScrollView scrollEnabled={false} contentContainerStyle={{paddingVertical: 50, height: '100%'}}>
+			<SafeAreaView style={{ alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+				<VStack style={{ width: 300 }}>
+					<Heading
+						size="lg"
+						fontWeight="600"
+						color={colors.primary}
+					>
+						Sign Up
+					</Heading>
+					<VStack space={3} mt="5">
 
-								<Heading
-									size="lg"
-									fontWeight="600"
-									color={colors.primary}
-								>
-									Sign Up
-								</Heading>
-								<VStack space={3} mt="5">
+						<FormControl isRequired isInvalid={'name' in errors}>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Name</Text></FormControl.Label>
+							<Input width='100%' color={colors.text} size="lg" onChangeText={value => setFormData({ ...formData, name: value })} />
+							{'name' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.name}</FormControl.ErrorMessage>}
+						</FormControl>
 
-									<FormControl isRequired isInvalid={'name' in errors}>
-										<FormControl.Label>Name</FormControl.Label>
-										<Input width='100%' color={colors.text} size="lg" onChangeText={value => setFormData({ ...formData, name: value })} />
-										{'name' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.name}</FormControl.ErrorMessage>}
-									</FormControl>
+						<FormControl isRequired isInvalid={'email' in errors}>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Email</Text></FormControl.Label>
+							<Input width='100%' color={colors.text} size="lg" autoCapitalize="none" keyboardType="email-address" onChangeText={value => setFormData({ ...formData, email: value })} />
+							{'email' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.email}</FormControl.ErrorMessage>}
+						</FormControl>
 
-									<FormControl isRequired isInvalid={'email' in errors}>
-										<FormControl.Label>Email</FormControl.Label>
-										<Input width='100%' color={colors.text} size="lg" autoCapitalize="none" keyboardType="email-address" onChangeText={value => setFormData({ ...formData, email: value })} />
-										{'email' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.email}</FormControl.ErrorMessage>}
-									</FormControl>
+						<FormControl isRequired isInvalid={'phoneNumber' in errors}>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Phone Number</Text></FormControl.Label>
+							<Input width='100%' color={colors.text} size="lg" keyboardType="phone-pad" maxLength={10} onChangeText={value => setFormData({ ...formData, phoneNumber: value })} />
+							{'phoneNumber' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.phoneNumber}</FormControl.ErrorMessage>}
+						</FormControl>
 
-									<FormControl isRequired isInvalid={'phoneNumber' in errors}>
-										<FormControl.Label>Phone Number</FormControl.Label>
-										<Input width='100%' color={colors.text} size="lg" keyboardType="phone-pad" maxLength={10} onChangeText={value => setFormData({ ...formData, phoneNumber: value })} />
-										{'phoneNumber' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.phoneNumber}</FormControl.ErrorMessage>}
-									</FormControl>
+						<FormControl isRequired isInvalid={'password' in errors}>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Password</Text></FormControl.Label>
+							<Input width='100%' color={colors.text} size="lg" type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
+								<Icon as={<MaterialIcons name={showPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
+							</Pressable>} onChangeText={value => setFormData({ ...formData, password: value })} />
+							{'password' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.password}</FormControl.ErrorMessage>}
+						</FormControl>
 
-									<FormControl isRequired isInvalid={'password' in errors}>
-										<FormControl.Label>Password</FormControl.Label>
-										<Input width='100%' color={colors.text} size="lg" type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
-											<Icon as={<MaterialIcons name={showPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
-										</Pressable>} onChangeText={value => setFormData({ ...formData, password: value })} />
-										{'password' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.password}</FormControl.ErrorMessage>}
-									</FormControl>
+						<FormControl isRequired isInvalid={'confirmPassword' in errors}>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Confirm Password</Text></FormControl.Label>
+							<Input width='100%' color={colors.text} size="lg" type={showConfirmPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+								<Icon as={<MaterialIcons name={showConfirmPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
+							</Pressable>} onChangeText={value => setFormData({ ...formData, confirmPassword: value })} />
+							{'confirmPassword' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.confirmPassword}</FormControl.ErrorMessage>}
+						</FormControl>
 
-									<FormControl isRequired isInvalid={'confirmPassword' in errors}>
-										<FormControl.Label>Confirm Password</FormControl.Label>
-										<Input width='100%' color={colors.text} size="lg" type={showConfirmPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
-											<Icon as={<MaterialIcons name={showConfirmPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
-										</Pressable>} onChangeText={value => setFormData({ ...formData, confirmPassword: value })} />
-										{'confirmPassword' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.confirmPassword}</FormControl.ErrorMessage>}
-									</FormControl>
+						<Button buttonColor={Color.NENO_BLUE} mode="contained" style={{marginTop: 15}} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onSignupPress}>
+							{buttonText}
+						</Button>
 
-									<Button buttonColor={Color.NENO_BLUE} mode="contained" style={{marginTop: 15}} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onSignupPress}>
-										{buttonText}
-									</Button>
-
-									<HStack mt="6" justifyContent="center">
-										<Text
-											fontSize="sm"
-											color={colors.text}
-										>
-											Existing user?{" "}
-										</Text>
-										<Link
-											_text={styles.actionButton}
-											onPress={() => {
-												navigation.navigate("Login");
-											}}
-										>
-											Sign In
-										</Link>
-									</HStack>
-								</VStack>
-							</VStack>
-						</SafeAreaView>
+						<HStack mt="6" justifyContent="center">
+							<Text
+								fontSize="sm"
+								color={colors.text}
+							>
+								Existing user?{" "}
+							</Text>
+							<Link
+								_text={styles.actionButton}
+								onPress={() => {
+									navigation.navigate("Login");
+								}}
+							>
+								Sign In
+							</Link>
+						</HStack>
+					</VStack>
+				</VStack>
+			</SafeAreaView>
 		</KeyboardAwareScrollView>
 		// </>
 		// </TouchableWithoutFeedback>

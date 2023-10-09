@@ -7,11 +7,11 @@ import { Text } from 'react-native';
 import store from "../store/store";
 import { useSelector, useDispatch } from "react-redux";
 import { Dimensions } from 'react-native';
-import { StatusBar } from 'react-native';
 
-import { VStack } from 'native-base';
+import { StatusBar, VStack } from 'native-base';
 import { Appbar, FAB, Provider, Portal, ToggleButton, Button, SegmentedButtons} from 'react-native-paper';
 import { Color } from '../components/atomic/Theme';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 
 "Make a button to toggle between reports and sightings. Then make a function "
 
@@ -188,7 +188,7 @@ export default function MapPage({ navigation: { navigate } }) {
 		}
 	  ]
 	// const windowWidth = Dimensions.get('window').width; 
-	// const windowHeight = Dimensions.get('window').height;
+	const windowHeight = Dimensions.get('window').height;
 
 	const [reports, setReports] = useState([]);
 	const [sightings, setSightings] = useState([]);
@@ -303,70 +303,68 @@ export default function MapPage({ navigation: { navigate } }) {
 
 	return (
 		<Provider>
-		<StatusBar  backgroundColor='transparent' translucent={true} />
-		<SafeAreaView style={styles.container}>
-				<View style={{ width: '100%',  height: '100%', alignItems: 'center' }}>
-					<MapView
-						ref={(ref) => this.mapView = ref}
-						provider={PROVIDER_GOOGLE}
-						style={styles.map}
-						initialRegion={mapRegion}
-						showCompass={true}
-						showsIndoors={false}
-						rotateEnabled={false}
-						loadingEnabled={true}
-						customMapStyle={ scheme == 'dark' ? mapStyle : []}
-						onRegionChangeComplete={(newRegion) => handleRegionChange(newRegion)}
-					>
-						{/* Render reports markers */}
-						{
-							tabValue == "reports" ?
-							
-						(Array.isArray(reports)
-							? reports.map((report, index) => (
-								<Marker
-									key={`${report[0]}_${report[3]}_${report[4]}`}
-									title={report[6]}
-									coordinate={{ longitude: report[3], latitude: report[4] }}
-									onPress={() =>
-										this.mapView.animateToRegion({
-											longitude: report[3],
-											latitude: report[4],
-											longitudeDelta: 0.0015,
-										})
-									}
-								></Marker>
-							))
-							: null) :
+		<StatusBar style='auto' />
+			<View style={{alignItems: 'center', height: '100%'}}>
+				<MapView
+					ref={(ref) => this.mapView = ref}
+					provider={PROVIDER_GOOGLE}
+					style={styles.map}
+					initialRegion={mapRegion}
+					showCompass={true}
+					showsIndoors={false}
+					rotateEnabled={false}
+					loadingEnabled={true}
+					customMapStyle={ scheme == 'dark' ? mapStyle : []}
+					onRegionChangeComplete={(newRegion) => handleRegionChange(newRegion)}
+				>
+					{/* Render reports markers */}
+					{
+						tabValue == "reports" ?
+						
+					(Array.isArray(reports)
+						? reports.map((report, index) => (
+							<Marker
+								key={`${report[0]}_${report[3]}_${report[4]}`}
+								title={report[6]}
+								coordinate={{ longitude: report[3], latitude: report[4] }}
+								onPress={() =>
+									this.mapView.animateToRegion({
+										longitude: report[3],
+										latitude: report[4],
+										longitudeDelta: 0.0015,
+									})
+								}
+							></Marker>
+						))
+						: null) :
 
-						//Render sightings markers
-						(Array.isArray(sightings)
-							? sightings.map((sighting, index) => (
-								<Marker
-									key={`${sighting[0]}_${sighting[2]}_${sighting[3]}`}
-									title={sighting[10]}
-									coordinate={{ longitude: sighting[2], latitude: sighting[3] }}
-									onPress={() =>
-										this.mapView.animateToRegion({
-											longitude: sighting[2],
-											latitude: sighting[3],
-											longitudeDelta: 0.0015,
-										})
-									}
-								></Marker>
-							))
-							: null)
+					//Render sightings markers
+					(Array.isArray(sightings)
+						? sightings.map((sighting, index) => (
+							<Marker
+								key={`${sighting[0]}_${sighting[2]}_${sighting[3]}`}
+								title={sighting[10]}
+								coordinate={{ longitude: sighting[2], latitude: sighting[3] }}
+								onPress={() =>
+									this.mapView.animateToRegion({
+										longitude: sighting[2],
+										latitude: sighting[3],
+										longitudeDelta: 0.0015,
+									})
+								}
+							></Marker>
+						))
+						: null)
 
-						}
-					</MapView>
-
-
-					{/* Switch and label */}
-					<View style={{ position: 'absolute', top: '1%', width: '100%' }} alignItems='center'>
+					}
+				</MapView>
+				<SafeAreaView style={{backgroundColor: 'transparent'}}>
+					<View style={{ width: '100%', alignItems: 'center' }}>
+						{/* Switch and label */}
 						<SegmentedButtons value={tabValue} onValueChange={setTabValue}
 							style={{ borderColor: colors.border, shadowOpacity: 0.3, shadowOffset: { width: 2, height: 2 }, 
 								marginTop: 0, width: '98%', backgroundColor: colors.background, borderRadius: 20, }}
-							theme={{ colors: { onSurface: colors.text, secondaryContainer: Color.FAINT_NENO_BLUE, onSecondaryContainer: colors.primary, outline: 'gray' }}} 
+							theme={{ colors: { onSurface: colors.text, secondaryContainer: colors.tertiary, onSecondaryContainer: colors.primary, outline: 'gray' }}} 
 							
 							buttons={[
 								{ label: 'Reports', icon: 'file-document', value: 'reports', style: backgroundColor = colors.background},
@@ -374,27 +372,26 @@ export default function MapPage({ navigation: { navigate } }) {
 							]}
 						/>
 
-						<Button mode='elevated' style={{ backgroundColor: colors.background, opacity: 0.9, marginTop: 8 }} onPress={onPressSearch}>
-							<Text style={{ color: colors.primary, fontWeight: 'bold' }}>Search this area</Text>
-						</Button>
-						<View style={{ marginTop: 5 }}>
-							{
-								tabValue == "reports" ? <Text style={styles.boldText}> {reports.length} reports in area</Text> : <Text style={styles.boldText}> {sightings.length} sightings in area</Text>
-							}
-						</View>
-
-						<Portal>
-							<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
-								actions={[
-									{ icon: 'file-document', label: 'New Missing Report', onPress: () => navigate('New Missing Report'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
-									{ icon: 'magnify', label: 'New Sighting', onPress: () => navigate('New Sighting'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
-								]} />
-						</Portal>
 					</View>
+				</SafeAreaView>
 
-				</View>
-				
-		</SafeAreaView>
+
+				<Button mode='elevated' style={{ backgroundColor: colors.background, opacity: 0.9, marginTop: 8 }} onPress={onPressSearch}>
+					<Text style={{ color: colors.primary, fontWeight: 'bold' }}>Search this area</Text>
+				</Button>
+				<View style={{ marginTop: 5 }}>
+					{
+						tabValue == "reports" ? <Text style={styles.boldText}> {reports.length} reports in area</Text> : <Text style={styles.boldText}> {sightings.length} sightings in area</Text>
+					}
+				</View>		
+			</View>		
+			<Portal>
+				<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
+					actions={[
+						{ icon: 'file-document', label: 'New Missing Report', onPress: () => navigate('New Missing Report'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+						{ icon: 'magnify', label: 'New Sighting', onPress: () => navigate('New Sighting'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+					]} />
+			</Portal>
 		</Provider>
 	);
 

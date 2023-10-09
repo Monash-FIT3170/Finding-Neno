@@ -2,7 +2,6 @@ import { Box, Center, FormControl, Heading, HStack, Icon, Input, KeyboardAvoidin
 import { Dimensions, SafeAreaView, StyleSheet, TouchableWithoutFeedback } from "react-native"
 import { MaterialIcons } from '@expo/vector-icons'
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
-import { StatusBar } from 'expo-status-bar';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { Button } from "react-native-paper";
 import { useTheme } from '@react-navigation/native'
@@ -85,29 +84,21 @@ const LoginPage = () => {
 	}
 
 	return (
-		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50, justifyContent: 'center', height: '100%', backgroundColor: colors.background }}
-			resetScrollToCoords={{ x: 0, y: 0 }}
-			scrollEnabled={true}
-			bounces={false}
-			enableAutomaticScroll={true}
-			extraScrollHeight={30}>
-			<StatusBar style="auto" />
-
-
-			<SafeAreaView style={{ alignItems: 'center', justifyContent: 'center' }}>
+		<KeyboardAwareScrollView scrollEnabled={false} contentContainerStyle={{paddingVertical: 50, height: '100%'}}>
+			<SafeAreaView style={{ alignItems: 'center', justifyContent: 'center', height: '100%'}}>
 				<VStack style={{ alignItems: 'center', maxWidth: 350 }}>
 					<Heading size="2xl" fontWeight="700" color={colors.primary}>
 						Finding Neno
 					</Heading>
 					<VStack space={3} mt="5" width='100%'>
 						<FormControl isRequired isInvalid={'username' in errors}>
-							<FormControl.Label>Email / Phone Number</FormControl.Label>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Email / Phone Number</Text></FormControl.Label>
 							<Input color={colors.text} size="lg" width='100%' onChangeText={value => setFormData({ ...formData, username: value })} />
 							{'username' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.username}</FormControl.ErrorMessage>}
 						</FormControl>
 
 						<FormControl isRequired isInvalid={'password' in errors}>
-							<FormControl.Label>Password</FormControl.Label>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Password</Text></FormControl.Label>
 							<Input color={colors.text} size="lg" width='100%' type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
 								<Icon as={<MaterialIcons name={showPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
 							</Pressable>} onChangeText={value => setFormData({ ...formData, password: value })} />

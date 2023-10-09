@@ -6,8 +6,6 @@ import { validEmail } from "./validation"
 import { useState } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
-import store from "../store/store";
-import { StatusBar } from 'expo-status-bar';
 
 
 const ForgotPasswordPage = () => {
@@ -56,7 +54,6 @@ const ForgotPasswordPage = () => {
 
 	return (
 		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-			<StatusBar style="auto" />
 			<Box flex={1} alignItems="center" justifyContent="center">
 				<Center w="100%">
 					<Box safeArea p="2" py="8" w="90%" maxW="290">
@@ -75,7 +72,7 @@ const ForgotPasswordPage = () => {
 						<VStack space={3} mt="5">
 
 							<FormControl isInvalid={'email' in errors}>
-								<FormControl.Label>Email</FormControl.Label>
+								<FormControl.Label><Text fontWeight={500} color={colors.text}>Email</Text></FormControl.Label>
 								<Input size="lg" onChangeText={value => setFormData({ ...formData, email: value })} />
 								{'email' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.email}</FormControl.ErrorMessage>}
 							</FormControl>

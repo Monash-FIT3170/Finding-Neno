@@ -1,12 +1,11 @@
 import { useNavigation, useTheme } from '@react-navigation/native';
-import { useToast, View } from "native-base";
+import { StatusBar, useToast, View } from "native-base";
 import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton } from 'react-native-paper';
 import { TabBar, TabView } from 'react-native-tab-view';
-import { StatusBar } from 'expo-status-bar';
 
 import { useSelector } from "react-redux";
 import ReportsList from '../components/ReportsList';
@@ -36,8 +35,8 @@ const DashboardPage = () => {
 	const { open } = FABstate;
 
 	const [routes] = useState([
-		{ key: 'reports', title: 'Reports', icon: 'file-document', color: Color.NENO_BLUE },
-		{ key: 'sightings', title: 'Sightings', icon: 'magnify', color: Color.NENO_BLUE },
+		{ key: 'reports', title: 'Reports', icon: 'file-document', color: Color.LIGHTER_NENO_BLUE },
+		{ key: 'sightings', title: 'Sightings', icon: 'magnify', color: Color.LIGHTER_NENO_BLUE },
 	])
 	const [index, setIndex] = useState(0);
 
@@ -122,11 +121,11 @@ const DashboardPage = () => {
 	}, [sightingImage]);
 
 	const renderTabBar = (props) => (
-		<TabBar {...props}
+		<TabBar {...props} pressOpacity={0.6}
 			renderLabel={({ route, focused, color }) => (
 				// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
-				<IconText iconName={route.icon} text={route.title} textColor={focused ? route.color : colors.text} 
-					iconColor={focused ? route.color : colors.text} iconSize={24} fontWeight='bold' />)} 
+				<IconText iconName={route.icon} text={route.title} textColor={focused ? route.color : 'gray'} 
+					iconColor={focused ? route.color : 'gray'} iconSize={24} fontWeight='bold' />)} 
 			style={{ backgroundColor: colors.background }}
 			contentContainerStyle={{ backgroundColor: 'transparent' }}
 			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, 
@@ -136,6 +135,7 @@ const DashboardPage = () => {
 	
 	return (
 		<Provider>
+			<StatusBar style='auto' />
 			<SafeAreaView style={{ flex: 1, height: '100%', backgroundColor: colors.background }}>
 				{/* TABS */}
 				<TabView renderTabBar={renderTabBar}

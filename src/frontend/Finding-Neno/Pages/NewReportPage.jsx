@@ -1,11 +1,9 @@
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, useTheme } from '@react-navigation/native';
 import { Box, Center, Heading, VStack, useToast, FormControl, Input, Select, Alert, Text, KeyboardAvoidingView, WarningOutlineIcon } from "native-base";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 import React, { useEffect, useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { Image, StyleSheet, View } from 'react-native';
-import { StatusBar } from 'expo-status-bar';
 import { Button, Subheading } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useSelector, useDispatch } from "react-redux";
@@ -23,13 +21,13 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 	const [dropdownOptions, setDropdownOptions] = useState([]);
 	const [errors, setErrors] = useState({});
-	const [buttonText, setButtonText] = useState("Create report")
+	const [buttonText, setButtonText] = useState("Create Report")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
 	const [selectedDatetime, setSelectedDatetime] = useState(new Date());
 	const [showPicker, setShowPicker] = useState(false);
 	const toast = useToast();
-
+	const { colors } = useTheme();
 
 
 	useEffect(() => {
@@ -94,26 +92,28 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 					if (res.status == 201) {
 						// Show success
 						toast.show({
+							title: "Report Added",
 							description: "Your report has been added!",
-							placement: "top"
+							placement: "top",
+							alignItems: "center"
 						})
 
 						// Pop to previous screen
 						navigation.goBack();
 					}
 					else {
-						setButtonText("Create report")
+						setButtonText("Create Report")
 						setIsButtonDisabled(false);
 					}
 				})
 				.catch((error) => {
-					setButtonText("Create report")
+					setButtonText("Create Report")
 					setIsButtonDisabled(false);
 					alert(error)
 				});
 		}
 		else {
-			setButtonText("Create report")
+			setButtonText("Create Report")
 			setIsButtonDisabled(false);
 		}
 	}
@@ -131,7 +131,10 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			}
 		}
 
-		if (formData.description.length > 500) {
+        if (formData.description.length < 50) {
+			foundErrors.description = "Please be more descriptive. Must be at least 50 characters";	
+		}
+		else if (formData.description.length > 500) {
 			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
 		}
 
@@ -205,20 +208,17 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	});
 
 	return (
-		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50, backgroundColor: 'white'}}
-            resetScrollToCoords={{ x: 0, y: 0 }}
-            scrollEnabled={true} enableAutomaticScroll={true} extraScrollHeight={30}>
-			<StatusBar style="auto" />
-			<SafeAreaView style={{ flex: 1, marginHorizontal: "10%" }}>
-				<VStack>
-					<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Report Your Missing Pet</Heading>
-					<Subheading>Lost your pet? Report your missing pet here so others can help</Subheading>
+		<KeyboardAwareScrollView contentContainerStyle={{paddingVertical: 50}}>
+			<SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: '100%'}}>
+				<VStack width={300} justifyContent='center'>
+					<Heading size="lg" fontWeight="600" color={colors.primary}>Report Your Missing Pet</Heading>
+					<Subheading style={{color: colors.text}}>Lost your pet? Report your missing pet here so others can help</Subheading>
 
 					<VStack space={3} mt="5">
 
 						<FormControl isRequired isInvalid={'missingPetId' in errors}>
-							<FormControl.Label>Your Pet</FormControl.Label>
-							<Select size="lg" placeholder="Select a pet"
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Your Pet</Text></FormControl.Label>
+							<Select color={colors.text} size="lg" placeholder="Select a pet"
 								selectedValue={formData.missingPetId}
 								onValueChange={(value) => setFormData({ ...formData, missingPetId: value })}>
 								<Select.Item label="Select a pet" value="" disabled hidden />
@@ -230,7 +230,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 						</FormControl>
 
 						<FormControl isRequired>
-							<FormControl.Label>Last Seen Date and Time</FormControl.Label>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Last Seen Date and Time</Text></FormControl.Label>
 							
 							<Button style={{ marginTop: 5, borderColor: Color.NENO_BLUE}} mode="outlined" textColor={Color.NENO_BLUE} onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
 							<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" maximumDate={new Date()} themeVariant="light" display="inline"
@@ -238,18 +238,18 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 						</FormControl>
 
 						<FormControl isRequired>
-							<FormControl.Label>Last Known Location</FormControl.Label>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Last Known Location</Text></FormControl.Label>
 							<MapAddressSearch formData={formData} setFormData={setFormData} />
 							{<FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>No address found.</FormControl.ErrorMessage>}
 						</FormControl>
 
-						<FormControl isInvalid={'description' in errors}>
-							<FormControl.Label>Description</FormControl.Label>
-							<Input size="lg" placeholder='Additional info' onChangeText={value => setFormData({ ...formData, description: value })} />
+						<FormControl isInvalid={'description' in errors} isRequired>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Description</Text></FormControl.Label>
+							<Input color={colors.text} multiline={true} size="lg" placeholder='Additional info' onChangeText={value => setFormData({ ...formData, description: value })} />
 							{'description' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.description}</FormControl.ErrorMessage>}
 						</FormControl>
 
-                        <Button buttonColor={Color.NENO_BLUE} mode="contained" disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onCreateReportPress}>
+                        <Button buttonColor={Color.NENO_BLUE} style={{opacity: !isButtonDisabled ? 1 : 0.4}} mode="contained" onPress={!isButtonDisabled ? onCreateReportPress : () => {}}>
                             {buttonText}
                         </Button>
 

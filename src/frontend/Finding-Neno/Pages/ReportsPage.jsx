@@ -6,12 +6,9 @@ import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import { Color } from "../components/atomic/Theme";
 import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton } from 'react-native-paper';
-import { StatusBar } from 'expo-status-bar';
 
-import Report from "../components/Report";
 
 import { useSelector, useDispatch } from "react-redux";
-import store from "../store/store";
 
 import ReportsList from '../components/ReportsList';
 
@@ -21,13 +18,11 @@ export default function ReportsPage({ navigation: { navigate } }) {
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
 	const isFocused = useIsFocused();
-	const navigation = useNavigation();
 	const [FABstate, setFABState] = useState({ open: false });
 	const onStateChange = ({ open }) => setFABState({ open });
 	const { open } = FABstate;
 
 	const [reports, setReports] = useState([]);
-
 
 	useEffect(() => {
 		if (isFocused) {
@@ -56,22 +51,21 @@ export default function ReportsPage({ navigation: { navigate } }) {
 			console.error(error);
 		}
 	};
-
+	
 	return (
 		<Provider>
-			<SafeAreaView style={{height: '100%'}}>
-				<StatusBar style="auto" />
-				<View>
+			<SafeAreaView style={{ overflow: 'visible'}}>
+				<View style={{paddingTop: 5}}>
 					<ReportsList reports={reports} onRefresh={onRefresh} />
 				</View>
 				<Portal>
 					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
 						actions={[
-                            { icon: 'file-document', label: 'New Missing Report', onPress: () => navigate('New Missing Report'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
-                            { icon: 'magnify', label: 'New Sighting', onPress: () => navigate('New Sighting'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+							{ icon: 'file-document', label: 'New Missing Report', onPress: () => navigate('New Missing Report'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+							{ icon: 'magnify', label: 'New Sighting', onPress: () => navigate('New Sighting'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
 						]} />
 				</Portal>
-			</SafeAreaView>
+			</SafeAreaView>		
 		</Provider>
 	)
 }

@@ -8,7 +8,6 @@ import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton } from 'r
 import { Color } from "../components/atomic/Theme";
 import { TabBar, TabView } from 'react-native-tab-view';
 import SightingsList from '../components/SightingsList';
-import { StatusBar } from 'expo-status-bar';
 import IconText from '../components/IconText';
 
 
@@ -29,8 +28,8 @@ export default function SightingsPage({ navigation: { navigate } }) {
 
     const [reloadPage, setReloadPage] = useState(false);
     const [routes] = useState([
-		{ key: 'sightingsOfMyPets', title: 'Sightings Of Your Pets', color: Color.NENO_BLUE },
-		{ key: 'mySavedSightings', title: 'Saved Sightings', color: Color.NENO_BLUE },
+		{ key: 'sightingsOfMyPets', title: 'Sightings Of Your Pets', color: colors.secondary },
+		{ key: 'mySavedSightings', title: 'Saved Sightings', color: colors.secondary },
 	])
 	const [index, setIndex] = useState(0);
 
@@ -97,16 +96,17 @@ export default function SightingsPage({ navigation: { navigate } }) {
 		<TabBar {...props} 
 			renderLabel={({ route, focused, color }) => (
 				// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
-				<IconText iconName={route.icon} text={route.title} textColor={focused ? route.color : colors.text} iconColor={focused ? route.color : colors.text} iconSize={24} fontWeight='bold' />)} 
+				<IconText iconName={route.icon} text={route.title} textColor={focused ? route.color : 'gray'} 
+                    iconColor={focused ? route.color : 'gray'} iconSize={24} fontWeight='bold' />)} 
 			style={{ backgroundColor: colors.background }}
-			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, borderRadius: 1.5, width: '15%', left: '18.5%' }} 
+			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, 
+                borderRadius: 1.5, width: '15%', left: '17.5%' }} 
 		/>
 	);
       
     return (
         <Provider>
             <SafeAreaView style={{height: "100%"}}>
-				<StatusBar style="auto" />
 				{/* TABS */}
 				<TabView renderTabBar={renderTabBar}
                     navigationState={{ index, routes }}

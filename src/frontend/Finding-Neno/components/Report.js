@@ -75,8 +75,8 @@ const Report = ({ report, userId }) => {
     }
 
     return (
-        <Animated.View style={{ backgroundColor: colors.card, opacity: fadeAnim, borderBottomWidth: 6, borderColor: colors.border}}>
-            <ImageView images={[{uri: petImage}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor='gray'/>
+        <Animated.View style={{ backgroundColor: colors.cardColor, opacity: fadeAnim, borderBottomWidth: 6, borderColor: colors.border}}>
+            <ImageView images={[{uri: petImage}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor={colors.background}/>
 
             {/* Info */}
             <View style={{ margin: '4%', marginBottom: 4 }}>

@@ -1,5 +1,5 @@
-import { useNavigation } from '@react-navigation/native';
-import { Modal, useToast, FormControl, Input, HStack, VStack, WarningOutlineIcon } from "native-base";
+import { useNavigation, useTheme } from '@react-navigation/native';
+import { Modal, useToast, FormControl, Input, HStack, VStack, Text, WarningOutlineIcon } from "native-base";
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
@@ -25,8 +25,7 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
     const toast = useToast();
-	const isFocused = useIsFocused();
-    const navigation = useNavigation();
+	const { colors } = useTheme();
     // console.log(showModal);
     
     const [sightingData, setSightingData] = useState({
@@ -133,8 +132,10 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 				.then((res) => {
 					if (res.status == 201) {
 						toast.show({
+							title: "Signting Reported",
 							description: "Your sighting has been added, and the owner has been notified.",
-							placement: "top"
+							placement: "top",
+							alignItems: 'center'
 						})
 						onClose();
 					}
@@ -149,39 +150,40 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 		<>
 			{showModal &&
 				<Modal avoidKeyboard isOpen onClose={onClose}>
-					<Modal.Content >
-						<Modal.CloseButton />
-						<Modal.Header>Sighting details</Modal.Header>
+					<Modal.Content backgroundColor={colors.background}>
+						<Modal.CloseButton _icon={{color: colors.text}} />
+						<Modal.Header borderColor={colors.border} backgroundColor={colors.background} _text={{color: colors.text}}>Report a Pet Sighting</Modal.Header>
 						<Modal.Body>
 							<VStack space={3}>
 								<ImageHandler image={sightingImage} setImage={setSightingImage} setIsButtonDisabled={setReportSightingBtnDisabled} />
 
 								<FormControl isRequired>
-									<FormControl.Label>Date and Time of Sighting</FormControl.Label>
+									<FormControl.Label><Text fontWeight={500} color={colors.text}>Date and Time of Sighting</Text></FormControl.Label>
 									<Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{formatDateTimeDisplay(sightingDateTime)}</Button>
 									<DateTimePickerModal date={sightingDateTime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
 										onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 								</FormControl>
 
 								<FormControl>
-									<FormControl.Label>Last Known Location</FormControl.Label>
+									<FormControl.Label><Text fontWeight={500} color={colors.text}>Last Known Location</Text></FormControl.Label>
 									<MapAddressSearch formData={sightingData} setFormData={setSightingData} />
 									{<FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>No address found.</FormControl.ErrorMessage>}
 								</FormControl>
 
 								<FormControl isInvalid={'description' in sightingFormErrors}>
-									<FormControl.Label>Description</FormControl.Label>
+									<FormControl.Label><Text fontWeight={500} color={colors.text}>Description</Text></FormControl.Label>
 									<Input size="lg" value={sightingData.description} placeholder='Additional info' onChangeText={value => setSightingData({ ...sightingData, description: value })} />
 									{'description' in sightingFormErrors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{sightingFormErrors.description}</FormControl.ErrorMessage>}
 								</FormControl>
 							</VStack>
 						</Modal.Body>
-						<Modal.Footer>
+						<Modal.Footer borderColor={colors.border} backgroundColor={colors.background}>
 								{/* TODO: onPress */}
 							<HStack space={2}>
 								<Button mode='outlined' textColor={Color.NENO_BLUE} style={{borderColor: Color.NENO_BLUE}} onPress={onClose} >Cancel</Button>
-								<Button buttonColor={Color.NENO_BLUE} disabled={reportSightingBtnDisabled} textColor='white' 
-									style={{ opacity: !reportSightingBtnDisabled ? 1 : 0.6}} onPress={() => handleSubmitSighting()}>Report Sighting</Button>
+								<Button buttonColor={Color.NENO_BLUE} style={{opacity: !reportSightingBtnDisabled ? 1 : 0.4}} mode="contained" onPress={!reportSightingBtnDisabled ? handleSubmitSighting : () => {}}>
+                            		Submit Sighting
+                        		</Button>	
 							</HStack> 
 						</Modal.Footer>
 					</Modal.Content>

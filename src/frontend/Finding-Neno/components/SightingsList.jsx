@@ -3,8 +3,11 @@ import { FlatList } from 'native-base';
 import { memo, useState } from "react";
 import { Text } from 'react-native-paper';
 import { formatDateTimeDisplay } from '../Pages/shared';
+import { useTheme } from '@react-navigation/native';
 
 function SightingsList({sightings, onRefresh, columns, emptyText}) {
+    const { colors } = useTheme();
+
     const [refreshing, setRefreshing] = useState(false);
     const onRefreshList = () => {
         setRefreshing(true);
