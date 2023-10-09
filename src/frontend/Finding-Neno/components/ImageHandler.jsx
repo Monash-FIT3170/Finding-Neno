@@ -129,7 +129,7 @@ const ImageHandler = ({ image, setImage, setIsButtonDisabled }) => {
                             image && 
                             <View borderRadius={"10%"} alignItems={"center"}>
                                 <TouchableHighlight onPress={() => setEnlargeImage(true)} underlayColor="#DDDDDD" style={{ borderRadius: 20 }}>
-                                    <Image source={{ uri: image }} style={{ width: "70%", aspectRatio: "1", borderRadius: 20 }} alt='pet sighting image' />
+                                    <Image source={{ uri: image }} style={{ width: "100%", aspectRatio: "1", borderRadius: 10 }} alt='pet sighting image' />
                                 </TouchableHighlight>
                             </View>
                     }

@@ -168,7 +168,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
                         <FormControl isRequired>
                             <FormControl.Label>Date and Time of Sighting</FormControl.Label>
-                            <Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
+                            <Button style={{ borderColor: Color.NENO_BLUE}} textColor={Color.NENO_BLUE} mode="outlined" onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
                             <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" maximumDate={new Date()} themeVariant="light" display="inline"
                                 onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
                         </FormControl>

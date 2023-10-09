@@ -231,7 +231,8 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 						<FormControl isRequired>
 							<FormControl.Label>Last Seen Date and Time</FormControl.Label>
-							<Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
+							
+							<Button style={{ marginTop: 5, borderColor: Color.NENO_BLUE}} mode="outlined" textColor={Color.NENO_BLUE} onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
 							<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" maximumDate={new Date()} themeVariant="light" display="inline"
 								onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 						</FormControl>
