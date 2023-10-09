@@ -247,7 +247,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
 	  
 	return (
-		<KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
+		<KeyboardAvoidingView style={{ flex: 1, backgroundColor: 'white'}} behavior="height">
 			<StatusBar style="auto" />
 			<FlatList
 				data={[{ key: 'form' }]} // Use a single item array as data source

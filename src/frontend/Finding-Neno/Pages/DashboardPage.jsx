@@ -126,11 +126,11 @@ const DashboardPage = () => {
 			renderLabel={({ route, focused, color }) => (
 				// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
 				<IconText iconName={route.icon} text={route.title} textColor={route.color} iconColor={route.color} iconSize={24} fontWeight='bold' />)} 
-			style={{ backgroundColor: colors.background }}
+			style={{ backgroundColor: 'white' }}
 			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, borderRadius: 1.5, width: '15%', left: '17.5%' }} 
 		/>
 	);
-
+	
 	return (
 		<Provider>
 			<SafeAreaView style={{ flex: 1, height: '100%' }}>

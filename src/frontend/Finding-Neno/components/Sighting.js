@@ -101,17 +101,17 @@ const Sighting = ({ userId, sighting, refresh }) => {
   }
 
   const imagelessSighting = (
-    <View style={{ width: "100%", alignItems: 'center', justifyContent: 'center', }} bg="#F9FDFF">
-      <VStack alignItems='center' width='100%'>
+    <View style={{ width: "100%"}} bg="#F9FDFF">
+      <VStack alignItems='left' width='100%'>
         <View>
-          <Heading textAlign='center'>{locationString}</Heading>
+          <Heading size="md" marginBottom={2}>{locationString}</Heading>
         </View>
         <HStack marginTop='2%' justifyContent='space-between'>
-          <VStack alignItems='center' width='30%' marginX={5}>
+          <VStack width='30%' >
             <Heading size="sm" >Species</Heading>
             {
               sightingAnimal == 'Other' ?
-                <Text textAlign='center'>{sightingAnimal}</Text> :
+                <Text >{sightingAnimal}</Text> :
                 <IconText iconName={sightingAnimal.toLowerCase()} text={sightingAnimal}
                   iconColor={Color.NENO_BLUE} textColor={'black'} iconSize={19} fontWeight='normal' />
             }
@@ -119,15 +119,15 @@ const Sighting = ({ userId, sighting, refresh }) => {
 
           {
             sightingBreed &&
-            <VStack alignItems='center' width='30%' marginX={5}>
+            <VStack  width='30%' marginX={5}>
               <Heading size="sm">Breed</Heading>
-              <Text textAlign='center'>{sightingBreed}</Text>
+              <Text >{sightingBreed}</Text>
             </VStack>
           }
         </HStack>
 
-        <View style={{ alignItems: 'center' }}>
-          <Heading size="sm" paddingTop='1%'>Last seen</Heading>
+        <View >
+          <Heading size="sm" marginTop={3}>Last seen</Heading>
           <Text>{dateTime}</Text>
         </View>
 
@@ -145,7 +145,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
   const sightingWithImage = (
     <View>
       <ImageView images={[{ uri: sightingImage }]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor='gray' />
-      <HStack width="100%" alignItems='center' justifyContent='space-between'>
+      <HStack width="100%" >
         {
           sightingImage &&
           <View style={{ width: "49%", aspectRatio: 1 }} >
@@ -153,25 +153,25 @@ const Sighting = ({ userId, sighting, refresh }) => {
               smallImageLoading && <ActivityIndicator style={{ top: '50%', left: '50%', position: 'absolute' }} />
             }
             <TouchableHighlight onPress={() => setEnlargeImage(true)} underlayColor="#DDDDDD"
-              style={{ borderRadius: 20, backgroundColor: 'white', shadowOpacity: 0.2, shadowOffset: { width: 2, height: 2 }, }}>
+              style={{ borderRadius: 20, backgroundColor: 'white' }}>
               <Image onLoadStart={() => setSmallImageLoading(true)} onLoadEnd={() => setSmallImageLoading(false)}
-                source={{ uri: sightingImage }} style={{ maxHeight: '100%', aspectRatio: 1, borderRadius: 20 }} alt={`Image of missing pet sighting`} />
+                source={{ uri: sightingImage }} style={{ maxHeight: '100%', aspectRatio: 1, borderRadius: 10 }} alt={`Image of missing pet sighting`} />
             </TouchableHighlight>
           </View>
         }
 
-        <View style={{ width: "48%", justifyContent: 'center', alignItems: 'center' }} bg="#F9FDFF">
+        <View style={{ width: "48%"}} bg="#F9FDFF">
           <View>
-            <Heading textAlign='center'>{locationString}</Heading>
+            <Heading size="md" marginX={5} marginBottom={3}>{locationString} </Heading>
           </View>
 
           <VStack>
             <HStack marginTop='2%' justifyContent='space-between'>
-              <VStack width={sightingBreed ? '50%' : '100%'} alignItems='center'>
-                <Heading size="sm" >Species</Heading>
+              <VStack width={sightingBreed ? '60%' : '100%'} >
+                <Heading size="sm" marginX={5}>Species</Heading>
                 {
                   sightingAnimal == 'Other' ?
-                    <Text textAlign='center'>{sightingAnimal}</Text> :
+                    <Text marginX={5}>{sightingAnimal}</Text> :
                     <IconText iconName={sightingAnimal.toLowerCase()} text={sightingAnimal}
                       iconColor={Color.NENO_BLUE} textColor={'black'} iconSize={19} fontWeight='normal' />
                 }
@@ -179,16 +179,16 @@ const Sighting = ({ userId, sighting, refresh }) => {
 
               {
                 sightingBreed &&
-                <VStack width='50%' alignItems='center'>
+                <VStack width='50%' marginX={2}>
                   <Heading size="sm">Breed</Heading>
-                  <Text textAlign='center'>{sightingBreed}</Text>
+                  <Text >{sightingBreed}</Text>
                 </VStack>
               }
             </HStack>
 
-            <View style={{ alignItems: 'center' }}>
-              <Heading size="sm" paddingTop='1%'>Seen at</Heading>
-              <Text>{dateTime}</Text>
+            <View >
+              <Heading size="sm" paddingTop='1%' marginX={5} marginTop={3}>Seen at</Heading>
+              <Text marginX={5}>{dateTime}</Text>
             </View>
           </VStack>
         </View>
@@ -205,7 +205,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
 
 
   return (
-    <Animated.View style={{ backgroundColor: 'white', opacity: fadeAnim, width: 380, marginTop: 10, marginBottom: 10, borderRadius: 30, shadowOpacity: 0.15, shadowOffset: { height: 8 } }}>
+    <Animated.View style={{ backgroundColor: 'white', opacity: fadeAnim, marginTop: 8, marginBottom: 0 }}>
 
       {/* Info */}
       <View style={{ margin: '4%', marginBottom: 4 }}>
@@ -214,7 +214,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
         }
 
         <View style={{ maxWidth: '100%', marginTop: '4%', marginBottom: '3%' }}>
-          <ShareButton title={"Pet Sighting - Finding Neno"} message={message} dialogTitle={"Share this pet sighting"} width={'100%'} />
+          <ShareButton title={"Pet Sighting - Finding Neno"} message={message} dialogTitle={"Share this pet sighting"} width={'100%'}/>
         </View>
         <Ionicons name={savedByUser == USER_ID ? "bookmark" : "bookmark-outline"} size={24} style={{ padding: 3, position: "absolute", top: 0, right: 0 }} onPress={handlePressSaveBtn} />
       </View>

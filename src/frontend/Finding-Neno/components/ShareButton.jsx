@@ -22,8 +22,8 @@ const ShareButton = ({ title, message, dialogTitle, url, width }) => {
     }
 
     return (
-        <Button onPress={onShare} style={{ width: width }} labelStyle={{ fontWeight: 'bold' }} textColor={Color.NENO_BLUE} 
-            buttonColor='white' compact={true} icon="export-variant" mode="elevated">Share</Button>
+        <Button onPress={onShare} style={{ width: width, borderRadius:10 }} labelStyle={{ fontWeight: 'bold'}} textColor='black' 
+            buttonColor={Color.LIGHTER_NENO_BLUE} compact={true} icon="export-variant" mode="contained">Share</Button>
 
     )
 }
