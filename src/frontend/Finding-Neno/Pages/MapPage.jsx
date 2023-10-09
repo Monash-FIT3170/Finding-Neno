@@ -373,15 +373,15 @@ export default function MapPage({ navigation: { navigate } }) {
 							]}
 						/>
 
-						<View style={{ marginTop: 10 }}>
+						<Button mode='elevated' style={{ backgroundColor: colors.background, opacity: 0.9, marginTop: 8 }} onPress={onPressSearch}>
+							<Text style={{ color: colors.primary, fontWeight: 'bold' }}>Search this area</Text>
+						</Button>
+						<View style={{ marginTop: 5 }}>
 							{
 								tabValue == "reports" ? <Text style={styles.boldText}> {reports.length} reports in area</Text> : <Text style={styles.boldText}> {sightings.length} sightings in area</Text>
 							}
 						</View>
 
-						<Button mode='elevated' style={{ backgroundColor: colors.background, opacity: 0.9, marginTop: '1%' }} onPress={onPressSearch}>
-							<Text style={{ color: colors.primary, fontWeight: 'bold' }}>Search this area</Text>
-						</Button>
 						<Portal>
 							<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
 								actions={[
