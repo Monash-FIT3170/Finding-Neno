@@ -219,7 +219,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
         <View style={{ maxWidth: '100%', marginTop: '4%', marginBottom: '3%' }}>
           <ShareButton title={"Pet Sighting - Finding Neno"} message={message} textColor={colors.background} dialogTitle={"Share this pet sighting"} width={'100%'}/>
         </View>
-        <Ionicons name={savedByUser == USER_ID ? "bookmark" : "bookmark-outline"} size={24} style={{ padding: 3, position: "absolute", top: 0, right: 0 }} onPress={handlePressSaveBtn} />
+        <Ionicons name={savedByUser == USER_ID ? "bookmark" : "bookmark-outline"} size={24} style={{ padding: 3, position: "absolute", top: 0, right: 0, color: colors.text}} onPress={handlePressSaveBtn} />
       </View>
     </Animated.View>
   );
