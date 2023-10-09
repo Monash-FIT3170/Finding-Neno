@@ -128,8 +128,8 @@ const Report = ({ report, userId }) => {
                 {
                     reportDesc &&
                     <VStack marginTop='3%'>
-                        <Heading size="sm">Description</Heading>
-                        <Text>{reportDesc}</Text>
+                        <Heading color={colors.text} size="sm">Description</Heading>
+                        <Text color={colors.text}>{reportDesc}</Text>
                     </VStack>
                 }
 

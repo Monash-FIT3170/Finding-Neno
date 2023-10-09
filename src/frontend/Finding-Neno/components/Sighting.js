@@ -138,8 +138,8 @@ const Sighting = ({ userId, sighting, refresh }) => {
       {
         sightingDesc &&
         <VStack marginTop='3%'>
-          <Heading size="sm">Description</Heading>
-          <Text>{sightingDesc}</Text>
+          <Heading size="sm" color={colors.text}>Description</Heading>
+          <Text color={colors.text}>{sightingDesc}</Text>
         </VStack>
       }
     </View>
@@ -219,7 +219,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
         <View style={{ maxWidth: '100%', marginTop: '4%', marginBottom: '3%' }}>
           <ShareButton title={"Pet Sighting - Finding Neno"} message={message} textColor={colors.background} dialogTitle={"Share this pet sighting"} width={'100%'}/>
         </View>
-        <Ionicons name={savedByUser == USER_ID ? "bookmark" : "bookmark-outline"} size={24} style={{ padding: 3, position: "absolute", top: 0, right: 0 }} onPress={handlePressSaveBtn} />
+        <Ionicons name={savedByUser == USER_ID ? "bookmark" : "bookmark-outline"} size={24} style={{ padding: 3, position: "absolute", top: 0, right: 0, color: colors.text}} onPress={handlePressSaveBtn} />
       </View>
     </Animated.View>
   );
