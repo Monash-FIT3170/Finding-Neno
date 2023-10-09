@@ -416,7 +416,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
               fontSize: 18,
               color: 'rgba(255, 255, 255, 0.8)',
               position: 'absolute',
-              top: 75,
+              top: 30,
               zIndex: 1,
             }}
           >
@@ -430,7 +430,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                 height: 50,
                 backgroundColor: 'rgba(255, 255, 255, 0)',
                 borderRadius: 50,
-                top: 62,
+                top: 17,
                 right: 10,
                 position: 'absolute',
                 zIndex: 1,
@@ -452,7 +452,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                 style={{
                   backgroundColor: 'white',
                   position: 'absolute',
-                  top: 110,
+                  top: 70,
                   right: 20,
                   width: 150,
                   borderRadius: 5,
@@ -500,6 +500,15 @@ export default function ProfilePage({ navigation: { navigate } }) {
                   }}
                 >
                   <Text>Privacy Policy</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{ paddingVertical: 10, paddingHorizontal: 15 }}
+                  onPress={() => {
+                    setDeleteModalVisible(true)
+                  }}
+                >
+                  <Text>Delete Account</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -609,10 +618,6 @@ export default function ProfilePage({ navigation: { navigate } }) {
             </Text>
           </TouchableOpacity>
 
-          <Button mb={3} onPress={() => setDeleteModalVisible(true)} backgroundColor={"red.600"}>
-              Delete Account
-          </Button>
-            
           <DeleteUserModal visible={deleteModalVisible} setVisible={setDeleteModalVisible} />
 
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
