@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Heading, Box, HStack, Text, Input, Switch, Slider, useToast} from 'native-base';
-import {Dimensions, TouchableOpacity, StyleSheet, Image, View } from 'react-native';
+import {Dimensions, TouchableOpacity, StyleSheet, Image, View, Platform } from 'react-native';
 import { useIsFocused } from "@react-navigation/native";
 
 import MapView, { PROVIDER_GOOGLE } from 'react-native-maps';
@@ -14,14 +14,14 @@ import { Divider } from 'native-base';
 function LocationNotifications() {
   const { API_URL } = useSelector((state) => state.api)
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+  const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
 
   // Component for Location Notifications
-  const windowWidth = Dimensions.get('window').width; 
-  const textInputWidth = windowWidth*0.7;
+  const textInputWidth = WINDOW_WIDTH*0.7;
   const [boxHeight, setBoxHeight] = useState(200);
+  const [marginBottom, setMarginBottom] = useState("0%");
   const toast = useToast();
 
-  
   // Data that will be saved to the database
   const [locationData, setLocationData] = useState();
 
@@ -31,6 +31,11 @@ function LocationNotifications() {
     if (isFocused) {
       fetchUserSettings();
     }
+
+    if (OS == 'ios'){ 
+      setMarginBottom("4%")
+    }
+
   }, [isFocused]);
 
   const [localNotificationsEnabled, setLocalNotificationsEnabled] = useState(false);
@@ -243,7 +248,7 @@ function LocationNotifications() {
           fontSize="md"
           color="coolGray.600"
           _dark={{ color: "warmGray.200" }}
-          pr={windowWidth / 3.5}
+          pr={WINDOW_WIDTH / 3.5}
         >
         Notification
         </Heading>
@@ -252,7 +257,7 @@ function LocationNotifications() {
         </TouchableOpacity>
         </HStack>
 
-        <HStack justifyContent="space-between" marginBottom='4%'>
+        <HStack justifyContent="space-between" marginBottom={marginBottom}>
         <Text fontSize="md" marginTop={1}>Possible Sightings Alert</Text>
         <Switch
         onToggle={togglePossibleNotifications}
@@ -261,9 +266,9 @@ function LocationNotifications() {
         />
         </HStack>
 
-      <Divider marginBottom="4%"/>
-      
-        <HStack justifyContent="space-between" marginBottom={1}>
+      <Divider marginBottom={marginBottom}/>
+
+        <HStack justifyContent="space-between" marginBottom={marginBottom}>
         <Text fontSize="md" marginTop={1}>Location Notifications</Text>
         <Switch
         onToggle={toggleLocationNotifications}

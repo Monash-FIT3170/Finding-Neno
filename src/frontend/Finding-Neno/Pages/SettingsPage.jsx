@@ -14,7 +14,6 @@ export default function SettingsPage() {
     <VStack h={windowHeight} padding={4}>
         <UserDetails/>
         <LocationNotifications/>
-        <DeleteProfile/>
     </VStack >
   </ScrollView>  
   )

@@ -9,8 +9,8 @@ import { validPhoneNumber } from "../../Pages/validation";
 
 
 function UserDetails() {
-    const windowWidth = Dimensions.get('window').width; 
-    const textInputWidth = windowWidth*0.7;
+  const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
+    const textInputWidth = WINDOW_WIDTH*0.7;
 
     const { API_URL } = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
@@ -133,7 +133,7 @@ function UserDetails() {
           fontSize="md"
           color="coolGray.600"
           _dark={{ color: "warmGray.200" }}
-          pr={windowWidth / 3.5}
+          pr={WINDOW_WIDTH / 3.5}
         >
           User Details
         </Heading>

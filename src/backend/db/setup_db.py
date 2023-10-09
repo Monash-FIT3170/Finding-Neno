@@ -77,12 +77,6 @@ def drop_tables(connection: psycopg2.extensions.connection):
     queries = [
         # Drop users_saved_sightings table
         """DROP TABLE IF EXISTS users_saved_sightings;""",
-        # Drop users_notification_logs table
-        """DROP TABLE IF EXISTS users_notification_logs;""",
-        # Drop notification_logs table
-        """DROP TABLE IF EXISTS notification_logs;""",
-        # Drop notification_type ENUM
-        """DROP TYPE IF EXISTS notification_type;""",
         # Drop sightings table
         """DROP TABLE IF EXISTS sightings;""",
         # Drop missing_reports table

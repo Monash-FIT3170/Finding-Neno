@@ -13,8 +13,8 @@ import Sighting from '../components/Sighting';
 const DashboardPage = () => {
 	const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+	const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
 
-	const windowWidth = Dimensions.get('window').width;
 	const navigation = useNavigation();
 	const toast = useToast();
 	const isFocused = useIsFocused();
@@ -172,7 +172,7 @@ const DashboardPage = () => {
 					}
 				}}
 				onIndexChange={setIndex}
-				initialLayout={{ width: windowWidth }}
+				initialLayout={{ width: WINDOW_WIDTH }}
 				renderTabBar={props => <TabBar {...props} style={{backgroundColor: Color.NENO_BLUE}}/>}
 			/>
 

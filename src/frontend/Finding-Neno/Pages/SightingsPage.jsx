@@ -9,13 +9,14 @@ import { Color } from "../components/atomic/Theme";
 
 export default function SightingsPage({navigation: {navigate}}) {
 
-    const windowWidth = Dimensions.get('window').width; 
     const isFocused = useIsFocused();
     const [sightingOfMyPetCards, setSightingOfMyPetCards] = useState('');
     const [savedSightingCards, setSavedSightingCards] = useState('');
 
 	const {API_URL} = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+    const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
+
 
     const [reloadPage, setReloadPage] = useState(false);
     const [routes] = useState([
@@ -134,7 +135,7 @@ export default function SightingsPage({navigation: {navigate}}) {
 					}
 				}}
 				onIndexChange={setIndex}
-				initialLayout={{ width: windowWidth }}
+				initialLayout={{ width: WINDOW_WIDTH }}
 				renderTabBar={props => <TabBar {...props} style={{backgroundColor: Color.NENO_BLUE}}/>}
 			/>
 

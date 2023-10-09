@@ -21,7 +21,8 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
   const { API_URL } = useSelector((state) => state.api);
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
-
+  const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
+  
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
 
@@ -143,8 +144,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
     setEditMode(false);
   };
 
-  const windowWidth = Dimensions.get("window").width;
-  const windowHeight = Dimensions.get("window").height;
+
 
   const name = user.name;
   const email = user.email;
@@ -253,7 +253,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
               letterSpacing: "lg",
             }}
             bg={Color.NENO_BLUE}
-            width={windowWidth}
+            width={WINDOW_WIDTH}
             height={windowHeight / 8}
           >
             <Box height={3} />
@@ -297,11 +297,11 @@ export default function ProfilePage({ navigation: { navigate } }) {
                 fontSize="sm"
                 color="coolGray.600"
                 _dark={{ color: "warmGray.200" }}
-                pr={windowWidth / 3.5}
+                pr={WINDOW_WIDTH / 3.5}
               >
                 USER DETAILS
               </Heading>
-              <Text pl={windowWidth / 3.5}></Text>
+              <Text pl={WINDOW_WIDTH / 3.5}></Text>
             </HStack>
 
             <Box h="2"></Box>
@@ -373,7 +373,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                 fontSize="sm"
                 color="coolGray.600"
                 _dark={{ color: "warmGray.200" }}
-                pr={windowWidth / 3.5}
+                pr={WINDOW_WIDTH / 3.5}
               >
                 PETS
               </Heading>
@@ -403,7 +403,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                 </HStack>
               ) : (
                 <Button
-                  pl={windowWidth / 3}
+                  pl={WINDOW_WIDTH / 3}
                   variant="link"
                   onPress={() => setEditMode(true)}
                 >
@@ -416,7 +416,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
               onPress={() => {
                 navigate("New Pet Page");
               }}
-              width={windowWidth - 80}
+              width={WINDOW_WIDTH - 80}
               height="40px"
             >
               Add New Pet

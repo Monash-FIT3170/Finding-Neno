@@ -32,6 +32,8 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
 
   const { API_URL } = useSelector((state) => state.api);
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+  const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
+
   const pet = useSelector((state) => state.pet);
   const dispatch = useDispatch();
 

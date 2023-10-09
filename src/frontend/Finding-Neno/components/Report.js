@@ -7,9 +7,10 @@ import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 
 
 const Report = ({ report, userId }) => {
-  // Pet Data
-  const windowWidth = Dimensions.get('window').width;
+  const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
 
+
+  // Pet Data
     const lastSeen = report[1];
     const reportDesc = report[2];
     const locationLongitude = report[3];
@@ -31,7 +32,7 @@ const Report = ({ report, userId }) => {
     
   return (
     <View justifyContent="center" alignItems="center" padding={4}>
-      <Box width={windowWidth - 20} height={400} bg="#F9FDFF" borderRadius={15}>
+      <Box width={WINDOW_WIDTH - 20} height={400} bg="#F9FDFF" borderRadius={15}>
         <Heading size="xl" paddingLeft={5} paddingTop={2}>
           {petName}
         </Heading>
@@ -68,7 +69,7 @@ const Report = ({ report, userId }) => {
           </VStack>
         </HStack>
 
-        <Box width={windowWidth - 40} height={180} paddingLeft={5} paddingTop={5} paddingBottom={1}>
+        <Box width={WINDOW_WIDTH - 40} height={180} paddingLeft={5} paddingTop={5} paddingBottom={1}>
           <Image source={{ uri: petImage }} style={{ width: '100%', height: '100%', borderTopLeftRadius: 20, borderTopRightRadius: 20 }} alt='pet' />
 
 

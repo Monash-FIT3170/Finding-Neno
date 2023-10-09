@@ -3,7 +3,7 @@ import { Heading, Box, HStack, Text, Button} from 'native-base';
 import { Dimensions, View} from 'react-native';
 
 function DeleteProfile() {
-    const windowWidth = Dimensions.get('window').width; 
+  const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
 
     return (
       <View>
@@ -14,7 +14,7 @@ function DeleteProfile() {
           fontSize="md"
           color="coolGray.600"
           _dark={{ color: "warmGray.200" }}
-          pr={windowWidth / 3.5}
+          pr={WINDOW_WIDTH / 3.5}
         >
         Delete Profile
         </Heading>
