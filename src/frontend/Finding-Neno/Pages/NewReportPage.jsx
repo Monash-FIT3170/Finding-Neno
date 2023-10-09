@@ -205,7 +205,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	});
 
 	return (
-		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}
+		<KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50, backgroundColor: 'white'}}
             resetScrollToCoords={{ x: 0, y: 0 }}
             scrollEnabled={true} enableAutomaticScroll={true} extraScrollHeight={30}>
 			<StatusBar style="auto" />
@@ -230,7 +230,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 						</FormControl>
 
 						<FormControl isRequired>
-							<FormControl.Label>Date and Time of Sighting</FormControl.Label>
+							<FormControl.Label>Last Seen Date and Time</FormControl.Label>
 							<Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
 							<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" maximumDate={new Date()} themeVariant="light" display="inline"
 								onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />

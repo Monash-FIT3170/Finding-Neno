@@ -155,7 +155,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
             <TouchableHighlight onPress={() => setEnlargeImage(true)} underlayColor="#DDDDDD"
               style={{ borderRadius: 20, backgroundColor: 'white' }}>
               <Image onLoadStart={() => setSmallImageLoading(true)} onLoadEnd={() => setSmallImageLoading(false)}
-                source={{ uri: sightingImage }} style={{ maxHeight: '100%', aspectRatio: 1, borderRadius: 5 }} alt={`Image of missing pet sighting`} />
+                source={{ uri: sightingImage }} style={{ maxHeight: '100%', aspectRatio: 1, borderRadius: 10 }} alt={`Image of missing pet sighting`} />
             </TouchableHighlight>
           </View>
         }

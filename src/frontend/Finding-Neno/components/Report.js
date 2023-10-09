@@ -72,50 +72,50 @@ const Report = ({ report, userId }) => {
     }
 
     return (
-        <Animated.View style={{ backgroundColor: 'white', opacity: fadeAnim, maxWidth: 380, marginTop: 10, marginBottom: 10, borderRadius: 30, shadowOpacity: 0.15, shadowOffset: {height: 8} }}>
+        <Animated.View style={{ backgroundColor: 'white', opacity: fadeAnim, marginTop: 10, marginBottom: 10 }}>
             <ImageView images={[{uri: petImage}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor='gray'/>
 
             {/* Info */}
             <View style={{ margin: '4%', marginBottom: 4 }}>
-                <HStack maxWidth="100%" justifyContent='space-between'>
+                <HStack maxWidth="100%" >
                     <View style={{ width: "49%", aspectRatio: 1 }} >
                         {
                             smallImageLoading && <ActivityIndicator style={{ top: '50%', left: '50%', position: 'absolute' }} />
                         }
                         <TouchableHighlight onPress={() => setEnlargeImage(true)} underlayColor="#DDDDDD"
-                            style={{ borderRadius: 20, backgroundColor: 'white', shadowOpacity: 0.2, shadowOffset: { width: 2, height: 2 }, }}>
+                            style={{ borderRadius: 20, backgroundColor: 'white'}}>
                             <Image onLoadStart={() => setSmallImageLoading(true)} onLoadEnd={() => setSmallImageLoading(false)}
-                                source={{ uri: petImage }} style={{ maxHeight: '100%', aspectRatio: 1, borderRadius: 20 }} alt={`Image of missing pet ${petName}`} />
+                                source={{ uri: petImage }} style={{ maxHeight: '100%', aspectRatio: 1, borderRadius: 10 }} alt={`Image of missing pet ${petName}`} />
                         </TouchableHighlight>
                     </View>
 
-                    <View style={{ width: "48%", justifyContent: 'center', alignItems:'center' }} bg="#F9FDFF">
+                    <View style={{ width: "48%" }} bg="#F9FDFF">
                         <View>
-                            <Heading textAlign='center' fontSize={petNameFontSize}>{petName}</Heading>
+                            <Heading size="md" marginX={5} marginBottom={3}>{petName} </Heading>
                         </View>
 
                         <VStack>
                             <HStack marginTop='2%' justifyContent='space-between'>
-                                <VStack width={petBreed ? '50%' : '100%'} alignItems='center'>
-                                    <Heading size="sm" >Species</Heading>
+                                <VStack width={petBreed ? '60%' : '100%'}>
+                                    <Heading size="sm" marginX={5} >Species</Heading>
                                     {
                                         petSpecies == 'Other' ? 
-                                        <Text textAlign='center'>{petSpecies}</Text> :
+                                        <Text marginX={5}>{petSpecies}</Text> :
                                         <IconText iconName={petSpecies.toLowerCase()} text={petSpecies} 
                                             iconColor={ Color.NENO_BLUE } textColor={ 'black' } iconSize={19} fontWeight='normal' />
                                     }
                                 </VStack>
 
-                                <VStack width='50%' alignItems='center'>
+                                <VStack width='50%' marginX={2}>
                                     <Heading size="sm">Breed</Heading>
-                                    <Text textAlign='center'>{petBreed}</Text>
+                                    <Text >{petBreed}</Text>
                                 </VStack>
                             </HStack>
 
-                            <View style={{ alignItems: 'center' }}>
-                                <Heading size="sm" paddingTop='1%'>Last seen</Heading>
-                                <Text>{lastSeen}</Text>
-                                <Heading size="sm" maxWidth='100%' paddingTop='1%'>{suburb}</Heading>
+                            <View >
+                                <Heading size="sm" paddingTop='1%' marginX={5} marginTop={3}>Last seen</Heading>
+                                <Text marginX={5} >{lastSeen}</Text>
+                                <Text marginX={5} >{locationString}</Text>
                             </View>
 
                         </VStack>
@@ -125,7 +125,7 @@ const Report = ({ report, userId }) => {
                 {
                     reportDesc &&
                     <VStack marginTop='3%'>
-                        <Heading size="sm">Additional Description</Heading>
+                        <Heading size="sm">Description</Heading>
                         <Text>{reportDesc}</Text>
                     </VStack>
                 }
@@ -136,8 +136,8 @@ const Report = ({ report, userId }) => {
                         // Controls what the owner of the report sees. If user is owner of the report, they
                         // won't be displayed with the option to report a sighting.
                         authorId != userId ?
-                            <Button style={{ width: '69%' }} buttonColor={Color.NENO_BLUE} labelStyle={{ fontWeight: 'bold' }} textColor='white' compact={true} icon="magnify" mode="elevated"
-                                onPress={() => setShowModal(true)}>Report a Sighting</Button>
+                            <Button style={{ width: '69%', borderRadius: 10}} buttonColor={Color.NENO_BLUE} labelStyle={{ fontWeight: 'bold' }} textColor='white' compact={true} icon="magnify" mode="contained"
+                                onPress={() => setShowModal(true)}>Add a Sighting</Button>
 
                             : ""
                     }

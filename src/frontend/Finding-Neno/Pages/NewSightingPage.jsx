@@ -132,7 +132,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
     }
 
     return (
-        <KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50 }}>
+        <KeyboardAwareScrollView contentContainerStyle={{ paddingBottom: 50, backgroundColor: 'white'}}>
             <StatusBar style="auto" />
             <SafeAreaView style={{ flex: 1, marginHorizontal: "10%" }}>
 
