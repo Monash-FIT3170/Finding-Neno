@@ -138,8 +138,8 @@ const Sighting = ({ userId, sighting, refresh }) => {
       {
         sightingDesc &&
         <VStack marginTop='3%'>
-          <Heading size="sm">Description</Heading>
-          <Text>{sightingDesc}</Text>
+          <Heading size="sm" color={colors.text}>Description</Heading>
+          <Text color={colors.text}>{sightingDesc}</Text>
         </VStack>
       }
     </View>
