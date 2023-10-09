@@ -364,8 +364,8 @@ export default function MapPage({ navigation: { navigate } }) {
 					<View style={{ position: 'absolute', top: '1%', width: '100%' }} alignItems='center'>
 						<SegmentedButtons value={tabValue} onValueChange={setTabValue}
 							style={{ borderColor: colors.border, shadowOpacity: 0.3, shadowOffset: { width: 2, height: 2 }, 
-								marginTop: 0, width: '98%', backgroundColor: 'white', borderRadius: 20, }}
-							theme={{ colors: { onSurface: colors.text, secondaryContainer: Color.FAINT_NENO_BLUE, onSecondaryContainer: colors.primary, outline: colors.text }}} 
+								marginTop: 0, width: '98%', backgroundColor: colors.background, borderRadius: 20, }}
+							theme={{ colors: { onSurface: colors.text, secondaryContainer: Color.FAINT_NENO_BLUE, onSecondaryContainer: colors.primary, outline: 'gray' }}} 
 							
 							buttons={[
 								{ label: 'Reports', icon: 'file-document', value: 'reports', style: backgroundColor = colors.background},
