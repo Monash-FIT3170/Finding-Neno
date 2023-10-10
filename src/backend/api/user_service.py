@@ -24,8 +24,6 @@ def check_access_token(connection) -> bool:
     else:
         return "User does not have access", 401
 
-
-
 def insert_user(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("inserting user: ", json_data)
@@ -194,40 +192,7 @@ def retrieve_missing_reports(connection, author_id) -> Tuple[str, int]:
             return missing_reports, 200
         elif len(missing_reports) == 0:
             return [], 204
-
-def retrieve_reports_by_pet(connection, pet_id) -> Tuple[str, int]:
-    """
-    This function calls the function to retrieve missing reports for a specific pet_id.
-    """
-
-    access_token = request.headers.get('Authorization').split('Bearer ')[1]
-    user_id = request.headers["User-ID"]
-    print(access_token)
-    print(user_id)
-    reports = retrieve_reports_by_pet_id(connection, pet_id, user_id, access_token)
-
-    if reports is False:
-        return "User does not have access", 401
-    else:
-        return reports, 200
     
-
-def delete_reports_by_id(connection, report_id):
-    token = request.headers.get('Authorization').split('Bearer ')[1]
-    user_id = request.headers["User-ID"]
-
-    success = delete_reports_id(
-        connection=connection,
-        report_id=report_id,
-        access_token=token,
-        user_id=user_id
-    )
-    if success:
-        return jsonify({'message': 'Pet report deleted successfully'}), 201
-    else:
-        return jsonify({'message': 'Failed to delete pet report'}), 500
-
-
 
 def retrieve_sightings(connection, missing_report_id, expiry_time) -> Tuple[str, int]:
     """
