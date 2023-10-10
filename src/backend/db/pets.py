@@ -30,7 +30,7 @@ def get_all_pets(
     
     cur = connection.cursor()
 
-    query = """SELECT * FROM pets WHERE owner_id = %s;"""
+    query = """SELECT * FROM pets WHERE owner_id = %s ORDER BY name;"""
 
     try:
         # Execute query
