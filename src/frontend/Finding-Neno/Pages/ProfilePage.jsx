@@ -254,7 +254,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
             }}
             bg={Color.NENO_BLUE}
             width={WINDOW_WIDTH}
-            height={windowHeight / 8}
+            height={WINDOW_HEIGHT / 8}
           >
             <Box height={3} />
             <HStack>

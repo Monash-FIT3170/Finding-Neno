@@ -7,11 +7,11 @@ import LocationNotifications from '../components/Settings/LocationNotfications';
 import DeleteProfile from '../components/Settings/DeleteProfile';
 
 export default function SettingsPage() {
-  const windowHeight = Dimensions.get('window').height;
+  const WINDOW_HEIGHT = Dimensions.get('window').height;
 
   return (
   <ScrollView flex={1}>
-    <VStack h={windowHeight} padding={4}>
+    <VStack h={WINDOW_HEIGHT} padding={4}>
         <UserDetails/>
         <LocationNotifications/>
     </VStack >
