@@ -135,9 +135,13 @@ export default function ProfilePage({ navigation: { navigate } }) {
       const url = `${API_URL}/delete_pet?pet_id=${petId}`;
       const response = await fetch(url, {
         method: "DELETE",
+        // Send request to delete pet.
         headers: {
           Authorization: `Bearer ${ACCESS_TOKEN}`,
-					'User-ID': USER_ID,
+          'User-ID': USER_ID,
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${ACCESS_TOKEN}`,
+          'User-ID': USER_ID
         },
       });
 
@@ -145,161 +149,22 @@ export default function ProfilePage({ navigation: { navigate } }) {
         throw new Error("Request failed with status " + response.status);
       }
 
-      if (response.status === 201) {
-        await fetchOwnerPets(); // refresh the pet list
-        console.log("Pet deleted successfully");
-      } else if (response.status === 204) {
-        console.log("Pet deleted successfully");
-      } else {
-        console.log("Unexpected response status:", response.status);
-      }
     } catch (error) {
       console.log("Error in profile page");
       console.log(error);
     }
   };
 
-  const deletePetReport = async (reportId) => {
-    try {
-      const url = `${IP}:${PORT}/delete_reports_by_id?report_id=${reportId}`;
-      const response = await fetch(url, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
-          'User-ID': USER_ID,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Request failed with status " + response.status);
-      }
-
-      if (response.status === 201) {
-        console.log("Pet report deleted successfully");
-      } else if (response.status === 204) {
-        console.log("Pet report deleted successfully");
-      } else {
-        console.log("Unexpected response status:", response.status);
-      }
-    } catch (error) {
-      console.log("Error in profile page: report deletion");
-      console.log(error);
-    }
-  };
-
-  const unlinkSightings = async (reportId) => {
-    try {
-      const url = `${IP}:${PORT}/get_sightings?report_id=${reportId}`;
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
-          'User-ID': USER_ID,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Request failed with status " + response.status);
-      }
-
-      const sightings = await response.json();
-      console.log("Sightings linked to report ID:", sightings);
-
-      if (sightings.length > 0) {
-        // If there are sightings linked to the report, unlink them
-        const unlinkResponse = await fetch(`${IP}:${PORT}/unlink_sightings?report_id=${reportId}`, {
-          method: "PUT",
-          headers: {
-            Authorization: `Bearer ${ACCESS_TOKEN}`,
-            'User-ID': USER_ID,
-          },
-        });
-  
-        if (!unlinkResponse.ok) {
-          throw new Error("Request failed with status " + unlinkResponse.status);
-        }
-  
-        console.log("Sightings unlinked successfully");
-      } else {
-        console.log("No sightings to unlink for report ID:", reportId);
-      }
-    } catch (error) {
-      console.log("Error in profile page: sighting unlinking");
-      console.log(error);
-    }
-  };
-
-  const fetchCurrentMissingReport = async (pet) => {
-    try {
-      const response = await fetch(`${IP}:${PORT}/get_reports_by_pet?pet_id=${pet.id}`, 
-      {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${ACCESS_TOKEN}`,
-          'User-ID': USER_ID,
-        },
-      });
-
-      if (!response.ok) {
-        throw new Error("Request failed with status " + response.status);
-      }
-
-      const result = await response.json();
-      if (result[0] === null) {
-        return null;
-      } else {
-        report = result[0][0];
-        return report[0];
-      }
-
-    } catch (error) {
-      console.log("Error in profile page: fetching current missing report");
-      console.log(error);
-    }
-  };
-
   const deleteSelectedPets = async () => {
     try {
-      // Step 1: Fetch Missing Pet Report ID for each selected pet
-      const reportIdsPromises = selectedPets.map(async (pet) => {
-        const reportId = await fetchCurrentMissingReport(pet);
-        return reportId;
-      });
-  
-      // Wait for all report IDs to be fetched
-      const reportIds = await Promise.all(reportIdsPromises);
 
-      // Check if there are any reports
-      if (reportIds.some((reportId) => reportId !== null)) {
+      console.log("selectedPets: ", selectedPets);
   
-        // Step 2: Unlink Sightings Linked to the Report
-        const sightingsPromises = reportIds.map(async (reportId, index) => {
-          if (reportId !== null) {
-            await unlinkSightings(reportId);
-          }
-        });
-    
-        // Wait for all sightings to be deleted
-        await Promise.all(sightingsPromises);
-    
-        // Step 3: Delete Missing Pet Reports
-        const deleteReportPromises = reportIds.map(async (reportId, index) => {
-          if (reportId !== null) {
-            await deletePetReport(reportId);
-          }
-        });
-    
-        // Wait for all reports to be deleted
-        await Promise.all(deleteReportPromises);
-      }
-  
-      // Step 4: Delete Selected Pets
-      const deletePetPromises = selectedPets.map(async (pet) => {
+      for (const pet of selectedPets) {
         await deletePet(pet.id);
-      });
-  
-      // Wait for all selected pets to be deleted
-      await Promise.all(deletePetPromises);
+      }
+
+      await fetchOwnerPets();
   
       // Clear the selectedPets array
       setSelectedPets([]);
@@ -468,6 +333,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                   style={{ paddingVertical: 10, paddingHorizontal: 15 }}
                   onPress={() => {
                     toggleDropdown();
+                    setSelectedPets([]);
                     if (pets.length > 0)
                       setEditMode(true);
                   }}
@@ -583,6 +449,18 @@ export default function ProfilePage({ navigation: { navigate } }) {
                 >
                   {email}
                 </Text>
+
+                {/* Profile phone number */}
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color: 'rgba(0, 0, 0, 0.4)',
+                    position: 'absolute',
+                    top: 100,
+                  }}
+                >
+                  {phone}
+                </Text>
             </Box>
 
           </View>
@@ -596,33 +474,11 @@ export default function ProfilePage({ navigation: { navigate } }) {
           />
         )}
 
-        {/* Button */}
-        <TouchableOpacity
-            style={{
-              width: 100,
-              height: 40,
-              backgroundColor: '#3498db',
-              borderRadius: 50,
-              alignItems: 'center',
-              justifyContent: 'center',
-              marginBottom: 15,
-            }}
-            // if edit mode is true, navigate to view profilepage, otherwise navigate to edit profile page
-            onPress={() => {
-              navigate(editMode ? "Edit Profile Page" : "View Profile Page");
-            }
-            }
-          >
-            <Text style={{ color: 'white'}}>
-              {editMode ? "SETTINGS" : "VIEW"}
-            </Text>
-          </TouchableOpacity>
-
           <DeleteUserModal visible={deleteModalVisible} setVisible={setDeleteModalVisible} />
 
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <HStack mt="6" justifyContent="flex-start" alignItems="center" marginBottom={2}>
-            < HStack style={{marginRight:editMode ? 20 : windowWidth / 1.8, alignItems: 'center'}}>
+            < HStack style={{marginRight:editMode ? 60 : windowWidth / 1.8, alignItems: 'center'}}>
             <Heading
               fontSize="sm"
               color="coolGray.600"
@@ -653,16 +509,23 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
           {editMode ? (
             <HStack alignItems="center">
-              <Button
-                size="sm"
-                marginTop={4}
-                marginLeft={35}
-                onPress={deleteSelectedPets}
-                bg="transparent" // Make the button transparent
+              <TouchableOpacity
+                onPress={() => {
+                  if (selectedPets.length > 0) {
+                    deleteSelectedPets();
+                  }
+                }}
+                style={{ 
+                  flexDirection: 'row', 
+                  alignItems: 'center',
+                  marginTop: 0,
+                  marginRight: 10,
+                }}
+                activeOpacity={0.7}
               >
-                <DeleteIcon color="#FF0000" />{" "}
-                {/* Change the color of DeleteIcon */}
-              </Button>
+                <DeleteIcon color="#FF0000" />
+              </TouchableOpacity>
+
               <Text marginLeft={-2}>{selectedPets.length}</Text>
               <Button
                 size="sm"

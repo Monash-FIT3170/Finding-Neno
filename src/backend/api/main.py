@@ -105,6 +105,11 @@ def delete_user():
     to_delete_id = request.args.get("user_id")
     return jsonify(delete_all_user_data(g.db, to_delete_id=to_delete_id))
 
+@app.route("/delete_pet", methods=["GET", "DELETE"])
+def delete_pet_api():
+    pet_id = request.args.get("pet_id")
+    return delete_all_pet_data(g.db, to_delete_id=pet_id)
+
 @app.route("/verify_token", methods=["GET"])
 def get_verify_token():
     return check_access_token(g.db)
@@ -169,12 +174,6 @@ def update_pet_api():
 def toggle_missing_status_api():
     return toggle_missing_status_operation(g.db)
 
-@app.route("/delete_pet", methods=["GET", "DELETE"]) # Requires Access_token and user ID for authorization
-def delete_pet_api():
-    pet_id = request.args.get("pet_id")
-    return delete_pet_operation(g.db, pet_id)
-
-
 @app.route("/insert_missing_report", methods=["POST"]) # Requires Access_token and user ID for authorization
 def post_insert_missing_report():
     return insert_missing_report(g.db)
@@ -193,20 +192,6 @@ def get_missing_reports():
     """
     author_id = request.args.get("author_id")
     return jsonify(retrieve_missing_reports(g.db, author_id))
-
-@app.route("/get_reports_by_pet", methods=["GET"])
-def get_reports_by_pet():
-    """
-    Returns an array of missing reports for a specific pet_id, sorted by latest to oldest.
-    """
-    pet_id = request.args.get("pet_id")
-    return jsonify(retrieve_reports_by_pet(g.db, pet_id))  # Updated function name
-
-
-@app.route("/delete_reports_by_id", methods=["GET", "DELETE"]) # Requires Access_token and user ID for authorization
-def delete_reports_by_id_api():
-    report_id = request.args.get("report_id")
-    return delete_reports_by_id(g.db, report_id)
 
 
 @app.route("/get_sightings", methods=["GET"])
