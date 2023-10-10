@@ -43,8 +43,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 	const LOADING_IMAGE = "https://media2.giphy.com/media/v1.Y2lkPTc5MGI3NjExaWRwMHI0cmlnOGU3Mm4xbzZwcTJwY2Nrb2hlZ3YwNmtleHo4Zm15MiZlcD12MV9pbnRlcm5hbF9naWZfYnlfaWQmY3Q9cw/L05HgB2h6qICDs5Sms/giphy.gif";
 
 	const onAddPetPress = () => {
-		setIsButtonDisabled(true);
-		setButtonText("Adding Pet...");
+		
 		/**
 		 * This function is used to submit the pet information to the backend.
 		 * It will call the POST method '/insert_pet' to create a new pet.
@@ -65,6 +64,9 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 		let isValid = validateDetails(formData);
 
 		if (isValid) {
+			setIsButtonDisabled(true);
+			setButtonText("Adding Pet...");
+			
 			// create the pet object
 			const pet = {
 				name: formData.petName,
