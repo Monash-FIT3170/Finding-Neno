@@ -1,6 +1,6 @@
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
 import marker from '../assets/marker_icon.png';
-import { Image, StyleSheet, View } from 'react-native';
+import { Image, StyleSheet, View, useColorScheme } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Input } from "native-base";
 import { Button } from 'react-native-paper';
@@ -10,6 +10,7 @@ import { useTheme } from '@react-navigation/native';
 
 const MapAddressSearch = ({ setFormData, formData }) => {
 
+    const scheme = useColorScheme();
     const { colors } = useTheme();
 	//map box for last known location
 	// Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
@@ -83,7 +84,7 @@ const MapAddressSearch = ({ setFormData, formData }) => {
                 </View>
 
             </View>
-            <Input color={colors.text} size="lg" marginTop={1} onChangeText={text => setAddress(text)} placeholder="Enter an address" />
+            <Input color={scheme === 'dark' ? 'white' : 'black'} size="lg" marginTop={1} onChangeText={text => setAddress(text)} placeholder="Enter an address" />
 
             <Button style={{ marginTop: 8, borderColor: Color.NENO_BLUE }} textColor={Color.NENO_BLUE} mode="outlined" title="Search Address" onPress={handleSearch}>Search Address</Button>
         </View>

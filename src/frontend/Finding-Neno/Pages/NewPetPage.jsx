@@ -145,10 +145,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 			foundErrors.petDescription = "Pet description is required";	
 		}
 
-		if (formData.petDescription.length < 50) {
-			foundErrors.petDescription = "Please be more descriptive. Must be at least 50 characters";	
-		}
-		else if (formData.petDescription.length > 500) {
+		if (formData.petDescription.length > 500) {
 		  foundErrors.petDescription = "Must not exceed 500 characters";
 		}
 	  

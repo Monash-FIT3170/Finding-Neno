@@ -193,8 +193,6 @@ export default function MapPage({ navigation: { navigate } }) {
 	const [reports, setReports] = useState([]);
 	const [sightings, setSightings] = useState([]);
 
-	// Radio button to toggle between reports (true) and sightings (false)
-	const [isViewReports, setIsViewReports] = useState(true);
 	const [tabValue, setTabValue] = useState("reports");
 
 	// Reloads data when map page is opened
@@ -202,7 +200,7 @@ export default function MapPage({ navigation: { navigate } }) {
 		if (isFocused) {
 			fetchData(mapRegion);
 		}
-	}, [isFocused]);
+	}, [isFocused, tabValue]);
 
 	// Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
 	const [mapRegion, setMapRegion] = useState({

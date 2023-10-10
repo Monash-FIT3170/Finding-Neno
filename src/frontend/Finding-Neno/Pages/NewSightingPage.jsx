@@ -10,12 +10,15 @@ import { formatDatetime, formatDateTimeDisplay, petTypeOptions } from "./shared"
 import { SafeAreaView } from 'react-native-safe-area-context';
 import MapAddressSearch from "../components/MapAddressSearch";
 import ImageHandler from "../components/ImageHandler";
+import { Dropdown } from 'react-native-element-dropdown';
+import { useColorScheme } from 'react-native';
 
 const NewSightingPage = ({ navigation: { navigate } }) => {
     const { API_URL } = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
     const navigation = useNavigation();
+    const scheme = useColorScheme();
     const { colors } = useTheme();
 
     const [errors, setErrors] = useState({});
@@ -147,14 +150,18 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
                         <FormControl isRequired isInvalid={'animal' in errors}>
                             <FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Type</Text></FormControl.Label>
-                            <Select size="lg" placeholder="Select a pet type" color={colors.text}
-                                selectedValue={formData.animal}
-                                onValueChange={(value) => setFormData({ ...formData, animal: value })}>
-                                <Select.Item label="Select a pet" value="" disabled hidden />
-                                {petTypeOptions.map((option, index) => (
-                                    <Select.Item key={index} label={option.label} value={option.value} />
-                                ))}
-                            </Select>
+							<Dropdown data={petTypeOptions} placeholder='Select a pet type' 
+								style={{ borderWidth: 1, borderColor: 'lightgray', borderRadius: 4}}
+								placeholderStyle={{color: 'darkgray', marginHorizontal: 13}}
+								itemTextStyle={{color: colors.text}}
+								itemContainerStyle={{backgroundColor: colors.background}}
+								containerStyle={{backgroundColor: colors.background}}
+								selectedTextStyle={{color: colors.text, marginHorizontal: 13}}
+                                iconStyle={{marginRight: 10}}
+								activeColor={ scheme === 'dark' ? '#313338' : '#dbdbdb' }
+								onChange={(item) => setFormData({ ...formData, animal: item.value })}
+								labelField='label' valueField='value'
+							/>
                             {'animal' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.animal}</FormControl.ErrorMessage>}
                         </FormControl>
 

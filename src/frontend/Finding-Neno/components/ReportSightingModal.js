@@ -159,12 +159,12 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 
 								<FormControl isRequired>
 									<FormControl.Label><Text fontWeight={500} color={colors.text}>Date and Time of Sighting</Text></FormControl.Label>
-									<Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={openPicker}>{formatDateTimeDisplay(sightingDateTime)}</Button>
-									<DateTimePickerModal date={sightingDateTime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
+									<Button style={{ borderColor: colors.primary }} textColor={colors.primary} o mode="outlined" onPress={openPicker}>{formatDateTimeDisplay(sightingDateTime)}</Button>
+									<DateTimePickerModal date={sightingDateTime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} display="inline"
 										onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 								</FormControl>
 
-								<FormControl>
+								<FormControl isRequired>
 									<FormControl.Label><Text fontWeight={500} color={colors.text}>Last Known Location</Text></FormControl.Label>
 									<MapAddressSearch formData={sightingData} setFormData={setSightingData} />
 									{<FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>No address found.</FormControl.ErrorMessage>}
@@ -172,7 +172,7 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 
 								<FormControl isInvalid={'description' in sightingFormErrors}>
 									<FormControl.Label><Text fontWeight={500} color={colors.text}>Description</Text></FormControl.Label>
-									<Input size="lg" value={sightingData.description} placeholder='Additional info' onChangeText={value => setSightingData({ ...sightingData, description: value })} />
+									<Input color={colors.text} size="lg" value={sightingData.description} placeholder='Additional info' onChangeText={value => setSightingData({ ...sightingData, description: value })} />
 									{'description' in sightingFormErrors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{sightingFormErrors.description}</FormControl.ErrorMessage>}
 								</FormControl>
 							</VStack>

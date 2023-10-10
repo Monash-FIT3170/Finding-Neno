@@ -1,5 +1,5 @@
-import { useNavigation, useTheme } from '@react-navigation/native';
-import { Box, Center, Heading, VStack, useToast, FormControl, Input, Select, Alert, Text, KeyboardAvoidingView, WarningOutlineIcon } from "native-base";
+import { useIsFocused, useNavigation, useTheme } from '@react-navigation/native';
+import { Box, Center, Select, Heading, VStack, useToast, FormControl, Input, Alert, Text, KeyboardAvoidingView, WarningOutlineIcon, View } from "native-base";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 import React, { useEffect, useState, useRef } from 'react';
@@ -8,10 +8,12 @@ import { Button, Subheading } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useSelector, useDispatch } from "react-redux";
 
-import { formatDateTimeDisplay, formatDatetime } from "./shared";
+import { formatDateTimeDisplay, formatDatetime, petTypeOptions } from "./shared";
 
 import MapAddressSearch from "../components/MapAddressSearch";
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Dropdown } from 'react-native-element-dropdown';
+import { useColorScheme } from 'react-native';
 
 const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
@@ -19,7 +21,6 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
-	const [dropdownOptions, setDropdownOptions] = useState([]);
 	const [errors, setErrors] = useState({});
 	const [buttonText, setButtonText] = useState("Create Report")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
@@ -27,7 +28,9 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	const [selectedDatetime, setSelectedDatetime] = useState(new Date());
 	const [showPicker, setShowPicker] = useState(false);
 	const toast = useToast();
+	const scheme = useColorScheme();
 	const { colors } = useTheme();
+	const isFocused = useIsFocused();
 
 
 	useEffect(() => {
@@ -50,16 +53,16 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 				}
 				const data = await response.json();
 
-				const petTuples = data.map((pet) => [pet["name"], pet["id"]]);
-
-				setDropdownOptions(petTuples)
+				const petOptions = data.map((pet) => ({ label: pet["name"], value: pet["id"] }));
+				
+				setDropdownOptions(petOptions)
 			} catch (error) {
 				console.error(error);
 			}
 		}
 
 		fetchOwnerPets();
-	}, []);
+	}, [isFocused]);
 
 	const onCreateReportPress = async () => {
 		setIsButtonDisabled(true);
@@ -131,10 +134,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 			}
 		}
 
-        if (formData.description.length < 50) {
-			foundErrors.description = "Please be more descriptive. Must be at least 50 characters";	
-		}
-		else if (formData.description.length > 500) {
+        if (formData.description.length > 500) {
 			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
 		}
 
@@ -207,8 +207,12 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		lastSeenDateTime: selectedDatetime,
 	});
 
+	const [dropdownOpen, setDropdownOpen] = useState(false);
+	const [dropdownOptions, setDropdownOptions] = useState(petTypeOptions);
+	const [value, setValue] = useState();
+
 	return (
-		<KeyboardAwareScrollView contentContainerStyle={{paddingVertical: 50}}>
+		<KeyboardAwareScrollView contentContainerStyle={{paddingVertical: 20}}>
 			<SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: '100%'}}>
 				<VStack width={300} justifyContent='center'>
 					<Heading size="lg" fontWeight="600" color={colors.primary}>Report Your Missing Pet</Heading>
@@ -218,22 +222,26 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 						<FormControl isRequired isInvalid={'missingPetId' in errors}>
 							<FormControl.Label><Text fontWeight={500} color={colors.text}>Your Pet</Text></FormControl.Label>
-							<Select color={colors.text} size="lg" placeholder="Select a pet"
-								selectedValue={formData.missingPetId}
-								onValueChange={(value) => setFormData({ ...formData, missingPetId: value })}>
-								<Select.Item label="Select a pet" value="" disabled hidden />
-								{dropdownOptions.map((option, index) => (
-									<Select.Item key={index} label={option[0]} value={option[1]} />
-								))}
-							</Select>
+							<Dropdown data={dropdownOptions} placeholder='Select a pet' 
+								style={{ borderWidth: 1, borderColor: 'lightgray', borderRadius: 4}}
+								placeholderStyle={{color: 'darkgray', marginHorizontal: 13}}
+								itemTextStyle={{color: colors.text}}
+								itemContainerStyle={{backgroundColor: colors.background}}
+								containerStyle={{backgroundColor: colors.background}}
+								selectedTextStyle={{color: colors.text, marginHorizontal: 13}}
+								iconStyle={{marginRight: 10}}
+								activeColor={ scheme === 'dark' ? '#313338' : '#dbdbdb' }
+								onChange={(item) => setFormData({ ...formData, missingPetId: item.value })}
+								labelField='label' valueField='value'
+							/>
+
 							{'missingPetId' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.missingPetId}</FormControl.ErrorMessage>}
 						</FormControl>
 
 						<FormControl isRequired>
 							<FormControl.Label><Text fontWeight={500} color={colors.text}>Last Seen Date and Time</Text></FormControl.Label>
-							
 							<Button style={{ marginTop: 5, borderColor: Color.NENO_BLUE}} mode="outlined" textColor={Color.NENO_BLUE} onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
-							<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" maximumDate={new Date()} themeVariant="light" display="inline"
+							<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" maximumDate={new Date()} display="inline"
 								onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
 						</FormControl>
 
