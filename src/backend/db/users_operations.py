@@ -33,7 +33,6 @@ def salt_and_hash(password):
 
     return hashed_password
 
-
 def generate_access_token():
     """
     This function generates an 32 character random access token using both letters and numbers
@@ -44,7 +43,6 @@ def generate_access_token():
     token = ''.join(secrets.choice(alphabet) for i in range(32))
 
     return token
-
 
 def insert_user_to_database(connection: psycopg2.extensions.connection, email: str, phone: str, name: str, password: str):
     """
@@ -112,7 +110,31 @@ def retrieve_user(connection: psycopg2.extensions.connection, profile_user_id: i
     return result
 
 
-def check_user_exists_in_database(connection: psycopg2.extensions.connection, email: str, password: str):
+def check_user_exists(connection: psycopg2.extensions.connection, email: str, phoneNumber: str):
+    """
+    This function is used to check if a user exists with the same email or phone number
+    """
+
+    cur = connection.cursor()
+
+    # Check if a user with this email or phone numer exists in the database
+    query = """SELECT id, access_token FROM users WHERE (email_address = %s OR phone_number = %s)"""
+
+    result = None
+
+    # Execute the query
+    try:
+        cur.execute(query, (email, phoneNumber))
+        user = cur.fetchall()
+        result = (len(user) == 0)
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
+def check_user_login_details(connection: psycopg2.extensions.connection, username: str, password: str):
     """
     This function is used to check if a user exists in the database and if the password match
     """
@@ -124,17 +146,17 @@ def check_user_exists_in_database(connection: psycopg2.extensions.connection, em
 
     # Check if a user with this email exists in the database
     # Construct a SELECT query to check if the user exists in the database and if its password matches
-    query = """SELECT id, access_token FROM users WHERE email_address = %s AND password = %s """
+    query = """SELECT id, access_token FROM users WHERE (email_address = %s OR phone_number = %s) AND password = %s """
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
 
     # Execute the query
     try:
-        cur.execute(query, (email, hashed_pass))
+        cur.execute(query, (username, username, hashed_pass))
         user = cur.fetchall()
         if len(user) == 0:  # If a user with the provided email could not be found
-            print("Invalid email or password combination.")
+            print("Invalid email/phone number or password combination.")
         else: # If login is correct
             result = user[0]
     except Exception as e:
@@ -283,7 +305,6 @@ def update_report_active_status(connection: psycopg2.extensions.connection, repo
         connection.rollback()
         return False
 
-
 def archive_missing_report_in_database(connection: psycopg2.extensions.connection, reportId, isActive, user_id, access_token):
     """
     This function is used to archive a missing report.
@@ -318,7 +339,6 @@ def archive_missing_report_in_database(connection: psycopg2.extensions.connectio
     # Close the cursor
     cur.close()
     return result
-
 
 def retrieve_missing_reports_from_database(connection: psycopg2.extensions.connection, author_id: int,  user_id: int, access_token: str):
     """
@@ -385,7 +405,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
         # Retrieve rows as an array
         missing_reports = cur.fetchall()
 
-        print(f"Missing reports successfully retrieved: {missing_reports}")
+        print(f"Missing reports successfully retrieved")
 
         result = missing_reports
     except Exception as e:
@@ -471,11 +491,13 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
         query = """
                     SELECT
                         s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, s.breed,
-                        u.name, u.email_address, u.phone_number
+                        u.name, u.email_address, u.phone_number, p.name as pet_name
                     FROM
                         sightings AS s
                     LEFT JOIN
                         missing_reports AS mr ON s.missing_report_id = mr.id
+                    JOIN 
+		                pets AS p ON p.id = mr.pet_id
                     JOIN
                         users AS u ON s.author_id = u.id
                     ORDER BY
@@ -512,6 +534,54 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
         sightings = cur.fetchall()
 
         print(f"Sightings successfully retrieved")
+
+        result = sightings
+    except Exception as e:
+        print(f"Error with retrieving sightings: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
+def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.connection, user_id: int, access_token: str):
+    """
+    Returns all pet sightingss that are linked to a missing report made/owned by user_id 
+
+    Returns False if access token is invalid, empty array if no sightings exist or an error is encountered, otherwise returns
+    sightings.
+    """
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    # Open cursor to access the connection.
+    cur = connection.cursor()
+
+    query = """
+                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.image_url, s.description, s.animal, 
+                    s.breed, u.name, u.email_address, u.phone_number, p.name as pet_name
+                FROM sightings AS s
+                    JOIN 
+                        missing_reports AS mr ON s.missing_report_id = mr.id
+                    JOIN 
+		                pets AS p ON p.id = mr.pet_id
+                    JOIN
+                        users AS u ON s.author_id = u.id
+                WHERE 
+                    mr.author_id = %s
+                ORDER BY
+                s.date_time DESC;
+            """
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    try:
+        cur.execute(query, (user_id,))
+
+        # Retrieve rows as an array
+        sightings = cur.fetchall()
+
+        print(f"Sightings for user reports successfully retrieved")
 
         result = sightings
     except Exception as e:
@@ -725,7 +795,6 @@ def delete_missing_reports_of_pet(connection: psycopg2.extensions.connection, pe
         print(f"Error with changing password: {e}")
 
     return result
-
 
 def change_password_in_database(connection: psycopg2.extensions.connection, email: int, new_password: str, user_id: int, access_token: str):
     """

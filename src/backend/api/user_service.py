@@ -32,6 +32,10 @@ def insert_user(connection) -> Tuple[str, int]:
     phoneNumber = json_data["phoneNumber"]
     password = json_data["password"]
     name = json_data["name"]
+
+    user_exists = check_user_exists(connection, email, phoneNumber)
+    if not user_exists:
+        return 'User already exists', 409
     insert_user_to_database(connection, email, phoneNumber, name, password)
     return "Success", 201
 
@@ -205,12 +209,29 @@ def retrieve_reports_by_pet(connection, pet_id) -> Tuple[str, int]:
 
 def retrieve_sightings(connection, missing_report_id) -> Tuple[str, int]:
     """
-    This function calls the function that connectionects to the db to retrieve all sightings or sightings for a missing 
+    This function calls the function that connects to the db to retrieve all sightings or sightings for a missing 
     report if its missing_report_id is provided.
     """
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
     sightings = retrieve_sightings_from_database(connection, missing_report_id, user_id, access_token)
+
+    if sightings is False:
+        return "User does not have access", 401
+    else:
+        if len(sightings) > 0:
+            return sightings, 200
+        elif len(sightings) == 0:
+            return [], 204
+
+def retrieve_my_report_sightings(connection) -> Tuple[str, int]:
+    """
+    This function calls the function that connects to the db to retrieve all sightings that are linked to a missing pet report 
+    made by user_id 
+    """
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+    sightings = retrieve_my_report_sightings_from_database(connection, user_id, access_token)
 
     if sightings is False:
         return "User does not have access", 401
@@ -256,10 +277,10 @@ def retrieve_sightings_in_area(connection, longitude, longitude_delta, latitude,
 def login(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("user login attempt: ", json_data)
-    email = json_data["email"].lower()
+    username = json_data["username"].lower()
     password = json_data["password"]
     print(password)
-    user_exists = check_user_exists_in_database(connection, email, password)
+    user_exists = check_user_login_details(connection, username, password)
     if user_exists:
         user_id, access_token = user_exists  # Unpack the tuple
         return "Success", 200, user_id, access_token  # Return user_id and access_token

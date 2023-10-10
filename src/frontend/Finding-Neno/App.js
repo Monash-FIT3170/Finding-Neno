@@ -138,18 +138,19 @@ function TabNavigator() {
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="location" color={color} size={size} />
 					),
+					headerShown: false
 				}}
 			/>
-			{/* <Tab.Screen
+			<Tab.Screen
 				name="Sightings"
-				component={SightingsStackNavigator}
+				component={SightingsPage}
 				options={{
 					tabBarIcon: ({ color, size }) => (
 						<Ionicons name="search" color={color} size={size} />
 					),
-					headerShown: false
+					headerShown: true
 				}}
-			/> */}
+			/>
 			<Tab.Screen
 				name="Report"
 				component={ReportStackNavigator}
@@ -187,6 +188,7 @@ function DashboardStackNavigator() {
 	return (
 		<Stack.Navigator initialRouteName="DashboardPage">
 			<Stack.Screen name="Dashboard Page" component={DashboardPage} />
+			<Stack.Screen name="New Report Page" component={NewReportPage} />
 			<Stack.Screen name="New Sighting Page" component={NewSightingPage} />
 		</Stack.Navigator>
 	)

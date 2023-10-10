@@ -6,7 +6,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
 import { validDateTime, validateCoordinates } from "./validation"
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import axios from 'axios';
 import { Image, StyleSheet, View } from 'react-native';
 
 import { useSelector, useDispatch } from "react-redux";
@@ -241,11 +240,12 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		try {
 			const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
 
-			const response = await axios.get(apiUrl);
-			if (response.data.length > 0) {
-				const firstResult = response.data[0];
+			const response = await fetch(apiUrl);
+			const result = await response.json();
+			if (result.length > 0) {
+				const firstResult = result[0];
 				setCoordinates({
-					latitude: parseFloat(firstResult.lat),
+					latitude: parseFloat(firstResult.lat), 
 					longitude: parseFloat(firstResult.lon),
 				});
 				setFormData({

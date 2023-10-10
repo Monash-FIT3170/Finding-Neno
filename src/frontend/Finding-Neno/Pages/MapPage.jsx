@@ -1,13 +1,15 @@
 import { NavigationContainer, useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, Callout,PROVIDER_GOOGLE } from 'react-native-maps';
 import { Switch, Image, StyleSheet, View } from 'react-native';
 import { TouchableOpacity } from 'react-native';
 import { Button, Text } from 'react-native';
 import store from "../store/store";
 import { useSelector, useDispatch } from "react-redux";
 import { Dimensions } from 'react-native';
+
+
 
 import { VStack } from 'native-base';
 
@@ -129,7 +131,6 @@ export default function MapPage() {
 					? reports.map((report, index) => (
 						<Marker
 							key={`${report[0]}_${report[3]}_${report[4]}`}
-							title={report[6]}
 							coordinate={{ longitude: report[3], latitude: report[4] }}
 							onPress={() =>
 								this.mapView.animateToRegion({
@@ -138,7 +139,17 @@ export default function MapPage() {
 									longitudeDelta: 0.0015,
 								})
 							}
-						></Marker>
+						>
+							<Callout>
+                <View>
+                    <Text>{`Name: ${report[6]}`}</Text> 
+					<Text>{`Species: ${report[7]}`}</Text>
+					<Text>{`Breed: ${report[8]}`}</Text>
+                    <Text>{`Details: ${report[2]}`}</Text> 
+                </View>
+            </Callout>
+
+						</Marker>
 					))
 					: null}
 
@@ -156,7 +167,15 @@ export default function MapPage() {
 									longitudeDelta: 0.0015,
 								})
 							}
-						></Marker>
+						>
+							<Callout>
+                <View>
+                    <Text>{`Species: ${sighting[5]}`}</Text> 
+					<Text>{`Breed: ${sighting[6]}`}</Text>
+					<Text>{`Description: ${sighting[4]}`}</Text>
+                </View>
+            </Callout>
+						</Marker>
 					))
 					: null}
 			</MapView>
@@ -235,3 +254,19 @@ const styles = StyleSheet.create({
 
 
 });
+/*<MapView
+            style={{ flex: 1 }}
+            // ... other MapView props
+        >
+            {reports.map((report, index) => (
+                <Marker
+                    key={report.id} // Assuming report has an id property, replace with appropriate key
+                    coordinate={{ latitude: report.latitude, longitude: report.longitude }} // replace with actual report latitude and longitude properties
+                    title={report.title}
+                    description={report.description}
+                    onPress={() => navigation.navigate('ReportPage', { report })}
+                />
+            ))}
+        </MapView>
+    );
+}*/
