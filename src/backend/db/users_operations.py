@@ -748,6 +748,61 @@ def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensio
     cur.close()
     return result
 
+def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_id: int, user_id: int, access_token: str):
+    """
+    This function retrieves reports based on the provided pet_id.
+    Missing report, pet, and owner information are returned.
+    Returns False if access token is invalid, an empty array if no reports exist for the given pet_id,
+    or an error is encountered. Otherwise, returns the reports.
+    """
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    query = """
+        SELECT 
+            mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
+            p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
+            u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+        FROM 
+            missing_reports AS mr
+        JOIN 
+            pets AS p ON mr.pet_id = p.id
+        JOIN 
+            users AS u ON mr.author_id = u.id
+        WHERE 
+            mr.is_active = true -- Condition to filter out only active missing reports
+        AND
+            p.id = %s;
+            
+    """
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = None
+
+    try:
+        cur.execute(query, (pet_id, ))
+
+        # Retrieve the reports
+        reports = cur.fetchall()
+
+        if reports:
+            print(f"Reports successfully retrieved: {reports}")
+            result = reports
+        else:
+            print(f"No reports found for the provided pet_id")
+
+    except Exception as e:
+        print(f"Error with retrieving the reports: {e}")
+        result = []
+
+    # Close the cursor
+    cur.close()
+    return result
+
 def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.connection, longitude, longitude_delta, latitude, latitude_delta):
     """
     This function retrieves the sightings near a coordinate point at latitude longitude. longitude_delta is the width of the area with longitude
@@ -844,6 +899,8 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
 
     cur.close()
     return result
+
+
 
 def retrieve_user_saved_sightings(connection: psycopg2.extensions.connection, user_id: int, access_token: str ):
     """
