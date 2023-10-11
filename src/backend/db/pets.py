@@ -30,7 +30,7 @@ def get_all_pets(
     
     cur = connection.cursor()
 
-    query = """SELECT * FROM pets WHERE owner_id = %s;"""
+    query = """SELECT * FROM pets WHERE owner_id = %s ORDER BY name;"""
 
     try:
         # Execute query
@@ -216,44 +216,106 @@ def update_pet_missing_status(connection: psycopg2.extensions.connection, pet_id
 
     return result
 
-def delete_pet(
-    connection: psycopg2.extensions.connection, 
-    id: int,
-    access_token: str, user_id: int
-):
-    """
-    Deletes an existing pet in the database
 
-    Arguments:
-        connection: postgres connection
-        id: id of the pet
-        access_token: access token of the pet owner
-    Returns:
-        True if successful, False otherwise
+def delete_all_pet_data_from_database(connection: psycopg2.extensions.connection, to_delete_id: int, user_id: int, access_token: str):
+    """
+    This function deletes the pet with the provided id
+
+    """
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        print("Access token verification failed.")
+        return False
+    
+    if not unlink_pet_sightings_from_user_reports(connection=connection, user_id=user_id, pet_id=to_delete_id):
+        print("Failed to unlink sightings from user reports.")
+        return False
+
+    # Delete pet's missing reports
+    if not delete_pet_reports(connection=connection, user_id=user_id, pet_id=to_delete_id):
+        print("Failed to delete pet's missing reports.")
+        return False
+
+    # Delete pet
+    if not delete_pet(connection=connection, user_id=user_id, pet_id=to_delete_id):
+        print("Failed to delete pet.")
+        return False
+
+    return True
+
+
+def unlink_pet_sightings_from_user_reports(connection: psycopg2.extensions.connection, user_id: int, pet_id: int):
+    """
+    This function unlinks sightings on this user's pet's missing reports.
     """
 
     cur = connection.cursor()
-    # Verify access token
-    if not verify_access_token(connection, user_id, access_token):
-        return False
 
-    result = False
+    query = """
+        UPDATE sightings SET missing_report_id = NULL WHERE missing_report_id IN (SELECT id FROM missing_reports WHERE author_id = %s AND pet_id = %s);
+    """
+
     try:
-        # Get the pet's owner's ID
-        query = """SELECT owner_id FROM pets WHERE id = %s;"""
-        cur.execute(query, (id,))
-        
-        
-        # Delete the pet
-        query = """DELETE FROM pets WHERE id = %s;"""
-        cur.execute(query, (id,))
-        result = True
-        print(f"Query executed successfully: {query}")
+        cur.execute(query, (user_id, pet_id))
+
+        # Commit the change
+        connection.commit()
+        print(f"Sightings successfully unlinked")
+        return True
+
     except Exception as e:
-        print(f"Error while executing query: {e}")
-        return False
+        print(f"Error with deleting user: {e}")
     
     cur.close()
-    connection.commit()
+    return False
 
-    return result
+
+def delete_pet_reports(connection: psycopg2.extensions.connection, user_id: int, pet_id: int):
+    """
+    This function deletes all missing reports created by the user for a pet.
+    """
+
+    cur = connection.cursor()
+
+    query = """
+        DELETE FROM missing_reports WHERE author_id = %s AND pet_id = %s;
+    """
+
+    try:
+        cur.execute(query, (user_id, pet_id))
+
+        # Commit the change
+        connection.commit()
+        print(f"Missing reports successfully deleted")
+        return True
+
+    except Exception as e:
+        print(f"Error with deleting user: {e}")
+    
+    cur.close()
+    return False
+
+
+def delete_pet(connection, user_id, pet_id):
+    """
+    This function deletes the pet that is selected.
+    """
+    
+    cur = connection.cursor()
+
+    query = """
+        DELETE FROM pets WHERE owner_id = %s AND id = %s;
+    """
+    
+    try:
+        cur.execute(query, (user_id, pet_id))
+        connection.commit()
+        print(f"Pet successfully deleted")
+        return True
+    
+    except Exception as e:
+        print(f"Error while deleting pet: {e}")
+
+    cur.close()
+    return False

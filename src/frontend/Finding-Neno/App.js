@@ -205,7 +205,13 @@ function ReportStackNavigator() {
 function ProfileStackNavigator() {
   return (
     <Stack.Navigator initialRouteName="ProfilePage">
-      <Stack.Screen name="Profile Page" component={ProfilePage} />
+      <Stack.Screen
+	  	name="Profile Page" 
+		component={ProfilePage}
+		options={{
+			headerShown: false // hide for the profile page
+		}}
+		/>
       <Stack.Screen name="New Pet Page" component={NewPetPage} />
       <Stack.Screen name="Edit Pet Page" component={EditPetPage} />
     </Stack.Navigator>
