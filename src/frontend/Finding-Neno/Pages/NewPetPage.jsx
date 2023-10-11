@@ -11,6 +11,8 @@ import { formatDatetime, petTypeOptions } from "./shared";
 import ImageHandler from '../components/ImageHandler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { Dropdown } from 'react-native-element-dropdown';
+import { useColorScheme } from 'react-native';
 
 const NewPetPage = ({ navigation: { navigate }, route }) => {
 	/**
@@ -21,6 +23,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 	   */
 
 	const navigation = useNavigation();
+	const scheme = useColorScheme();
 	const { colors } = useTheme();
 	const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
@@ -173,35 +176,39 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
 						<FormControl isInvalid={'petName' in errors} isRequired>
 							<FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Name</Text></FormControl.Label>
-							<Input color={colors.text} size="lg" placeholder='Enter the name of your pet' onChangeText={value => setFormData({ ...formData, petName: value })} />
+							<Input color={colors.text} size="lg" placeholder='Enter the name of your pet' onChangeText={value => setFormData({ ...formData, petName: value.trim() })} />
 							{'petName' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petName}</FormControl.ErrorMessage>}
 						</FormControl>
 						
 						<ImageHandler image={petImage} setImage={setPetImage} setIsButtonDisabled={setIsButtonDisabled} isRequired={true} error={'petImage' in errors} />
 
 						<FormControl isInvalid={'petType' in errors} isRequired>
-							<FormControl.Label><Text fontWeight={500} color={colors.text}>Choose Pet Type</Text></FormControl.Label>
-							<Select color={colors.text} size="lg" placeholder="Select a pet type"
-								selectedValue={formData.petType}
-								onValueChange={(value) => setFormData({ ...formData, petType: value })}>
-								<Select.Item label="Select a pet" value="" disabled hidden />
-								{petTypeOptions.map((option, index) => (
-									<Select.Item key={index} label={option.label} value={option.value} />
-								))}
-							</Select>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Type</Text></FormControl.Label>
+							<Dropdown data={petTypeOptions} placeholder='Select a pet type' 
+								style={{ borderWidth: 1, borderColor: 'lightgray', borderRadius: 4}}
+								placeholderStyle={{color: 'darkgray', marginHorizontal: 13}}
+								itemTextStyle={{color: colors.text}}
+								itemContainerStyle={{backgroundColor: colors.background}}
+								containerStyle={{backgroundColor: colors.background}}
+								selectedTextStyle={{color: colors.text, marginHorizontal: 13}}
+								iconStyle={{marginRight: 10}}
+								activeColor={ scheme === 'dark' ? '#313338' : '#dbdbdb' }
+								onChange={(item) => setFormData({ ...formData, petType: item.value })}
+								labelField='label' valueField='value'
+							/>
 							{'petType' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petType}</FormControl.ErrorMessage>}
 						</FormControl>
 
 						<FormControl isInvalid={'petBreed' in errors} isRequired>
 							<FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Breed</Text></FormControl.Label>
-							<Input color={colors.text} size="lg" onChangeText={value => setFormData({ ...formData, petBreed: value })} placeholder="Enter pet breed" />
+							<Input color={colors.text} size="lg" onChangeText={value => setFormData({ ...formData, petBreed: value.trim() })} placeholder="Enter pet breed" />
 							{'petBreed' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petBreed}</FormControl.ErrorMessage>}
 						</FormControl>
 
 						<FormControl isInvalid={'petDescription' in errors} isRequired>
 							<FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Description</Text></FormControl.Label>
 							<Input multiline={true} color={colors.text} size="lg"
-								onChangeText={(value) => setFormData({ ...formData, petDescription: value })}
+								onChangeText={(value) => setFormData({ ...formData, petDescription: value.trim() })}
 								placeholder="Please describe more about your pet"
 							/>
 							{'petDescription' in errors && (

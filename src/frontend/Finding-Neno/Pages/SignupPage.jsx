@@ -131,7 +131,7 @@ const SignupPage = () => {
 
 						<FormControl isRequired isInvalid={'name' in errors}>
 							<FormControl.Label><Text fontWeight={500} color={colors.text}>Name</Text></FormControl.Label>
-							<Input width='100%' color={colors.text} size="lg" onChangeText={value => setFormData({ ...formData, name: value })} />
+							<Input width='100%' color={colors.text} size="lg" onChangeText={value => setFormData({ ...formData, name: value.trim() })} />
 							{'name' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.name}</FormControl.ErrorMessage>}
 						</FormControl>
 

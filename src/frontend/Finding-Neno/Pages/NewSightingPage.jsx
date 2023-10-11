@@ -169,7 +169,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                             <FormControl.Label><Text fontWeight={500} color={colors.text}>Breed</Text></FormControl.Label>
                             <Input size="lg" color={colors.text}
                                 placeholder="Pet breed"
-                                onChangeText={value => setFormData({ ...formData, breed: value })}
+                                onChangeText={value => setFormData({ ...formData, breed: value.trim() })}
                             />
                         </FormControl>
 
@@ -188,7 +188,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
                         <FormControl isInvalid={'description' in errors}>
                             <FormControl.Label><Text fontWeight={500} color={colors.text}>Description</Text></FormControl.Label>
-                            <Input multiline={true} size="lg" color={colors.text} placeholder="Additional info" onChangeText={value => setFormData({ ...formData, description: value })} />
+                            <Input multiline={true} size="lg" color={colors.text} placeholder="Additional info" onChangeText={value => setFormData({ ...formData, description: value.trim() })} />
                             {'description' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.description}</FormControl.ErrorMessage>}
                         </FormControl>
 

@@ -134,7 +134,7 @@ const ImageHandler = ({ image, setImage, setIsButtonDisabled, isRequired, error 
     return (                        
         <FormControl isRequired={isRequired} isInvalid={error}>
 
-            <ImageView images={[{uri: image}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor='gray'/>
+            <ImageView images={[{uri: image}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor={colors.background}/>
 
             <VStack space={2}>
                 <FormControl.Label><Text fontWeight={500} color={scheme === 'dark'? 'white' : 'black'}>Photo</Text></FormControl.Label>
@@ -159,7 +159,7 @@ const ImageHandler = ({ image, setImage, setIsButtonDisabled, isRequired, error 
                 {
                     image ?
                         <View alignItems={"center"}>
-                            <Button style={{ borderColor: Color.NENO_BLUE, width: "48%" }} textColor={Color.NENO_BLUE} icon="trash-can-outline" mode="outlined" onPress={handleRemovePhoto} >
+                            <Button style={{ borderColor: Color.NENO_BLUE, width: "50%" }} textColor={Color.NENO_BLUE} icon="trash-can-outline" mode="outlined" onPress={handleRemovePhoto} >
                                 Remove Photo
                             </Button>
                         </View> : ""

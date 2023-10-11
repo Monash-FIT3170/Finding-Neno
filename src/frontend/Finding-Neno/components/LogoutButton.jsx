@@ -1,7 +1,8 @@
 import React from 'react';
-import { Button } from 'native-base';
 import store from "../store/store";
 import { logout } from '../store/user';
+import { Button } from 'react-native-paper';
+import { Color } from './atomic/Theme';
 
 const LogoutButton = ({ onPress }) => {
   const handleLogout = () => {
@@ -11,9 +12,9 @@ const LogoutButton = ({ onPress }) => {
   };
 
   return (
-    <Button onPress={handleLogout} backgroundColor={"#FA8072"}>
+    <Button buttonColor={Color.NENO_BLUE} mode="contained" onPress={handleLogout}>
       Logout
-    </Button>
+    </Button>	
   );
 };
 
