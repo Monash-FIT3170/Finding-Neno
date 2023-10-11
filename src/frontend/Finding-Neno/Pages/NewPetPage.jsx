@@ -176,7 +176,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
 						<FormControl isInvalid={'petName' in errors} isRequired>
 							<FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Name</Text></FormControl.Label>
-							<Input color={colors.text} size="lg" placeholder='Enter the name of your pet' onChangeText={value => setFormData({ ...formData, petName: value.trim() })} />
+							<Input _input={{selectionColor: colors.primary}} color={colors.text} size="lg" placeholder='Enter the name of your pet' onChangeText={value => setFormData({ ...formData, petName: value.trim() })} />
 							{'petName' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petName}</FormControl.ErrorMessage>}
 						</FormControl>
 						
@@ -201,13 +201,13 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 
 						<FormControl isInvalid={'petBreed' in errors} isRequired>
 							<FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Breed</Text></FormControl.Label>
-							<Input color={colors.text} size="lg" onChangeText={value => setFormData({ ...formData, petBreed: value.trim() })} placeholder="Enter pet breed" />
+							<Input _input={{selectionColor: colors.primary}} color={colors.text} size="lg" onChangeText={value => setFormData({ ...formData, petBreed: value.trim() })} placeholder="Enter pet breed" />
 							{'petBreed' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.petBreed}</FormControl.ErrorMessage>}
 						</FormControl>
 
 						<FormControl isInvalid={'petDescription' in errors} isRequired>
 							<FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Description</Text></FormControl.Label>
-							<Input multiline={true} color={colors.text} size="lg"
+							<Input _input={{selectionColor: colors.primary}} multiline={true} color={colors.text} size="lg"
 								onChangeText={(value) => setFormData({ ...formData, petDescription: value.trim() })}
 								placeholder="Please describe more about your pet"
 							/>

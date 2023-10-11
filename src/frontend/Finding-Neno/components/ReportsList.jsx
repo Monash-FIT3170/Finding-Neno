@@ -19,8 +19,8 @@ function ReportsList({reports, onRefresh, columns, userId}) {
             keyExtractor={item => `${item[0]}`}
             onRefresh={onListRefresh}
             refreshing={refreshing}
-            ListEmptyComponent={<Text style={{ paddingVertical: '5%', fontSize: 15, fontWeight: '700', alignSelf: 'center'}}>There are no reports of missing pets.</Text>}
-            ListFooterComponent={<Text style={{ paddingVertical: '5%', fontSize: 15, fontWeight: '700', alignSelf: 'center'}}>Last updated {formatDateTimeDisplay(new Date())}</Text>}
+            ListEmptyComponent={<Text style={{ paddingTop: 30, fontSize: 15, fontWeight: '700', alignSelf: 'center'}}>There are no reports of missing pets.</Text>}
+            ListFooterComponent={<Text style={{ paddingTop: 30, fontSize: 15, fontWeight: '700', alignSelf: 'center'}}>Last updated {formatDateTimeDisplay(new Date())}</Text>}
         />
     )
 }

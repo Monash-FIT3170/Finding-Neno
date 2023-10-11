@@ -138,9 +138,9 @@ const DeleteUserModal = ({ visible, setVisible }) => {
 
                     <FormControl isInvalid={'password' in errors}>
                         <FormControl.Label><Text fontWeight={500} color={colors.text}>Confirm this is you</Text></FormControl.Label>
-                        <Input selectionColor={colors.primary} color={colors.text} placeholder='Password' type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
+                        <Input _input={{selectionColor: colors.primary}} selectionColor={colors.primary} color={colors.text} placeholder='Password' type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
                         <Icon as={<MaterialIcons name={showPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
-                        </Pressable>} onChangeText={value => setFormData({...formData, password: value})} autoComplete='false' autoCorrect='false' />
+                        </Pressable>} onChangeText={value => setFormData({...formData, password: value})} />
                         {'password' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.password}</FormControl.ErrorMessage>}
                     </FormControl>
                 </Modal.Body>

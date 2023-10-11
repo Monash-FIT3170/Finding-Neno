@@ -253,7 +253,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 						<FormControl isInvalid={'description' in errors} isRequired>
 							<FormControl.Label><Text fontWeight={500} color={colors.text}>Description</Text></FormControl.Label>
-							<Input color={colors.text} multiline={true} size="lg" placeholder='Additional info' onChangeText={value => setFormData({ ...formData, description: value.trim() })} />
+							<Input _input={{selectionColor: colors.primary}} color={colors.text} multiline={true} size="lg" placeholder='Additional info' onChangeText={value => setFormData({ ...formData, description: value.trim() })} />
 							{'description' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.description}</FormControl.ErrorMessage>}
 						</FormControl>
 

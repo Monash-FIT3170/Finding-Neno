@@ -176,7 +176,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
                   <VStack space={3} mt="5">
                     <FormControl isInvalid={"petName" in errors} isRequired>
                       <FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Name</Text></FormControl.Label>
-                      <Input size='lg' color={colors.text}
+                      <Input _input={{selectionColor: colors.primary}} size='lg' color={colors.text}
                         onChangeText={(value) => setPetName(value.trim())}
                         value={petName} // Set the input value to the current petName
                       />
@@ -213,7 +213,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
                     </FormControl>
                     <FormControl isInvalid={"petBreed" in errors} isRequired>
                       <FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Breed</Text></FormControl.Label>
-                      <Input size='lg' color={colors.text}
+                      <Input _input={{selectionColor: colors.primary}} size='lg' color={colors.text}
                         onChangeText={(value) => setPetBreed(value.trim())}
                         value={petBreed} // Set the input value to the current petBreed
                         placeholder="Enter pet breed"
@@ -226,7 +226,7 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
                     </FormControl>
                     <FormControl isInvalid={"petDescription" in errors} isRequired>
                       <FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Description</Text></FormControl.Label>
-                      <Input size='lg' color={colors.text}
+                      <Input _input={{selectionColor: colors.primary}} size='lg' color={colors.text}
                         onChangeText={(value) => setPetDescription(value.trim())}
                         value={petDescription} // Set the input value to the current petDescription
                         placeholder="Please describe more about your pet"

@@ -172,7 +172,7 @@ const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
 
 								<FormControl isInvalid={'description' in sightingFormErrors}>
 									<FormControl.Label><Text fontWeight={500} color={colors.text}>Description</Text></FormControl.Label>
-									<Input color={colors.text} size="lg" value={sightingData.description} placeholder='Additional info' onChangeText={value => setSightingData({ ...sightingData, description: value })} />
+									<Input _input={{selectionColor: colors.primary}} color={colors.text} size="lg" value={sightingData.description} placeholder='Additional info' onChangeText={value => setSightingData({ ...sightingData, description: value })} />
 									{'description' in sightingFormErrors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{sightingFormErrors.description}</FormControl.ErrorMessage>}
 								</FormControl>
 							</VStack>
