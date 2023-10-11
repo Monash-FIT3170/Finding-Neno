@@ -482,62 +482,6 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
     cur.close()
     return result
 
-def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_id: int, user_id: int, access_token: str):
-    """
-    This function retrieves reports based on the provided pet_id.
-    Missing report, pet, and owner information are returned.
-
-    Returns False if access token is invalid, an empty array if no reports exist for the given pet_id,
-    or an error is encountered. Otherwise, returns the reports.
-    """
-
-    # Verify access token
-    if not verify_access_token(connection, user_id, access_token):
-        return False
-
-    cur = connection.cursor()
-
-    query = """
-        SELECT 
-            mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
-            p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
-            u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
-        FROM 
-            missing_reports AS mr
-        JOIN 
-            pets AS p ON mr.pet_id = p.id
-        JOIN 
-            users AS u ON mr.author_id = u.id
-        WHERE 
-            mr.is_active = true -- Condition to filter out only active missing reports
-        AND
-            p.id = %s;
-
-            
-    """
-
-    # Result is the object returned or True if no errors encountered, False if there is an error
-    result = None
-
-    try:
-        cur.execute(query, (pet_id, ))
-
-        # Retrieve the reports
-        reports = cur.fetchall()
-
-        if reports:
-            print(f"Reports successfully retrieved: {reports}")
-            result = reports
-        else:
-            print(f"No reports found for the provided pet_id")
-
-    except Exception as e:
-        print(f"Error with retrieving the reports: {e}")
-        result = []
-
-    # Close the cursor
-    cur.close()
-    return result
 
 def retrieve_sightings_from_database(connection: psycopg2.extensions.connection, missing_report_id: int, expiry_time, user_id: int, access_token: str):
     """
@@ -553,6 +497,8 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
 
     # Open cursor to access the connection.
     cur = connection.cursor()
+
+    print(f"Getting sightings with missing_report_id: {missing_report_id}")
 
     # Iniltialise list of parameters for query
     params = [user_id]
@@ -613,6 +559,7 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
     cur.close()
     return result
 
+
 def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.connection, user_id: int, access_token: str):
     """
     Returns all pet sightingss that are linked to a missing report made/owned by user_id 
@@ -667,6 +614,44 @@ def retrieve_my_report_sightings_from_database(connection: psycopg2.extensions.c
     # Close the cursor
     cur.close()
     return result
+
+def unlink_sightings_by_report_id(connection: psycopg2.extensions.connection, missing_report_id: int, user_id: int, access_token: str):
+    """
+    This function is used to set all sightings with a certain missing_report_id to inactive.
+
+    Returns False if access token is invalid, True if query is executed successfully.
+    """
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    print(f"Unlinking sightings with missing_report_id: {missing_report_id}")
+
+    # UPDATE query to set sightings missing_report_id to NULL
+    query = """UPDATE sightings SET missing_report_id = NULL WHERE missing_report_id = %s;"""
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (missing_report_id, ))
+        print(f"Query executed successfully: {query}")
+
+        # Commit the change
+        connection.commit()
+
+        result = True
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
 
 def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensions.connection, longitude, longitude_delta, latitude, latitude_delta):
     """
@@ -759,6 +744,61 @@ def retrieve_missing_reports_in_area_from_database(connection: psycopg2.extensio
         print(f"Error with retrieving missing reports in area: {e}")
         result = []
 
+    cur.close()
+    return result
+
+def retrieve_reports_by_pet_id(connection: psycopg2.extensions.connection, pet_id: int, user_id: int, access_token: str):
+    """
+    This function retrieves reports based on the provided pet_id.
+    Missing report, pet, and owner information are returned.
+    Returns False if access token is invalid, an empty array if no reports exist for the given pet_id,
+    or an error is encountered. Otherwise, returns the reports.
+    """
+
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    query = """
+        SELECT 
+            mr.id AS missing_report_id, mr.date_time, mr.description, mr.location_longitude, mr.location_latitude,
+            p.id AS pet_id, p.name AS pet_name, p.animal, p.breed, p.image_url AS pet_image_url,
+            u.id AS owner_id, u.name AS owner_name, u.email_address AS owner_email, u.phone_number AS owner_phone_number
+        FROM 
+            missing_reports AS mr
+        JOIN 
+            pets AS p ON mr.pet_id = p.id
+        JOIN 
+            users AS u ON mr.author_id = u.id
+        WHERE 
+            mr.is_active = true -- Condition to filter out only active missing reports
+        AND
+            p.id = %s;
+            
+    """
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = None
+
+    try:
+        cur.execute(query, (pet_id, ))
+
+        # Retrieve the reports
+        reports = cur.fetchall()
+
+        if reports:
+            print(f"Reports successfully retrieved: {reports}")
+            result = reports
+        else:
+            print(f"No reports found for the provided pet_id")
+
+    except Exception as e:
+        print(f"Error with retrieving the reports: {e}")
+        result = []
+
+    # Close the cursor
     cur.close()
     return result
 
@@ -858,6 +898,8 @@ def retrieve_sightings_in_area_from_database(connection: psycopg2.extensions.con
 
     cur.close()
     return result
+
+
 
 def retrieve_user_saved_sightings(connection: psycopg2.extensions.connection, user_id: int, access_token: str ):
     """
@@ -974,28 +1016,6 @@ def unsave_sighting_for_user(connection: psycopg2.extensions.connection, user_id
 
     # Close the cursor
     cur.close()
-    return result
-
-def delete_missing_reports_of_pet(connection: psycopg2.extensions.connection, pet_id: int):
-    """
-    This function deletes all missing reports associated with pet.
-    """
-    cur = connection.cursor()
-
-    query = """DELETE missing_reports WHERE pet_id = %s;"""
-
-    result = False
-    try:
-        cur.execute(query, (pet_id, ))
-
-        # Commit the change
-        connection.commit()
-        print(f"Missing reports successfully deleted")
-
-        result = True
-    except Exception as e:
-        print(f"Error with changing password: {e}")
-
     return result
 
 def change_password_in_database(connection: psycopg2.extensions.connection, email: int, new_password: str, user_id: int, access_token: str):

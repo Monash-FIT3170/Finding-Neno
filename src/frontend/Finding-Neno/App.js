@@ -242,7 +242,7 @@ function SightingsStackNavigator() {
 function ProfileStackNavigator() {
   return (
     <Stack.Navigator initialRouteName="ProfilePage">
-      <Stack.Screen name="Profile Page" component={ProfilePage} options={{ title: "Profile", headerShown: false, }} />
+      <Stack.Screen name="Profile Page"  component={ProfilePage} options={{ title: "Profile", headerShown: false, }} />
       <Stack.Screen name="New Pet" component={NewPetPage} options={{ title: "" }} />
       <Stack.Screen name="Edit Pet" component={EditPetPage} options={{ title: "" }} />
     </Stack.Navigator>
