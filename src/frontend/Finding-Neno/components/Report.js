@@ -4,6 +4,7 @@ import { Dimensions } from 'react-native';
 import ReportSightingModal from '../components/ReportSightingModal';
 import * as ImagePicker from 'expo-image-picker';
 import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
+import { useSelector } from 'react-redux';
 
 
 const Report = ({ report, userId }) => {
@@ -17,6 +18,8 @@ const Report = ({ report, userId }) => {
     const locationLatitude = report[4];
     const locationString = report[5];
     const authorId = report[15]
+    console.log(authorId)
+    console.log(userId)
     
     const petName = report[7][0].toUpperCase() +report[7].substring(1);
     const petSpecies = report[8][0].toUpperCase() +report[8].substring(1);;

@@ -76,17 +76,17 @@ def drop_tables(connection: psycopg2.extensions.connection):
 
     queries = [
         # Drop users_saved_sightings table
-        """DROP TABLE IF EXISTS users_saved_sightings;""",
+        """DROP TABLE IF EXISTS users_saved_sightings CASCADE;""",
         # Drop sightings table
-        """DROP TABLE IF EXISTS sightings;""",
+        """DROP TABLE IF EXISTS sightings CASCADE;""",
         # Drop missing_reports table
-        """DROP TABLE IF EXISTS missing_reports;""",
+        """DROP TABLE IF EXISTS missing_reports CASCADE;""",
         # Drop pets table
-        """DROP TABLE IF EXISTS pets;""",
+        """DROP TABLE IF EXISTS pets CASCADE;""",
         # Drop user_settings table
-        """DROP TABLE IF EXISTS user_settings;""",
+        """DROP TABLE IF EXISTS user_settings CASCADE;""",
         # Drop users table
-        """DROP TABLE IF EXISTS users;""",
+        """DROP TABLE IF EXISTS users CASCADE;""",
     ]
 
     for query in queries:
