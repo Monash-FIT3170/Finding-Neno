@@ -314,7 +314,7 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     # Execute the query
     try:
         # New reports are automatically set as active
-        cur.execute(query, (author_id, pet_id, last_seen, location_longitude, location_latitude, location_string, description))
+        cur.execute(query, (pet_id, author_id, last_seen, location_longitude, location_latitude, location_string, description))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -1261,7 +1261,7 @@ def get_missing_report(connection: psycopg2.extensions.connection, missing_repor
 
     query = """
         SELECT 
-            id, pet_id, author_id, date_time_of_creation, date_time, location_longitude, location_latitude, description, isactive
+            id, pet_id, author_id, date_time_of_creation, date_time, location_longitude, location_latitude, description, is_active
         FROM 
             missing_reports
         WHERE 
@@ -1295,7 +1295,7 @@ def get_missing_report(connection: psycopg2.extensions.connection, missing_repor
         "location_longitude": result[5],
         "location_latitude": result[6],
         "description": result[7],
-        "isactive": result[8],
+        "is_active": result[8],
     }
 
     return mr
