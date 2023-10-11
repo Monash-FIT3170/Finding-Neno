@@ -344,7 +344,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                 <TouchableOpacity
                   style={{ paddingVertical: 10, paddingHorizontal: 15 }}
                   onPress={() => {
-                    // set notifications
+                    navigate("Settings Page");
                   }}
                 >
                   <Text>Settings</Text>
