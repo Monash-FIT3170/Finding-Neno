@@ -17,10 +17,10 @@ const Report = ({ report, userId }) => {
   const locationString = report[5];
   const authorId = report[15]
   
-  const petName = report[6][0].toUpperCase() +report[6].substring(1);
-  const petSpecies = report[7][0].toUpperCase() +report[7].substring(1);;
-  const petBreed = report[8][0].toUpperCase() +report[8].substring(1);;
-  const petImage = report[9];
+  const petName = report[7][0].toUpperCase() +report[7].substring(1);
+  const petSpecies = report[8][0].toUpperCase() +report[8].substring(1);;
+  const petBreed = report[9][0].toUpperCase() +report[9].substring(1);;
+  const petImage = report[10];
   const distance = report[16] != null ? Math.round(parseFloat(report[16] * 100)) / 100 : null;
 
   const [showModal, setShowModal] = useState(false);
