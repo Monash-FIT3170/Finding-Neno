@@ -249,7 +249,7 @@ def insert_sighting_to_database(connection: psycopg2.extensions.connection, auth
     cur = connection.cursor()
 
     # Construct and INSERT query to insert this user into the DB
-    query = """INSERT INTO sightings (missing_report_id, author_id, animal, breed, date_time, date_time_of_creation, location_longitude, 
+    query = """INSERT INTO sightings (author_id, missing_report_id, animal, breed, date_time, date_time_of_creation, location_longitude, 
     location_latitude, location_string, image_url, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
 
     # Result is the object returned or True if no errors encountered, False if there is an error
@@ -296,7 +296,7 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     # Execute the query
     try:
         # New reports are automatically set as active
-        cur.execute(query, (author_id, pet_id, last_seen, date_time_creation, location_longitude, location_latitude, location_string, description))
+        cur.execute(query, (pet_id, author_id, last_seen, date_time_creation, location_longitude, location_latitude, location_string, description))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -505,8 +505,9 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
 
     # Query returns all sightings in the database
     query = """
-                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.location_string, s.image_url, s.description, s.animal, s.breed,
-                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.is_active
+                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.location_string, 
+                    s.image_url, s.description, s.animal, s.breed,
+                    u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.is_active
                 FROM
                     sightings AS s
                 LEFT JOIN

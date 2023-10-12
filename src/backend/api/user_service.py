@@ -78,7 +78,11 @@ def insert_sighting(connection) -> Tuple[str, int]:
     description = json_data["description"]
 
 
-    result = insert_sighting_to_database(connection, missing_report_id, author_id, animal, breed, date_obj, date_obj_of_creation, location_longitude, location_latitude, location_string, imageUrl, description, user_id, access_token)
+    result = insert_sighting_to_database(connection=connection, missing_report_id=missing_report_id, author_id=author_id, 
+                                         animal=animal, breed=breed, date_time=date_obj, date_time_creation=date_obj_of_creation, 
+                                         location_longitude=location_longitude, location_latitude=location_latitude, location_string=location_string, 
+                                         image_url=imageUrl, description=description, 
+                                         user_id=user_id, access_token=access_token)
 
     if result is False:
         return "User does not have access", 401
@@ -108,7 +112,11 @@ def insert_missing_report(connection) -> Tuple[str, int]:
 
     description = json_data["description"]
     
-    result = insert_missing_report_to_database(connection, pet_id, author_id, last_seen, date_time_creation, location_longitude, location_latitude, location_string, description, user_id, access_token)
+    result = insert_missing_report_to_database(connection=connection, pet_id=pet_id, author_id=author_id, 
+                                               last_seen=last_seen, date_time_creation=date_time_creation, 
+                                               location_longitude=location_longitude, location_latitude=location_latitude, 
+                                               location_string=location_string, description=description, 
+                                               user_id=user_id, access_token=access_token)
 
     if result is False:
         return "User does not have access", 401
@@ -137,8 +145,18 @@ def update_missing_report(connection) -> Tuple[str, int]:
     description = json_data["description"]
     is_active = json_data["is_active"]
 
-    result = update_missing_report_in_database(connection, report_id, pet_id, author_id, last_seen, location_longitude,
-                                      location_latitude, description, is_active, access_token)
+    result = update_missing_report_in_database(
+        connection=connection, 
+        report_id=report_id, 
+        pet_id=pet_id, 
+        author_id=author_id, 
+        last_seen=last_seen, 
+        location_longitude=location_longitude, location_latitude=location_latitude, 
+        description=description, 
+        is_active=is_active, 
+        access_token=access_token
+    )
+
     if result is False:
         return "User does not have access", 401
     else:
@@ -182,7 +200,8 @@ def retrieve_missing_reports(connection, author_id) -> Tuple[str, int]:
     user_id = request.headers["User-ID"]
     print(access_token)
     print(user_id)
-    missing_reports = retrieve_missing_reports_from_database(connection, author_id, user_id, access_token)
+    missing_reports = retrieve_missing_reports_from_database(connection=connection, author_id=author_id, 
+                                                             user_id=user_id, access_token=access_token)
 
     if missing_reports is False:
         return "User does not have access", 401
@@ -202,7 +221,8 @@ def retrieve_reports_by_pet(connection, pet_id) -> Tuple[str, int]:
     user_id = request.headers["User-ID"]
     print(access_token)
     print(user_id)
-    reports = retrieve_reports_by_pet_id(connection, pet_id, user_id, access_token)
+    reports = retrieve_reports_by_pet_id(connection=connection, pet_id=pet_id, 
+                                         user_id=user_id, access_token=access_token)
 
     if reports is False:
         return "User does not have access", 401
@@ -217,7 +237,12 @@ def retrieve_sightings(connection, missing_report_id, expiry_time) -> Tuple[str,
     """
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
-    sightings = retrieve_sightings_from_database(connection, missing_report_id, expiry_time, user_id, access_token)
+    sightings = retrieve_sightings_from_database(
+        connection=connection, 
+        missing_report_id=missing_report_id, 
+        expiry_time=expiry_time, 
+        user_id=user_id, access_token=access_token
+    )
 
     if sightings is False:
         return "User does not have access", 401
@@ -253,7 +278,11 @@ def retrieve_my_report_sightings(connection) -> Tuple[str, int]:
     """
     access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
-    sightings = retrieve_my_report_sightings_from_database(connection, user_id, access_token)
+    sightings = retrieve_my_report_sightings_from_database(
+        connection=connection, 
+        user_id=user_id, 
+        access_token=access_token
+    )
 
     if sightings is False:
         return "User does not have access", 401
@@ -268,7 +297,11 @@ def retrieve_missing_reports_in_area(connection, longitude, longitude_delta, lat
     This function calls the function that connects to the db to retrieve missing reports in an area of width longitude_delta, height
     latitude_delta and centre latitude longitude.
     """
-    missing_reports = retrieve_missing_reports_in_area_from_database(connection, longitude, longitude_delta, latitude, latitude_delta)
+    missing_reports = retrieve_missing_reports_in_area_from_database(
+        connection=connection, 
+        longitude=longitude, longitude_delta=longitude_delta, 
+        latitude=latitude, latitude_delta=latitude_delta
+    )
     
     if missing_reports is False:
         return "User does not have access", 401
@@ -284,7 +317,11 @@ def retrieve_sightings_in_area(connection, longitude, longitude_delta, latitude,
     This function calls the function that connects to the db to retrieve sightings in an area of width longitude_delta, height
     latitude_delta and centre latitude longitude.
     """
-    sightings = retrieve_sightings_in_area_from_database(connection, longitude, longitude_delta, latitude, latitude_delta)
+    sightings = retrieve_sightings_in_area_from_database(
+        connection=connection, 
+        longitude=longitude, longitude_delta=longitude_delta, 
+        latitude=latitude, latitude_delta=latitude_delta
+    )
 
     if sightings is False:
         return "User does not have access", 401

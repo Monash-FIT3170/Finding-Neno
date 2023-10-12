@@ -21,7 +21,7 @@ const Report = ({ report, userId }) => {
     const locationLongitude = report[3];
     const locationLatitude = report[4];
     const locationString = report[5];
-    const authorId = report[15]
+    const authorId = report[16]
     
     const petName = report[7][0].toUpperCase() +report[7].substring(1);
     const petSpecies = report[8][0].toUpperCase() +report[8].substring(1);
