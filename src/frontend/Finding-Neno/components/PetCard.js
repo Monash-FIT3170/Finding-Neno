@@ -1,9 +1,10 @@
 import React, {useState, useEffect} from 'react';
-import { View, TouchableOpacity, Modal } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
+import { Modal } from 'native-base';
 import { Image, Text, Box, Button } from 'native-base';
 import { useSelector, useDispatch } from 'react-redux';
 
-const PetCard = ({color, pet, onClick, editMode}) => {
+const PetCard = ({color, pet, onClick, editMode, onUpdate}) => {
   const {API_URL} = useSelector((state) => state.api)
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
@@ -19,13 +20,13 @@ const PetCard = ({color, pet, onClick, editMode}) => {
   pet.description.length > 50
     ? pet.description.substring(0, 50) + "..."
     : pet.description;
-  const [missing, setMissing] = useState(pet.is_missing);
+  const [showConfirmFoundModal, setShowConfirmFoundModal] = useState(false);
   const descriptionHeight =
   pet.description.length > 50 && !editMode ? petDescription.length * 0.5 : 0;
 
   // Button to confirm if user has found pet
   const borderRadius = () => {
-    if (missing) {
+    if (pet.is_missing) {
       return 0;
     } else {
       return 20;
@@ -33,15 +34,15 @@ const PetCard = ({color, pet, onClick, editMode}) => {
   };
 
   const displayMissingButton = () => {
-    if (missing) {
+    if (pet.is_missing) {
       return (
         <Button
           title="Missing"
           bg="#454545"
           style={{ borderRadius: 0, borderBottomRightRadius: 20, borderBottomLeftRadius: 20 }}
-          onPress={toggleMissingStatus} // Attach the onPress handler
+          onPress={() => setShowConfirmFoundModal(true)} // Attach the onPress handler
         >
-          Found Me!
+          Mark as Found
         </Button>
       );
     } else {
@@ -68,7 +69,7 @@ const PetCard = ({color, pet, onClick, editMode}) => {
         if (response.ok) {
             await fetchMissingReport();
             // Perform any necessary updates on the frontend
-            setMissing(!missing);
+            onUpdate();
           } else {
             console.log('Error while toggling status:', response.statusText);
         }
@@ -141,13 +142,28 @@ const updateMissingReport = async (report) => {
     <TouchableOpacity
     activeOpacity={editMode ? 0.6 : 1}
     onPress={editMode ? onClick : null}>
+      <View
+          style={{
+            shadowColor: "#A9A9A9",
+            backgroundColor: 'transparent',
+            shadowOffset: { width: 4, height: -6 },
+            shadowOpacity: 0.2,
+            shadowRadius: 10,
+            elevation: 2,
+          }}
+        >
       <Box
-        backgroundColor={color}
+        backgroundColor={"white"}
         borderTopLeftRadius={20}
         borderBottomRightRadius={borderRadius()}
         borderBottomLeftRadius={borderRadius()}
         height={150 + descriptionHeight}
-        style={{ opacity: editMode ? 0.8 : 1, borderRadius: 20, overflow: "hidden" }}
+        style={{ 
+          opacity: editMode ? 0.8 : 1,
+          borderRadius: 20, 
+          overflow: "hidden",
+
+      }}
       >
         <View>
           <View style={{ flexDirection: "row", alignItems: "center" }}>
@@ -206,12 +222,39 @@ const updateMissingReport = async (report) => {
           </View>
         </View>
       </Box>
+      </View>
     </TouchableOpacity>
     {displayMissingButton()}
+      {showConfirmFoundModal && <ConfirmFoundModal isVisible={showConfirmFoundModal} setIsVisible={setShowConfirmFoundModal} onRemove={() => toggleMissingStatus()}/>}
     <Box h="4"></Box>
     </View>
   );
 };
+
+function ConfirmFoundModal({ isVisible, setIsVisible, onRemove }) {
+  return <Modal isOpen={isVisible} onClose={() => setIsVisible(false)} size={"md"}>
+    <Modal.Content >
+      <Modal.CloseButton />
+      <Modal.Header>Mark pet as found?</Modal.Header>
+      <Modal.Body>
+        <Text>Please confirm that this pet has been found. This will remove its missing pet reports.</Text>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button.Group space={2}>
+          <Button variant="ghost" colorScheme="blueGray" onPress={() => setIsVisible(false)} >
+            Cancel
+          </Button>
+          <Button onPress={() => {
+            onRemove()
+            setIsVisible(false)
+          }} backgroundColor={"#FA8072"}>
+            Confirm
+          </Button>
+        </Button.Group>
+      </Modal.Footer>
+    </Modal.Content>
+  </Modal>
+}
 
 
 export default PetCard;

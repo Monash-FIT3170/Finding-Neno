@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import datetime
 from typing import Tuple
+from get_suburb import get_suburb
 
 file = Path(__file__).resolve()
 package_root_directory = file.parents[1]
@@ -11,7 +12,7 @@ sys.path.append(str(package_root_directory))
 
 from db.authentication import verify_access_token
 from db.users_operations import *
-
+from db.delete_user import delete_all_user_data_from_database 
 
 def check_access_token(connection) -> bool:
     # json_data = request.get_json(force=True)
@@ -23,8 +24,6 @@ def check_access_token(connection) -> bool:
     else:
         return "User does not have access", 401
 
-
-
 def insert_user(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
     print("inserting user: ", json_data)
@@ -34,6 +33,20 @@ def insert_user(connection) -> Tuple[str, int]:
     name = json_data["name"]
     insert_user_to_database(connection, email, phoneNumber, name, password)
     return "Success", 201
+
+def validate_password_operation(connection):
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+
+    json_data = request.get_json(force=True)
+    to_check_id = json_data["toCheckId"]
+    password = json_data["password"]
+
+    result = check_user_password(connection=connection, to_check_id=to_check_id, password=password, user_id=user_id, access_token=access_token)
+    if result is False:
+        return "User does not have access", 401
+    else:
+        return jsonify(result), 200
 
 def insert_sighting(connection) -> Tuple[str, int]:
     json_data = request.get_json(force=True)
@@ -51,17 +64,14 @@ def insert_sighting(connection) -> Tuple[str, int]:
     hour, minute, day, month, year = separate_datetime(date_time_input)
     date_time = datetime.datetime(year, month, day, hour, minute)
 
-    date_time_of_creation_input = json_data["dateTimeOfCreation"]
-    hour, minute, day, month, year = separate_datetime(date_time_of_creation_input)
-    date_time_of_creation = datetime.datetime(year, month, day, hour, minute)
-
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
+    location_string = get_suburb(location_latitude, location_longitude)
     imageUrl = json_data["imageUrl"]
     description = json_data["description"]
 
 
-    result = insert_sighting_to_database(connection, missing_report_id, author_id, date_time_of_creation, animal, breed, date_time, location_longitude, location_latitude, imageUrl, description, user_id, access_token)
+    result = insert_sighting_to_database(connection, missing_report_id, author_id, animal, breed, date_time, location_longitude, location_latitude, location_string, imageUrl, description, user_id, access_token)
 
     if result is False:
         return "User does not have access", 401
@@ -82,16 +92,13 @@ def insert_missing_report(connection) -> Tuple[str, int]:
     hour, minute, day, month, year = separate_datetime(last_seen_input)
     last_seen = datetime.datetime(year, month, day, hour, minute)
 
-    date_time_of_creation_input = json_data["dateTimeOfCreation"]
-    hour, minute, day, month, year = separate_datetime(date_time_of_creation_input)
-    date_time_of_creation = datetime.datetime(year, month, day, hour, minute)
-
     coordinates = json_data["lastLocation"]
     location_longitude, location_latitude = coordinates.split(",")
+    location_string = get_suburb(location_latitude, location_longitude)
 
     description = json_data["description"]
     
-    result = insert_missing_report_to_database(connection, pet_id, author_id, date_time_of_creation, last_seen, location_longitude, location_latitude, description, user_id, access_token)
+    result = insert_missing_report_to_database(connection, pet_id, author_id, last_seen, location_longitude, location_latitude, location_string, description, user_id, access_token)
 
     if result is False:
         return "User does not have access", 401
@@ -118,7 +125,7 @@ def update_missing_report(connection) -> Tuple[str, int]:
     location_longitude, location_latitude = coordinates.split(",")
 
     description = json_data["description"]
-    is_active = json_data["is_active"]
+    is_active = json_data["isActive"]
 
     result = update_missing_report_in_database(connection, report_id, pet_id, author_id, last_seen, location_longitude,
                                       location_latitude, description, is_active, access_token)
@@ -232,7 +239,7 @@ def retrieve_reports_by_pet(connection, pet_id) -> Tuple[str, int]:
         return "User does not have access", 401
     else:
         return reports, 200
-
+    
 
 def retrieve_sightings(connection, missing_report_id, expiry_time) -> Tuple[str, int]:
     """
@@ -250,6 +257,25 @@ def retrieve_sightings(connection, missing_report_id, expiry_time) -> Tuple[str,
             return sightings, 200
         elif len(sightings) == 0:
             return [], 204
+    
+def unlink_sightings_by_report(connection, missing_report_id) -> Tuple[str, int]: 
+    """
+    This function calls the function that connects to the db to unlink sightings from a missing report if its missing_report_id is provided.
+    """
+    token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+
+    success = unlink_sightings_by_report_id(
+        connection=connection,
+        missing_report_id=missing_report_id,
+        access_token=token,
+        user_id=user_id
+    )
+    if success:
+        return jsonify({'message': 'Sightings unlinked successfully'}), 201
+    else:
+        return jsonify({'message': 'Failed to unlink sightings'}), 500
+
 
 def retrieve_my_report_sightings(connection) -> Tuple[str, int]:
     """
@@ -447,3 +473,15 @@ def reset_password(username, new_password):
     return True
     # Replace with password reset logic
 
+def delete_all_user_data(connection, to_delete_id):
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
+    user_id = request.headers["User-ID"]
+    
+    json_data = request.get_json(force=True)
+    to_delete_id = json_data["toDeleteId"]
+
+    result = delete_all_user_data_from_database(connection=connection, to_delete_id=to_delete_id, user_id=user_id, access_token=access_token)
+    if result is False:
+        return "User does not have access", 401
+    else:
+        return "Success", 200

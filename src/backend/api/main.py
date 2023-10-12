@@ -100,6 +100,16 @@ def close_connection():
 def post_insert_user():
     return insert_user(g.db)
 
+@app.route("/delete_user", methods=["DELETE"])
+def delete_user():
+    to_delete_id = request.args.get("user_id")
+    return jsonify(delete_all_user_data(g.db, to_delete_id=to_delete_id))
+
+@app.route("/delete_pet", methods=["GET", "DELETE"])
+def delete_pet_api():
+    pet_id = request.args.get("pet_id")
+    return delete_all_pet_data(g.db, to_delete_id=pet_id)
+
 @app.route("/verify_token", methods=["GET"])
 def get_verify_token():
     return check_access_token(g.db)
@@ -130,6 +140,10 @@ def retrieve_profile_information():
         return jsonify(data)
     else:
         return None
+    
+@app.route("/validate_password", methods=["POST"]) # Requires Access_token and user ID for authorization
+def validate_password():
+    return validate_password_operation(g.db)
 
 @app.route("/change_password", methods=["PATCH"]) # Requires Access_token and user ID for authorization
 def post_change_password():
@@ -159,12 +173,6 @@ def update_pet_api():
 @app.route("/update_missing_status", methods=["PUT"])  # Use PUT method for updating
 def toggle_missing_status_api():
     return toggle_missing_status_operation(g.db)
-
-@app.route("/delete_pet", methods=["GET", "DELETE"]) # Requires Access_token and user ID for authorization
-def delete_pet_api():
-    pet_id = request.args.get("pet_id")
-    return delete_pet_operation(g.db, pet_id)
-
 
 @app.route("/insert_missing_report", methods=["POST"]) # Requires Access_token and user ID for authorization
 def post_insert_missing_report():
@@ -280,11 +288,18 @@ def get_my_report_sightings():
 
     [
         sighting_id, missing_report_id, author_id (author of sighting), date_time (date time sighting was made), 
-        sighting longitude , sighting latitude, sighting image_url, sighting description, animal, breed, author's name, author's email, author's phone number, pet_name, isactive
+        sighting longitude , sighting latitude, sighting image_url, sighting description, animal, breed, author's name, author's email, author's phone number, pet_name, is_active
     ]
     """
     return jsonify(retrieve_my_report_sightings(g.db))
 
+@app.route("/get_reports_by_pet", methods=["GET"])
+def get_reports_by_pet():
+    """
+    Returns an array of missing reports for a specific pet_id, sorted by latest to oldest.
+    """
+    pet_id = request.args.get("pet_id")
+    return jsonify(retrieve_reports_by_pet(g.db, pet_id))  # Updated function name
 
 
 @app.route("/update_missing_report", methods=["PUT"])
@@ -302,6 +317,12 @@ def put_archive_missing_report():
 @app.route("/insert_sighting", methods=["POST"]) # Requires Access_token and user ID for authorization
 def post_insert_sighting():
     return insert_sighting(g.db)
+
+
+@app.route("/unlink_sightings", methods=["PUT"]) # Requires Access_token and user ID for authorization
+def put_unlink_sightings():
+    report_id = request.args.get("report_id")
+    return unlink_sightings_by_report(g.db, report_id)
 
 @app.route("/retrieve_saved_sightings", methods=["GET"]) # Requires Access_token and user ID for authorization
 def get_saved_sighting():

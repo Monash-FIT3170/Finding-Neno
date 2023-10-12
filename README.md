@@ -68,6 +68,7 @@ If this does not work, run the following commands instead:
   pip3 install python-dotenv
   pip3 install pytest
   pip3 install pytest-mock
+  pip3 install geopy
   ```
 Run the following command from the root directory: 
   ```

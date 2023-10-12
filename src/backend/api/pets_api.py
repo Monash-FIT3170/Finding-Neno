@@ -45,7 +45,6 @@ def insert_pet_operation(conn, owner_id):
         breed=data["breed"],
         description=data["description"],
         image_url=data["image_url"],
-        is_missing = data["is_missing"],
         owner_id=owner_id,
         access_token=token
     )
@@ -90,19 +89,12 @@ def toggle_missing_status_operation(conn):
     return "", 400
 
 
-def delete_pet_operation(conn, pet_id):
-    token = request.headers.get('Authorization').split('Bearer ')[1]
+def delete_all_pet_data(connection, to_delete_id):
+    access_token = request.headers.get('Authorization').split('Bearer ')[1]
     user_id = request.headers["User-ID"]
 
-    success = delete_pet(
-        connection=conn,
-        id=pet_id,
-        access_token=token, user_id=user_id
-    )
-    if success:
-        return jsonify({'message': 'Pet deleted successfully'}), 201
+    result = delete_all_pet_data_from_database(connection=connection, to_delete_id=to_delete_id, user_id=user_id, access_token=access_token)
+    if result is False:
+        return "User does not have access", 401
     else:
-        return jsonify({'message': 'Failed to delete pet'}), 500
-
-
-
+        return "Success", 200

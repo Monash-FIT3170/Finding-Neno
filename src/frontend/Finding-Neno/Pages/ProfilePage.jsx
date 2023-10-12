@@ -1,21 +1,27 @@
 import { useNavigation } from "@react-navigation/native";
-import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link, Modal} from "native-base";
-import { Dimensions } from "react-native";
+import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link, Modal, View} from "native-base";
+import { Dimensions, SafeAreaView } from "react-native";
 import { Color } from "../components/atomic/Theme";
 import { useIsFocused } from "@react-navigation/native";
 import { useEffect, useState } from "react";
 import PetCard from "../components/PetCard";
 import { Checkbox } from "native-base";
 import { DeleteIcon } from "native-base";
-
+import DeleteUserModal from "../components/DeleteUserModal";
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 import pet, { selectPet } from "../store/pet";
 import LogoutButton from '../components/LogoutButton';
 import { logout } from '../store/user';
+import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
+import { TouchableOpacity } from "react-native-gesture-handler";
+import { Linking } from 'react-native';
+import { PaperProvider } from "react-native-paper";
 
 export default function ProfilePage({ navigation: { navigate } }) {
   const navigation = useNavigation();
+  const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const { API_URL } = useSelector((state) => state.api);
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
@@ -37,7 +43,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 	const [user, setUser] = useState([]);
   const [editMode, setEditMode] = useState(false);
   const [selectedPets, setSelectedPets] = useState([]);
-	const [logoutModalVisible, setLogoutModalVisible] = useState(false);
+  const [isLogoutModalVisible, setIsLogoutModalVisible] = useState(false);
 
 	useEffect(() => {
 		if (isFocused) {
@@ -73,6 +79,29 @@ export default function ProfilePage({ navigation: { navigate } }) {
 		}
 	}
 
+  const openLink = async (url) => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+  
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        console.error('Could not open the URL:', url);
+      }
+    } catch (error) {
+      console.error('An error occurred while opening the URL:', error);
+    }
+  };
+
+  const handleLogout = () => {
+    setIsLogoutModalVisible(true);
+  };
+  
+
+  const toggleDropdown = () => {
+    setIsDropdownOpen(!isDropdownOpen);
+  };
+
 	// Retrieve Profile Information
 	const fetchProfileInfo = async () => {
 		try {
@@ -106,9 +135,13 @@ export default function ProfilePage({ navigation: { navigate } }) {
       const url = `${API_URL}/delete_pet?pet_id=${petId}`;
       const response = await fetch(url, {
         method: "DELETE",
+        // Send request to delete pet.
         headers: {
           Authorization: `Bearer ${ACCESS_TOKEN}`,
-					'User-ID': USER_ID,
+          'User-ID': USER_ID,
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${ACCESS_TOKEN}`,
+          'User-ID': USER_ID
         },
       });
 
@@ -116,30 +149,33 @@ export default function ProfilePage({ navigation: { navigate } }) {
         throw new Error("Request failed with status " + response.status);
       }
 
-      if (response.status === 201) {
-        await fetchOwnerPets(); // refresh the pet list
-        console.log("Pet deleted successfully");
-      } else if (response.status === 204) {
-        console.log("Pet deleted successfully");
-      } else {
-        console.log("Unexpected response status:", response.status);
-      }
     } catch (error) {
       console.log("Error in profile page");
       console.log(error);
     }
   };
 
-  const deleteSelectedPets = () => {
-    // for each pet in selectedPets, get petID and delete it
-    selectedPets.forEach((petId) => {
-      deletePet(petId);
-    });
+  const deleteSelectedPets = async () => {
+    try {
 
-    // After deletion, clear the selectedPets array
-    setSelectedPets([]);
-    setEditMode(false);
+      console.log("selectedPets: ", selectedPets);
+  
+      for (const pet of selectedPets) {
+        await deletePet(pet.id);
+      }
+
+      await fetchOwnerPets();
+  
+      // Clear the selectedPets array
+      setSelectedPets([]);
+      setEditMode(false);
+  
+      console.log("All selected pets, reports, and sightings deleted successfully");
+    } catch (error) {
+      console.error("Error in deleteSelectedPets:", error);
+    }
   };
+  
 
   const windowWidth = Dimensions.get("window").width;
   const windowHeight = Dimensions.get("window").height;
@@ -169,18 +205,18 @@ export default function ProfilePage({ navigation: { navigate } }) {
                     marginEnd={10}
                   >
                     <Checkbox
-                      isChecked={selectedPets.includes(pet.id)}
+                      isChecked={selectedPets.includes(pet)}
                       onChange={(isChecked) => {
                         if (isChecked) {
                           // If the checkbox is checked, add the pet to the selectedPets array
                           setSelectedPets((prevSelectedPets) => [
                             ...prevSelectedPets,
-                            pet.id,
+                            pet,
                           ]);
                         } else {
                           // If the checkbox is unchecked, remove the pet from the selectedPets array
                           setSelectedPets((prevSelectedPets) =>
-                            prevSelectedPets.filter((id) => id !== pet.id)
+                            prevSelectedPets.filter((selectedPet) => selectedPet !== pet)
                           );
                         }
                       }}
@@ -198,6 +234,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                       dispatch(selectPet(pet));
                       navigate("Edit Pet Page");
                     }}
+                    onUpdate={fetchOwnerPets}
 					editMode={editMode} 
                   />
                 </VStack>
@@ -231,185 +268,290 @@ export default function ProfilePage({ navigation: { navigate } }) {
     }
   };
 
+  const [deleteModalVisible, setDeleteModalVisible] = useState(false);
+
   return (
-    <ScrollView>
-      <Box alignItems="center" justifyContent="center">
-        <Box
-          alignSelf="center"
-          _text={{
-            alignSelf: "center",
-            justifyContent: "center",
-            fontSize: "lg",
-            fontWeight: "medium",
-            color: "warmGray.50",
-            letterSpacing: "lg",
-          }}
-          bg={Color.NENO_BLUE}
-          width={windowWidth}
-          height={windowHeight / 8}
-        >
-          <Box height={3} />
-          <HStack>
-            <Box width={8} />
-            <Box
-              bg="#FFFFFF"
-              height={76}
-              width={76}
-              borderRadius={38}
-              alignSelf="center"
-              alignItems="center"
-              justifyContent="center"
+    <PaperProvider>
+      <SafeAreaView style={{ height: "100%" }}>
+      <ScrollView style={{backgroundColor: 'white' }}>
+        <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginBottom: 30 }}>
+          {/* Your Page Header */}
+          <Text
+            style={{
+              fontSize: 18,
+              color: 'rgba(255, 255, 255, 0.8)',
+              position: 'absolute',
+              top: 30,
+              zIndex: 1,
+            }}
+          >
+            PROFILE
+          </Text>
+          {/* Cog Icon */}
+          {/* Button */}
+          <Button
+              style={{
+                width: 50,
+                height: 50,
+                backgroundColor: 'rgba(255, 255, 255, 0)',
+                borderRadius: 50,
+                top: 17,
+                right: 10,
+                position: 'absolute',
+                zIndex: 1,
+              }}
+              onPress={() => {
+                toggleDropdown();
+              }}
             >
-              <Image
-                alignSelf="center"
-                size={70}
-                borderRadius={35}
-                source={{
-                  uri: "https://wallpaperaccess.com/full/317501.jpg",
-                }}
-                alt="Alternate Text"
+              <Ionicons
+                name="settings-outline"
+                size={25}
+                color='rgba(255, 255, 255, 0.8)'
               />
+            </Button>
+
+
+            {isDropdownOpen && (
+              <Box
+                style={{
+                  backgroundColor: 'white',
+                  position: 'absolute',
+                  top: 70,
+                  right: 20,
+                  width: 150,
+                  borderRadius: 5,
+                  zIndex: 1,
+                  shadowColor: '#000',
+                  shadowOffset: { width: 0, height: 2 },
+                  shadowOpacity: 0.3,
+                  shadowRadius: 4,
+                  elevation: 3, // For Android
+                }}
+              >
+                <TouchableOpacity
+                  style={{ paddingVertical: 10, paddingHorizontal: 15 }}
+                  onPress={() => {
+                    toggleDropdown();
+                    setSelectedPets([]);
+                    if (pets.length > 0)
+                      setEditMode(true);
+                  }}
+                >
+                  <Text>Edit</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{ paddingVertical: 10, paddingHorizontal: 15 }}
+                  onPress={() => {
+                    // set notifications
+                  }}
+                >
+                  <Text>Settings</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{ paddingVertical: 10, paddingHorizontal: 15 }}
+                  onPress={() => {
+                    openLink('https://docs.google.com/document/d/1JnLxuZf_ELNUQptn7H71IjDpMYgeFg43LLitybX1MZ8/edit?usp=sharing');
+                  }}
+                >
+                  <Text>Terms of Use</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{ paddingVertical: 10, paddingHorizontal: 15 }}
+                  onPress={() => {
+                    openLink('https://docs.google.com/document/d/1deTDNJJdMBqrisotJRy35lA9JQfQgItkFpE1_erhNss/edit?usp=sharing')
+                  }}
+                >
+                  <Text>Privacy Policy</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{ paddingVertical: 10, paddingHorizontal: 15 }}
+                  onPress={() => {
+                    setDeleteModalVisible(true)
+                  }}
+                >
+                  <Text>Delete Account</Text>
+                </TouchableOpacity>
+
+                <TouchableOpacity
+                  style={{ paddingVertical: 10, paddingHorizontal: 15 }}
+                  onPress={() => {
+                    handleLogout();
+                  }}
+                >
+                  <Text>Logout</Text>
+                </TouchableOpacity>
+              </Box>
+            )}
+            
+        <LinearGradient
+          colors={['#FF5733', '#FFA500']} // Gradient colors
+          start={{ x: 0, y: 0 }}
+          end={{ x: 1, y: 1 }}
+          style={{
+            alignSelf: 'center',
+            justifyContent: 'center',
+            alignItems: 'center',
+            width: windowWidth,
+            height: windowHeight / 3.2, // Adjust this to control the gradient height
+          }}
+        >
+
+          {/* Wrapping View with Shadow */}
+          <View
+            style={{
+              shadowColor: "#A9A9A9",
+              shadowOffset: { width: 0, height: -8 },
+              shadowOpacity: 0.2,
+              shadowRadius: 4,
+              elevation: 3,
+            }}
+          >
+
+            {/* Circular foreground */}
+            <Box
+              style={{
+                backgroundColor: "#FFFFFF",
+                height: windowWidth *1.8,
+                width: windowWidth *1.8,
+                marginTop: windowWidth * 1.8,
+                borderRadius: windowWidth,
+                alignSelf: "center",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+
+                {/* Profile Name */}
+                <Text
+                  style={{
+                    fontSize: 20,
+                    color: 'rgba(0, 0, 0, 0.8)',
+                    position: 'absolute',
+                    top: 50,
+                  }}
+                >
+                  {name}
+                </Text>
+
+                {/* Profile email */}
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color: 'rgba(0, 0, 0, 0.4)',
+                    position: 'absolute',
+                    top: 80,
+                  }}
+                >
+                  {email}
+                </Text>
+
+                {/* Profile phone number */}
+                <Text
+                  style={{
+                    fontSize: 15,
+                    color: 'rgba(0, 0, 0, 0.4)',
+                    position: 'absolute',
+                    top: 100,
+                  }}
+                >
+                  {phone}
+                </Text>
             </Box>
-            <Box width={9} />
-            <Heading
-              alignSelf="center"
-              size="lg"
-              fontWeight="600"
-              color="warmGray.200"
-              _dark={{ color: "coolGray.600" }}
-            >
-              {name}
-            </Heading>
-          </HStack>
-        </Box>
 
-        <VStack>
-          <HStack mt="6" justifyContent="space-between">
-            <Heading
-              fontSize="sm"
-              color="coolGray.600"
-              _dark={{ color: "warmGray.200" }}
-              pr={windowWidth / 3.5}
-            >
-              USER DETAILS
-            </Heading>
-            <Text pl={windowWidth / 3.5}></Text>
-          </HStack>
+          </View>
 
-          <Box h="2"></Box>
+        </LinearGradient>
 
-          <Box bg="gray.200" px="2" py="1" borderRadius="md">
-            <HStack mt="2" justifyContent="space-between">
-              <Heading
-                fontSize="sm"
-                color="coolGray.600"
-                _dark={{ color: "warmGray.200" }}
-              >
-                Email
-              </Heading>
-              <Text
-                fontSize="sm"
-                color="coolGray.600"
-                _dark={{ color: "warmGray.200" }}
-              >
-                {email}
-              </Text>
-            </HStack>
-          </Box>
+        {isLogoutModalVisible && (
+          <LogoutModal
+            logoutModalVisible={isLogoutModalVisible}
+            setLogoutModalVisible={setIsLogoutModalVisible}
+          />
+        )}
 
-          <Box h="2"></Box>
+          <DeleteUserModal visible={deleteModalVisible} setVisible={setDeleteModalVisible} />
 
-          <Box bg="gray.200" px="2" py="1" borderRadius="md">
-            <HStack mt="2" justifyContent="space-between">
-              <Heading
-                fontSize="sm"
-                color="coolGray.600"
-                _dark={{ color: "warmGray.200" }}
-              >
-                Phone
-              </Heading>
-              <Text
-                fontSize="sm"
-                color="coolGray.600"
-                _dark={{ color: "warmGray.200" }}
-              >
-                {phone}
-              </Text>
-            </HStack>
-          </Box>
-					<Box h="2"></Box>
-
-					<Button onPress={() => setLogoutModalVisible(true)} backgroundColor={"#FA8072"}>
-						Logout
-					</Button>
-
-					<LogoutModal logoutModalVisible={logoutModalVisible} setLogoutModalVisible={setLogoutModalVisible} />
-
-        </VStack>
-
-        <Box height={1} />
-
-        <VStack>
-          <HStack mt="6" justifyContent="space-between" alignItems="center">
+          <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <HStack mt="6" justifyContent="flex-start" alignItems="center" marginBottom={2}>
+            < HStack style={{marginRight:editMode ? 60 : windowWidth / 1.8, alignItems: 'center'}}>
             <Heading
               fontSize="sm"
               color="coolGray.600"
               _dark={{ color: "warmGray.200" }}
-              pr={windowWidth / 3.5}
+              marginLeft={10}
             >
               PETS
             </Heading>
 
-            {editMode ? (
-              <HStack alignItems="center">
-                <Button
-                  size="sm"
-                  marginTop={4}
-                  onPress={deleteSelectedPets}
-                  bg="transparent" // Make the button transparent
-                >
-                  <DeleteIcon color="#FF0000" />{" "}
-                  {/* Change the color of DeleteIcon */}
-                </Button>
-                <Text marginLeft={-2}>{selectedPets.length}</Text>
-                <Button
-                  size="sm"
-                  onPress={() => {
+            <TouchableOpacity
+              style={{
+                width: 18,
+                height: 18,
+                backgroundColor: 'warmGray.200',
+                borderRadius: 50,
+                marginLeft: 10,
+                marginBottom: 6,
+                marginRight: 15,
+              }}
+              onPress={() => {
+                navigate("New Pet Page");
+              }}
+            >
+              <Text style={{ color: 'black', fontSize: 18 }}>+</Text>
+            </TouchableOpacity>
+            </HStack>
+          
+
+          {editMode ? (
+            <HStack alignItems="center">
+              <TouchableOpacity
+                onPress={() => {
+                  if (selectedPets.length > 0) {
                     deleteSelectedPets();
-                  }}
-                  variant="link"
-                  paddingLeft={6}
-                >
-                  Done
-                </Button>
-              </HStack>
-            ) : (
-              <Button
-                pl={windowWidth / 3}
-                variant="link"
-                onPress={() => setEditMode(true)}
+                  }
+                }}
+                style={{ 
+                  flexDirection: 'row', 
+                  alignItems: 'center',
+                  marginTop: 0,
+                  marginRight: 10,
+                }}
+                activeOpacity={0.7}
               >
-                Edit
+                <DeleteIcon color="#FF0000" />
+              </TouchableOpacity>
+
+              <Text marginLeft={-2}>{selectedPets.length}</Text>
+              <Button
+                size="sm"
+                onPress={() => {
+                  deleteSelectedPets();
+                }}
+                variant="link"
+                marginLeft={5}
+              >
+                Done
               </Button>
+            </HStack>
+          ) : (
+              <></>
             )}
-          </HStack>
-
-          <Button
-            onPress={() => {
-              navigate("New Pet Page");
-            }}
-            width={windowWidth - 80}
-            height="40px"
-          >
-            Add New Pet
-          </Button>
-          <Box h="4"></Box>
-        </VStack>
-
-        {petCards()}      </Box>
+        </HStack>
+        </View>
 
 
-    </ScrollView>
+          {petCards()}
+
+          </View>
+
+      </ScrollView>
+    </SafeAreaView>
+    </PaperProvider>
   );
 }
 

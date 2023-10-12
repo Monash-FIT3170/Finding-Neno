@@ -14,7 +14,7 @@ import { login } from "../store/user";
 const LoginPage = () => {
 	const [formData, setFormData] = useState({});
 	const [errors, setErrors] = useState({});
-	const [show, setShow] = useState(false);
+	const [showPassword, setShowPassword] = useState(false);
 	const [buttonText, setButtonText] = useState("Sign in")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
@@ -95,8 +95,8 @@ const LoginPage = () => {
 						
 							<FormControl isInvalid={'password' in errors}>
 								<FormControl.Label>Password</FormControl.Label>
-								<Input type={show ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShow(!show)}>
-								<Icon as={<MaterialIcons name={show ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
+								<Input type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
+								<Icon as={<MaterialIcons name={showPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
 								</Pressable>} onChangeText={value => setFormData({...formData, password: value})} />
 								{'password' in errors && <FormControl.ErrorMessage>{errors.password}</FormControl.ErrorMessage>}
 
