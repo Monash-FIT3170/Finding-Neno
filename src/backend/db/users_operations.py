@@ -5,6 +5,7 @@ import psycopg2
 import datetime
 import os
 import requests # pip install requests==2.31.0 - TODO: add to requirements.txt
+from typing import Optional, List
 
 from db.authentication import verify_access_token
 
@@ -1305,7 +1306,7 @@ def get_local_users(
     connection: psycopg2.extensions.connection,
     longitude: float,
     latitude: float,
-):
+) -> Optional[List[int]]:
     """
     Gets the user IDs of all users who are local to the given coordinates.
 
@@ -1333,6 +1334,7 @@ def get_local_users(
 
         # Retrieve rows as an array
         users = cur.fetchall()
+        users = [user[0] for user in users]
 
         cur.close()
 
@@ -1382,10 +1384,9 @@ def get_possible_owners(
             sin(radians(%s)) * sin(radians(mr.location_latitude)) 
             + cos(radians(%s)) * cos(radians(mr.location_latitude)) * cos(radians(%s) - radians(mr.location_longitude))
         ) * 6371 <= %s
-    AND
-        p.animal = %s
-    AND
-        UPPER(p.breed) = UPPER(%s)
+        AND p.animal = %s
+        AND UPPER(p.breed) = UPPER(%s)
+        AND mr.is_active IS TRUE;
     """
     try:
         cur.execute(query, (latitude, latitude, longitude, radius, animal, breed))

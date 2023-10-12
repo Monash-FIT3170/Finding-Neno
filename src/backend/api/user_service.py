@@ -585,15 +585,12 @@ def send_notification_to_local_users(
     # Get pet
     pet = get_pet(connection=connection, pet_id=missing_report["pet_id"])
 
-    # Get owner
-    owner = get_user_details(connection=connection, user_id=missing_report["author_id"])
-
     # Get users in the area
     local_user_ids = get_local_users(connection=connection, longitude=missing_report["location_longitude"], latitude=missing_report["location_latitude"])
 
     # Send notification to each user
     for user_id in local_user_ids:
-        if user_id != owner["id"]:
+        if user_id != missing_report["author_id"]:
             user = get_user_details(connection=connection, user_id=user_id)
 
             title = "Missing Pet Alert In Your Area"

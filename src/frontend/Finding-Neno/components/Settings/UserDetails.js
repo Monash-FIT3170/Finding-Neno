@@ -89,13 +89,17 @@ function UserDetails() {
     }
 
     const saveDetails = () => {
-        console.log(tempDetails)
+        console.log(tempDetails);
         console.log(validateDetails());
         // Show success
         if(!validateDetails()){
             console.log("Invalid Details")
-            updateName(user.name)            
-            updatePhoneNumber(user.phone)
+            toast.show({
+                description: "Invalid user details!",
+                placement: "top"
+            })
+            updateName(user.name);   
+            updatePhoneNumber(user.phone);
         } else {
             setUser({...user, name: tempDetails.name, phone: tempDetails.phone})
             updateUser()
@@ -108,21 +112,27 @@ function UserDetails() {
     }
 
     const validateDetails = () => {
-		// Validates details. If details are valid, send formData object to onSignupPress.
-		foundErrors = {};
-        if(!tempDetails.name || tempDetails.name == ""){
-            foundErrors = { ...foundErrors, name: 'Name is required' }
-        }
+      // Validates details. If details are valid, send formData object to onSignupPress.
+      foundErrors = {};
+      if(!tempDetails.name || tempDetails.name == ""){
+          foundErrors = { ...foundErrors, name: 'Name is required' }
+      }
 
-        if (!validPhoneNumber(tempDetails.phone)) {
-			foundErrors = { ...foundErrors, phoneNumber: 'Phone number is invalid' }
-		}
+      if (!validPhoneNumber(tempDetails.phone)) {
+        foundErrors = { ...foundErrors, phoneNumber: 'Phone number is invalid' }
+      }
 
-		setErrors(foundErrors);
+      setErrors(foundErrors);
 
-		// true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
-		return Object.keys(foundErrors).length === 0;
-	}
+      console.log("-------------------------------");
+      console.log(Object.keys({}).length);
+      console.log(foundErrors);
+      console.log(Object.keys(foundErrors).length);
+      console.log("-------------------------------");
+
+      // true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
+      return Object.keys(foundErrors).length === 0;
+    }
 
     return (
       <View >
