@@ -1421,6 +1421,10 @@ def send_notification(
         bcontentdy: The content of the email notification.
     Returns: True if the notification was sent successfully, False otherwise.
     """
+    if os.getenv("SENDGRID_API_KEY") is None:
+        print("SENDGRID_API_KEY environment variable not found!")
+        return False
+
     FROM_EMAIL_ADDRESS = "findingnenoofficial@gmail.com"
     URL = "https://api.sendgrid.com/v3/mail/send"
     response = requests.post(
