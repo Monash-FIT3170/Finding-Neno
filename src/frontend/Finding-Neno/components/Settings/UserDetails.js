@@ -88,27 +88,25 @@ function UserDetails() {
         setTempDetails({ ...tempDetails, phone: newNumber})
     }
 
+
+
     const saveDetails = () => {
-        console.log(tempDetails);
-        console.log(validateDetails());
-        // Show success
-        if(!validateDetails()){
-            console.log("Invalid Details")
-            toast.show({
-                description: "Invalid user details!",
-                placement: "top"
-            })
-            updateName(user.name);   
-            updatePhoneNumber(user.phone);
+        // Show success 
+        if(validateDetails()){
+          setUser({...user, name: tempDetails.name, phone: tempDetails.phone})
+          updateUser()
+          toast.show({
+              description: "User details updated!",
+              placement: "top"
+          })
         } else {
-            setUser({...user, name: tempDetails.name, phone: tempDetails.phone})
-            updateUser()
-            toast.show({
-                description: "User details updated!",
-                placement: "top"
-            })
+          console.log("invalid details");
+          toast.show({
+            description: "Invalid Details",
+            placement: "top"
+          })
+          setTempDetails({ name: user.name, phone: user.phone });
         }
-        console.log(user)
     }
 
     const validateDetails = () => {
@@ -124,11 +122,7 @@ function UserDetails() {
 
       setErrors(foundErrors);
 
-      console.log("-------------------------------");
-      console.log(Object.keys({}).length);
-      console.log(foundErrors);
-      console.log(Object.keys(foundErrors).length);
-      console.log("-------------------------------");
+      console.log(foundErrors)
 
       // true if no errors (foundErrors = 0), false if errors found (foundErrors > 0)
       return Object.keys(foundErrors).length === 0;
@@ -156,21 +150,19 @@ function UserDetails() {
 
         <Text fontSize="md">Name </Text>
         <Spacer width={5}/>
-        <FormControl >
 		<Input 
             placeholder={user.name}
             onEndEditing={(e) => updateName(e.nativeEvent.text)}
             width={textInputWidth} 
             textAlign="right" 
             variant={"unstyled"}/>
-        {'name' in errors && <FormControl.ErrorMessage>{errors.name}</FormControl.ErrorMessage>}
-		</FormControl>
+
         </HStack>
 
         <HStack justifyContent="space-between"  marginBottom='1%'>
         <Text fontSize="md">Phone</Text>
         <Spacer width={5}/>
-        <FormControl isInvalid={'phoneNumber' in errors}>
+
 		<Input 
             keyboardType="numeric" 
             maxLength={10} 
@@ -179,8 +171,7 @@ function UserDetails() {
             width={textInputWidth} 
             textAlign="right" 
             variant={"unstyled"}/>
-		</FormControl>
-        {'phoneNumber' in errors && <FormControl.ErrorMessage>{errors.phoneNumber}</FormControl.ErrorMessage>}
+
         </HStack>        
         
         <HStack justifyContent="space-between"  marginBottom='1%'>
