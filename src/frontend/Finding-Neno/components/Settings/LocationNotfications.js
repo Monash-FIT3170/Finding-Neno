@@ -308,7 +308,7 @@ function LocationNotifications() {
 	markerView: {
 		top: '50%',
 		left: '50%',
-		marginLeft: "0%",
+		marginLeft: "-4%",
 		marginTop: "-6%",
 		position: 'absolute',
 	},
