@@ -7,9 +7,7 @@ import { formatDateTimeDisplay } from '../../Pages/shared';
 function SightingsList({sightings, onRefresh, columns, emptyText}) {
     const [refreshing, setRefreshing] = useState(false);
     const onRefreshList = () => {
-        setRefreshing(true);
         onRefresh();
-        setRefreshing(false);
     }
 
     return (

@@ -539,7 +539,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
                     WHERE 
                         u.id = %s AND mr.is_active = true
                     ORDER BY 
-                        mr.date_time DESC;
+                        mr.date_time DESC, p.name ASC;
                 """
 
     # Result is the object returned or True if no errors encountered, False if there is an error
@@ -619,7 +619,7 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
             
     query += """
                 ORDER BY
-                s.date_time DESC;
+                s.date_time DESC, s.location_string ASC;
             """
     result = False
 
