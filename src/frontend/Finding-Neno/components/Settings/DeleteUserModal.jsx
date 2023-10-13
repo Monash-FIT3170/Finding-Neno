@@ -48,13 +48,13 @@ const DeleteUserModal = ({ visible, setVisible }) => {
                 .then(response => response.json())
                 .then(data => {
                     if (data[0] === "Success") {
+                        store.dispatch(logout());
                         toast.show({
                             title: 'Account Deleted',
                             status: 'success',
                             description: 'Your account has been deleted.',
 							placement: 'top'
                         });
-                        store.dispatch(logout());
                     } else {
                         toast.show({
                             title: 'Error',

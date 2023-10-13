@@ -14,8 +14,6 @@ def delete_all_user_data_from_database(connection: psycopg2.extensions.connectio
     Returns False if access token is invalid, True if query is executed successfully.
     """
 
-    print(to_delete_id)
-
     # Verify access token
     if not verify_access_token(connection, user_id, access_token):
         return False
@@ -38,6 +36,10 @@ def delete_all_user_data_from_database(connection: psycopg2.extensions.connectio
 
     # Delete user's pets
     if not delete_all_user_pets(connection=connection, user_id=to_delete_id):
+        return False
+    
+    # Delete user's settings
+    if not delete_user_settings(connection=connection, user_id=to_delete_id):
         return False
     
     # Delete user
@@ -164,6 +166,31 @@ def delete_all_user_pets(connection: psycopg2.extensions.connection, user_id: in
         # Commit the change
         connection.commit()
         print(f"Pets successfully deleted")
+        return True
+
+    except Exception as e:
+        print(f"Error with deleting user: {e}")
+    
+    cur.close()
+    return False
+
+def delete_user_settings(connection: psycopg2.extensions.connection, user_id: int):
+    """
+    This function deletes the user's settings.
+    """
+
+    cur = connection.cursor()
+
+    query = """
+        DELETE FROM user_settings WHERE user_id = %s;
+    """
+
+    try:
+        cur.execute(query, (user_id, ))
+
+        # Commit the change
+        connection.commit()
+        print(f"User settings successfully deleted")
         return True
 
     except Exception as e:

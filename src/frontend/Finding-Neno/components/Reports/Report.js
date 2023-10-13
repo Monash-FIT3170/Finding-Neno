@@ -89,7 +89,7 @@ const Report = ({ report, userId }) => {
                             smallImageLoading && <ActivityIndicator style={{ top: '50%', left: '50%', position: 'absolute' }} />
                         }
                         <TouchableHighlight onPress={() => setEnlargeImage(true)} underlayColor="#DDDDDD"
-                            style={{ borderRadius: 20, backgroundColor: 'white'}}>
+                            style={{ borderRadius: 10, backgroundColor: 'white'}}>
                             <Image onLoadStart={() => setSmallImageLoading(true)} onLoadEnd={() => setSmallImageLoading(false)}
                                 source={{ uri: petImage }} style={{ maxHeight: '100%', aspectRatio: 1, borderRadius: 10 }} alt={`Image of missing pet ${petName}`} />
                         </TouchableHighlight>
