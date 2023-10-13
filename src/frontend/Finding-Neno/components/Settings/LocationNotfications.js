@@ -133,6 +133,7 @@ function LocationNotifications() {
   const handleRegionChange = (region) => {
     setMapRegion(region);
     setCoordinates({ longitude: region.longitude, latitude: region.latitude });
+    setLocationData({...locationData, long: region.longitude, lat: region.latitude})
   }
 
   const handleSearch = async () => {
@@ -308,12 +309,12 @@ function LocationNotifications() {
 		top: '50%',
 		left: '50%',
 		marginLeft: "0%",
-		marginTop: "-5%",
+		marginTop: "-6%",
 		position: 'absolute',
 	},
 	marker: {
-		height: 24,
-		width: 24
+		height: 32,
+		width: 32
 	}
 });
   
