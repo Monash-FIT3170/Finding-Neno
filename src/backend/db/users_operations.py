@@ -520,7 +520,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
                     WHERE
                         mr.is_active = true -- Condition to filter out only active missing reports
                     ORDER BY 
-                        mr.date_time DESC;
+                        mr.date_time DESC, p.name ASC;
                 """
 
     else:

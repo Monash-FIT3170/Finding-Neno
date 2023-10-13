@@ -55,7 +55,7 @@ export default function ReportsPage({ navigation: { navigate } }) {
 		<Provider>
 			<SafeAreaView style={{ overflow: 'visible'}}>
 				<View style={{paddingTop: 5}}>
-					<ReportsList reports={reports} onRefresh={onRefresh} />
+					<ReportsList reports={reports} onRefresh={onRefresh} userId={USER_ID}/>
 				</View>
 				<Portal>
 					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, bottom: -33 }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}

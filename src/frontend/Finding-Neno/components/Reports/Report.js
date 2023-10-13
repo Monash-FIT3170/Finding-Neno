@@ -16,6 +16,7 @@ import { useSelector } from 'react-redux';
 const Report = ({ report, userId }) => {
   const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
     const { colors } = useTheme();
+    
 
     // Pet Data
     const lastSeen = formatDateTimeDisplay(new Date(report[1]));
