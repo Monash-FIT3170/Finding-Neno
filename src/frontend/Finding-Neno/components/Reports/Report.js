@@ -104,7 +104,7 @@ const Report = ({ report, userId }) => {
                                 <VStack>
                                     <Heading color={colors.text} size="sm" >Species</Heading>
                                     {
-                                        petSpecies == 'Other' ? 
+                                        petSpecies == 'other' ? 
                                         <Text color={colors.text}>{petSpecies}</Text> :
                                         <IconText iconName={petSpecies.toLowerCase()} text={petSpecies} 
                                             iconColor={ Color.NENO_BLUE } textColor={colors.text} iconSize={19} fontWeight='normal' />

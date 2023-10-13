@@ -209,8 +209,15 @@ const updateMissingReport = async (report) => {
               >
                 <View style={{ flexDirection: "column"}}>
                   <Heading fontSize="sm" color={colors.text} size="sm">Species</Heading>
-                  <IconText iconName={petType.toLowerCase()} text={petType}
-                      iconColor={Color.NENO_BLUE} textColor={colors.text} iconSize={19} fontWeight='normal' />
+                  
+                  {
+                    petType == 'other' ?
+                      <Text color={colors.text}>{petType}</Text> :
+                      <View style={{ width: '100%' }}>
+                        <IconText iconName={petType.toLowerCase()} text={petType}
+                          iconColor={Color.NENO_BLUE} textColor={colors.text} iconSize={19} fontWeight='normal' />
+                      </View>
+                  }
                 </View>
                 <View
                   style={{
