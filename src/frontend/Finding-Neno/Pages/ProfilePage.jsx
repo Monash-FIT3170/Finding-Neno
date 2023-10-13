@@ -421,7 +421,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
             >
 
                 {/* Profile Name */}
-                <Text style={{ fontSize: 24, color: colors.text, position: 'absolute', top: 50, }}>
+                <Text style={{ fontSize: 20, color: colors.text, position: 'absolute', top: 50, }}>
                   {name}
                 </Text>
 

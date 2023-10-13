@@ -68,7 +68,7 @@ function LocationNotifications({colors}) {
           </HStack>
     
           <HStack justifyContent="space-between"  marginBottom='1%'>
-            <Text fontSize="md">Radius</Text>
+            <Text color={colors.text} fontSize="md">Radius</Text>
             <Slider 
               width={200} 
               defaultValue={locationData['radius']*10} 
