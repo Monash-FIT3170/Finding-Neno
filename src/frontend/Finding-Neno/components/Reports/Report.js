@@ -102,7 +102,7 @@ const Report = ({ report, userId }) => {
                         <VStack>
                             <HStack marginTop='2%' justifyContent='space-between'>
                                 <VStack>
-                                    <Heading color={colors.text} size="sm" >Species</Heading>
+                                    <Heading color={colors.text} size="sm">Species</Heading>
                                     {
                                         petSpecies == 'other' ? 
                                         <Text color={colors.text}>{petSpecies}</Text> :
