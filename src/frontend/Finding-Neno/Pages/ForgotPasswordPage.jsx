@@ -6,7 +6,6 @@ import { validEmail } from "./validation"
 import { useState } from "react";
 
 import { useSelector, useDispatch } from "react-redux";
-import store from "../store/store";
 
 
 const ForgotPasswordPage = () => {
@@ -75,9 +74,9 @@ const ForgotPasswordPage = () => {
 						<VStack space={3} mt="5">
 
 							<FormControl isInvalid={'email' in errors}>
-								<FormControl.Label>Email</FormControl.Label>
-								<Input onChangeText={value => setFormData({ ...formData, email: value })} />
-								{'email' in errors && <FormControl.ErrorMessage>{errors.email}</FormControl.ErrorMessage>}
+								<FormControl.Label><Text fontWeight={500} color={colors.text}>Email</Text></FormControl.Label>
+								<Input _input={{selectionColor: colors.primary}} size="lg" onChangeText={value => setFormData({ ...formData, email: value })} />
+								{'email' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.email}</FormControl.ErrorMessage>}
 							</FormControl>
 
 							<Button mt="2" bgColor={Color.NENO_BLUE}

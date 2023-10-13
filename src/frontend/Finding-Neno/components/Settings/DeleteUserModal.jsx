@@ -1,12 +1,13 @@
-import { FormControl, HStack, Icon, Input, Pressable, View, WarningOutlineIcon, useToast } from 'native-base';
+import { FormControl, Modal, HStack, Icon, Input, Pressable, View, WarningOutlineIcon, useToast } from 'native-base';
 import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'
-import { Button, Modal, Portal, Text } from 'react-native-paper';
-import { Color } from './atomic/Theme';
+import { Button, Portal, Text } from 'react-native-paper';
+import { Color } from '../atomic/Theme';
 import { useSelector } from 'react-redux';
-import store from "../store/store";
-import { logout } from '../store/user';
+import store from "../../store/store";
+import { logout } from '../../store/user';
+import { useTheme } from '@react-navigation/native';
 
 const DeleteUserModal = ({ visible, setVisible }) => {
     const { API_URL } = useSelector((state) => state.api)
@@ -18,6 +19,7 @@ const DeleteUserModal = ({ visible, setVisible }) => {
     const [errors, setErrors] = useState({});
 	const [showPassword, setShowPassword] = useState(false);
     const toast = useToast();
+    const { colors } = useTheme();
 
     const closeModal = () => {
         setVisible(false);
@@ -46,13 +48,13 @@ const DeleteUserModal = ({ visible, setVisible }) => {
                 .then(response => response.json())
                 .then(data => {
                     if (data[0] === "Success") {
+                        store.dispatch(logout());
                         toast.show({
                             title: 'Account Deleted',
                             status: 'success',
                             description: 'Your account has been deleted.',
 							placement: 'top'
                         });
-                        store.dispatch(logout());
                     } else {
                         toast.show({
                             title: 'Error',
@@ -113,40 +115,42 @@ const DeleteUserModal = ({ visible, setVisible }) => {
         }
     };
 
+    const styles = StyleSheet.create({
+        modal: {
+            width: '100%',
+            height: '100%',
+            alignItems: 'center',
+        },
+        container: {
+            backgroundColor: colors.background,
+            padding: 20,
+            borderRadius: 20
+        },
+    });
+
     return (
-        <Portal>
-            <Modal style={styles.modal} visible={visible} onDismiss={closeModal} contentContainerStyle={styles.container}>
-                <Text style={{ fontWeight: 'bold', fontSize: '20' }}>Delete Account</Text>
-                <Text style={{ marginTop: 4 }}>Are you sure you want to delete your account? You cannot undo this action.</Text>
+        <Modal isOpen={visible} onClose={closeModal} size={"md"}>
+          <Modal.Content backgroundColor={colors.background}>
+                <Modal.CloseButton _icon={{color: colors.text}} />
+                <Modal.Header _text={{color: colors.text}} backgroundColor={colors.background} borderColor={colors.border}>Delete Account</Modal.Header>
+                <Modal.Body>
+                    <Text style={{ color: colors.text, marginTop: 4 }}>Are you sure you want to delete your account? You cannot undo this action.</Text>
 
-                <FormControl isInvalid={'password' in errors}>
-                    <FormControl.Label>Confirm this is you</FormControl.Label>
-                    <Input placeholder='Password' type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
-                    <Icon as={<MaterialIcons name={showPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
-                    </Pressable>} onChangeText={value => setFormData({...formData, password: value})} autoComplete='false' autoCorrect='false' />
-                    {'password' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.password}</FormControl.ErrorMessage>}
-                </FormControl>
-
-                <HStack marginTop={4} width='100%'>
+                    <FormControl isInvalid={'password' in errors}>
+                        <FormControl.Label><Text fontWeight={500} color={colors.text}>Confirm this is you</Text></FormControl.Label>
+                        <Input _input={{selectionColor: colors.primary}} selectionColor={colors.primary} color={colors.text} placeholder='Password' type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
+                        <Icon as={<MaterialIcons name={showPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
+                        </Pressable>} onChangeText={value => setFormData({...formData, password: value})} />
+                        {'password' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.password}</FormControl.ErrorMessage>}
+                    </FormControl>
+                </Modal.Body>
+                <Modal.Footer borderColor={colors.border} backgroundColor={colors.background}>
                     <Button mode='outlined' textColor={Color.NENO_BLUE} style={{ borderColor: Color.NENO_BLUE, width: 100 }} onPress={closeModal}>Cancel</Button>
-                    <Button mode='contained' buttonColor='red' style={{ marginLeft: 4, width: 100 }} onPress={deleteUser}>Delete</Button>
-                </HStack>
-            </Modal>
-        </Portal>
+                    <Button mode='contained' textColor='white' buttonColor='red' style={{ marginLeft: 4, width: 100 }} onPress={deleteUser}>Delete</Button>
+                </Modal.Footer>
+          </Modal.Content>
+        </Modal>
     );
 };
-
-const styles = StyleSheet.create({
-    modal: {
-        width: '100%',
-        height: '100%',
-        alignItems: 'center',
-    },
-    container: {
-        backgroundColor: 'white',
-        padding: 20,
-        borderRadius: 20
-    },
-});
 
 export default DeleteUserModal;

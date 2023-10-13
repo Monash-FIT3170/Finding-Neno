@@ -13,7 +13,7 @@ function DashboardMenu({ navigation }) {
             </Pressable>
           )}>
             <Menu.Item>
-              <Text style={{ textAlign: 'left' }} onPress={() => navigation.navigate('Report', { screen: 'New Report Page' })}>Report</Text>
+              <Text style={{ textAlign: 'left' }} onPress={() => navigation.navigate('Report', { screen: 'New Missing Report Page' })}>Report</Text>
             </Menu.Item>
             <Menu.Item>
               <Text style={{ textAlign: 'left' }}>Sighting</Text>

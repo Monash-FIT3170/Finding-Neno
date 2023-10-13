@@ -6,6 +6,8 @@ import datetime
 import os
 import requests # pip install requests==2.31.0 - TODO: add to requirements.txt
 from typing import Optional, List
+import requests # pip install requests==2.31.0 - TODO: add to requirements.txt
+from typing import Optional, List
 
 from db.authentication import verify_access_token
 
@@ -249,7 +251,7 @@ def check_user_login_details(connection: psycopg2.extensions.connection, usernam
     return result
 
 def insert_sighting_to_database(connection: psycopg2.extensions.connection, author_id: str,
-                                    missing_report_id: int, animal: str, breed: str, date_time: datetime, location_longitude: float,
+                                    missing_report_id: int, animal: str, breed: str, date_time: datetime, date_time_creation: datetime, location_longitude: float,
                                         location_latitude: float, location_string: str, image_url: str, description: str, user_id: int, access_token: str):
     """
     This function is used to add a new sighting to the database.
@@ -265,12 +267,15 @@ def insert_sighting_to_database(connection: psycopg2.extensions.connection, auth
     cur = connection.cursor()
 
     # Construct and INSERT query to insert this user into the DB
-    query = """INSERT INTO sightings (missing_report_id, author_id, animal, breed, date_time, location_longitude, 
-    location_latitude, location_string, image_url, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+    query = """INSERT INTO sightings (author_id, missing_report_id, animal, breed, date_time, date_time_of_creation, location_longitude, 
+    location_latitude, location_string, image_url, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"""
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
 
     # Execute the query
     try:
-        cur.execute(query, (missing_report_id, author_id, animal, breed, date_time, location_longitude, location_latitude, location_string, image_url, description))
+        cur.execute(query, (author_id, missing_report_id, animal, breed, date_time, date_time_creation, location_longitude, location_latitude, location_string, image_url, description))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -294,7 +299,7 @@ def insert_sighting_to_database(connection: psycopg2.extensions.connection, auth
 
 
 def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id: str,
-                                      pet_id: int, last_seen: datetime, location_longitude: float, location_latitude: float,
+                                      pet_id: int, last_seen: datetime, date_time_creation: datetime, location_longitude: float, location_latitude: float,
                                           location_string: str, description: str, user_id: int, access_token: str):
     """
     This function is used to add a new missing report to the database.
@@ -309,13 +314,13 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     cur = connection.cursor()
 
     # Construct and INSERT query to insert this user into the DB
-    query = """INSERT INTO missing_reports (pet_id, author_id, date_time, location_longitude, 
-    location_latitude, location_string, description) VALUES (%s, %s, %s, %s, %s, %s, %s);"""
+    query = """INSERT INTO missing_reports (pet_id, author_id, date_time, date_time_of_creation, location_longitude, 
+    location_latitude, location_string, description) VALUES (%s, %s, %s, %s, %s, %s, %s, %s);"""
 
     # Execute the query
     try:
         # New reports are automatically set as active
-        cur.execute(query, (pet_id, author_id, last_seen, location_longitude, location_latitude, location_string, description))
+        cur.execute(query, (pet_id, author_id, last_seen, date_time_creation, location_longitude, location_latitude, location_string, description))
         print(f"Query executed successfully: {query}")
 
         # Commit the change
@@ -515,7 +520,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
                     WHERE
                         mr.is_active = true -- Condition to filter out only active missing reports
                     ORDER BY 
-                        mr.date_time DESC;
+                        mr.date_time DESC, p.name ASC;
                 """
 
     else:
@@ -534,7 +539,7 @@ def retrieve_missing_reports_from_database(connection: psycopg2.extensions.conne
                     WHERE 
                         u.id = %s AND mr.is_active = true
                     ORDER BY 
-                        mr.date_time DESC;
+                        mr.date_time DESC, p.name ASC;
                 """
 
     # Result is the object returned or True if no errors encountered, False if there is an error
@@ -583,8 +588,9 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
 
     # Query returns all sightings in the database
     query = """
-                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.location_string, s.image_url, s.description, s.animal, s.breed,
-                        u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.is_active
+                SELECT s.id, s.missing_report_id, s.author_id, s.date_time, s.location_longitude, s.location_latitude, s.location_string, 
+                    s.image_url, s.description, s.animal, s.breed,
+                    u.name, u.email_address, u.phone_number, ss.user_id as saved_by, p.name as pet_name, mr.is_active
                 FROM
                     sightings AS s
                 LEFT JOIN
@@ -613,7 +619,7 @@ def retrieve_sightings_from_database(connection: psycopg2.extensions.connection,
             
     query += """
                 ORDER BY
-                s.date_time DESC;
+                s.date_time DESC, s.location_string ASC;
             """
     result = False
 

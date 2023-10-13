@@ -1,5 +1,5 @@
-import { useNavigation } from "@react-navigation/native";
-import { Box, Image, Heading, HStack, VStack, Button, Text, ScrollView, Link, Modal, View} from "native-base";
+import { useNavigation, useTheme } from "@react-navigation/native";
+import { Box, Image, Button, Heading, HStack, VStack, Text, ScrollView, Link, Modal, View} from "native-base";
 import { Dimensions, SafeAreaView } from "react-native";
 import { Color } from "../components/atomic/Theme";
 import { useIsFocused } from "@react-navigation/native";
@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import PetCard from "../components/PetCard";
 import { Checkbox } from "native-base";
 import { DeleteIcon } from "native-base";
-import DeleteUserModal from "../components/DeleteUserModal";
+import DeleteUserModal from "../components/Settings/DeleteUserModal";
 import { useSelector, useDispatch } from "react-redux";
 import store from "../store/store";
 import pet, { selectPet } from "../store/pet";
@@ -17,10 +17,12 @@ import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Linking } from 'react-native';
-import { PaperProvider } from "react-native-paper";
+import { Button as PaperButton, PaperProvider } from "react-native-paper";
 
 export default function ProfilePage({ navigation: { navigate } }) {
   const navigation = useNavigation();
+  const { colors } = useTheme();
+
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const { API_URL } = useSelector((state) => state.api);
@@ -183,6 +185,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
   const name = user.name;
   const email = user.email;
   const phone = user.phone;
+  
 
   const petCards = () => {
     if (pets.length > 0) {
@@ -232,7 +235,8 @@ export default function ProfilePage({ navigation: { navigate } }) {
                     pet={pet}
                     onClick={() => {
                       dispatch(selectPet(pet));
-                      navigate("Edit Pet Page");
+                      navigate("Edit Pet");
+
                     }}
                     onUpdate={fetchOwnerPets}
 					editMode={editMode} 
@@ -249,7 +253,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                   onPress={() => {
                     // navigate to edit pet page
                     dispatch(selectPet(pet));
-                    navigate("Edit Pet Page");
+                    navigate("Edit Pet");
                   }}
                 >
                   <Image
@@ -273,23 +277,13 @@ export default function ProfilePage({ navigation: { navigate } }) {
   return (
     <PaperProvider>
       <SafeAreaView style={{ height: "100%" }}>
-      <ScrollView style={{backgroundColor: 'white' }}>
+      <ScrollView style={{backgroundColor: colors.background }} height={'100%'}> 
         <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', marginBottom: 30 }}>
           {/* Your Page Header */}
-          <Text
-            style={{
-              fontSize: 18,
-              color: 'rgba(255, 255, 255, 0.8)',
-              position: 'absolute',
-              top: 30,
-              zIndex: 1,
-            }}
-          >
-            PROFILE
-          </Text>
+          
           {/* Cog Icon */}
           {/* Button */}
-          <Button
+          <Button 
               style={{
                 width: 50,
                 height: 50,
@@ -307,7 +301,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
               <Ionicons
                 name="settings-outline"
                 size={25}
-                color='rgba(255, 255, 255, 0.8)'
+                color={colors.text}
               />
             </Button>
 
@@ -315,7 +309,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
             {isDropdownOpen && (
               <Box
                 style={{
-                  backgroundColor: 'white',
+                  backgroundColor: colors.background,
                   position: 'absolute',
                   top: 70,
                   right: 20,
@@ -338,7 +332,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                       setEditMode(true);
                   }}
                 >
-                  <Text>Edit</Text>
+                  <Text color={colors.text}>Edit</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -347,7 +341,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                     navigate("Settings Page");
                   }}
                 >
-                  <Text>Settings</Text>
+                  <Text color={colors.text}>Settings</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -356,7 +350,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                     openLink('https://docs.google.com/document/d/1JnLxuZf_ELNUQptn7H71IjDpMYgeFg43LLitybX1MZ8/edit?usp=sharing');
                   }}
                 >
-                  <Text>Terms of Use</Text>
+                  <Text color={colors.text}>Terms of Use</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -365,7 +359,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                     openLink('https://docs.google.com/document/d/1deTDNJJdMBqrisotJRy35lA9JQfQgItkFpE1_erhNss/edit?usp=sharing')
                   }}
                 >
-                  <Text>Privacy Policy</Text>
+                  <Text color={colors.text}>Privacy Policy</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -374,7 +368,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                     setDeleteModalVisible(true)
                   }}
                 >
-                  <Text>Delete Account</Text>
+                  <Text color='danger.600'>Delete Account</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
@@ -383,13 +377,13 @@ export default function ProfilePage({ navigation: { navigate } }) {
                     handleLogout();
                   }}
                 >
-                  <Text>Logout</Text>
+                  <Text color={colors.text}>Logout</Text>
                 </TouchableOpacity>
               </Box>
             )}
             
         <LinearGradient
-          colors={['#FF5733', '#FFA500']} // Gradient colors
+          colors={[colors.tertiary, colors.primary]} // Gradient colors
           start={{ x: 0, y: 0 }}
           end={{ x: 1, y: 1 }}
           style={{
@@ -415,7 +409,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
             {/* Circular foreground */}
             <Box
               style={{
-                backgroundColor: "#FFFFFF",
+                backgroundColor: colors.background,
                 height: WINDOW_WIDTH *1.8,
                 width: WINDOW_WIDTH *1.8,
                 marginTop: WINDOW_WIDTH * 1.8,
@@ -427,38 +421,17 @@ export default function ProfilePage({ navigation: { navigate } }) {
             >
 
                 {/* Profile Name */}
-                <Text
-                  style={{
-                    fontSize: 20,
-                    color: 'rgba(0, 0, 0, 0.8)',
-                    position: 'absolute',
-                    top: 50,
-                  }}
-                >
+                <Text style={{ fontSize: 20, color: colors.text, position: 'absolute', top: 50, }}>
                   {name}
                 </Text>
 
                 {/* Profile email */}
-                <Text
-                  style={{
-                    fontSize: 15,
-                    color: 'rgba(0, 0, 0, 0.4)',
-                    position: 'absolute',
-                    top: 80,
-                  }}
-                >
+                <Text style={{ fontSize: 15, color: colors.text, position: 'absolute', top: 80, }}>
                   {email}
                 </Text>
 
                 {/* Profile phone number */}
-                <Text
-                  style={{
-                    fontSize: 15,
-                    color: 'rgba(0, 0, 0, 0.4)',
-                    position: 'absolute',
-                    top: 100,
-                  }}
-                >
+                <Text style={{ fontSize: 15, color: colors.text, position: 'absolute', top: 100, }}>
                   {phone}
                 </Text>
             </Box>
@@ -470,7 +443,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
         {isLogoutModalVisible && (
           <LogoutModal
             logoutModalVisible={isLogoutModalVisible}
-            setLogoutModalVisible={setIsLogoutModalVisible}
+            setLogoutModalVisible={setIsLogoutModalVisible} colors={colors}
           />
         )}
 
@@ -480,12 +453,11 @@ export default function ProfilePage({ navigation: { navigate } }) {
           <HStack mt="6" justifyContent="flex-start" alignItems="center" marginBottom={2}>
             < HStack style={{marginRight:editMode ? 60 : WINDOW_WIDTH / 1.8, alignItems: 'center'}}>
             <Heading
-              fontSize="sm"
-              color="coolGray.600"
-              _dark={{ color: "warmGray.200" }}
+              fontSize="lg"
+              color={colors.text}
               marginLeft={10}
             >
-              PETS
+              Your Pets
             </Heading>
 
             <TouchableOpacity
@@ -495,14 +467,14 @@ export default function ProfilePage({ navigation: { navigate } }) {
                 backgroundColor: 'warmGray.200',
                 borderRadius: 50,
                 marginLeft: 10,
-                marginBottom: 6,
+                marginBottom: -5,
                 marginRight: 15,
               }}
               onPress={() => {
-                navigate("New Pet Page");
+                navigate("New Pet");
               }}
             >
-              <Text style={{ color: 'black', fontSize: 18 }}>+</Text>
+              <Text style={{ color: colors.primary, fontSize: 25 }}>+</Text>
             </TouchableOpacity>
             </HStack>
           
@@ -555,24 +527,21 @@ export default function ProfilePage({ navigation: { navigate } }) {
   );
 }
 
+function LogoutModal({ logoutModalVisible, setLogoutModalVisible, colors }) {
+  return (
+    <Modal isOpen={logoutModalVisible} onClose={() => setLogoutModalVisible(false)} size={"md"}>
+      <Modal.Content backgroundColor={colors.background}>
+        <Modal.CloseButton _icon={{color: colors.text}} />
+        <Modal.Header _text={{color: colors.text}} backgroundColor={colors.background} borderColor={colors.border}>Log Out?</Modal.Header>
+        <Modal.Body>
+          <Text color={colors.text}>Are you sure you want to log out?</Text>
+        </Modal.Body>
 
-function LogoutModal({ logoutModalVisible, setLogoutModalVisible }) {
-	return <Modal isOpen={logoutModalVisible} onClose={() => setLogoutModalVisible(false)} size={"md"}>
-		<Modal.Content >
-			<Modal.CloseButton />
-			<Modal.Header>Log Out?</Modal.Header>
-			<Modal.Body>
-				<Text>Are you sure you want to log out?</Text>
-			</Modal.Body>
-
-			<Modal.Footer>
-				<Button.Group space={2}>
-					<Button variant="ghost" colorScheme="blueGray" onPress={() => setLogoutModalVisible(false)} >
-						Cancel
-					</Button>
-					<LogoutButton onPress={() => setLogoutModalVisible(false)} />
-				</Button.Group>
-			</Modal.Footer>
-		</Modal.Content>
-	</Modal>
+        <Modal.Footer borderColor={colors.border} backgroundColor={colors.background}>
+            <PaperButton mode='outlined' textColor={Color.NENO_BLUE} style={{borderColor: Color.NENO_BLUE, marginRight: 6}} onPress={() => { setLogoutModalVisible(false) }} >Cancel</PaperButton>
+            <LogoutButton onPress={() => setLogoutModalVisible(false)} />
+        </Modal.Footer>
+      </Modal.Content>
+    </Modal>
+  )
 }

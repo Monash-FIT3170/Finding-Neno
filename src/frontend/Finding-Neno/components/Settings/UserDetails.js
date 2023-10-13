@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Heading, Box, HStack, Text, Input, FormControl, Spacer, useToast} from 'native-base';
+import { Heading, Box, HStack, Text, Input, FormControl, Spacer, useToast, useTheme} from 'native-base';
 import { Dimensions, TouchableOpacity, View} from 'react-native';
 import { useIsFocused } from "@react-navigation/native";
 
@@ -8,7 +8,7 @@ import { validPhoneNumber } from "../../Pages/validation";
 
 
 
-function UserDetails() {
+function UserDetails({ colors }) {
   const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
     const textInputWidth = WINDOW_WIDTH*0.7;
 
@@ -93,17 +93,19 @@ function UserDetails() {
     const saveDetails = () => {
         // Show success 
         if(validateDetails()){
-          setUser({...user, name: tempDetails.name, phone: tempDetails.phone})
+          setUser({...user, name: tempDetails.name.trim(), phone: tempDetails.phone})
           updateUser()
           toast.show({
               description: "User details updated!",
-              placement: "top"
+              placement: "top",
+              alignItems: "center"
           })
         } else {
           console.log("invalid details");
           toast.show({
             description: "Invalid Details",
-            placement: "top"
+            placement: "top",
+            alignItems: "center"
           })
           setTempDetails({ name: user.name, phone: user.phone });
         }
@@ -130,13 +132,12 @@ function UserDetails() {
 
     return (
       <View >
-        <Box h={165} backgroundColor={"#FFFFFF"} borderRadius={10} marginBottom='5%'>
+        <Box h={165} backgroundColor={colors.settingBackground} borderRadius={10} marginBottom='5%'>
         <Box padding={3}>
         <HStack justifyContent="space-between" marginBottom={3}>
         <Heading
           fontSize="md"
-          color="coolGray.600"
-          _dark={{ color: "warmGray.200" }}
+          color={colors.primary}
           pr={WINDOW_WIDTH / 3.5}
         >
           User Details
@@ -148,9 +149,11 @@ function UserDetails() {
         
         <HStack justifyContent="space-between"  marginBottom='1%'>
 
-        <Text fontSize="md">Name </Text>
+        <Text color={colors.text} fontSize="md">Name </Text>
         <Spacer width={5}/>
-		<Input 
+		    <Input 
+            _input={{selectionColor: colors.primary}} 
+            color={colors.text}
             placeholder={user.name}
             onEndEditing={(e) => updateName(e.nativeEvent.text)}
             width={textInputWidth} 
@@ -160,10 +163,12 @@ function UserDetails() {
         </HStack>
 
         <HStack justifyContent="space-between"  marginBottom='1%'>
-        <Text fontSize="md">Phone</Text>
+        <Text color={colors.text} fontSize="md">Phone</Text>
         <Spacer width={5}/>
 
-		<Input 
+		    <Input 
+            _input={{selectionColor: colors.primary}} 
+            color={colors.text}
             keyboardType="numeric" 
             maxLength={10} 
             placeholder={user.phone}
@@ -175,8 +180,8 @@ function UserDetails() {
         </HStack>        
         
         <HStack justifyContent="space-between"  marginBottom='1%'>
-        <Text fontSize="md">Email</Text>
-        <Text width={textInputWidth} textAlign="right">{user.email} </Text>
+        <Text color={colors.text} fontSize="md">Email</Text>
+        <Text color={colors.text} width={textInputWidth} textAlign="right">{user.email} </Text>
         </HStack>
         </Box>  
         </Box>

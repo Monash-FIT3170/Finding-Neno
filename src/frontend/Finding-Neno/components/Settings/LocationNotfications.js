@@ -11,7 +11,7 @@ import { useSelector } from "react-redux";
 import { Divider } from 'native-base';
 
 
-function LocationNotifications() {
+function LocationNotifications({colors}) {
   const { API_URL } = useSelector((state) => state.api)
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
   const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
@@ -55,10 +55,12 @@ function LocationNotifications() {
   const renderLocationForm = () => {
     if(localNotificationsEnabled) {
       return (
-        <View>
+        <View style={{backgroundColor: 'transparent'}}>
           <HStack justifyContent="space-between"  marginBottom='1%'>
-            <Text fontSize="md">Location</Text>
+            <Text color={colors.text} fontSize="md">Location</Text>
             <Input
+              _input={{selectionColor: colors.primary}} 
+              color={colors.text}
               onChangeText={(text) => updateLocation(text)} 
               onEndEditing={() => handleSearch()}
               placeholder="Enter Location" width={textInputWidth} textAlign="right" 
@@ -66,7 +68,7 @@ function LocationNotifications() {
           </HStack>
     
           <HStack justifyContent="space-between"  marginBottom='1%'>
-            <Text fontSize="md">Radius</Text>
+            <Text color={colors.text} fontSize="md">Radius</Text>
             <Slider 
               width={200} 
               defaultValue={locationData['radius']*10} 
@@ -78,7 +80,7 @@ function LocationNotifications() {
             </Slider.Track>
             <Slider.Thumb />
             </Slider>
-            <Text fontSize="xs" color={"#BCBCBC"}>{radiusText}km</Text>
+            <Text color={colors.text} fontSize="xs">{radiusText}km</Text>
           </HStack>
     
           <Box height={150} marginBottom='1%' >
@@ -242,13 +244,12 @@ function LocationNotifications() {
    
   return (
     <View>
-      <Box h={boxHeight} backgroundColor={"#FFFFFF"} borderRadius={10} marginBottom='5%'>
+      <Box h={boxHeight} backgroundColor={colors.settingBackground} borderRadius={10} marginBottom='5%'>
       <Box padding={3}>
         <HStack justifyContent="space-between" marginBottom={3}>
         <Heading
           fontSize="md"
-          color="coolGray.600"
-          _dark={{ color: "warmGray.200" }}
+          color={colors.primary}
           pr={WINDOW_WIDTH / 3.5}
         >
         Notification
@@ -259,7 +260,7 @@ function LocationNotifications() {
         </HStack>
 
         <HStack justifyContent="space-between" marginBottom={marginBottom}>
-        <Text fontSize="md" marginTop={1}>Possible Sightings Alert</Text>
+        <Text color={colors.text} fontSize="md" marginTop={1}>Possible Sightings Alert</Text>
         <Switch
         onToggle={togglePossibleNotifications}
         value={possibleSightingsEnabled}
@@ -270,8 +271,8 @@ function LocationNotifications() {
       <Divider marginBottom={marginBottom}/>
 
         <HStack justifyContent="space-between" marginBottom={marginBottom}>
-        <Text fontSize="md" marginTop={1}>Location Notifications</Text>
-        <Switch
+        <Text color={colors.text} fontSize="md" marginTop={1}>Location Notifications</Text>
+        <Switch color={colors.primary}
         onToggle={toggleLocationNotifications}
         value={localNotificationsEnabled}
         size={"sm"}

@@ -1,16 +1,25 @@
 import React, {useState, useEffect} from 'react';
 import { View, TouchableOpacity } from 'react-native'
-import { Modal } from 'native-base';
-import { Image, Text, Box, Button } from 'native-base';
+import { Button, Heading, Modal } from 'native-base';
+import { Image, Text, Box } from 'native-base';
 import { useSelector, useDispatch } from 'react-redux';
+import ImageView from 'react-native-image-viewing';
+import { useTheme } from '@react-navigation/native';
+import { TouchableHighlight } from 'react-native-gesture-handler';
+import IconText from './Shared/IconText';
+import { Color } from './atomic/Theme';
+import { Button as PaperButton } from 'react-native-paper';
 
 const PetCard = ({color, pet, onClick, editMode, onUpdate}) => {
   const {API_URL} = useSelector((state) => state.api)
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
-  const Color = {
-    NENO_BLUE: 'blue' 
-  };
+  const { colors } = useTheme();
+  
+  const [enlargeImage, setEnlargeImage] = useState(false);
+  const closeImageModal = () => {
+      setEnlargeImage(false);
+  }
 
   const petName = pet.name[0].toUpperCase() + pet.name.substring(1);
   const petType = pet.animal[0].toUpperCase() + pet.animal.substring(1);
@@ -142,9 +151,12 @@ const updateMissingReport = async (report) => {
     <TouchableOpacity
     activeOpacity={editMode ? 0.6 : 1}
     onPress={editMode ? onClick : null}>
+                  
+                  
+      <ImageView images={[{uri: petImage}]} visible={enlargeImage} onRequestClose={closeImageModal} presentationStyle='overFullScreen' backgroundColor={colors.background}/>
+
       <View
           style={{
-            shadowColor: "#A9A9A9",
             backgroundColor: 'transparent',
             shadowOffset: { width: 4, height: -6 },
             shadowOpacity: 0.2,
@@ -153,7 +165,7 @@ const updateMissingReport = async (report) => {
           }}
         >
       <Box
-        backgroundColor={"white"}
+        backgroundColor={colors.border}
         borderTopLeftRadius={20}
         borderBottomRightRadius={borderRadius()}
         borderBottomLeftRadius={borderRadius()}
@@ -169,20 +181,23 @@ const updateMissingReport = async (report) => {
           <View style={{ flexDirection: "row", alignItems: "center" }}>
             <View style={{ width: "35%", height: "100%" }}>
               {petImage && (
-                <Image
-                  source={{ uri: petImage }}
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    borderTopLeftRadius: 20,
-                  }}
-                  alt="pet"
-                />
+                
+                <TouchableHighlight onPress={() => setEnlargeImage(true)} underlayColor="#DDDDDD">
+                  <Image
+                    source={{ uri: petImage }}
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      borderTopLeftRadius: 20,
+                    }}
+                    alt="pet"
+                  />
+                </TouchableHighlight>
               )}
             </View>
 
             <View style={{ flex: 1, marginLeft: "5%", padding: "2%" }}>
-              <Text style={{ fontSize: 25, paddingBottom: 10, paddingTop: 10 }}>
+              <Text color={colors.text} style={{ fontSize: 25, paddingBottom: 10, paddingTop: 10 }}>
                 {petName}
               </Text>
               <View
@@ -193,12 +208,16 @@ const updateMissingReport = async (report) => {
                 }}
               >
                 <View style={{ flexDirection: "column"}}>
-                  <Text style={{ fontSize: 12, color: "#F2F2F7" }}>
-                    Species:
-                  </Text>
-                  <Text style={{ fontSize: 16, textTransform: "capitalize" }}>
-                    {petType}
-                  </Text>
+                  <Heading fontSize="sm" color={colors.text} size="sm">Species</Heading>
+                  
+                  {
+                    petType == 'Other' ?
+                      <Text color={colors.text}>{petType}</Text> :
+                      <View style={{ width: '100%' }}>
+                        <IconText iconName={petType.toLowerCase()} text={petType}
+                          iconColor={Color.NENO_BLUE} textColor={colors.text} iconSize={19} fontWeight='normal' />
+                      </View>
+                  }
                 </View>
                 <View
                   style={{
@@ -206,16 +225,14 @@ const updateMissingReport = async (report) => {
                     marginLeft: "20%",
                   }}
                 >
-                  <Text style={{ fontSize: 12, color: "#F2F2F7" }}>Breed:</Text>
-                  <Text style={{ fontSize: 16 }}>{petBreed}</Text>
+                  <Heading fontSize="sm" color={colors.text} size="sm">Breed</Heading>
+                  <Text color={colors.text} style={{ fontSize: 14 }}>{petBreed}</Text>
                 </View>
               </View>
               {!editMode && (
                 <>
-                  <Text style={{ fontSize: 12, color: "#F2F2F7", marginBottom: "1%" }}>
-                    Details:
-                  </Text>
-                  <Text style={{ fontSize: 14 }}>{petDescription}</Text>
+                  <Heading fontSize="sm" color={colors.text} size="sm">Details</Heading>
+                  <Text color={colors.text} style={{ fontSize: 14 }}>{petDescription}</Text>
                 </>
               )}
             </View>
@@ -225,33 +242,24 @@ const updateMissingReport = async (report) => {
       </View>
     </TouchableOpacity>
     {displayMissingButton()}
-      {showConfirmFoundModal && <ConfirmFoundModal isVisible={showConfirmFoundModal} setIsVisible={setShowConfirmFoundModal} onRemove={() => toggleMissingStatus()}/>}
+      {showConfirmFoundModal && <ConfirmFoundModal isVisible={showConfirmFoundModal} colors={colors} setIsVisible={setShowConfirmFoundModal} onRemove={() => toggleMissingStatus()}/>}
     <Box h="4"></Box>
     </View>
   );
 };
 
-function ConfirmFoundModal({ isVisible, setIsVisible, onRemove }) {
+function ConfirmFoundModal({ isVisible, setIsVisible, onRemove, colors }) {
   return <Modal isOpen={isVisible} onClose={() => setIsVisible(false)} size={"md"}>
     <Modal.Content >
-      <Modal.CloseButton />
-      <Modal.Header>Mark pet as found?</Modal.Header>
-      <Modal.Body>
-        <Text>Please confirm that this pet has been found. This will remove its missing pet reports.</Text>
+    <Modal.CloseButton _icon={{color: colors.text}} />
+      <Modal.Header _text={{color: colors.text}} backgroundColor={colors.background} borderColor={colors.border}>Mark pet as found?</Modal.Header>
+      <Modal.Body backgroundColor={colors.background}>
+        <Text color={colors.text}>Please confirm that this pet has been found. This will remove its missing pet reports.</Text>
       </Modal.Body>
-      <Modal.Footer>
-        <Button.Group space={2}>
-          <Button variant="ghost" colorScheme="blueGray" onPress={() => setIsVisible(false)} >
-            Cancel
-          </Button>
-          <Button onPress={() => {
-            onRemove()
-            setIsVisible(false)
-          }} backgroundColor={"#FA8072"}>
-            Confirm
-          </Button>
-        </Button.Group>
-      </Modal.Footer>
+      <Modal.Footer backgroundColor={colors.background} borderColor={colors.border}>
+          <PaperButton mode='outlined' textColor={Color.NENO_BLUE} style={{borderColor: Color.NENO_BLUE, marginRight: 6}} onPress={() => { setIsVisible(false) }} >Cancel</PaperButton>
+          <PaperButton mode='contained' textColor='white' buttonColor={Color.NENO_BLUE} style={{ marginLeft: 4, width: 100 }} onPress={() => {onRemove(); setIsVisible(false)}}>Confirm</PaperButton>
+       </Modal.Footer>
     </Modal.Content>
   </Modal>
 }

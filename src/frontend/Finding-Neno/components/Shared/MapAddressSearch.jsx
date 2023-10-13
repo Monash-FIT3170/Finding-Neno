@@ -1,11 +1,17 @@
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import marker from '../assets/marker_icon.png';
-import { Image, StyleSheet, View } from 'react-native';
-import { useRef, useState } from 'react';
-import { Button, Input } from "native-base";
+import marker from '../../assets/marker_icon.png';
+import { Image, StyleSheet, View, useColorScheme } from 'react-native';
+import { useEffect, useRef, useState } from 'react';
+import { Input } from "native-base";
+import { Button } from 'react-native-paper';
+import { Color } from "../atomic/Theme";
+import { useTheme } from '@react-navigation/native';
+
 
 const MapAddressSearch = ({ setFormData, formData }) => {
 
+    const scheme = useColorScheme();
+    const { colors } = useTheme();
 	//map box for last known location
 	// Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
 	const [mapRegion, setMapRegion] = useState({
@@ -15,34 +21,33 @@ const MapAddressSearch = ({ setFormData, formData }) => {
 		longitudeDelta: 0.03,
 	})
 
+    useEffect(() => {
+        setFormData({
+            ...formData, lastLocation: `${mapRegion.longitude}, ${mapRegion.latitude}`
+        })
+    }, [])
+
     const [address, setAddress] = useState('');
-    const [coordinates, setCoordinates] = useState({longitude: mapRegion.longitude, latitude: mapRegion.latitude});
 
 	// Retrieves coordinates of current centre of map when map is moved around
 	const handleRegionChange = (region) => {
 		setMapRegion(region);
-        console.log(region.longitude);
-        console.log(region.latitude);
         setFormData({
             ...formData,
             lastLocation: `${region.longitude}, ${region.latitude}`,
         });
-        console.log(formData.lastLocation)
-        setCoordinates({ longitude: region.longitude, latitude: region.latitude });
+        console.log(`last location: ${formData.lastLocation}`)
     }
 
     const handleSearch = async () => {
         try {
+            console.log("running")
             const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
 
 			const response = await fetch(apiUrl);
 			const result = await response.json();
 			if (result.length > 0) {
 				const firstResult = result[0];
-                setCoordinates({
-                    latitude: parseFloat(firstResult.lat),
-                    longitude: parseFloat(firstResult.lon),
-                });
                 setFormData({
                     ...formData,
                     lastLocation: `${parseFloat(firstResult.lon)}, ${parseFloat(firstResult.lat)}`,
@@ -54,12 +59,9 @@ const MapAddressSearch = ({ setFormData, formData }) => {
                     latitudeDelta: 0.03,
                     longitudeDelta: 0.05,
                 });
-            } else {
-                setCoordinates(null);
             }
         } catch (error) {
             console.error('Error fetching data:', error);
-            setCoordinates(null);
         }
     };
 
@@ -67,7 +69,7 @@ const MapAddressSearch = ({ setFormData, formData }) => {
 
     return (
         <View>
-            <View height={150} marginBottom={2}>
+            <View style={{height: 150, marginBottom: 5}}>
                 <MapView
                     ref={mapViewRef}
                     provider={PROVIDER_GOOGLE}
@@ -82,9 +84,9 @@ const MapAddressSearch = ({ setFormData, formData }) => {
                 </View>
 
             </View>
-            <Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
+            <Input _input={{selectionColor: colors.primary}} color={scheme === 'dark' ? 'white' : 'black'} size="lg" marginTop={1} onChangeText={text => setAddress(text)} placeholder="Enter an address" />
 
-            <Button title="Search" onPress={handleSearch}>Search Address</Button>
+            <Button style={{ marginTop: 8, borderColor: Color.NENO_BLUE }} textColor={Color.NENO_BLUE} mode="outlined" title="Search Address" onPress={handleSearch}>Search Address</Button>
         </View>
     )
 }
