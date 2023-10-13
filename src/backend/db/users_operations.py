@@ -6,6 +6,8 @@ import datetime
 import os
 import requests # pip install requests==2.31.0 - TODO: add to requirements.txt
 from typing import Optional, List
+import requests # pip install requests==2.31.0 - TODO: add to requirements.txt
+from typing import Optional, List
 
 from db.authentication import verify_access_token
 

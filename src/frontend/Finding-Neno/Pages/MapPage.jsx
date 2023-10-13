@@ -21,6 +21,8 @@ export default function MapPage({ navigation: { navigate } }) {
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 	const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
 	
+	const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
+	
 	const navigation = useNavigation();
 	const isFocused = useIsFocused();
 	    

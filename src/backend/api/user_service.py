@@ -4,6 +4,7 @@ from pathlib import Path
 import sys
 import datetime
 from typing import Tuple, Dict, Any
+from typing import Tuple, Dict, Any
 from get_suburb import get_suburb
 
 file = Path(__file__).resolve()
@@ -38,7 +39,12 @@ def insert_user(connection) -> Tuple[str, int]:
     if not user_exists:
         return 'User already exists', 409
     # Insert user into database
+    user_id = # Insert user into database
     user_id = insert_user_to_database(connection, email, phoneNumber, name, password)
+
+    # Insert default user settings into database
+    insert_user_settings_to_database(connection, user_id, False, None, None, None, False)
+
 
     # Insert default user settings into database
     insert_user_settings_to_database(connection, user_id, False, None, None, None, False)
@@ -94,6 +100,13 @@ def insert_sighting(connection) -> Tuple[str, int]:
     if sighting_id is None:
         return "User does not have access", 401
     else:
+        # Send notification to the author of the missing report
+        if missing_report_id is not None:
+            send_notification_to_report_author(connection=connection, sighting_data=json_data)
+        else:
+            # Send notifications to possible nearby owners
+            send_notification_to_possible_owners(connection=connection, sighting_data=json_data)
+
         # Send notification to the author of the missing report
         if missing_report_id is not None:
             send_notification_to_report_author(connection=connection, sighting_data=json_data)
