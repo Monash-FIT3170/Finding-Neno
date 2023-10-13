@@ -149,7 +149,7 @@ const SignupPage = () => {
 
 						<FormControl isRequired isInvalid={'password' in errors}>
 							<FormControl.Label><Text fontWeight={500} color={colors.text}>Password</Text></FormControl.Label>
-							<Input _input={{selectionColor: colors.primary}} width='100%' color={colors.text} size="lg" type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
+							<Input backgroundColor='white' _input={{selectionColor: colors.primary}} color='black' width='100%' size="lg" type={showPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowPassword(!showPassword)}>
 								<Icon as={<MaterialIcons name={showPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
 							</Pressable>} onChangeText={value => setFormData({ ...formData, password: value })} />
 							{'password' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.password}</FormControl.ErrorMessage>}
@@ -157,7 +157,7 @@ const SignupPage = () => {
 
 						<FormControl isRequired isInvalid={'confirmPassword' in errors}>
 							<FormControl.Label><Text fontWeight={500} color={colors.text}>Confirm Password</Text></FormControl.Label>
-							<Input _input={{selectionColor: colors.primary}} width='100%' color={colors.text} size="lg" type={showConfirmPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+							<Input backgroundColor='white' _input={{selectionColor: colors.primary}} width='100%' color='black' size="lg" type={showConfirmPassword ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
 								<Icon as={<MaterialIcons name={showConfirmPassword ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
 							</Pressable>} onChangeText={value => setFormData({ ...formData, confirmPassword: value })} />
 							{'confirmPassword' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.confirmPassword}</FormControl.ErrorMessage>}
