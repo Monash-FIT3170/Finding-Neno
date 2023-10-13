@@ -44,7 +44,9 @@ Create a .env file in the root directory. Add the following to the .env file (en
    DATABASE_USER=postgres  
    DATABASE_PASSWORD=password  
    DATABASE_HOST=localhost  
-   DATABASE_PORT=5432  
+   DATABASE_PORT=5432
+
+   SENDGRID_API_KEY=<REDACTED> # Speak to @josiahschuller to get a key.
   ``` 
 Create a .env file within the `src/frontend/Finding-Neno` directory. Add the following to this .env file:  
   ```
