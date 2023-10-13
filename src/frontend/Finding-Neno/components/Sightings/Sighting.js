@@ -173,7 +173,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
               <VStack> 
                 <Heading color={colors.text} size="sm">Species</Heading>
                 {
-                  sightingAnimal == 'other' ?
+                  sightingAnimal == 'Other' ?
                     <Text color={colors.text}>{sightingAnimal}</Text> :
                     <IconText iconName={sightingAnimal.toLowerCase()} text={sightingAnimal}
                       iconColor={Color.NENO_BLUE} textColor={colors.text} iconSize={19} fontWeight='normal' />
