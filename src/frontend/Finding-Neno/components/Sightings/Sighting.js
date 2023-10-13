@@ -105,7 +105,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
     <View style={{ width: "100%"}} bg="#F9FDFF">
       <VStack alignItems='left'>
         <View>
-          <Heading color={colors.text} size="md" marginBottom={2}>{locationString}</Heading>
+          <Heading color={colors.text} maxWidth='90%' size="md" marginBottom={2}>{locationString}</Heading>
         </View>
         <HStack marginTop='2%' justifyContent='space-between'>
           <VStack backgroundColor='green'>
@@ -165,7 +165,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
 
         <View style={{ width: "48%", marginHorizontal: 20}} bg="#F9FDFF">
           <View>
-            <Heading color={colors.text} size="md" marginBottom={3}>{locationString} </Heading>
+            <Heading color={colors.text} maxWidth='70%' size="md" marginBottom={3}>{locationString}</Heading>
           </View>
 
           <VStack>
