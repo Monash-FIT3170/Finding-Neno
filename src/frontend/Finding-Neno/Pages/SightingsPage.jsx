@@ -26,8 +26,6 @@ export default function SightingsPage({ navigation: { navigate } }) {
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
     const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
 
-    const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
-
 
     const [reloadPage, setReloadPage] = useState(false);
     const [routes] = useState([

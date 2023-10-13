@@ -13,8 +13,6 @@ import { useSelector, useDispatch } from "react-redux";
 import ReportsList from '../components/Reports/ReportsList';
 
 export default function ReportsPage({ navigation: { navigate } }) {
-    const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
-
     const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
