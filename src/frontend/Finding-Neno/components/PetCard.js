@@ -211,7 +211,7 @@ const updateMissingReport = async (report) => {
                   <Heading fontSize="sm" color={colors.text} size="sm">Species</Heading>
                   
                   {
-                    petType == 'other' ?
+                    petType == 'Other' ?
                       <Text color={colors.text}>{petType}</Text> :
                       <View style={{ width: '100%' }}>
                         <IconText iconName={petType.toLowerCase()} text={petType}
@@ -226,7 +226,7 @@ const updateMissingReport = async (report) => {
                   }}
                 >
                   <Heading fontSize="sm" color={colors.text} size="sm">Breed</Heading>
-                  <Text color={colors.text} style={{ fontSize: 16 }}>{petBreed}</Text>
+                  <Text color={colors.text} style={{ fontSize: 14 }}>{petBreed}</Text>
                 </View>
               </View>
               {!editMode && (
