@@ -8,7 +8,6 @@ import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton } from 'r
 import { Color } from "../components/atomic/Theme";
 import { TabBar, TabView } from 'react-native-tab-view';
 import SightingsList from '../components/Sightings/SightingsList';
-import IconText from '../components/Shared/IconText';
 
 
 export default function SightingsPage({ navigation: { navigate } }) {
@@ -97,8 +96,8 @@ export default function SightingsPage({ navigation: { navigate } }) {
 		<TabBar {...props} 
 			renderLabel={({ route, focused, color }) => (
 				// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
-				<IconText iconName={route.icon} text={route.title} textColor={focused ? route.color : 'gray'} 
-                    iconColor={focused ? route.color : 'gray'} iconSize={24} fontWeight='bold' />)} 
+                <Text style={{ color: focused ? route.color : 'gray', fontWeight: 'bold' }}>{route.title}</Text>
+            )}
 			style={{ backgroundColor: colors.background }}
 			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, 
                 borderRadius: 1.5, width: '15%', left: '17.5%' }} 
