@@ -3,14 +3,22 @@ import psycopg2.pool
 import sys, os
 from dotenv import load_dotenv
 from flask import Flask, request, jsonify, g
-import flask
+from flask_cors import CORS
+from pathlib import Path
 
-from user_service import *
-from pets_api import *
+# Add the parent directory to the path so that backend deployment works
+# and so that you can access scripts from the db directory
+file = Path(__file__).resolve()
+package_root_directory = file.parents[1]
+sys.path.append(str(package_root_directory))
+
+from api.user_service import *
+from api.pets_api import *
 
 database_pool = None
 
 app = Flask(__name__)
+CORS(app)
 
 
 def create_database_pool():
@@ -19,7 +27,7 @@ def create_database_pool():
     """
     return psycopg2.pool.SimpleConnectionPool(
         minconn=1,
-        maxconn=1000,
+        maxconn=99999,
         dbname=os.getenv("DATABASE_NAME"),
         user=os.getenv("DATABASE_USER"),
         password=os.getenv("DATABASE_PASSWORD"),
@@ -28,22 +36,43 @@ def create_database_pool():
     )
 
 
-def get_connetion():
+def get_connection():
     """
     Returns the connection to the database.
     """
-    if database_pool is not None:
-        return database_pool.getconn()
-    else:
-        return None
+    global database_pool
+    if database_pool is None:
+        database_pool = create_database_pool()
+    return database_pool.getconn()
     
+
+def drop_db_connections(connection: psycopg2.extensions.connection, dbname: str):
+    """
+    Drops all other connections to the database (if they exist)
+    """
+    cur = connection.cursor()
+    query = f"""
+        SELECT pg_terminate_backend(pg_stat_activity.pid)
+        FROM pg_stat_activity
+        WHERE pg_stat_activity.datname = '{dbname}'
+        AND pid <> pg_backend_pid();
+    """
+    try:
+        cur.execute(query)
+        print("Successfully dropped all other connections to the database")
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+    
+    connection.commit()
+    cur.close()
+
 
 """
 Code by Sohaib Farooqi, edited by user956424 on Stack Overflow: https://stackoverflow.com/a/48021571
 """
 @app.before_request
 def before_request():
-   conn = get_connetion()
+   conn = get_connection()
    g.db = conn
 
 @app.after_request
@@ -55,7 +84,7 @@ def after_request(response):
 
 @app.route("/")
 def root():
-    return "Finding Neno Server is Up!"
+    return "Finding Neno Back-End Server is Up!"
 
 @app.route("/manual_start_connection")
 def manual_start_database_pool():
@@ -71,6 +100,16 @@ def close_connection():
 def post_insert_user():
     return insert_user(g.db)
 
+@app.route("/delete_user", methods=["DELETE"])
+def delete_user():
+    to_delete_id = request.args.get("user_id")
+    return jsonify(delete_all_user_data(g.db, to_delete_id=to_delete_id))
+
+@app.route("/delete_pet", methods=["GET", "DELETE"])
+def delete_pet_api():
+    pet_id = request.args.get("pet_id")
+    return delete_all_pet_data(g.db, to_delete_id=pet_id)
+
 @app.route("/verify_token", methods=["GET"])
 def get_verify_token():
     return check_access_token(g.db)
@@ -79,23 +118,35 @@ def get_verify_token():
 def post_login():
     print("logging in")
     data = login(g.db)
-    print(data)
-    headers = {
-        'userId': data[2],
-        'accessToken': data[3],
-    }
 
-    return data[0], data[1], headers
+    if data[1] == 200:
+        print(data)
+        headers = {
+            'userId': data[2],
+            'accessToken': data[3],
+        }
+
+        return data[0], data[1], headers
+    else:
+        print(data)
+        return data[0], data[1]
 
 @app.route("/retrieve_profile", methods=["GET"]) # Requires Access_token and user ID for authorization
 def retrieve_profile_information():
-    print("retrieving current user profile, ")
     user_id = request.args.get("user_id")
     data = retrieve_profile(g.db, user_id)
     if data[1] == 200:
         return jsonify(data)
     else:
         return None
+    
+@app.route("/validate_password", methods=["POST"]) # Requires Access_token and user ID for authorization
+def validate_password():
+    return validate_password_operation(g.db)
+
+@app.route("/update_profile", methods=["PUT"]) # Requires Access_token and user ID for authorization
+def update_profile_information():
+    return update_profile(g.db)
 
 @app.route("/change_password", methods=["PATCH"]) # Requires Access_token and user ID for authorization
 def post_change_password():
@@ -126,11 +177,21 @@ def update_pet_api():
 def toggle_missing_status_api():
     return toggle_missing_status_operation(g.db)
 
-@app.route("/delete_pet", methods=["GET", "DELETE"]) # Requires Access_token and user ID for authorization
-def delete_pet_api():
-    pet_id = request.args.get("pet_id")
-    return delete_pet_operation(g.db, pet_id)
+@app.route("/get_location_notification_settings", methods=["GET"])
+def get_location_notification_settings():
+    """
+    Returns an array of user settings for a specific user_id, of the following format.
 
+    [
+        location_notifications_enabled, location_longitude, location_latitude, location_notification_radius
+    ]
+    """
+    user_id = request.args.get("user_id")
+    return jsonify(retrieve_location_notification_user_settings(g.db, user_id))
+
+@app.route("/update_location_notification_settings", methods=["PUT"])
+def update_location_notification_settings():
+    return update_location_notification_settings_api(g.db)
 
 @app.route("/insert_missing_report", methods=["POST"]) # Requires Access_token and user ID for authorization
 def post_insert_missing_report():
@@ -151,15 +212,6 @@ def get_missing_reports():
     author_id = request.args.get("author_id")
     return jsonify(retrieve_missing_reports(g.db, author_id))
 
-@app.route("/get_reports_by_pet", methods=["GET"])
-def get_reports_by_pet():
-    """
-    Returns an array of missing reports for a specific pet_id, sorted by latest to oldest.
-    """
-    pet_id = request.args.get("pet_id")
-    return jsonify(retrieve_reports_by_pet(g.db, pet_id))  # Updated function name
-
-
 
 @app.route("/get_sightings", methods=["GET"])
 def get_sightings():
@@ -168,12 +220,12 @@ def get_sightings():
 
     [
         sighting_id, missing_report_id, author_id (author of sighting), date_time (date time sighting was made), 
-        location_longitude, location_latitude, image_url, description, author's name, author's email, author's phone number
+        location_longitude, location_latitude, image_url, description, author's name, author's email, author's phone number, pet_name
     ]
     """
     missing_report_id = request.args.get("missing_report_id")
-    return jsonify(retrieve_sightings(g.db, missing_report_id))
-
+    expiry_time = request.args.get("expiry_time")
+    return jsonify(retrieve_sightings(g.db, missing_report_id, expiry_time))
 
 @app.route("/get_missing_reports_in_area", methods=["GET"])
 def get_missing_reports_in_area():
@@ -192,7 +244,6 @@ def get_missing_reports_in_area():
     latitude_delta = request.args.get("lat_delta")
     return jsonify(retrieve_missing_reports_in_area(g.db, longitude, longitude_delta, latitude, latitude_delta))
 
-
 @app.route("/get_sightings_in_area", methods=["GET"])
 def get_sightings_in_area():
     """
@@ -210,7 +261,25 @@ def get_sightings_in_area():
     latitude_delta = request.args.get("lat_delta")
     return jsonify(retrieve_sightings_in_area(g.db, longitude, longitude_delta, latitude, latitude_delta))
 
+@app.route("/get_my_report_sightings", methods=["GET"])
+def get_my_report_sightings():
+    """
+    Returns an array of sightings for the current user's missing reports, sorted by latest to oldest, of the following format.
 
+    [
+        sighting_id, missing_report_id, author_id (author of sighting), date_time (date time sighting was made), 
+        sighting longitude , sighting latitude, sighting image_url, sighting description, animal, breed, author's name, author's email, author's phone number, pet_name, is_active
+    ]
+    """
+    return jsonify(retrieve_my_report_sightings(g.db))
+
+@app.route("/get_reports_by_pet", methods=["GET"])
+def get_reports_by_pet():
+    """
+    Returns an array of missing reports for a specific pet_id, sorted by latest to oldest.
+    """
+    pet_id = request.args.get("pet_id")
+    return jsonify(retrieve_reports_by_pet(g.db, pet_id))  # Updated function name
 
 
 @app.route("/update_missing_report", methods=["PUT"])
@@ -230,22 +299,44 @@ def post_insert_sighting():
     return insert_sighting(g.db)
 
 
+@app.route("/unlink_sightings", methods=["PUT"]) # Requires Access_token and user ID for authorization
+def put_unlink_sightings():
+    report_id = request.args.get("report_id")
+    return unlink_sightings_by_report(g.db, report_id)
+
+@app.route("/retrieve_saved_sightings", methods=["GET"]) # Requires Access_token and user ID for authorization
+def get_saved_sighting():
+    return jsonify(retrieve_saved_sightings(g.db))
+
+@app.route("/save_sighting", methods=["POST"]) # Requires Access_token and user ID for authorization
+def post_saved_sighting():
+    return save_user_sighting(g.db)
+
+@app.route("/unsave_sighting", methods=["POST"]) # Requires Access_token and user ID for authorization
+def post_unsaved_sighting():
+    return unsave_user_sighting(g.db)
+
+
 if __name__ == "__main__": 
-    # Get environment file path from command line arguments
-    if len(sys.argv) < 2:
-        raise Exception(
-            "No environment file path provided - see top of this file for instructions"
-        )
-    environment_file_path = sys.argv[1]
-    if environment_file_path is None or environment_file_path == "":
-        raise Exception(
-            "No environment file path provided - see top of this file for instructions"
-        )
+    if len(sys.argv) >= 2:
+        # Get environment file path from command line arguments
+        environment_file_path = sys.argv[1]
+        if environment_file_path is None or environment_file_path == "":
+            raise Exception(
+                "No environment file path provided - see top of this file for instructions"
+            )
+        else:
+            # Load environment variables
+            load_dotenv(environment_file_path)
     else:
-        # Load environment variables
-        load_dotenv(environment_file_path)
+        print("Warning: no environment file path provided.")
+        
+    # Connect to database
+    database_pool = create_database_pool()
 
-        database_pool = create_database_pool()
+    # Disconnect other connections to database if they exist
+    drop_db_connections(connection=database_pool.getconn(), dbname=os.getenv("DATABASE_NAME"))
 
-        app.run(host="0.0.0.0", debug=True)
+    # Run Flask app
+    app.run(host="0.0.0.0", debug=True)
 

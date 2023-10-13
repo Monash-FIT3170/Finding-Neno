@@ -1,35 +1,35 @@
-import { useNavigation } from '@react-navigation/native';
-import { Box, Center, Heading, VStack, useToast, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView } from "native-base";
+import { useIsFocused, useNavigation, useTheme } from '@react-navigation/native';
+import { Box, Center, Select, Heading, VStack, useToast, FormControl, Input, Alert, Text, KeyboardAvoidingView, WarningOutlineIcon, View } from "native-base";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
 
 import React, { useEffect, useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { validDateTime, validateCoordinates } from "./validation"
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import axios from 'axios';
-import { Image, StyleSheet, View } from 'react-native';
-
+import { Button, Subheading } from 'react-native-paper';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view'
 import { useSelector, useDispatch } from "react-redux";
-import store from "../store/store";
-import marker from '../assets/marker_icon.png';
 
-import { formatDatetime } from "./shared"
+import { formatDateTimeDisplay, formatDatetime, petTypeOptions } from "./shared";
+
+import MapAddressSearch from "../components/Shared/MapAddressSearch";
+import { Dropdown } from 'react-native-element-dropdown';
+import { SafeAreaView, useColorScheme } from 'react-native';
 
 const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();
 
-	const { IP, PORT } = useSelector((state) => state.api)
+	const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
-	const [dropdownOptions, setDropdownOptions] = useState([]);
 	const [errors, setErrors] = useState({});
-	const [buttonText, setButtonText] = useState("Create report")
+	const [buttonText, setButtonText] = useState("Create Report")
 	const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
 	const [selectedDatetime, setSelectedDatetime] = useState(new Date());
 	const [showPicker, setShowPicker] = useState(false);
 	const toast = useToast();
-
+	const scheme = useColorScheme();
+	const { colors } = useTheme();
+	const isFocused = useIsFocused();
 
 
 	useEffect(() => {
@@ -37,7 +37,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		// ownerId = 2
 		const fetchOwnerPets = async () => {
 			try {
-				const url = `${IP}:${PORT}/get_owner_pets?owner_id=${USER_ID}`;
+				const url = `${API_URL}/get_owner_pets?owner_id=${USER_ID}`;
 				const response = await fetch(url, {
 					method: "GET",
 					headers: {
@@ -52,37 +52,33 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 				}
 				const data = await response.json();
 
-				const petTuples = data.map((pet) => [pet["name"], pet["id"]]);
-
-				setDropdownOptions(petTuples)
+				const petOptions = data.map((pet) => ({ label: pet["name"], value: pet["id"] }));
+				
+				setDropdownOptions(petOptions)
 			} catch (error) {
 				console.error(error);
 			}
 		}
 
 		fetchOwnerPets();
-	}, []);
+	}, [isFocused]);
 
 	const onCreateReportPress = async () => {
 		setIsButtonDisabled(true);
 		setButtonText("Creating report...");
 
-		console.log(formData)
-
-		console.log(formData)
-
 		let isValid = await validateDetails(formData);
 
 		if (isValid) {
-			const url = `${IP}:${PORT}/insert_missing_report`;
+			const url = `${API_URL}/insert_missing_report`;
 
 			const missingReport = {
 				authorId: USER_ID,
 				missingPetId: formData.missingPetId,
 				description: formData.description,
-				lastSeenDateTime: formatDatetime(selectedDatetime),
-				dateTimeOfCreation: formatDatetime(new Date()),
-				lastLocation: `${coordinates.longitude}, ${coordinates.latitude}`,
+				lastSeenDateTime: selectedDatetime,
+				dateTimeOfCreation: new Date(),
+				lastLocation: formData.lastLocation,
 			}
 
 			await fetch(url, {
@@ -98,31 +94,28 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 					if (res.status == 201) {
 						// Show success
 						toast.show({
+							title: "Report Added",
 							description: "Your report has been added!",
-							placement: "top"
+							placement: "top",
+							alignItems: "center"
 						})
-
-						// navigation.navigate("DashboardPage");
 
 						// Pop to previous screen
 						navigation.goBack();
-
-						// Pop to top of stack
-						// navigation.dispatch(StackActions.popToTop());
 					}
 					else {
-						setButtonText("Create report")
+						setButtonText("Create Report")
 						setIsButtonDisabled(false);
 					}
 				})
 				.catch((error) => {
-					setButtonText("Create report")
+					setButtonText("Create Report")
 					setIsButtonDisabled(false);
 					alert(error)
 				});
 		}
 		else {
-			setButtonText("Create report")
+			setButtonText("Create Report")
 			setIsButtonDisabled(false);
 		}
 	}
@@ -134,22 +127,18 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 		if (!formData.missingPetId || formData.missingPetId == "") {
 			foundErrors = { ...foundErrors, missingPetId: 'Please select a pet' }
 		}
+		else {
+			if (exists) {
+				foundErrors = { ...foundErrors, missingPetId: 'Pet Report already exists' }
+			}
+		}
 
-		// if (!formData.lastLocation || formData.lastLocation == "") {
-		// 	foundErrors = { ...foundErrors, lastLocation: 'Last known location is required e.g. 24.212, -54.122' }
-		// }
-
-		if (formData.description.length > 500) {
+        if (formData.description.length > 500) {
 			foundErrors = { ...foundErrors, description: 'Must not exceed 500 characters' }
 		}
 
 		const exists = await missingReportExists(formData.missingPetId);
-		console.log("does the pet report exists " + exists)
 
-		if (exists) {
-			console.log("pet report exists")
-			foundErrors = { ...foundErrors, missingPetId: 'Pet Report already exists' }
-		}
 
 		setErrors(foundErrors);
 		console.log(foundErrors)
@@ -162,7 +151,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	const missingReportExists = async (pet_id) => {
 		try {
 			const petId = pet_id; // Replace with the actual pet ID you want to retrieve reports for
-			const response = await fetch(`${IP}:${PORT}/get_reports_by_pet?pet_id=${petId}`, {
+			const response = await fetch(`${API_URL}/get_reports_by_pet?pet_id=${petId}`, {
 				method: 'GET',
 				headers: {
 					Authorization: `Bearer ${ACCESS_TOKEN}`,
@@ -201,11 +190,12 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 	const handleDatetimeConfirm = (datetime) => {
 		setSelectedDatetime(datetime);
-		setFormData({ ...formData, lastSeenDateTime: formatDatetime(datetime) });
+		setFormData({ ...formData, lastSeenDateTime: datetime });
 		closePicker();
 	}
 
 	const closePicker = () => {
+		console.log(selectedDatetime)
 		setShowPicker(false);
 	}
 
@@ -213,160 +203,68 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 	const [formData, setFormData] = useState({
 		authorId: USER_ID,
 		description: '',
-		lastSeenDateTime: formatDatetime(selectedDatetime),
-		dateTimeOfCreation: formatDatetime(new Date())
+		lastSeenDateTime: selectedDatetime,
 	});
 
-	//map box for last known location
-	// Initial map view is Melbourne. Delta is the zoom level, indicating distance of edges from the centre.
-	const [mapRegion, setMapRegion] = useState({
-		latitude: -37.8136,
-		longitude: 144.9631,
-		latitudeDelta: 0.03,
-		longitudeDelta: 0.03,
-	})
-
-	// Retrieves coordinates of current centre of map when map is moved around
-	const handleRegionChange = (region) => {
-		setMapRegion(region);
-        setCoordinates({ longitude: region.longitude, latitude: region.latitude });
-		console.log(coordinates)
-    }
-
-    const [address, setAddress] = useState('');
-    const [coordinates, setCoordinates] = useState({longitude: mapRegion.longitude, latitude: mapRegion.latitude});
-	const mapViewRef = useRef(null);
-
-	const handleSearch = async () => {
-		try {
-			const apiUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${address}`;
-
-			const response = await axios.get(apiUrl);
-			if (response.data.length > 0) {
-				const firstResult = response.data[0];
-				setCoordinates({
-					latitude: parseFloat(firstResult.lat),
-					longitude: parseFloat(firstResult.lon),
-				});
-				setFormData({
-					...formData,
-					lastLocation: `${parseFloat(firstResult.lon)}, ${parseFloat(firstResult.lat)}`,
-				});
-				// You can animate to the new coordinates here if you want
-				mapViewRef.current.animateToRegion({
-					latitude: parseFloat(firstResult.lat),
-					longitude: parseFloat(firstResult.lon),
-					longitudeDelta: 0.0015,
-				});
-			} else {
-				setCoordinates(null);
-			}
-		} catch (error) {
-			console.error('Error fetching data:', error);
-			setCoordinates(null);
-		}
-	};
+	const [dropdownOpen, setDropdownOpen] = useState(false);
+	const [dropdownOptions, setDropdownOptions] = useState(petTypeOptions);
+	const [value, setValue] = useState();
 
 	return (
-		<KeyboardAvoidingView style={{ flex: 1 }} behavior="padding">
-			<Box flex={1} alignItems="center" justifyContent="center">
-				<Center w="100%">
-					<Box safeArea p="2" py="8" w="90%" maxW="290">
-						<VStack>
-							<Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Create a Report</Heading>
+		<KeyboardAwareScrollView contentContainerStyle={{paddingVertical: 20}}>
+			<SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: '100%'}}>
+				<VStack width={300} justifyContent='center'>
+					<Heading size="lg" fontWeight="600" color={colors.primary}>Report Your Missing Pet</Heading>
+					<Subheading style={{color: colors.text}}>Lost your pet? Report your missing pet here so others can help</Subheading>
 
-							<VStack space={3} mt="5">
+					<VStack space={3} mt="5">
 
-								<FormControl isInvalid={'missingPetId' in errors}>
-									<FormControl.Label>Choose Pet</FormControl.Label>
-									<Select placeholder="Select a pet"
-										selectedValue={formData.missingPetId}
-										onValueChange={(value) => setFormData({ ...formData, missingPetId: value })}>
-										<Select.Item label="Select a pet" value="" disabled hidden />
-										{dropdownOptions.map((option, index) => (
-											<Select.Item key={index} label={option[0]} value={option[1]} />
-										))}
-									</Select>
-									{'missingPetId' in errors && <FormControl.ErrorMessage>{errors.missingPetId}</FormControl.ErrorMessage>}
-								</FormControl>
+						<FormControl isRequired isInvalid={'missingPetId' in errors}>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Your Pet</Text></FormControl.Label>
+							<Dropdown data={dropdownOptions} placeholder='Select a pet' 
+								style={{ borderWidth: 1, borderColor: 'lightgray', borderRadius: 4}}
+								placeholderStyle={{color: 'darkgray', marginHorizontal: 13}}
+								itemTextStyle={{color: colors.text}}
+								itemContainerStyle={{backgroundColor: colors.background}}
+								containerStyle={{backgroundColor: colors.background}}
+								selectedTextStyle={{color: colors.text, marginHorizontal: 13}}
+								iconStyle={{marginRight: 10}}
+								activeColor={ scheme === 'dark' ? '#313338' : '#dbdbdb' }
+								onChange={(item) => setFormData({ ...formData, missingPetId: item.value })}
+								labelField='label' valueField='value'
+							/>
 
-								<FormControl>
-									<FormControl.Label>Last Seen</FormControl.Label>
-									<Button onPress={openPicker}>{`${selectedDatetime.toDateString()} ${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')}`}</Button>
-									<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
-										onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
-								</FormControl>
+							{'missingPetId' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.missingPetId}</FormControl.ErrorMessage>}
+						</FormControl>
 
-								<FormControl>
-									<FormControl.Label>Last Known Location</FormControl.Label>
-									<Box height={150} marginBottom={2}>
-										<MapView
-											ref={mapViewRef}
-											provider={PROVIDER_GOOGLE}
-											style={styles.map}
-											initialRegion={mapRegion}
-											onRegionChange={handleRegionChange}
-										>
-										</MapView>
+						<FormControl isRequired>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Last Seen Date and Time</Text></FormControl.Label>
+							<Button style={{ marginTop: 5, borderColor: Color.NENO_BLUE}} mode="outlined" textColor={Color.NENO_BLUE} onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
+							<DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" maximumDate={new Date()} display="inline"
+								onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
+						</FormControl>
 
-										<View style={styles.markerView}>
-											<Image source={marker} style={styles.marker}></Image>
-										</View>
-									</Box>
-									<Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
-									{coordinates === null && <FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
-								</FormControl>
+						<FormControl isRequired>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Last Known Location</Text></FormControl.Label>
+							<MapAddressSearch formData={formData} setFormData={setFormData} />
+							{<FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>No address found.</FormControl.ErrorMessage>}
+						</FormControl>
 
-								<Button title="Search" onPress={handleSearch}>Set Adress</Button>
+						<FormControl isInvalid={'description' in errors} isRequired>
+							<FormControl.Label><Text fontWeight={500} color={colors.text}>Description</Text></FormControl.Label>
+							<Input _input={{selectionColor: colors.primary}} color={colors.text} multiline={true} size="lg" placeholder='Additional info' onChangeText={value => setFormData({ ...formData, description: value.trim() })} />
+							{'description' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.description}</FormControl.ErrorMessage>}
+						</FormControl>
 
-								<FormControl isInvalid={'description' in errors}>
-									<FormControl.Label>Additional Info</FormControl.Label>
-									<Input onChangeText={value => setFormData({ ...formData, description: value })} />
-									{'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
-								</FormControl>
+                        <Button buttonColor={Color.NENO_BLUE} style={{opacity: !isButtonDisabled ? 1 : 0.4}} mode="contained" onPress={!isButtonDisabled ? onCreateReportPress : () => {}}>
+                            {buttonText}
+                        </Button>
 
-								<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onCreateReportPress}>
-									{buttonText}
-								</Button>
-
-							</VStack>
-						</VStack>
-					</Box>
-				</Center>
-			</Box>
-		</KeyboardAvoidingView>
+					</VStack>
+				</VStack>
+			</SafeAreaView>
+		</KeyboardAwareScrollView>
 	);
 };
-
-const styles = StyleSheet.create({
-	container: {
-		flex: 1,
-		justifyContent: 'flex-end',
-		alignItems: 'center'
-	},
-	map: {
-		...StyleSheet.absoluteFillObject,
-	},
-	text: {
-		fontSize: 20
-	},
-	button: {
-		borderRadius: 20,
-		backgroundColor: 'blue',
-	},
-	markerView: {
-		top: '50%',
-		left: '50%',
-		marginLeft: -24,
-		marginTop: -44,
-		position: 'absolute',
-	},
-	marker: {
-		height: 48,
-		width: 48
-	}
-});
-
-
 
 export default NewReportPage;

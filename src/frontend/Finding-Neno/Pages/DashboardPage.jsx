@@ -1,53 +1,67 @@
-import { useNavigation } from '@react-navigation/native';
-import { Menu, Box, Modal, Center, Image, useToast, ScrollView, View, Heading, VStack, HStack, FormControl, Input, Link, Button, Text, Alert, Pressable, Icon, KeyboardAvoidingView } from "native-base";
-import { ActivityIndicator, Dimensions } from 'react-native';
+import { useNavigation, useTheme } from '@react-navigation/native';
+import { StatusBar, useToast, View } from "native-base";
+import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView } from 'react-native';
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { ToggleButton } from 'react-native-paper';
-import DateTimePickerModal from 'react-native-modal-datetime-picker';
+import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton } from 'react-native-paper';
+import { TabBar, TabView } from 'react-native-tab-view';
 
 import { useSelector } from "react-redux";
-import Report from '../components/Report';
-import Sighting from '../components/Sighting';
+import ReportsList from '../components/Reports/ReportsList';
+import SightingsList from '../components/Sightings/SightingsList';
+import IconText from '../components/Shared/IconText';
 
 const DashboardPage = () => {
-	const { IP, PORT } = useSelector((state) => state.api)
+	const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+	const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
 
-	const windowWidth = Dimensions.get('window').width;
 	const navigation = useNavigation();
 	const toast = useToast();
 	const isFocused = useIsFocused();
+	const { colors } = useTheme();
 
-  // TODO: change report structure to be an array of dictionaries? Refer to mock data that is commented out for desired structure
-  const [reports, setReports] = useState([]);
-//   const [modalVisible, setModalVisible] = useState(false);
-  const [sightingDateTime, setSightingDateTime] = useState(new Date());
-  const [sightingData, setSightingData] = useState({authorId: USER_ID});
-  const [reportSightingBtnDisabled, setReportSightingBtnDisabled] = useState(false);
-  const [sightingFormErrors, setSightingFormErrors] = useState({});
-  const [showPicker, setShowPicker] = useState(false);
-  // const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
-  const [sightingImage, setSightingImage] = useState(null);
-  const [isUploading, setIsUploading] = useState(false);
-  const [tabValue, setTabValue] = useState("reports");
-  const [allSightings, setAllSightings] = useState([]);
+	const [reports, setReports] = useState([]);
+	const [allSightings, setAllSightings] = useState([]);
+	const [sightingData, setSightingData] = useState({ authorId: USER_ID });
+	const [sightingImage, setSightingImage] = useState(null);
+	const [initialReportsLoaded, setInitialReportsLoaded] = useState(false);
+	const [initialSightingsLoaded, setInitialSightingsLoaded] = useState(false);
+	const [reloadPage, setReloadPage] = useState(false);
 
+	const [FABstate, setFABState] = useState({ open: false });
+	const onStateChange = ({ open }) => setFABState({ open });
+	const { open } = FABstate;
+
+	const [routes] = useState([
+		{ key: 'reports', title: 'Reports', icon: 'file-document', color: Color.LIGHTER_NENO_BLUE },
+		{ key: 'sightings', title: 'Sightings', icon: 'magnify', color: Color.LIGHTER_NENO_BLUE },
+	])
+	const [index, setIndex] = useState(0);
+
+	// Fetch when tab is changed or page is focused
 	useEffect(() => {
 		if (isFocused) {
-			fetchAllReports();
-      fetchAllSightings();
+			setReloadPage(false);
+			fetchData();
 		}
-	}, [isFocused]);
+	}, [isFocused, initialReportsLoaded, initialSightingsLoaded, reloadPage]);
 
-	// TODO: replace this image with the actual image from DB ? 
-	const image = "https://wallpaperaccess.com/full/317501.jpg";
+	const onRefresh = () => {
+		fetchData();
+	}
+
+	const fetchData = () => {
+		fetchAllReports();
+		fetchAllSightings();
+		// setSightingCards(generateSightingCards(allSightings)); // moved this into fetchAllSightings
+	}
 
 	// API calls 
 	const fetchAllReports = async () => {
 		try {
-			const url = `${IP}:${PORT}/get_missing_reports`;
+			const url = `${API_URL}/get_missing_reports`;
 			const response = await fetch(url, {
 				method: "GET",
 				headers: {
@@ -61,8 +75,10 @@ const DashboardPage = () => {
 				throw new Error(`Request failed with status: ${response.status}`);
 			}
 
-			const data = await response.json();
-			setReports(data[0]);
+			await response.json().then(data => {
+				setReports(data[0]);
+				setInitialReportsLoaded(true);
+			});
 		} catch (error) {
 			console.error(error);
 		}
@@ -70,7 +86,9 @@ const DashboardPage = () => {
 
   const fetchAllSightings = async () => {
     try {
-			const url = `${IP}:${PORT}/get_sightings`;
+      // Retrieve sightings that are less than 30 days old
+      const expiryTime = 30;
+			const url = `${API_URL}/get_sightings?expiry_time=${expiryTime}`;
 			const response = await fetch(url, {
 				method: "GET",
 				headers: {
@@ -84,81 +102,67 @@ const DashboardPage = () => {
 				throw new Error(`Request failed with status: ${response.status}`);
 			}
 
-			const data = await response.json();
-      setAllSightings(data[0]);
+			await response.json().then(data => {
+				setAllSightings(data[0]);
+				setInitialSightingsLoaded(true);
+
+				// filters out sightings that are linked to reports where is_active == False i.e pet has been found
+				// setSightingCards(generateSightingCards(data[0]));
+			});
+			
 		} catch (error) {
 			console.error(error);
 		}
-  };
-
-  // image_url is not being set properly without this useEffect - should probs find a more robust way to fix it later 
-  	useEffect(() => {
-		setSightingData({...sightingData, image_url: sightingImage})
+	};
+	
+	// image_url is not being set properly without this useEffect - should probs find a more robust way to fix it later 
+	useEffect(() => {
+		setSightingData({ ...sightingData, image_url: sightingImage })
 	}, [sightingImage]);
 
-  useEffect(() => {
-    if (tabValue == "reports") {
-      fetchAllReports();
-    } else {
-      fetchAllSightings();
-    }
-  }, [tabValue])
-
-    return (
-      <View>
-    <View>
-      <View justifyContent="center" alignItems="flex-start" bg={'blue.300'} padding={4}>
-        <Menu shadow={2} w="360"  trigger={(triggerProps) => (
-          <Pressable width="100%" accessibilityLabel="More options menu" {...triggerProps}>
-            <View style={{ alignItems: 'flex-start' }}>
-              <Heading> ➕ New Post </Heading>
-            </View>
-          </Pressable>
-        )}>
-          <Menu.Item onPress={() => navigation.navigate('Report', { screen: 'New Report Page' })}>Report</Menu.Item>
-          <Menu.Item onPress={() => navigation.navigate('Dashboard', { screen: 'New Sighting Page' })}>Sighting</Menu.Item>
-        </Menu>
-      </View>
-    </View>
-
-    {/* TABS */}
-        <ToggleButton.Row onValueChange={value => {
-          value != null ? setTabValue(value) : ''}} 
-                        value={tabValue}
-                        style={{justifyContent: 'space-between', width: Dimensions.get('window').width}}>
-        <ToggleButton icon={()=> <Text>Reports</Text>} 
-                      value="reports" 
-                      style={{width: '50%'}}/>
-        <ToggleButton icon={()=> <Text>Sightings</Text>} 
-                      value="sightings" 
-                      style={{width: '50%'}}/>
-        </ToggleButton.Row>
-
-        {/* TODO: fix this - it is not scrolling all the way */}
-
-        <ScrollView style={{backgroundColor: '#EDEDED'}}>
-          
-          {/* display depending on tabs */}
-          { tabValue == "reports" 
-          ?
-            <>
-              {reports && reports.map((report, index) => (
-                  <Report userId={USER_ID} report={report} key={index}/>
-              ))}
-            </> 
-          : 
-            <>
-              {allSightings && allSightings.map((sighting, index) => (
-                  <Sighting userId={USER_ID} sighting={sighting} key={index}/>
-              ))}
-            </>
-          }
-
-          <Box h={180}></Box>
-
-        </ScrollView>
-        </View>
-    );
+	const renderTabBar = (props) => (
+		<TabBar {...props} pressOpacity={0.6}
+			renderLabel={({ route, focused, color }) => (
+				// <Text style={{ color: 'black', fontWeight: 'bold' }}>{route.title}</Text>
+				<IconText iconName={route.icon} text={route.title} textColor={focused ? route.color : 'gray'} 
+					iconColor={focused ? route.color : 'gray'} iconSize={24} fontWeight='bold' />)} 
+			style={{ backgroundColor: colors.background }}
+			contentContainerStyle={{ backgroundColor: 'transparent' }}
+			indicatorStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, height: 3, 
+				borderRadius: 1.5, width: '15%', left: '17.5%' }} 
+		/>
+	);
+	
+	return (
+		<Provider>
+			<StatusBar style='auto' />
+			<SafeAreaView style={{ flex: 1, height: '100%', backgroundColor: colors.background }}>
+				{/* TABS */}
+				<TabView renderTabBar={renderTabBar}
+					navigationState={{ index, routes }}
+					renderScene={({ route }) => {
+						switch (route.key) {
+							case 'reports':
+								return <ReportsList reports={reports} onRefresh={onRefresh} columns={1} userId={USER_ID} />;
+							case 'sightings':
+								return <SightingsList sightings={allSightings} onRefresh={onRefresh} emptyText={"There are no reported sightings."} />;
+							default:
+								return null; // TODO: make a view that says "no reports/sightings yet" etc for when theres nothing on the app yet ?
+						}
+					}}
+					onIndexChange={setIndex}
+					initialLayout={{ width: WINDOW_WIDTH }}
+				/>
+				<Portal>
+					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, bottom: -33 }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
+						actions={[
+							{ icon: 'file-document', label: 'New Missing Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Missing Report' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+							{ icon: 'magnify', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
+						]} />
+				</Portal>
+			</SafeAreaView>
+		</Provider>
+	);
 }
 
 export default DashboardPage;
