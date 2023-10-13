@@ -132,7 +132,7 @@ function UserDetails({ colors }) {
 
     return (
       <View >
-        <Box h={165} backgroundColor={colors.background} borderRadius={10} marginBottom='5%'>
+        <Box h={165} backgroundColor={colors.settingBackground} borderRadius={10} marginBottom='5%'>
         <Box padding={3}>
         <HStack justifyContent="space-between" marginBottom={3}>
         <Heading

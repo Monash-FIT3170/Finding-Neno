@@ -46,6 +46,7 @@ const FindingNenoLightTheme = {
 		card: 'white',
 		text: 'black',
 		border: 'lightgray',
+		settingBackground: '#f5f5f5',
 	},
 }
 
@@ -61,6 +62,7 @@ const FindingNenoDarkTheme = {
 		card: '#151517',
 		text: 'white',
 		border: 'black',
+		settingBackground: '#5f5f5f',
 	},
 }
 

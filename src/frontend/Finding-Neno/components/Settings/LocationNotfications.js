@@ -244,7 +244,7 @@ function LocationNotifications({colors}) {
    
   return (
     <View>
-      <Box h={boxHeight} backgroundColor={colors.background} borderRadius={10} marginBottom='5%'>
+      <Box h={boxHeight} backgroundColor={colors.settingBackground} borderRadius={10} marginBottom='5%'>
       <Box padding={3}>
         <HStack justifyContent="space-between" marginBottom={3}>
         <Heading
