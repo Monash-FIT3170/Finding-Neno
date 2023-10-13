@@ -14,11 +14,11 @@ import store from "../store/store";
 
 export default function ReportPage({ navigation: { navigate}}) {
     const navigation = useNavigation();
-    const windowWidth = Dimensions.get('window').width; 
-    const windowHeight = Dimensions.get('window').height;
 
     const {API_URL} = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+    const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
+
 
     const isFocused = useIsFocused();
     
@@ -59,7 +59,7 @@ export default function ReportPage({ navigation: { navigate}}) {
         <Button
         bg="#FA8072"
         onPress={() => navigate('New Report Page')} 
-        width={windowWidth - 60}
+        width={WINDOW_WIDTH - 60}
         height="40px"
         >
         Add New Report

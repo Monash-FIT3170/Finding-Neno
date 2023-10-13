@@ -16,11 +16,11 @@ import { VStack } from 'native-base';
 export default function MapPage() {
 	const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+	const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
+	
 	const navigation = useNavigation();
 	const isFocused = useIsFocused();
 
-	// const windowWidth = Dimensions.get('window').width; 
-	// const windowHeight = Dimensions.get('window').height;
 
 	// Image URL for custom marker iconrts
 	const imageURL = '';

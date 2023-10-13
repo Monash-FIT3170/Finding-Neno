@@ -25,7 +25,8 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
   const { API_URL } = useSelector((state) => state.api);
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
-
+  const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
+  
   const isFocused = useIsFocused();
   const dispatch = useDispatch();
 
@@ -177,8 +178,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
   };
   
 
-  const windowWidth = Dimensions.get("window").width;
-  const windowHeight = Dimensions.get("window").height;
+
 
   const name = user.name;
   const email = user.email;
@@ -344,7 +344,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
                 <TouchableOpacity
                   style={{ paddingVertical: 10, paddingHorizontal: 15 }}
                   onPress={() => {
-                    // set notifications
+                    navigate("Settings Page");
                   }}
                 >
                   <Text>Settings</Text>
@@ -396,8 +396,8 @@ export default function ProfilePage({ navigation: { navigate } }) {
             alignSelf: 'center',
             justifyContent: 'center',
             alignItems: 'center',
-            width: windowWidth,
-            height: windowHeight / 3.2, // Adjust this to control the gradient height
+            width: WINDOW_WIDTH,
+            height: WINDOW_HEIGHT / 3.2, // Adjust this to control the gradient height
           }}
         >
 
@@ -416,10 +416,10 @@ export default function ProfilePage({ navigation: { navigate } }) {
             <Box
               style={{
                 backgroundColor: "#FFFFFF",
-                height: windowWidth *1.8,
-                width: windowWidth *1.8,
-                marginTop: windowWidth * 1.8,
-                borderRadius: windowWidth,
+                height: WINDOW_WIDTH *1.8,
+                width: WINDOW_WIDTH *1.8,
+                marginTop: WINDOW_WIDTH * 1.8,
+                borderRadius: WINDOW_WIDTH,
                 alignSelf: "center",
                 alignItems: "center",
                 justifyContent: "center",
@@ -478,7 +478,7 @@ export default function ProfilePage({ navigation: { navigate } }) {
 
           <View style={{ flexDirection: 'row', alignItems: 'center' }}>
           <HStack mt="6" justifyContent="flex-start" alignItems="center" marginBottom={2}>
-            < HStack style={{marginRight:editMode ? 60 : windowWidth / 1.8, alignItems: 'center'}}>
+            < HStack style={{marginRight:editMode ? 60 : WINDOW_WIDTH / 1.8, alignItems: 'center'}}>
             <Heading
               fontSize="sm"
               color="coolGray.600"

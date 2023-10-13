@@ -4,18 +4,22 @@ import { Dimensions } from 'react-native';
 import ReportSightingModal from '../components/ReportSightingModal';
 import * as ImagePicker from 'expo-image-picker';
 import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
+import { useSelector } from 'react-redux';
 
 
 const Report = ({ report, userId }) => {
-  // Pet Data
-  const windowWidth = Dimensions.get('window').width;
+  const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
 
+
+  // Pet Data
     const lastSeen = report[1];
     const reportDesc = report[2];
     const locationLongitude = report[3];
     const locationLatitude = report[4];
     const locationString = report[5];
     const authorId = report[15]
+    console.log(authorId)
+    console.log(userId)
     
     const petName = report[7][0].toUpperCase() +report[7].substring(1);
     const petSpecies = report[8][0].toUpperCase() +report[8].substring(1);;
@@ -31,7 +35,7 @@ const Report = ({ report, userId }) => {
     
   return (
     <View justifyContent="center" alignItems="center" padding={4}>
-      <Box width={windowWidth - 20} height={400} bg="#F9FDFF" borderRadius={15}>
+      <Box width={WINDOW_WIDTH - 20} height={400} bg="#F9FDFF" borderRadius={15}>
         <Heading size="xl" paddingLeft={5} paddingTop={2}>
           {petName}
         </Heading>
@@ -68,7 +72,7 @@ const Report = ({ report, userId }) => {
           </VStack>
         </HStack>
 
-        <Box width={windowWidth - 40} height={180} paddingLeft={5} paddingTop={5} paddingBottom={1}>
+        <Box width={WINDOW_WIDTH - 40} height={180} paddingLeft={5} paddingTop={5} paddingBottom={1}>
           <Image source={{ uri: petImage }} style={{ width: '100%', height: '100%', borderTopLeftRadius: 20, borderTopRightRadius: 20 }} alt='pet' />
 
 

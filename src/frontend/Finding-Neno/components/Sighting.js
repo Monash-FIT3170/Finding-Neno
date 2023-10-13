@@ -11,7 +11,7 @@ import { useIsFocused } from '@react-navigation/native';
 
 const Sighting = ({userId, sighting, setReloadParent}) => {
   // Pet Data
-  const windowWidth = Dimensions.get('window').width; 
+  const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
 
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
   const {API_URL} = useSelector((state) => state.api)
@@ -77,7 +77,7 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
   return (
     <View justifyContent = "center" alignItems = "center" padding={4}>
         {/* TODO: unhard code the heights, widths etc later */}
-    <Box width={windowWidth - 20} height={sightingImage ? 400 : 250} bg="#F9FDFF" borderRadius={15} paddingLeft={5} paddingTop={2} paddingRight={5}>
+    <Box width={WINDOW_WIDTH - 20} height={sightingImage ? 400 : 250} bg="#F9FDFF" borderRadius={15} paddingLeft={5} paddingTop={2} paddingRight={5}>
       
       <HStack paddingTop={3} alignItems={"center"} justifyContent={"space-between"}>
       <Heading size = "lg" >
@@ -114,7 +114,7 @@ const Sighting = ({userId, sighting, setReloadParent}) => {
         </VStack>
       </HStack>
 
-      <Box width={windowWidth - 40} height={180} paddingTop={5} paddingBottom={1} paddingRight={5}>
+      <Box width={WINDOW_WIDTH - 40} height={180} paddingTop={5} paddingBottom={1} paddingRight={5}>
         {sightingImage && <Image source={{ uri: sightingImage }} style={{ width: '100%', height: '100%', borderRadius: 10, marginBottom: 8 }} alt="pet" />}
 
         <Button width={'100%'} borderRadius={10} paddingTop={3}>

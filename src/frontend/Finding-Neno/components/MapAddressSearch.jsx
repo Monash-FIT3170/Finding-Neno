@@ -84,7 +84,7 @@ const MapAddressSearch = ({ setFormData, formData }) => {
             </View>
             <Input onChangeText={text => setAddress(text)} placeholder="Enter an address" />
 
-            <Button title="Search" onPress={handleSearch}>Search Adress</Button>
+            <Button title="Search" onPress={handleSearch}>Search Address</Button>
         </View>
     )
 }

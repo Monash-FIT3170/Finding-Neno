@@ -133,7 +133,6 @@ def post_login():
 
 @app.route("/retrieve_profile", methods=["GET"]) # Requires Access_token and user ID for authorization
 def retrieve_profile_information():
-    print("retrieving current user profile, ")
     user_id = request.args.get("user_id")
     data = retrieve_profile(g.db, user_id)
     if data[1] == 200:
@@ -144,6 +143,10 @@ def retrieve_profile_information():
 @app.route("/validate_password", methods=["POST"]) # Requires Access_token and user ID for authorization
 def validate_password():
     return validate_password_operation(g.db)
+
+@app.route("/update_profile", methods=["PUT"]) # Requires Access_token and user ID for authorization
+def update_profile_information():
+    return update_profile(g.db)
 
 @app.route("/change_password", methods=["PATCH"]) # Requires Access_token and user ID for authorization
 def post_change_password():
@@ -173,6 +176,22 @@ def update_pet_api():
 @app.route("/update_missing_status", methods=["PUT"])  # Use PUT method for updating
 def toggle_missing_status_api():
     return toggle_missing_status_operation(g.db)
+
+@app.route("/get_location_notification_settings", methods=["GET"])
+def get_location_notification_settings():
+    """
+    Returns an array of user settings for a specific user_id, of the following format.
+
+    [
+        location_notifications_enabled, location_longitude, location_latitude, location_notification_radius
+    ]
+    """
+    user_id = request.args.get("user_id")
+    return jsonify(retrieve_location_notification_user_settings(g.db, user_id))
+
+@app.route("/update_location_notification_settings", methods=["PUT"])
+def update_location_notification_settings():
+    return update_location_notification_settings_api(g.db)
 
 @app.route("/insert_missing_report", methods=["POST"]) # Requires Access_token and user ID for authorization
 def post_insert_missing_report():
@@ -208,7 +227,6 @@ def get_sightings():
     expiry_time = request.args.get("expiry_time")
     return jsonify(retrieve_sightings(g.db, missing_report_id, expiry_time))
 
-
 @app.route("/get_missing_reports_in_area", methods=["GET"])
 def get_missing_reports_in_area():
     """
@@ -225,7 +243,6 @@ def get_missing_reports_in_area():
     latitude = request.args.get("lat")
     latitude_delta = request.args.get("lat_delta")
     return jsonify(retrieve_missing_reports_in_area(g.db, longitude, longitude_delta, latitude, latitude_delta))
-
 
 @app.route("/get_sightings_in_area", methods=["GET"])
 def get_sightings_in_area():

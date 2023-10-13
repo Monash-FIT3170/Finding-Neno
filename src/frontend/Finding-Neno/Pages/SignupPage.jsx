@@ -24,8 +24,6 @@ const SignupPage = () => {
 
 	const navigation = useNavigation();
 
-	console.log("SignupPage");
-
 	const onSignupPress = async () => {
 		setIsButtonDisabled(true);
 		setButtonText("Signing up...")
