@@ -5,15 +5,15 @@ import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
 import { Ionicons } from '@expo/vector-icons';
 import { useSelector } from "react-redux";
 import { useIsFocused, useTheme } from '@react-navigation/native';
-import { formatDateTimeDisplay } from '../Pages/shared';
+import { formatDateTimeDisplay } from '../../Pages/shared';
 import ImageView from 'react-native-image-viewing';
-import ShareButton from './ShareButton';
-import IconText from './IconText';
-import { Color } from './atomic/Theme';
+import ShareButton from '../Shared/ShareButton';
+import IconText from '../Shared/IconText';
+import { Color } from '../atomic/Theme';
 
 const Sighting = ({ userId, sighting, refresh }) => {
   // Pet Data
-  const windowWidth = Dimensions.get('window').width;
+  const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
 
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
   const { API_URL } = useSelector((state) => state.api)
@@ -31,7 +31,6 @@ const Sighting = ({ userId, sighting, refresh }) => {
   const sightingDesc = sighting[8];
   const sightingAnimal = sighting[9][0].toUpperCase() + sighting[9].substring(1);
   const sightingBreed = sighting[10].split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
-  console.log(sighting)
   const ownerName = sighting[11];
   const ownerEmail = sighting[12];
   const sightingPhoneNumber = sighting[13];

@@ -1,6 +1,6 @@
 import { useNavigation, useTheme } from '@react-navigation/native';
 import { Modal, useToast, FormControl, Input, HStack, VStack, Text, WarningOutlineIcon } from "native-base";
-import { Color } from "../components/atomic/Theme";
+import { Color } from "../atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
@@ -10,9 +10,9 @@ import { Button } from 'react-native-paper';
 
 import { useSelector } from "react-redux";
 
-import { formatDatetime, formatDateTimeDisplay } from '../Pages/shared';
-import MapAddressSearch from "../components/MapAddressSearch";
-import ImageHandler from './ImageHandler';
+import { formatDatetime, formatDateTimeDisplay } from '../../Pages/shared';
+import MapAddressSearch from "../Shared/MapAddressSearch";
+import ImageHandler from '../Shared/ImageHandler';
 
 const ReportSightingModal = ({report, userId, closeModal, showModal}) => {
     const [sightingDateTime, setSightingDateTime] = useState(new Date());

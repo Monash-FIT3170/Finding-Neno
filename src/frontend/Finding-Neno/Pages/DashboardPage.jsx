@@ -8,15 +8,15 @@ import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton } from 'r
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import { useSelector } from "react-redux";
-import ReportsList from '../components/ReportsList';
-import SightingsList from '../components/SightingsList';
-import IconText from '../components/IconText';
+import ReportsList from '../components/Reports/ReportsList';
+import SightingsList from '../components/Sightings/SightingsList';
+import IconText from '../components/Shared/IconText';
 
 const DashboardPage = () => {
 	const { API_URL } = useSelector((state) => state.api)
 	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+	const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
 
-	const windowWidth = Dimensions.get('window').width;
 	const navigation = useNavigation();
 	const toast = useToast();
 	const isFocused = useIsFocused();
@@ -151,7 +151,7 @@ const DashboardPage = () => {
 						}
 					}}
 					onIndexChange={setIndex}
-					initialLayout={{ width: windowWidth }}
+					initialLayout={{ width: WINDOW_WIDTH }}
 				/>
 				<Portal>
 					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, bottom: -33 }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}

@@ -6,7 +6,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import ImageView from 'react-native-image-viewing';
 import { useTheme } from '@react-navigation/native';
 import { TouchableHighlight } from 'react-native-gesture-handler';
-import IconText from './IconText';
+import IconText from './Shared/IconText';
 import { Color } from './atomic/Theme';
 import { Button as PaperButton } from 'react-native-paper';
 

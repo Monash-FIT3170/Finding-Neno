@@ -10,6 +10,8 @@ import { useSelector, useDispatch } from "react-redux";
 
 const ForgotPasswordPage = () => {
 	const { API_URL } = useSelector((state) => state.api);
+	const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
+
 	const [formData, setFormData] = useState({});
 	const [errors, setErrors] = useState({});
 	const [buttonText, setButtonText] = useState("Send Reset Code")

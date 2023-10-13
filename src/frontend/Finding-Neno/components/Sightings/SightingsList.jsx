@@ -2,7 +2,7 @@ import Sighting from './Sighting';
 import { FlatList } from 'native-base';
 import { memo, useState } from "react";
 import { Text } from 'react-native-paper';
-import { formatDateTimeDisplay } from '../Pages/shared';
+import { formatDateTimeDisplay } from '../../Pages/shared';
 import { useTheme } from '@react-navigation/native';
 
 function SightingsList({sightings, onRefresh, columns, emptyText}) {

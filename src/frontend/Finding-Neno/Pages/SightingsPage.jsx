@@ -7,13 +7,12 @@ import { useEffect, useState } from 'react';
 import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton } from 'react-native-paper';
 import { Color } from "../components/atomic/Theme";
 import { TabBar, TabView } from 'react-native-tab-view';
-import SightingsList from '../components/SightingsList';
-import IconText from '../components/IconText';
+import SightingsList from '../components/Sightings/SightingsList';
+import IconText from '../components/Shared/IconText';
 
 
 export default function SightingsPage({ navigation: { navigate } }) {
 
-    const windowWidth = Dimensions.get('window').width; 
     const isFocused = useIsFocused();
     const [sightingsOfMyPets, setSightingsOfMyPet] = useState('');
     const [mySavedSightings, setMySavedSightings] = useState('');
@@ -25,6 +24,8 @@ export default function SightingsPage({ navigation: { navigate } }) {
 
     const { API_URL } = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+    const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
+
 
     const [reloadPage, setReloadPage] = useState(false);
     const [routes] = useState([
@@ -121,7 +122,7 @@ export default function SightingsPage({ navigation: { navigate } }) {
                         }
                     }}
                     onIndexChange={setIndex}
-                    initialLayout={{ width: windowWidth }}
+                    initialLayout={{ width: WINDOW_WIDTH }}
                 />
                 <Portal>
                     <FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, bottom: -33 }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}

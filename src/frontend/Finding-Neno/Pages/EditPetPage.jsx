@@ -25,7 +25,7 @@ import store from "../store/store";
 
 import { petTypeOptions } from "./shared";
 import { Subheading } from "react-native-paper";
-import ImageHandler from "../components/ImageHandler.jsx";
+import ImageHandler from "../components/Shared/ImageHandler.jsx";
 import { Dropdown } from "react-native-element-dropdown";
 
 const EditPetPage = ({ navigation: { navigate }, route }) => {
@@ -36,6 +36,8 @@ const EditPetPage = ({ navigation: { navigate }, route }) => {
 
   const { API_URL } = useSelector((state) => state.api);
   const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+  const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
+
   const pet = useSelector((state) => state.pet);
   const dispatch = useDispatch();
 

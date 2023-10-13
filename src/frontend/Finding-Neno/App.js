@@ -24,6 +24,7 @@ import PasswordResetPage from "./Pages/PasswordResetPage";
 import SightingsPage from "./Pages/SightingsPage";
 import NewSightingPage from "./Pages/NewSightingPage";
 import NewReportPage from "./Pages/NewReportPage";
+import SettingsPage from "./Pages/SettingsPage";
 import { Ionicons } from '@expo/vector-icons'; // Import the desired icon library
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from "react";
@@ -245,6 +246,7 @@ function ProfileStackNavigator() {
       <Stack.Screen name="Profile Page"  component={ProfilePage} options={{ title: "Profile", headerShown: false, }} />
       <Stack.Screen name="New Pet" component={NewPetPage} options={{ title: "" }} />
       <Stack.Screen name="Edit Pet" component={EditPetPage} options={{ title: "" }} />
+	  <Stack.Screen name="Settings Page" component={SettingsPage} options={{ title: "Settings" }}/>
     </Stack.Navigator>
   )
 }

@@ -18,6 +18,10 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 export default function MapPage({ navigation: { navigate } }) {
 
 	const { API_URL } = useSelector((state) => state.api)
+	const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
+	const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
+	
+	const navigation = useNavigation();
 	const isFocused = useIsFocused();
 	    
 	const [FABstate, setFABState] = useState({ open: false });
@@ -187,8 +191,6 @@ export default function MapPage({ navigation: { navigate } }) {
 		  ]
 		}
 	  ]
-	// const windowWidth = Dimensions.get('window').width; 
-	const windowHeight = Dimensions.get('window').height;
 
 	const [reports, setReports] = useState([]);
 	const [sightings, setSightings] = useState([]);

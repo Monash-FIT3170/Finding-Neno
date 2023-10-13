@@ -4,7 +4,7 @@ import { Button } from 'react-native-paper';
 import { FormControl, HStack, Image, VStack, View, Text } from 'native-base';
 import { ActivityIndicator, TouchableHighlight, useColorScheme } from 'react-native';
 import { useState } from 'react';
-import { Color } from './atomic/Theme';
+import { Color } from '../atomic/Theme';
 import { useTheme } from '@react-navigation/native';
 
 const ImageHandler = ({ image, setImage, setIsButtonDisabled, isRequired, error }) => {

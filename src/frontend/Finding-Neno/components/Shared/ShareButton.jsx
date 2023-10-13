@@ -1,6 +1,6 @@
 import { Share } from "react-native";
 import { Button } from "react-native-paper";
-import { Color } from "./atomic/Theme";
+import { Color } from "../atomic/Theme";
 
 const ShareButton = ({ title, message, dialogTitle, textColor, url, width }) => {
     const onShare = async () => {

@@ -1,18 +1,20 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { ActivityIndicator, Animated, TouchableHighlight, View } from 'react-native'
-import ReportSightingModal from './ReportSightingModal';
+import ReportSightingModal from '../Sightings/ReportSightingModal';
 import { HStack, Heading, Image, VStack, Text } from 'native-base';
 import { Button } from 'react-native-paper';
-import { Color } from './atomic/Theme';
-import { formatDateTimeDisplay } from '../Pages/shared';
+import { Color } from '../atomic/Theme';
+import { formatDateTimeDisplay } from '../../Pages/shared';
 import ImageView from 'react-native-image-viewing';
-import IconText from './IconText';
-import ShareButton from './ShareButton';
+import IconText from '../Shared/IconText';
+import ShareButton from '../Shared/ShareButton';
 import { useTheme } from '@react-navigation/native';
 
+import { useSelector } from 'react-redux';
 
 
 const Report = ({ report, userId }) => {
+  const { OS, WINDOW_WIDTH, WINDOW_HEIGHT} = useSelector((state) => state.device);
     const { colors } = useTheme();
 
     // Pet Data
@@ -21,7 +23,9 @@ const Report = ({ report, userId }) => {
     const locationLongitude = report[3];
     const locationLatitude = report[4];
     const locationString = report[5];
-    const authorId = report[16]
+    const authorId = report[15];
+    console.log(authorId)
+    console.log(userId)
     
     const petName = report[7][0].toUpperCase() +report[7].substring(1);
     const petSpecies = report[8][0].toUpperCase() +report[8].substring(1);

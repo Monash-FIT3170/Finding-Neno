@@ -7,11 +7,10 @@ import { Button, Subheading } from 'react-native-paper';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { useSelector } from "react-redux";
 import { formatDatetime, formatDateTimeDisplay, petTypeOptions } from "./shared";
-import { SafeAreaView } from 'react-native-safe-area-context';
-import MapAddressSearch from "../components/MapAddressSearch";
-import ImageHandler from "../components/ImageHandler";
+import MapAddressSearch from "../components/Shared/MapAddressSearch";
+import ImageHandler from "../components/Shared/ImageHandler";
 import { Dropdown } from 'react-native-element-dropdown';
-import { useColorScheme } from 'react-native';
+import { SafeAreaView, useColorScheme } from 'react-native';
 
 const NewSightingPage = ({ navigation: { navigate } }) => {
     const { API_URL } = useSelector((state) => state.api)

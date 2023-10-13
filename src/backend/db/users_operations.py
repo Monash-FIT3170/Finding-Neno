@@ -4,6 +4,8 @@ import hashlib
 import psycopg2
 import datetime
 import os
+import requests # pip install requests==2.31.0 - TODO: add to requirements.txt
+from typing import Optional, List
 
 from db.authentication import verify_access_token
 
@@ -69,12 +71,26 @@ def insert_user_to_database(connection: psycopg2.extensions.connection, email: s
     try:
         cur.execute(query, (email, phone, name, hashed_pass, salt, access_token))
         print(f"Query executed successfully: {query}")
+
+        # Get the user ID
+        query = """SELECT id FROM users WHERE email_address = %s;"""
+        cur.execute(query, (email,))
+        user_id = cur.fetchone()[0]
+        
+        # Close the cursor
+        connection.commit()
+        cur.close()
+
+        # Return the user ID
+        return user_id
+
     except Exception as e:
         print(f"Error while executing query: {e}")
+        cur.close()
+        return None
 
-    # Close the cursor
-    connection.commit()
-    cur.close()
+
+
 
 def retrieve_user(connection: psycopg2.extensions.connection, profile_user_id: int, user_id: int, access_token: str):
     """
@@ -91,7 +107,7 @@ def retrieve_user(connection: psycopg2.extensions.connection, profile_user_id: i
 
     # Check if a user with this email exists in the database
     # Construct a SELECT query to retrieve the user
-    query = """SELECT name, email_address, phone_number FROM users WHERE id = %s AND access_token = %s"""
+    query = """SELECT name, email_address, phone_number FROM users WHERE id = %s AND access_token = %s;"""
 
     # Result is the object returned or True if no errors encountered, False if there is an error
     result = False
@@ -238,7 +254,7 @@ def insert_sighting_to_database(connection: psycopg2.extensions.connection, auth
     """
     This function is used to add a new sighting to the database.
 
-    Returns False if access tokenn is invalid, True if query is executed successfully.
+    Returns the ID of the sighting if executed successfully, None otherwise.
     """
 
     # Verify access token
@@ -263,13 +279,22 @@ def insert_sighting_to_database(connection: psycopg2.extensions.connection, auth
         # Commit the change
         connection.commit()
 
-        result = True # set to True only if it executes successfully 
-    except Exception as e:
-        print(f"Error while executing query: {e}")
+        # Get the sighting ID
+        query = """
+        SELECT id FROM sightings
+        WHERE author_id = %s ORDER BY date_time_of_creation DESC LIMIT 1;"""
+        cur.execute(query, (author_id,))
+        sighting_id = cur.fetchone()[0]
 
-    # Close the cursor
-    cur.close()
-    return result
+        cur.close()
+
+        return sighting_id
+
+    except Exception as e:
+        cur.close()
+        print(f"Error while executing query: {e}")
+        return None
+
 
 def insert_missing_report_to_database(connection: psycopg2.extensions.connection, author_id: str,
                                       pet_id: int, last_seen: datetime, date_time_creation: datetime, location_longitude: float, location_latitude: float,
@@ -277,7 +302,7 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
     """
     This function is used to add a new missing report to the database.
 
-    Returns False if access token is invalid, True if query is executed successfully.
+    Returns the ID of the missing report. If fails, then returns None
     """
 
     # Verify access token
@@ -285,9 +310,6 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
         return False
 
     cur = connection.cursor()
-
-    # Result is the object returned or True if no errors encountered, False if there is an error
-    result = False
 
     # Construct and INSERT query to insert this user into the DB
     query = """INSERT INTO missing_reports (pet_id, author_id, date_time, date_time_of_creation, location_longitude, 
@@ -302,13 +324,36 @@ def insert_missing_report_to_database(connection: psycopg2.extensions.connection
         # Commit the change
         connection.commit()
 
-        result = True
+        # Get the missing report ID
+        query = """SELECT id FROM missing_reports WHERE pet_id = %s AND author_id = %s ORDER BY date_time_of_creation DESC LIMIT 1;"""
+        cur.execute(query, (pet_id, author_id,))
+        missing_report_id = cur.fetchone()[0]
+        cur.close()
+
+        return missing_report_id
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+        return None
+
+def insert_user_settings_to_database(connection, user_id, location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, possible_sighting_notifications_enabled):
+    cur = connection.cursor()
+
+    # Construct an INSERT query to insert this user into the DB
+    query = """
+    INSERT INTO user_settings
+    (user_id, location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, possible_sighting_notifications_enabled)
+    VALUES (%s, %s, %s, %s, %s, %s);"""
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id, location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, possible_sighting_notifications_enabled,))
+        print(f"Query executed successfully: {query}")
     except Exception as e:
         print(f"Error while executing query: {e}")
 
-    # CClose the cursor
+    # Close the cursor
+    connection.commit()
     cur.close()
-    return result
 
 def update_missing_report_in_database(connection: psycopg2.extensions.connection, report_id: int,  pet_id: int, author_id: int,
                                       last_seen, location_longitude, location_latitude, description, is_active, access_token):
@@ -369,6 +414,42 @@ def update_report_active_status(connection: psycopg2.extensions.connection, repo
         print(f"Error updating status: {e}")
         connection.rollback()
         return False
+
+def update_location_notifications_settings_in_database(connection, user_id, location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, possible_sightings_enabled, access_token):
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    # UPDATE query to update missing report
+    query = """
+                UPDATE 
+                    user_settings 
+                SET 
+                     location_notifications_enabled = %s, location_longitude = %s, location_latitude = %s, location_notification_radius = %s, possible_sighting_notifications_enabled = %s
+                WHERE 
+                    user_id = %s;
+                """
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, possible_sightings_enabled, user_id))
+        print(f"Query executed successfully: {query}")
+
+        # Commit the change
+        connection.commit()
+
+        result = True
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
 
 def archive_missing_report_in_database(connection: psycopg2.extensions.connection, reportId, is_active, user_id, access_token):
     """
@@ -1019,6 +1100,38 @@ def unsave_sighting_for_user(connection: psycopg2.extensions.connection, user_id
     cur.close()
     return result
 
+def retrieve_location_notification_settings(connection, user_id, access_token):
+    # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    query = """
+    SELECT location_notifications_enabled, location_longitude, location_latitude, location_notification_radius, possible_sighting_notifications_enabled
+    FROM user_settings WHERE user_id = %s;
+    """
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (user_id,))
+        user_settings = cur.fetchall()
+
+        if len(user_settings) == 0:
+            print("No user found with the provided id and access token.")
+        else: 
+            result = user_settings[0]  
+
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
 def change_password_in_database(connection: psycopg2.extensions.connection, email: int, new_password: str, user_id: int, access_token: str):
     """
     This function updates the password of the row in the database which matches the email provided.
@@ -1056,3 +1169,296 @@ def change_password_in_database(connection: psycopg2.extensions.connection, emai
     # Close the cursor
     cur.close()
     return result
+
+def get_user_details(connection: psycopg2.extensions.connection, user_id: int):
+    """
+    Retrieves a user from the database using its id.
+
+    Arguments:
+        connection: The connection to the database.
+        user_id: The id of the user to retrieve.
+    Returns: The user if it exists
+    """
+    cur = connection.cursor()
+
+    query = """
+        SELECT 
+            id, email_address, phone_number, name
+        FROM 
+            users
+        WHERE 
+            id = %s;
+    """
+    try:
+        cur.execute(query, (user_id, ))
+
+        # Retrieve rows as an array
+        user = cur.fetchall()
+
+        if user:
+            print(f"Missing report successfully retrieved: {user}")
+            result = user[0]
+        else:
+            return None
+
+    except Exception as e:
+        print(f"Error with retrieving the missing report: {e}")
+        return None
+
+    # Close the cursor
+    cur.close()
+
+    user_details = {
+        "id": result[0],
+        "email_address": result[1],
+        "phone_number": result[2],
+        "name": result[3],
+    }
+
+    return user_details
+
+def update_user_details(connection: psycopg2.extensions.connection, user_id: int, name: str, phone: str, access_token: str):
+        # Verify access token
+    if not verify_access_token(connection, user_id, access_token):
+        return False
+
+    cur = connection.cursor()
+
+    # UPDATE query to update missing report
+    query = """
+                UPDATE 
+                    users 
+                SET 
+                    name = %s, phone_number = %s
+                WHERE 
+                    id = %s;
+                """
+
+    # Result is the object returned or True if no errors encountered, False if there is an error
+    result = False
+
+    # Execute the query
+    try:
+        cur.execute(query, (name, phone, user_id))
+        print(f"Query executed successfully: {query}")
+
+        # Commit the change
+        connection.commit()
+
+        result = True
+    except Exception as e:
+        print(f"Error while executing query: {e}")
+
+    # Close the cursor
+    cur.close()
+    return result
+
+def get_missing_report(connection: psycopg2.extensions.connection, missing_report_id: int):
+    """
+    Retrieves a missing report from the database using its id.
+    
+    Arguments:
+        connection: The connection to the database.
+        missing_report_id: The id of the missing report to retrieve.
+    Returns: The missing report if it exists
+    """
+    cur = connection.cursor()
+
+    query = """
+        SELECT 
+            id, pet_id, author_id, date_time_of_creation, date_time, location_longitude, location_latitude, description, is_active
+        FROM 
+            missing_reports
+        WHERE 
+            id = %s;
+    """
+    try:
+        cur.execute(query, (missing_report_id, ))
+
+        # Retrieve rows as an array
+        missing_report = cur.fetchall()
+
+        if missing_report:
+            print(f"Missing report successfully retrieved: {missing_report}")
+            result = missing_report[0]
+        else:
+            return None
+
+    except Exception as e:
+        print(f"Error with retrieving the missing report: {e}")
+        return None
+
+    # Close the cursor
+    cur.close()
+
+    mr = {
+        "id": result[0],
+        "pet_id": result[1],
+        "author_id": result[2],
+        "date_time_of_creation": result[3],
+        "date_time": result[4],
+        "location_longitude": result[5],
+        "location_latitude": result[6],
+        "description": result[7],
+        "is_active": result[8],
+    }
+
+    return mr
+
+
+def get_local_users(
+    connection: psycopg2.extensions.connection,
+    longitude: float,
+    latitude: float,
+) -> Optional[List[int]]:
+    """
+    Gets the user IDs of all users who are local to the given coordinates.
+
+    Arguments:
+        connection: The connection to the database.
+        longitude: The longitude of the user.
+        latitude: The latitude of the user.
+    """
+    cur = connection.cursor()
+
+    # Haversine formula: https://stackoverflow.com/a/57136609
+    query = """
+    SELECT 
+        id
+    FROM 
+        users JOIN user_settings ON users.id = user_settings.user_id
+    WHERE
+        acos(
+            sin(radians(%s)) * sin(radians(location_latitude)) 
+            + cos(radians(%s)) * cos(radians(location_latitude)) * cos(radians(%s) - radians(location_longitude))
+        ) * 6371 <= location_notification_radius
+    """
+    try:
+        cur.execute(query, (latitude, latitude, longitude))
+
+        # Retrieve rows as an array
+        users = cur.fetchall()
+        users = [user[0] for user in users]
+
+        cur.close()
+
+        if users:
+            print(f"Users successfully retrieved: {users}")
+            return users
+        else:
+            return []
+
+    except Exception as e:
+        print(f"Error with retrieving the users: {e}")
+        cur.close()
+        return None
+
+
+def get_possible_owners(
+    connection: psycopg2.extensions.connection,
+    longitude: float,
+    latitude: float,
+    radius: float,
+    animal: str,
+    breed: str,
+):
+    """
+    Gets possible owners who have made missing reports with similar details
+
+    Arguments:
+        connection: The connection to the database.
+        longitude: The longitude of the sighting author.
+        latitude: The latitude of the sighting author.
+        radius: The radius of the search area (in km).
+        animal: The animal of the pet.
+        breed: The breed of the pet.
+    """
+    cur = connection.cursor()
+
+    # Haversine formula: https://stackoverflow.com/a/57136609
+    query = """
+    SELECT 
+        mr.author_id
+    FROM 
+        missing_reports AS mr
+    JOIN 
+        pets AS p ON mr.pet_id = p.id
+    WHERE
+        acos(
+            sin(radians(%s)) * sin(radians(mr.location_latitude)) 
+            + cos(radians(%s)) * cos(radians(mr.location_latitude)) * cos(radians(%s) - radians(mr.location_longitude))
+        ) * 6371 <= %s
+        AND p.animal = %s
+        AND UPPER(p.breed) = UPPER(%s)
+        AND mr.is_active IS TRUE;
+    """
+    try:
+        cur.execute(query, (latitude, latitude, longitude, radius, animal, breed))
+
+        # Retrieve rows as an array
+        users = cur.fetchall()
+
+        cur.close()
+
+        if users:
+            print(f"Users successfully retrieved: {users}")
+            return users
+        else:
+            return []
+
+    except Exception as e:
+        print(f"Error with retrieving the users: {e}")
+        cur.close()
+        return None
+
+
+def send_notification(
+    email_address: str,
+    subject: str,
+    content: str,
+):
+    """
+    Sends an email notification using Sendgrid.
+
+    Arguments:
+        email_address: The email address to send the notification to.
+        subject: The subject of the email notification.
+        bcontentdy: The content of the email notification.
+    Returns: True if the notification was sent successfully, False otherwise.
+    """
+    if os.getenv("SENDGRID_API_KEY") is None:
+        print("SENDGRID_API_KEY environment variable not found!")
+        return False
+
+    FROM_EMAIL_ADDRESS = "findingnenoofficial@gmail.com"
+    URL = "https://api.sendgrid.com/v3/mail/send"
+    response = requests.post(
+        url=URL,
+        headers={
+            "Authorization": f"Bearer {os.getenv('SENDGRID_API_KEY')}",
+            "Content-Type": "application/json",
+        },
+        json={
+            "personalizations": [
+                {
+                    "to": [{"email": email_address}],
+                    "subject": subject,
+                }
+            ],
+            "content": [
+                {
+                    "type": "text/html",
+                    "value": content,
+                }
+            ],
+            "from": {"email": FROM_EMAIL_ADDRESS, "name": "Finding Neno"},
+            "reply_to": {"email": FROM_EMAIL_ADDRESS, "name": "Finding Neno"},
+        }
+    )
+    
+    if response.status_code == 202:
+        return True
+    else:
+        print(response.status_code)
+        print(response.text)
+        return False

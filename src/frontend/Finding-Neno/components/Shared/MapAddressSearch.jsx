@@ -1,10 +1,10 @@
 import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import marker from '../assets/marker_icon.png';
+import marker from '../../assets/marker_icon.png';
 import { Image, StyleSheet, View, useColorScheme } from 'react-native';
 import { useEffect, useRef, useState } from 'react';
 import { Input } from "native-base";
 import { Button } from 'react-native-paper';
-import { Color } from "../components/atomic/Theme";
+import { Color } from "../atomic/Theme";
 import { useTheme } from '@react-navigation/native';
 
 

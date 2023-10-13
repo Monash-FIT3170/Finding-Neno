@@ -3,10 +3,10 @@ import { useEffect, useState } from 'react';
 import { StyleSheet } from 'react-native';
 import { MaterialIcons } from '@expo/vector-icons'
 import { Button, Portal, Text } from 'react-native-paper';
-import { Color } from './atomic/Theme';
+import { Color } from '../atomic/Theme';
 import { useSelector } from 'react-redux';
-import store from "../store/store";
-import { logout } from '../store/user';
+import store from "../../store/store";
+import { logout } from '../../store/user';
 import { useTheme } from '@react-navigation/native';
 
 const DeleteUserModal = ({ visible, setVisible }) => {

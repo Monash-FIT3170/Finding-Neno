@@ -10,10 +10,9 @@ import { useSelector, useDispatch } from "react-redux";
 
 import { formatDateTimeDisplay, formatDatetime, petTypeOptions } from "./shared";
 
-import MapAddressSearch from "../components/MapAddressSearch";
-import { SafeAreaView } from 'react-native-safe-area-context';
+import MapAddressSearch from "../components/Shared/MapAddressSearch";
 import { Dropdown } from 'react-native-element-dropdown';
-import { useColorScheme } from 'react-native';
+import { SafeAreaView, useColorScheme } from 'react-native';
 
 const NewReportPage = ({ navigation: { navigate } }) => {
 	const navigation = useNavigation();

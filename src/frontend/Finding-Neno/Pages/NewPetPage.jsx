@@ -8,11 +8,10 @@ import { Button } from 'react-native-paper';
 import { useSelector, useDispatch } from "react-redux";
 
 import { formatDatetime, petTypeOptions } from "./shared";
-import ImageHandler from '../components/ImageHandler';
+import ImageHandler from '../components/Shared/ImageHandler';
 import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Dropdown } from 'react-native-element-dropdown';
-import { useColorScheme } from 'react-native';
+import { SafeAreaView, useColorScheme } from 'react-native';
 
 const NewPetPage = ({ navigation: { navigate }, route }) => {
 	/**

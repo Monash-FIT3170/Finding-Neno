@@ -2,7 +2,7 @@ import Report from './Report';
 import { FlatList } from 'native-base';
 import { memo, useState } from 'react';
 import { Text } from 'react-native-paper';
-import { formatDateTimeDisplay } from '../Pages/shared';
+import { formatDateTimeDisplay } from '../../Pages/shared';
 
 function ReportsList({reports, onRefresh, columns, userId}) {
     const [refreshing, setRefreshing] = useState(false);
