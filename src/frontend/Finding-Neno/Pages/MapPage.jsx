@@ -381,7 +381,7 @@ export default function MapPage({ navigation: { navigate } }) {
 				</Button>
 				<View style={{ marginTop: 5 }}>
 					{
-						tabValue == "reports" ? <Text style={styles.boldText}> {reports.length} reports in area</Text> : <Text style={styles.boldText}> {sightings.length} sightings in area</Text>
+						tabValue == "reports" ? <Text style={styles.boldText}> {reports.length} report{reports.length == 1 ? '' : 's'} in area</Text> : <Text style={styles.boldText}> {sightings.length} sighting{sightings.length == 1 ? '' : 's'} in area</Text>
 					}
 				</View>		
 			</View>		
