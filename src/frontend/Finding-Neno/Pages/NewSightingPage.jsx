@@ -1,96 +1,41 @@
-import { useNavigation } from '@react-navigation/native';
-import { Box, Center, View, Heading, VStack, useToast, Image, FormControl, Input, Button, Select, Alert, Text, KeyboardAvoidingView, FlatList } from "native-base";
-import { Picker } from '@react-native-picker/picker';
+import { useNavigation, useTheme } from '@react-navigation/native';
+import { Heading, VStack, useToast, FormControl, Input, Select, Text, WarningOutlineIcon } from "native-base";
 import DateTimePickerModal from 'react-native-modal-datetime-picker';
-import * as ImagePicker from 'expo-image-picker';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { Color } from "../components/atomic/Theme";
-import { validDateTime, validateCoordinates } from "./validation"
-import { ActivityIndicator } from 'react-native';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
-import { StyleSheet } from 'react-native';
-
-import { useSelector, useDispatch } from "react-redux";
-import store from "../store/store";
-import marker from '../assets/marker_icon.png';
-
-import { formatDatetime, petTypeOptions } from "./shared";
-import MapAddressSearch from "../components/MapAddressSearch";
+import { Button, Subheading } from 'react-native-paper';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import { useSelector } from "react-redux";
+import { formatDatetime, formatDateTimeDisplay, petTypeOptions } from "./shared";
+import MapAddressSearch from "../components/Shared/MapAddressSearch";
+import ImageHandler from "../components/Shared/ImageHandler";
+import { Dropdown } from 'react-native-element-dropdown';
+import { SafeAreaView, useColorScheme } from 'react-native';
 
 const NewSightingPage = ({ navigation: { navigate } }) => {
     const { API_URL } = useSelector((state) => state.api)
     const { USER_ID, ACCESS_TOKEN } = useSelector((state) => state.user);
 
     const navigation = useNavigation();
+    const scheme = useColorScheme();
+    const { colors } = useTheme();
 
     const [errors, setErrors] = useState({});
-    const [buttonText, setButtonText] = useState("Add sighting")
+    const [buttonText, setButtonText] = useState("Add Sighting")
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
     const [selectedDatetime, setSelectedDatetime] = useState(new Date());
     const [showPicker, setShowPicker] = useState(false);
-    const [image, setImage] = useState(null);
     const toast = useToast();
 
     // default form values
     const [formData, setFormData] = useState({
         breed: '',
         imageUrl: '',
-        dateTime: formatDatetime(selectedDatetime),
-        description: ''
+        dateTime: selectedDatetime,
+        description: '',
     });
     const [sightingImage, setSightingImage] = useState(null);
-    const [isUploading, setIsUploading] = useState(false);
-
-    const handleTakePhoto = async () => {
-        /**
-         * This function is used to take a photo from the user's camera.
-         * It will call the ImagePicker API to open the camera and allow the user to take a photo.
-         * It will then set the petImage state to the taken photo.
-         */
-        const { status } = await ImagePicker.requestCameraPermissionsAsync();
-        if (status === 'granted') {
-            let result = await ImagePicker.launchCameraAsync({
-                allowsEditing: true,
-                aspect: [4, 3],
-                quality: 1,
-                base64: true,
-            });
-            if (!result.canceled) {
-                // Upload to Imgur
-                let base64Img = result.assets[0].base64;
-                uploadImage(base64Img, setSightingImage);
-            }
-        }
-    };
-
-    const handleChoosePhoto = async () => {
-        /**
-         * This function is used to choose a photo from the user's photo library.
-         * It will call the ImagePicker API to open the photo library and allow the user to choose a photo.
-         * It will then set the petImage state to the chosen photo.
-         */
-        const { status } = await ImagePicker.requestMediaLibraryPermissionsAsync();
-        if (status === 'granted') {
-            let result = await ImagePicker.launchImageLibraryAsync({
-                mediaTypes: ImagePicker.MediaTypeOptions.Images,
-                allowsEditing: true,
-                aspect: [4, 3],
-                quality: 1,
-                base64: true,
-            });
-            if (!result.canceled) {
-                if (result.assets[0].uri.startsWith("http")) {
-                    // Image is a URL, so leave it as is
-                    setSightingImage(result.assets[0].uri);
-                } else {
-                    // Image is a local file path, so upload to Imgur
-                    let base64Img = result.assets[0].base64;
-                    uploadImage(base64Img, setSightingImage);
-                }
-            }
-        }
-    };
 
     const validateDetails = (formData) => {
         // Validates details. If details are valid, send formData object to onCreateReportPress.
@@ -115,55 +60,6 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
         return Object.keys(foundErrors).length === 0;
     }
 
-
-    const uploadImage = async (base64Img, setSightingImage) => {
-        setIsButtonDisabled(true);
-        setIsUploading(true);
-        // Uploads an image to Imgur and sets the petImage state to the uploaded image URL
-        // const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae6267a83abd8cc753f9ee819-lq";
-
-        // Set loading image while the chosen image is being uploaded
-        // setSightingImage(LOADING_IMAGE);
-
-        const formData = new FormData();
-        formData.append("image", base64Img);
-
-        await fetch("https://api.imgur.com/3/image", {
-            method: "POST",
-            headers: {
-                "Authorization": "Client-ID 736cd8c6daf1a6e",
-            },
-            body: formData,
-        })
-            .then(res => res.json())
-            .then(res => {
-                if (res.success === true) {
-                    console.log(`Image successfully uploaded: ${res.data.link}}`);
-                    setSightingImage(res.data.link.toString());
-                } else {
-                    toast.show({
-                        description: "Image failed to upload. Please try again.",
-                        placement: "top"
-                    })
-                    console.log("Image failed to upload")
-                    // console.log("Image failed to upload - setting default image");
-                    // setSightingImage(DEFAULT_IMAGE);
-                }
-            })
-            .catch(err => {
-                toast.show({
-                    description: "Image failed to upload. Please try again.",
-                    placement: "top"
-                })
-                console.log("Image failed to upload:", err);
-                // setSightingImage(DEFAULT_IMAGE);
-            });
-
-
-        setIsUploading(false);
-        setIsButtonDisabled(false);
-    }
-
     const onPress = async () => {
         setIsButtonDisabled(true);
         setButtonText("Adding sighting...");
@@ -178,6 +74,7 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                 breed: formData.breed,
                 imageUrl: sightingImage,
                 dateTime: formData.dateTime,
+				dateTimeOfCreation: new Date(),
                 description: formData.description,
 				lastLocation: formData.lastLocation
             }
@@ -196,24 +93,27 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
                 .then((res) => {
                     if (res.status == 201) {
                         toast.show({
+                            title: "Sighting Added",
                             description: "Your sighting has been added!",
-                            placement: "top"
+                            placement: "top",
+                            alignItems: "center"
                         })
-                        navigate('Dashboard Page')
+                        
+                        navigation.goBack();
                     }
                     else {
-                        setButtonText("Add sighting");
+                        setButtonText("Add Sighting");
                         setIsButtonDisabled(false);
                     }
                 })
                 .catch((error) => {
-                    setButtonText("Add sighting");
+                    setButtonText("Add Sighting");
                     setIsButtonDisabled(false);
                     alert(error);
                 });
         }
         else {
-            setButtonText("Add sighting");
+            setButtonText("Add Sighting");
             setIsButtonDisabled(false);
         }
     }
@@ -227,126 +127,79 @@ const NewSightingPage = ({ navigation: { navigate } }) => {
 
     const handleDatetimeConfirm = (datetime) => {
         setSelectedDatetime(datetime);
-        setFormData({ ...formData, dateTime: formatDatetime(datetime) });
+        setFormData({ ...formData, dateTime: datetime });
         closePicker();
     }
 
     const closePicker = () => {
+        console.log(selectedDatetime)
         setShowPicker(false);
     }
 
-
     return (
-        <KeyboardAvoidingView style={{ flex: 1 }} behavior="height">
-            <FlatList
-                data={[{ key: 'form' }]} // Use a single item array as data source
-                renderItem={() => (
-                    <Box flex={1} alignItems="center" justifyContent="center">
-                        <Center w="100%">
-                            <Box safeArea p="2" py="8" w="90%" maxW="290">
-                                <VStack>
-                                    <Heading size="lg" fontWeight="600" color="coolGray.800" _dark={{ color: "warmGray.50", }}>Add a New Sighting</Heading>
+		<KeyboardAwareScrollView contentContainerStyle={{paddingVertical: 50}}>
+			<SafeAreaView style={{ flex: 1, alignItems: 'center', justifyContent: 'center', height: '100%'}}>
+				<VStack width={300} justifyContent='center'>
+                    <Heading size="lg" fontWeight="600" color={colors.primary}>Report a Pet Sighting</Heading>
+                    <Subheading style={{color: colors.text}}>Found a lost pet? Report your sighting here</Subheading>
+                    <Subheading style={{color: colors.text}}>Sighting will automatically expire after 30 days</Subheading>
 
-                                    <VStack space={3} mt="5">
-                                        <FormControl.Label>Photo</FormControl.Label>
-                                        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                                            {
-                                                isUploading ? <ActivityIndicator /> :
-                                                    sightingImage && <Image source={{ uri: sightingImage }} style={{ width: 200, height: 200 }} alt='pet sighting image' />
-                                            }
-                                        </View>
-                                        <Button variant="ghost" onPress={handleChoosePhoto}>
-                                            Choose From Library
-                                        </Button>
-                                        <Button variant="ghost" onPress={handleTakePhoto}>
-                                            Take Photo
-                                        </Button>
+                    <VStack space={3} mt="5"> 
+                        <ImageHandler image={sightingImage} setImage={setSightingImage} setIsButtonDisabled={setIsButtonDisabled} />
 
-                                        <FormControl isInvalid={'animal' in errors}>
-                                            <FormControl.Label>Choose Pet Type</FormControl.Label>
-                                            <Select placeholder="Select a pet type"
-                                                selectedValue={formData.animal}
-                                                onValueChange={(value) => setFormData({ ...formData, animal: value })}>
-                                                <Select.Item label="Select a pet" value="" disabled hidden />
-                                                {petTypeOptions.map((option, index) => (
-                                                    <Select.Item key={index} label={option.label} value={option.value} />
-                                                ))}
-                                            </Select>
-                                            {'animal' in errors && <FormControl.ErrorMessage>{errors.animal}</FormControl.ErrorMessage>}
-                                        </FormControl>
+                        <FormControl isRequired isInvalid={'animal' in errors}>
+                            <FormControl.Label><Text fontWeight={500} color={colors.text}>Pet Type</Text></FormControl.Label>
+							<Dropdown data={petTypeOptions} placeholder='Select a pet type' 
+								style={{ borderWidth: 1, borderColor: 'lightgray', borderRadius: 4}}
+								placeholderStyle={{color: 'darkgray', marginHorizontal: 13}}
+								itemTextStyle={{color: colors.text}}
+								itemContainerStyle={{backgroundColor: colors.background}}
+								containerStyle={{backgroundColor: colors.background}}
+								selectedTextStyle={{color: colors.text, marginHorizontal: 13}}
+                                iconStyle={{marginRight: 10}}
+								activeColor={ scheme === 'dark' ? '#313338' : '#dbdbdb' }
+								onChange={(item) => setFormData({ ...formData, animal: item.value })}
+								labelField='label' valueField='value'
+							/>
+                            {'animal' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.animal}</FormControl.ErrorMessage>}
+                        </FormControl>
 
-                                        <FormControl>
-                                            <FormControl.Label>Breed</FormControl.Label>
-                                            <Input
-                                                placeholder="Pet breed"
-                                                onChangeText={value => setFormData({ ...formData, breed: value })}
-                                            />
-                                        </FormControl>
+                        <FormControl>
+                            <FormControl.Label><Text fontWeight={500} color={colors.text}>Breed</Text></FormControl.Label>
+                            <Input _input={{selectionColor: colors.primary}} size="lg" color={colors.text}
+                                placeholder="Pet breed"
+                                onChangeText={value => setFormData({ ...formData, breed: value.trim() })}
+                            />
+                        </FormControl>
 
-                                        <FormControl>
-                                            <FormControl.Label>Date and Time of Sighting</FormControl.Label>
-                                            <Button onPress={openPicker}>{`${selectedDatetime.toDateString()} ${selectedDatetime.getHours().toString().padStart(2, '0')}:${selectedDatetime.getMinutes().toString().padStart(2, '0')}`}</Button>
-                                            <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" locale="en_GB" maximumDate={new Date()} themeVariant="light" display="inline"
-                                                onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
-                                        </FormControl>
+                        <FormControl isRequired>
+                            <FormControl.Label><Text fontWeight={500} color={colors.text}>Date and Time of Sighting</Text></FormControl.Label>
+                            <Button style={{ borderColor: colors.primary}} textColor={colors.primary} mode="outlined" onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
+                            <DateTimePickerModal date={selectedDatetime} isVisible={showPicker} mode="datetime" maximumDate={new Date()} themeVariant="light" display="inline"
+                                onConfirm={(datetime) => handleDatetimeConfirm(datetime)} onCancel={closePicker} />
+                        </FormControl>
 
-                                        <FormControl>
-                                            <FormControl.Label>Last Known Location</FormControl.Label>
-                                            <MapAddressSearch formData={formData} setFormData={setFormData} />
-                                            {<FormControl.ErrorMessage>No address found.</FormControl.ErrorMessage>}
-                                        </FormControl>
+                        <FormControl>
+                            <FormControl.Label><Text fontWeight={500} color={colors.text}>Last Known Location</Text></FormControl.Label>
+                            <MapAddressSearch formData={formData} setFormData={setFormData} />
+                            {<FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>No address found.</FormControl.ErrorMessage>}
+                        </FormControl>
 
-                                        <FormControl isInvalid={'description' in errors}>
-                                            <FormControl.Label>Description (Additional Info)</FormControl.Label>
-                                            <Input onChangeText={value => setFormData({ ...formData, description: value })} />
-                                            {'description' in errors && <FormControl.ErrorMessage>{errors.description}</FormControl.ErrorMessage>}
-                                        </FormControl>
+                        <FormControl isInvalid={'description' in errors}>
+                            <FormControl.Label><Text fontWeight={500} color={colors.text}>Description</Text></FormControl.Label>
+                            <Input _input={{selectionColor: colors.primary}} multiline={true} size="lg" color={colors.text} placeholder="Additional info" onChangeText={value => setFormData({ ...formData, description: value.trim() })} />
+                            {'description' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.description}</FormControl.ErrorMessage>}
+                        </FormControl>
 
-                                        <Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onPress}>
-                                            {buttonText}
-                                        </Button>
+                        <Button buttonColor={Color.NENO_BLUE} style={{opacity: !isButtonDisabled ? 1 : 0.4}} mode="contained" onPress={!isButtonDisabled ? onPress : () => {}}>
+                            {buttonText}
+                        </Button>
 
-                                    </VStack>
-                                </VStack>
-                            </Box>
-                        </Center>
-                    </Box>
-                )}
-            />
-        </KeyboardAvoidingView>
+                    </VStack>
+                </VStack>
+            </SafeAreaView>
+        </KeyboardAwareScrollView>
     );
-
 }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        justifyContent: 'flex-end',
-        alignItems: 'center'
-    },
-    map: {
-        ...StyleSheet.absoluteFillObject,
-    },
-    text: {
-        fontSize: 20
-    },
-    button: {
-        borderRadius: 20,
-        backgroundColor: 'blue',
-    },
-    markerView: {
-        top: '50%',
-        left: '50%',
-        marginLeft: -24,
-        marginTop: -44,
-        position: 'absolute',
-    },
-    marker: {
-        height: 48,
-        width: 48
-    }
-});
-
-
 
 export default NewSightingPage;

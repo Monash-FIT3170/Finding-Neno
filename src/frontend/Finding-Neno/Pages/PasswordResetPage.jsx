@@ -111,25 +111,25 @@ const PasswordResetPage = () => {
 						<VStack space={3} mt="5">
 
 							<FormControl isInvalid={'resetCode' in errors}>
-								<FormControl.Label>Reset Code</FormControl.Label>
-								<Input onChangeText={value => setFormData({...formData, resetCode: value})} />
-								{'resetCode' in errors && <FormControl.ErrorMessage>{errors.resetCode}</FormControl.ErrorMessage>}
+								<FormControl.Label><Text fontWeight={500} color={colors.text}>Reset Code</Text></FormControl.Label>
+								<Input _input={{selectionColor: colors.primary}} size="lg" onChangeText={value => setFormData({...formData, resetCode: value})} />
+								{'resetCode' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.resetCode}</FormControl.ErrorMessage>}
 							</FormControl>
 
 							<FormControl isInvalid={'password' in errors}>
-								<FormControl.Label>Password</FormControl.Label>
-								<Input type={show ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShow(!show)}> 
+								<FormControl.Label><Text fontWeight={500} color={colors.text}>Password</Text></FormControl.Label>
+								<Input _input={{selectionColor: colors.primary}} size="lg" type={show ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShow(!show)}> 
 								<Icon as={<MaterialIcons name={show ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
 								</Pressable>} onChangeText={value => setFormData({...formData, password: value})} />
-								{'password' in errors && <FormControl.ErrorMessage>{errors.password}</FormControl.ErrorMessage>}
+								{'password' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.password}</FormControl.ErrorMessage>}
 							</FormControl>
 
 							<FormControl isInvalid={'confirmPassword' in errors}>
-								<FormControl.Label>Confirm Password</FormControl.Label>
-								<Input type={showConfirm ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowConfirm(!showConfirm)}> 
+								<FormControl.Label><Text fontWeight={500} color={colors.text}>Confirm Password</Text></FormControl.Label>
+								<Input _input={{selectionColor: colors.primary}} size="lg" type={showConfirm ? "text" : "password"} InputRightElement={<Pressable onPress={() => setShowConfirm(!showConfirm)}> 
 								<Icon as={<MaterialIcons name={showConfirm ? "visibility" : "visibility-off"} />} size={5} mr="2" color="muted.400" />
 								</Pressable>} onChangeText={value => setFormData({...formData, confirmPassword: value})} />
-								{'confirmPassword' in errors && <FormControl.ErrorMessage>{errors.confirmPassword}</FormControl.ErrorMessage>}
+								{'confirmPassword' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.confirmPassword}</FormControl.ErrorMessage>}
 							</FormControl>
 
 							<Button mt="2" bgColor={Color.NENO_BLUE} disabled={isButtonDisabled} opacity={!isButtonDisabled ? 1 : 0.6} onPress={onPasswordResetPress}>

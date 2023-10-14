@@ -68,7 +68,7 @@ class TestDatabaseFunctions(unittest.TestCase):
         result = check_user_login_details(mock_conn, 'test@example.com', 'password')  # use 'password' here
 
         # Check that the cursor's execute method was called with the right parameters
-        query = """SELECT * FROM users WHERE email_address = %s"""
+        query = """SELECT * FROM users WHERE email_address = %s;"""
         mock_cursor.execute.assert_called_once_with(query, 'test@example.com')  # Expect a tuple instead of a string
 
         # Check that the result is True
