@@ -605,10 +605,10 @@ def filter_missing_reports_from_database(connection: psycopg2.extensions.connect
             
             # Haversine formula: https://stackoverflow.com/a/57136609
             query += """                    
-                        acos(
+                        , (acos(
                             sin(radians(%s)) * sin(radians(mr.location_latitude)) 
                             + cos(radians(%s)) * cos(radians(mr.location_latitude)) * cos(radians(%s) - radians(mr.location_longitude))
-                        ) * 6371 AS distance
+                        ) * 6371) AS distance
                     """
 
             params.extend([latitude, latitude, longitude])
@@ -877,14 +877,14 @@ def filter_sightings_from_database(connection: psycopg2.extensions.connection, f
     if filters.get("location"):    
         longitude = filters["location"]["longitude"]
         latitude = filters["location"]["latitude"] 
-
+        print(latitude, " ", longitude)
         if longitude != None and latitude != None:
             # Haversine formula: https://stackoverflow.com/a/57136609
             query += """                    
-                        acos(
+                        , (acos(
                             sin(radians(%s)) * sin(radians(s.location_latitude)) 
                             + cos(radians(%s)) * cos(radians(s.location_latitude)) * cos(radians(%s) - radians(s.location_longitude))
-                        ) * 6371 AS distance
+                        ) * 6371) AS distance
                     """
 
             params.extend([latitude, latitude, longitude])

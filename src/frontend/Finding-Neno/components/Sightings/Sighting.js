@@ -36,6 +36,8 @@ const Sighting = ({ userId, sighting, refresh }) => {
   const sightingPhoneNumber = sighting[13];
   const savedByUser = sighting[14];
   const petName = sighting[15];
+  const distance = sighting[17] != null ? Math.round(parseFloat(sighting[17] * 100)) / 100 : null;
+  console.log(sighting)
 
   const [enlargeImage, setEnlargeImage] = useState(false);
   const [smallImageLoading, setSmallImageLoading] = useState(false);
@@ -127,6 +129,18 @@ const Sighting = ({ userId, sighting, refresh }) => {
               <Text color={colors.text}>{sightingBreed}</Text>
             </VStack>
           }
+          
+          {
+        distance != null &&
+        <VStack>
+          <Heading color={colors.text} size="sm" paddingLeft={5} paddingTop={2}>
+            Distance
+          </Heading>
+          <Text color={colors.text} paddingLeft={5}>
+            {distance} km
+          </Text>
+        </VStack>
+      }
         </HStack>
 
         <View >
@@ -185,6 +199,18 @@ const Sighting = ({ userId, sighting, refresh }) => {
                 <VStack width='50%' marginX={2}>
                   <Heading color={colors.text} size="sm">Breed</Heading>
                   <Text color={colors.text}>{sightingBreed}</Text>
+                </VStack>
+              }
+            
+              {
+                distance != null &&
+                <VStack>
+                  <Heading color={colors.text} size="sm" paddingLeft={5} paddingTop={2}>
+                    Distance
+                  </Heading>
+                  <Text color={colors.text} paddingLeft={5}>
+                    {distance} km
+                  </Text>
                 </VStack>
               }
             </HStack>

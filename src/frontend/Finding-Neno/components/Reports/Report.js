@@ -30,6 +30,8 @@ const Report = ({ report, userId }) => {
     const petSpecies = report[8][0].toUpperCase() +report[8].substring(1);
     const petBreed = report[9].split(' ').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
     const petImage = report[10];
+    const distance = report[15] != null ? Math.round(parseFloat(report[15] * 100)) / 100 : null;
+
 
     const [showModal, setShowModal] = useState(false);
     const [suburb, setSuburb] = useState("");
@@ -116,6 +118,18 @@ const Report = ({ report, userId }) => {
                                     <Heading color={colors.text} size="sm">Breed</Heading>
                                     <Text color={colors.text}>{petBreed}</Text>
                                 </VStack>
+                                
+                                {
+                                    distance != null &&
+                                    <VStack>
+                                        <Heading color={colors.text} size="sm" paddingLeft={5} paddingTop={2}>
+                                            Distance
+                                        </Heading>
+                                        <Text color={colors.text} paddingLeft={5}>
+                                            {distance} km
+                                        </Text>
+                                    </VStack>
+                                }
                             </HStack>
 
                             <View >

@@ -38,14 +38,12 @@ const DashboardPage = () => {
 	const [sightingFilters, setSightingFilters] = useState({
 		pet_type: [],
 		pet_breed: [],
-		location: { latitude: null, longitude: null, radius: null },
+		location: { latitude: -37.8136, longitude: 144.9631, radius: 50 },
 		author_id: null,
 		sort_order: "DESC",
 		expiry_time: 30,
 	});
 	const [allSightings, setAllSightings] = useState([]);
-	const [sightingData, setSightingData] = useState({ authorId: USER_ID });
-	const [sightingImage, setSightingImage] = useState(null);
 	const [initialReportsLoaded, setInitialReportsLoaded] = useState(false);
 	const [initialSightingsLoaded, setInitialSightingsLoaded] = useState(false);
 	const [reloadPage, setReloadPage] = useState(false);
