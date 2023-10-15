@@ -602,13 +602,16 @@ def filter_missing_reports_from_database(connection: psycopg2.extensions.connect
         latitude = filters["location"]["latitude"]
         
         if longitude != None and latitude != None:
+            
+            # Haversine formula: https://stackoverflow.com/a/57136609
             query += """                    
-                        , ST_Distance(
-                                ST_GeogFromText('Point(%s %s)'),
-                                ST_GeogFromText(CONCAT('Point(', mr.location_longitude,' ', mr.location_latitude, ')'))
-                            ) / 1000 AS distance
+                        acos(
+                            sin(radians(%s)) * sin(radians(mr.location_latitude)) 
+                            + cos(radians(%s)) * cos(radians(mr.location_latitude)) * cos(radians(%s) - radians(mr.location_longitude))
+                        ) * 6371 AS distance
                     """
-            params.extend([longitude, latitude])
+
+            params.extend([latitude, latitude, longitude])
             distance_filter = True
         
     # Continue building query
@@ -876,13 +879,15 @@ def filter_sightings_from_database(connection: psycopg2.extensions.connection, f
         latitude = filters["location"]["latitude"] 
 
         if longitude != None and latitude != None:
+            # Haversine formula: https://stackoverflow.com/a/57136609
             query += """                    
-                        , ST_Distance(
-                                ST_GeogFromText('Point(%s %s)'),
-                                ST_GeogFromText(CONCAT('Point(', s.location_longitude,' ', s.location_latitude, ')'))
-                            ) / 1000 AS distance
+                        acos(
+                            sin(radians(%s)) * sin(s.radians(location_latitude)) 
+                            + cos(radians(%s)) * cos(s.radians(location_latitude)) * cos(radians(%s) - radians(s.location_longitude))
+                        ) * 6371 AS distance
                     """
-            params.extend([longitude, latitude])
+
+            params.extend([latitude, latitude, longitude])
             distance_filter = True
                     
     # Continue building query
