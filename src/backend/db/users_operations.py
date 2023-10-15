@@ -882,8 +882,8 @@ def filter_sightings_from_database(connection: psycopg2.extensions.connection, f
             # Haversine formula: https://stackoverflow.com/a/57136609
             query += """                    
                         acos(
-                            sin(radians(%s)) * sin(s.radians(location_latitude)) 
-                            + cos(radians(%s)) * cos(s.radians(location_latitude)) * cos(radians(%s) - radians(s.location_longitude))
+                            sin(radians(%s)) * sin(radians(s.location_latitude)) 
+                            + cos(radians(%s)) * cos(radians(s.location_latitude)) * cos(radians(%s) - radians(s.location_longitude))
                         ) * 6371 AS distance
                     """
 
