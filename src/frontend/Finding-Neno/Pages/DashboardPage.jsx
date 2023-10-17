@@ -4,7 +4,7 @@ import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView } from 'rea
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton } from 'react-native-paper';
+import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton, Button } from 'react-native-paper';
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import { useSelector } from "react-redux";
@@ -28,6 +28,7 @@ const DashboardPage = () => {
 	// const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
 	const [sightingImage, setSightingImage] = useState(null);
 	const [reportFilters, setReportFilters] = useState({
+		query: "",
 		pet_type: [],
 		pet_breed: [],
 		location: { latitude: null, longitude: null, radius: null },
@@ -36,6 +37,7 @@ const DashboardPage = () => {
 		sort_order: "DESC",
 	});
 	const [sightingFilters, setSightingFilters] = useState({
+		query: "",
 		pet_type: [],
 		pet_breed: [],
 		location: { latitude: -37.8136, longitude: 144.9631, radius: 50 },
@@ -162,9 +164,9 @@ const DashboardPage = () => {
 					renderScene={({ route }) => {
 						switch (route.key) {
 							case 'reports':
-								return <ReportsList reports={reports} onRefresh={onRefresh} columns={1} userId={USER_ID} />;
+								return <ReportsList reports={reports} onRefresh={onRefresh} columns={1} userId={USER_ID} colors={colors} />;
 							case 'sightings':
-								return <SightingsList sightings={allSightings} onRefresh={onRefresh} emptyText={"There are no reported sightings."} />;
+								return <SightingsList sightings={allSightings} onRefresh={onRefresh} emptyText={"There are no reported sightings."} colors={colors} setFilters={setSightingFilters} />;
 							default:
 								return null; // TODO: make a view that says "no reports/sightings yet" etc for when theres nothing on the app yet ?
 						}
@@ -172,6 +174,7 @@ const DashboardPage = () => {
 					onIndexChange={setIndex}
 					initialLayout={{ width: WINDOW_WIDTH }}
 				/>
+
 				<Portal>
 					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, bottom: -33 }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
 						actions={[
