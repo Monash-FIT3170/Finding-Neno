@@ -105,8 +105,6 @@ the “frontend-build” job in the GitHub Actions section of the repository.
 
 Versioning follows the Semantic Versioning 2.0 (https://semver.org)
 
-Current version is v1.0.0
-
 ## How to submit a Pull Request
 
 ### Title: 
