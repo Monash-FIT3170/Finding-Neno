@@ -72,7 +72,7 @@ export default function App() {
 		<NativeBaseProvider>
 			<Provider store={store}>
 				<NavigationContainer theme={scheme === 'dark' ? FindingNenoDarkTheme : FindingNenoLightTheme}>
-					<StatusBar style='auto' backgroundColor='transparent' translucent />
+					<StatusBar style='auto'/>
 					<MainNavigator />
 				</NavigationContainer>
 			</Provider>

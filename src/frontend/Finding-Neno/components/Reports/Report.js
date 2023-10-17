@@ -53,7 +53,7 @@ const Report = ({ report, userId }) => {
     }, [petName]);
 
     const message = 
-    `Have you seen this missing pet? \n\nName: ${petName} \nSpecies: ${petSpecies} \nBreed: ${petBreed} \nLast seen ${lastSeen} around ${suburb} \nPet Image: ${petImage} ${reportDesc ? "Additional description: " + reportDesc : ""} \n\nIf you have seen this pet, please report your sighting on the Finding Neno app.`
+    `Have you seen this missing pet? \n\nName: ${petName} \nSpecies: ${petSpecies} \nBreed: ${petBreed} \nLast seen ${lastSeen} around ${suburb} \nPet Image: ${petImage} ${reportDesc ? "\nAdditional description: " + reportDesc : ""} \n\nIf you have seen this pet, please report your sighting on the Finding Neno app.`
 
     const closeImageModal = () => {
         setEnlargeImage(false);

@@ -154,7 +154,7 @@ const DashboardPage = () => {
 					initialLayout={{ width: WINDOW_WIDTH }}
 				/>
 				<Portal>
-					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, bottom: -33 }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
+					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
 						actions={[
 							{ icon: 'file-document', label: 'New Missing Report', onPress: () => navigation.navigate('Dashboard', { screen: 'New Missing Report' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
 							{ icon: 'magnify', label: 'New Sighting', onPress: () => navigation.navigate('Dashboard', { screen: 'New Sighting' }), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },

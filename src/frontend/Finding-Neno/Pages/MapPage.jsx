@@ -381,12 +381,12 @@ export default function MapPage({ navigation: { navigate } }) {
 				</Button>
 				<View style={{ marginTop: 5 }}>
 					{
-						tabValue == "reports" ? <Text style={styles.boldText}> {reports.length} reports in area</Text> : <Text style={styles.boldText}> {sightings.length} sightings in area</Text>
+						tabValue == "reports" ? <Text style={styles.boldText}> {reports.length} report{reports.length == 1 ? '' : 's'} in area</Text> : <Text style={styles.boldText}> {sightings.length} sighting{sightings.length == 1 ? '' : 's'} in area</Text>
 					}
 				</View>		
 			</View>		
 			<Portal>
-				<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE, bottom: -33 }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
+				<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
 					actions={[
 						{ icon: 'file-document', label: 'New Missing Report', onPress: () => navigate('New Missing Report'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },
 						{ icon: 'magnify', label: 'New Sighting', onPress: () => navigate('New Sighting'), color: Color.NENO_BLUE, style: { backgroundColor: Color.FAINT_NENO_BLUE } },

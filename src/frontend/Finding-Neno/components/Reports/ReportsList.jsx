@@ -20,7 +20,7 @@ function ReportsList({reports, onRefresh, columns, userId}) {
             onRefresh={onListRefresh}
             refreshing={refreshing}
             ListEmptyComponent={<Text style={{ paddingTop: 30, fontSize: 15, fontWeight: '700', alignSelf: 'center'}}>There are no reports of missing pets.</Text>}
-            ListFooterComponent={<Text style={{ paddingTop: 30, fontSize: 15, fontWeight: '700', alignSelf: 'center'}}>Last updated {formatDateTimeDisplay(new Date())}</Text>}
+            ListFooterComponent={<Text style={{ paddingVertical: 30, fontSize: 15, fontWeight: '700', alignSelf: 'center'}}>Last updated {formatDateTimeDisplay(new Date())}</Text>}
         />
     )
 }
