@@ -22,14 +22,24 @@ Detailed documentation can be found in the team's [Google Drive](https://drive.g
 ### Software Requirements and Dependencies
 
 * Python (including pip)
-* Node: https://nodejs.org/en/download
-* Expo CLI
+* Node v10.2.0: https://nodejs.org/en/download
+* Expo CLI SDK 49
   ```
   npm install -g expo-cli
   ```
 * Expo Go on your phone: https://expo.dev/client
 * PostgreSQL: https://www.postgresql.org/download/ (add a new server once installed)
 * TablePlus (optional, used to visualise database): https://tableplus.com/  (Create a connection to the database using the details of the PostgreSQL server created in the previous step)
+* React v18.2.0
+* CORS v3.0.10: look at Configuration
+* Flask v2.2.3: look at Configuration
+* GUnicorn v20.0.4: look at Configuration
+* psycopg2 v2.9.5: look at Configuration
+* pytest v7.2.2: look at Configuration
+* pytest-mock v3.11.1: look at Configuration
+* python-dotenv v1.0.0: look at Configuration
+* geopy v2.4.0: look at Configuration
+* requests v2.31.0: look at Configuration
 
 ### Installation
 Clone the repo
@@ -63,7 +73,7 @@ Set up the database structure:
   python3 src/backend/db/setup_db.py .env
   ```
 
-## Running the app 
+## Running the app (Locally)
 1. Start the server via pgAdmin
 2. Run the following command from the root directory: 
   ```
@@ -76,7 +86,47 @@ Set up the database structure:
   npm start
   ```
 
-4. Scan the QR code to start using Finding Neno!
+4. Scan the QR code
+5. Select "Expo Go" to start using Finding Neno!
+
+## Deployment (Discontinued in December 2023)
+<b>IMPORTANT</b>: As of December 2023, the Heroku setup used for deployment
+will be discontinued due to costs.
+
+The front-end is bundled into an Android build using Expo Application Services (EAS). This build connects to the deployed
+back-end on Heroku and can be downloaded on Android devices with a recent Android version.
+
+The back-end is re-deployed and the front-end is re-bundled for every push to the main branch in the repository through 
+a CI/CD pipeline. In order to find a link to a downloadable Android build, see the “Build preview application” stage in 
+the “frontend-build” job in the GitHub Actions section of the repository.
+
+
+## Versioning
+
+Versioning follows the Semantic Versioning 2.0 (https://semver.org)
+
+## How to submit a Pull Request
+
+### Title: 
+For user story branches: the title of the pull request should be in the form of “Implement user story <user story 
+number>: <concise rewording of user story>”, e.g. “Implement user story 5: pet sighting reports“.
+
+If the branch is not for a user story, e.g. task, bug fixing, use the form of “<action> <object>”, e.g. “Fix API 
+deployment”, “Implement task notifications api call in backend”
+
+### Description:
+The description should describe the related user story, if applicable. The description should then document all the 
+changes made in that branch.
+
+### Review Process:
+The PR will then be reviewed in due time.
+
+If the code is ready to be merged, it will be merged by the maintainers of this repository.
+If not, the maintainers will leave comments on the PR. You will be required to reply to the comments with the changes
+made if you address these comments. If you disagree with the reviewer’s comment, you can justify your decisions in a 
+reply to the comment. The maintainers will then review your new work.
+
+
 
 ## Notes and Common Issues
 * Network error:
