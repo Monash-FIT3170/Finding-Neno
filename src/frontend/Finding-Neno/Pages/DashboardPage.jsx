@@ -4,7 +4,7 @@ import { ActivityIndicator, Dimensions, RefreshControl, SafeAreaView } from 'rea
 import { Color } from "../components/atomic/Theme";
 import { useEffect, useState } from 'react';
 import { useIsFocused } from '@react-navigation/native';
-import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton } from 'react-native-paper';
+import { Appbar, FAB, Provider, Portal, SegmentedButtons, ToggleButton, Button } from 'react-native-paper';
 import { TabBar, TabView } from 'react-native-tab-view';
 
 import { useSelector } from "react-redux";
@@ -22,10 +22,30 @@ const DashboardPage = () => {
 	const isFocused = useIsFocused();
 	const { colors } = useTheme();
 
+	// TODO: change report structure to be an array of dictionaries? Refer to mock data that is commented out for desired structure
 	const [reports, setReports] = useState([]);
-	const [allSightings, setAllSightings] = useState([]);
 	const [sightingData, setSightingData] = useState({ authorId: USER_ID });
+	// const DEFAULT_IMAGE = "https://qph.cf2.quoracdn.net/main-qimg-46470f9ae627a83abd8cc753f9ee819-lq";
 	const [sightingImage, setSightingImage] = useState(null);
+	const [reportFilters, setReportFilters] = useState({
+		query: "",
+		pet_type: [],
+		pet_breed: [],
+		location: { latitude: null, longitude: null, radius: null },
+		author_id: null,
+		is_active: null,
+		sort_order: "DESC",
+	});
+	const [sightingFilters, setSightingFilters] = useState({
+		query: "",
+		pet_type: [],
+		pet_breed: [],
+		location: { latitude: -37.8136, longitude: 144.9631, radius: 50 },
+		author_id: null,
+		sort_order: "DESC",
+		expiry_time: 30,
+	});
+	const [allSightings, setAllSightings] = useState([]);
 	const [initialReportsLoaded, setInitialReportsLoaded] = useState(false);
 	const [initialSightingsLoaded, setInitialSightingsLoaded] = useState(false);
 	const [reloadPage, setReloadPage] = useState(false);
@@ -61,14 +81,15 @@ const DashboardPage = () => {
 	// API calls 
 	const fetchAllReports = async () => {
 		try {
-			const url = `${API_URL}/get_missing_reports`;
+			const url = `${API_URL}/filter_missing_reports`;
 			const response = await fetch(url, {
-				method: "GET",
+				method: "POST",
 				headers: {
 					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${ACCESS_TOKEN}`,
 					'User-ID': USER_ID,
 				},
+				body: JSON.stringify(reportFilters),
 			});
 
 			if (!response.ok) {
@@ -84,18 +105,18 @@ const DashboardPage = () => {
 		}
 	};
 
-  const fetchAllSightings = async () => {
-    try {
-      // Retrieve sightings that are less than 30 days old
-      const expiryTime = 30;
-			const url = `${API_URL}/get_sightings?expiry_time=${expiryTime}`;
+	const fetchAllSightings = async () => {
+		try {
+			// Retrieve sightings that are less than 30 days old
+			const url = `${API_URL}/filter_sightings`;
 			const response = await fetch(url, {
-				method: "GET",
+				method: "POST",
 				headers: {
 					'Content-Type': 'application/json',
 					'Authorization': `Bearer ${ACCESS_TOKEN}`,
 					'User-ID': USER_ID,
 				},
+				body: JSON.stringify(sightingFilters),
 			});
 
 			if (!response.ok) {
@@ -109,12 +130,12 @@ const DashboardPage = () => {
 				// filters out sightings that are linked to reports where is_active == False i.e pet has been found
 				// setSightingCards(generateSightingCards(data[0]));
 			});
-			
+
 		} catch (error) {
 			console.error(error);
 		}
 	};
-	
+
 	// image_url is not being set properly without this useEffect - should probs find a more robust way to fix it later 
 	useEffect(() => {
 		setSightingData({ ...sightingData, image_url: sightingImage })
@@ -143,9 +164,9 @@ const DashboardPage = () => {
 					renderScene={({ route }) => {
 						switch (route.key) {
 							case 'reports':
-								return <ReportsList reports={reports} onRefresh={onRefresh} columns={1} userId={USER_ID} />;
+								return <ReportsList reports={reports} onRefresh={onRefresh} columns={1} userId={USER_ID} colors={colors} />;
 							case 'sightings':
-								return <SightingsList sightings={allSightings} onRefresh={onRefresh} emptyText={"There are no reported sightings."} />;
+								return <SightingsList sightings={allSightings} onRefresh={onRefresh} emptyText={"There are no reported sightings."} colors={colors} setFilters={setSightingFilters} />;
 							default:
 								return null; // TODO: make a view that says "no reports/sightings yet" etc for when theres nothing on the app yet ?
 						}
@@ -153,6 +174,7 @@ const DashboardPage = () => {
 					onIndexChange={setIndex}
 					initialLayout={{ width: WINDOW_WIDTH }}
 				/>
+
 				<Portal>
 					<FAB.Group color='white' fabStyle={{ backgroundColor: Color.LIGHTER_NENO_BLUE }} icon={open ? "close" : "plus"} open={open} visible onStateChange={onStateChange}
 						actions={[

@@ -166,7 +166,7 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 
 				outcome = data[0]
 
-				if (outcome === null) {
+				if (outcome.length === 0) {
 					console.log('Pet Report doesnt exist');
 					return false;
 				} else {

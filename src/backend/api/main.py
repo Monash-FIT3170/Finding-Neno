@@ -212,6 +212,43 @@ def get_missing_reports():
     author_id = request.args.get("author_id")
     return jsonify(retrieve_missing_reports(g.db, author_id))
 
+@app.route("/filter_missing_reports", methods=["POST"])
+def get_filtered_missing_reports():
+    """
+    Returns an array of filtered missing reports by pet type, pet breed, and/or proximity to a location.
+
+    [
+        missing_report_id, date_time (last seen), description (additional info), location_longitude, location_latitude,
+        pet_id, pet_name, pet_animal, pet_breed, image_url,
+        owner_id, owner_name, owner_email, owner_phone_number,
+        author_id, distance (distance from location)
+    ]
+    """
+    reports = filter_missing_reports(g.db)
+    return jsonify(reports)
+
+@app.route("/filter_sightings", methods=["POST"])
+def get_filtered_sightings():
+    """
+    Returns an array of filtered sightings by pet type, pet breed, and/or proximity to a location.
+
+    [
+        sighting_id, missing_report_id, author_id (author of sighting), date_time (date time sighting was made), 
+        location_longitude, location_latitude, image_url, description, author's name, author's email, author's phone number,
+        distance (distance from location)
+    ]
+    """
+    sightings = filter_sightings(g.db)
+    return jsonify(sightings)
+
+@app.route("/get_reports_by_pet", methods=["GET"])
+def get_reports_by_pet():
+    """
+    Returns an array of missing reports for a specific pet_id, sorted by latest to oldest.
+    """
+    pet_id = request.args.get("pet_id")
+    return jsonify(retrieve_reports_by_pet(g.db, pet_id))  # Updated function name
+
 
 @app.route("/get_sightings", methods=["GET"])
 def get_sightings():
@@ -272,15 +309,6 @@ def get_my_report_sightings():
     ]
     """
     return jsonify(retrieve_my_report_sightings(g.db))
-
-@app.route("/get_reports_by_pet", methods=["GET"])
-def get_reports_by_pet():
-    """
-    Returns an array of missing reports for a specific pet_id, sorted by latest to oldest.
-    """
-    pet_id = request.args.get("pet_id")
-    return jsonify(retrieve_reports_by_pet(g.db, pet_id))  # Updated function name
-
 
 @app.route("/update_missing_report", methods=["PUT"])
 def put_update_missing_report():

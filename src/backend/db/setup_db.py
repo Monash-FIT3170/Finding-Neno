@@ -37,10 +37,10 @@ def create_tables(connection: psycopg2.extensions.connection):
 
     queries = [
         # Create users table
-        """CREATE TABLE "users" (id SERIAL PRIMARY KEY, email_address VARCHAR(255) UNIQUE NOT NULL, phone_number VARCHAR(
+        """CREATE TABLE "users" (id SERIAL PRIMARY KEY, email_address VARCHAR(255) NOT NULL, phone_number VARCHAR(
         255), name VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL, salt VARCHAR(255), access_token VARCHAR(255) NOT NULL);""",
         # Create user settings table
-        """CREATE TABLE "user_settings" (user_id INTEGER PRIMARY KEY REFERENCES "users"(id), location_notifications_enabled BOOLEAN NOT NULL, location_longitude FLOAT, location_latitude FLOAT, location_notification_radius FLOAT, possible_sighting_notifications_enabled BOOLEAN NOT NULL);""",
+        """CREATE TABLE "user_settings" (user_id INTEGER PRIMARY KEY REFERENCES "users"(id));""",
         # Create pets table
         """CREATE TABLE "pets" (id SERIAL PRIMARY KEY, name VARCHAR(255), animal VARCHAR(255), breed VARCHAR(255), 
         description VARCHAR(255), image_url VARCHAR(1000), isMissing BOOLEAN DEFAULT FALSE,  owner_id INTEGER REFERENCES "users"(id));""",
@@ -52,6 +52,16 @@ def create_tables(connection: psycopg2.extensions.connection):
         """CREATE TABLE "sightings" (id SERIAL PRIMARY KEY, missing_report_id INTEGER REFERENCES missing_reports(id), 
         author_id INTEGER REFERENCES "users"(id), date_time_of_creation TIMESTAMP DEFAULT CURRENT_TIMESTAMP, animal VARCHAR(255), breed VARCHAR(255), date_time TIMESTAMP NOT NULL, location_longitude FLOAT, 
         location_latitude FLOAT, location_string VARCHAR(255), image_url VARCHAR(255), description VARCHAR(255));""",
+        # Create notification_type ENUM
+        # TODO: add more notification types?
+        """CREATE TYPE "notification_type" AS ENUM ('sighting', 'missing_report');""",
+        # Create notification_logs table
+        """CREATE TABLE "notification_logs" (id SERIAL PRIMARY KEY, type notification_type NOT NULL, sighting_id 
+        INTEGER REFERENCES "sightings"(id), missing_report_id INTEGER REFERENCES "missing_reports"(id), 
+        message VARCHAR(255), date_time TIMESTAMP NOT NULL);""",
+        # Create users_notification_logs table
+        """CREATE TABLE "users_notification_logs" (user_id INTEGER REFERENCES "users"(id), notification_id INTEGER 
+        REFERENCES "notification_logs"(id));""",
         # Create users_saved_sightings
         """CREATE TABLE "users_saved_sightings" (saved_id SERIAL PRIMARY KEY, user_id INTEGER REFERENCES "users"(id),
         sighting_id INTEGER REFERENCES "sightings"(id));""",
@@ -76,17 +86,23 @@ def drop_tables(connection: psycopg2.extensions.connection):
 
     queries = [
         # Drop users_saved_sightings table
-        """DROP TABLE IF EXISTS users_saved_sightings CASCADE;""",
+        """DROP TABLE IF EXISTS users_saved_sightings;""",
+        # Drop users_notification_logs table
+        """DROP TABLE IF EXISTS users_notification_logs;""",
+        # Drop notification_logs table
+        """DROP TABLE IF EXISTS notification_logs;""",
+        # Drop notification_type ENUM
+        """DROP TYPE IF EXISTS notification_type;""",
         # Drop sightings table
-        """DROP TABLE IF EXISTS sightings CASCADE;""",
+        """DROP TABLE IF EXISTS sightings;""",
         # Drop missing_reports table
-        """DROP TABLE IF EXISTS missing_reports CASCADE;""",
+        """DROP TABLE IF EXISTS missing_reports;""",
         # Drop pets table
-        """DROP TABLE IF EXISTS pets CASCADE;""",
+        """DROP TABLE IF EXISTS pets;""",
         # Drop user_settings table
-        """DROP TABLE IF EXISTS user_settings CASCADE;""",
+        """DROP TABLE IF EXISTS user_settings;""",
         # Drop users table
-        """DROP TABLE IF EXISTS users CASCADE;""",
+        """DROP TABLE IF EXISTS users;""",
     ]
 
     for query in queries:
@@ -98,7 +114,6 @@ def drop_tables(connection: psycopg2.extensions.connection):
 
     connection.commit()
     cur.close()
-
 
 if __name__ == "__main__":
     # Get environment file path from command line arguments
