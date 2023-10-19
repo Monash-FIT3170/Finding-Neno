@@ -104,7 +104,7 @@ const NewPetPage = ({ navigation: { navigate }, route }) => {
 							placement: "top",
 							alignItems: "center"
 						})
-						navigate('Profile Page')
+						navigation.goBack();
 					}
 					else {
 						setButtonText("Add Pet")
