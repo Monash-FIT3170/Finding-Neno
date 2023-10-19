@@ -1,8 +1,9 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { ActivityIndicator, Animated, TouchableHighlight, View } from 'react-native'
+import { ActivityIndicator, Animated, TouchableHighlight, View, Linking } from 'react-native'
 import { Dimensions } from 'react-native';
-import { Box, HStack, Heading, Image, VStack, Text, Button } from 'native-base';
-import { Ionicons } from '@expo/vector-icons';
+import { Box, HStack, Heading, Image, VStack, Text, Icon } from 'native-base';
+import { Button } from "react-native-paper";
+import { Ionicons, MaterialIcons } from '@expo/vector-icons';
 import { useSelector } from "react-redux";
 import { useIsFocused, useTheme } from '@react-navigation/native';
 import { formatDateTimeDisplay } from '../../Pages/shared';
@@ -170,7 +171,7 @@ const Sighting = ({ userId, sighting, refresh }) => {
 
           <VStack>
             <HStack marginTop='2%' justifyContent='space-between'>
-              <VStack> 
+              <VStack>
                 <Heading color={colors.text} size="sm">Species</Heading>
                 {
                   sightingAnimal == 'Other' ?
@@ -206,6 +207,19 @@ const Sighting = ({ userId, sighting, refresh }) => {
     </View>
   )
 
+  const openPhoneApp = () => {
+    let phoneUrl = `tel:${sightingPhoneNumber}`
+    Linking.canOpenURL(phoneUrl)
+      .then(supported => {
+        if (!supported) {
+          console.log('Phone number is not available');
+        } else {
+          return Linking.openURL(phoneUrl);
+        }
+      })
+      .catch(err => console.log(err));
+  };
+
 
   return (
     <Animated.View style={{ backgroundColor: colors.cardColor, opacity: fadeAnim, borderBottomWidth: 6, borderColor: colors.border}}>
@@ -216,9 +230,14 @@ const Sighting = ({ userId, sighting, refresh }) => {
           sightingImage ? sightingWithImage : imagelessSighting
         }
 
-        <View style={{ maxWidth: '100%', marginTop: '4%', marginBottom: '3%' }}>
-          <ShareButton title={"Pet Sighting - Finding Neno"} message={message} textColor={colors.background} dialogTitle={"Share this pet sighting"} width={'100%'}/>
+        <View style={{ maxWidth: '100%', marginTop: '4%', marginBottom: '3%', flexDirection: "row", justifyContent: 'space-between' }}>
+          <ShareButton title={"Pet Sighting - Finding Neno"} message={message} textColor={colors.background} dialogTitle={"Share this pet sighting"} width={'78%'}/>
+
+          <Button style={{ width: '20%', borderRadius:10 }} buttonColor={Color.LIGHTER_NENO_BLUE} compact={true}  onPress={openPhoneApp}>
+            <Icon as={<MaterialIcons name="call" />} size={6} color="white" />
+          </Button>
         </View>
+
         <Ionicons name={savedByUser == USER_ID ? "bookmark" : "bookmark-outline"} size={24} style={{ padding: 3, position: "absolute", top: 0, right: 0, color: colors.text}} onPress={handlePressSaveBtn} />
       </View>
     </Animated.View>
