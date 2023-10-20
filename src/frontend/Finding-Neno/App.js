@@ -208,6 +208,7 @@ function DashboardStackNavigator() {
 			<Stack.Screen name="Dashboard Page" component={DashboardPage} options={{ title: "Dashboard", headerShown: false, }}/>
 			<Stack.Screen name="New Missing Report" component={NewReportPage} options={{ title: "" }}/>
 			<Stack.Screen name="New Sighting" component={NewSightingPage} options={{ title: "" }}/>
+			<Stack.Screen name="New Pet" component={NewPetPage} options={{ title: "" }} />
 		</Stack.Navigator>
 	)
 }
@@ -218,6 +219,7 @@ function MapStackNavigator() {
 			<Stack.Screen name="Map Page" component={MapPage} options={{ title: "Map", headerShown: false, }} />
 			<Stack.Screen name="New Missing Report" component={NewReportPage} options={{ title: "" }}/>
 			<Stack.Screen name="New Sighting" component={NewSightingPage} options={{ title: "" }}/>
+			<Stack.Screen name="New Pet" component={NewPetPage} options={{ title: "" }} />
 		</Stack.Navigator>
 	)
 }
@@ -228,6 +230,7 @@ function ReportStackNavigator() {
 			<Stack.Screen name="Reports Page" component={ReportsPage} options={{ title: "My Reports", headerShown: false, }} />
 			<Stack.Screen name="New Missing Report" component={NewReportPage} options={{ title: "" }}/>
 			<Stack.Screen name="New Sighting" component={NewSightingPage} options={{ title: "" }}/>
+			<Stack.Screen name="New Pet" component={NewPetPage} options={{ title: "" }} />
 		</Stack.Navigator>
 	)
 }
@@ -238,6 +241,7 @@ function SightingsStackNavigator() {
 			<Stack.Screen name="Sightings Page"  component={SightingsPage} options={{ title: "Sightings", headerShown: false, }} />
 			<Stack.Screen name="New Missing Report" component={NewReportPage} options={{ title: "" }}/>
 			<Stack.Screen name="New Sighting" component={NewSightingPage} options={{ title: "" }}/>
+			<Stack.Screen name="New Pet" component={NewPetPage} options={{ title: "" }} />
 		</Stack.Navigator>
 	)
 }

@@ -237,6 +237,10 @@ const NewReportPage = ({ navigation: { navigate } }) => {
 							{'missingPetId' in errors && <FormControl.ErrorMessage leftIcon={<WarningOutlineIcon size="xs" />}>{errors.missingPetId}</FormControl.ErrorMessage>}
 						</FormControl>
 
+						<Button buttonColor={Color.NENO_BLUE} style={{opacity: !isButtonDisabled ? 1 : 0.4}} mode="contained" onPress= {()=>navigate("New Pet")}>
+                            Add New Pet
+                        </Button>
+
 						<FormControl isRequired>
 							<FormControl.Label><Text fontWeight={500} color={colors.text}>Last Seen Date and Time</Text></FormControl.Label>
 							<Button style={{ marginTop: 5, borderColor: Color.NENO_BLUE}} mode="outlined" textColor={Color.NENO_BLUE} onPress={openPicker}>{formatDateTimeDisplay(selectedDatetime)}</Button>
